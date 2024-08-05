@@ -16,9 +16,6 @@ let g:is_mac = 0
 let g:is_termux = 0
 let g:is_container = 0
 
-let g:host_os = 'unknown'
-
-
 " General options
 let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!.git" --glob "!node_modules" '
 let s:fzf_base_options = [ '--multi', '--ansi', '--info=inline', '--bind', 'alt-c:clear-query' ]
@@ -543,8 +540,19 @@ func! GitPath () abort
   endif
 endf
 
+function! s:Fzf_preview_window_opts(spec, fullscreen) abort
+  if a:fullscreen
+    let a:spec.options = a:spec.options + [ '--preview-window', 'up,60%' ]
+  else
+    let a:spec.options = a:spec.options + [ '--preview-window', 'right,60%' ]
+  endif
+
+  return a:spec
+endf
+
 function! s:Fzf_vim_files(query, options, fullscreen) abort
   let spec = fzf#vim#with_preview({ 'options': [] }, a:fullscreen)
+  let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
   " Append options after to get better keybindings for 'ctrl-/'
   let spec.options = spec.options + a:options
 
@@ -643,10 +651,13 @@ function! s:FzfRgWindows_preview(spec, fullscreen) abort
   " echo command_preview
 
   if has_key(a:spec, 'options')
-    let a:spec.options = a:spec.options + ['--preview',  command_preview] + s:fzf_bind_options
+    let options = a:spec.options + ['--preview',  command_preview] + s:fzf_bind_options
   else
-    let a:spec.options = s:fzf_preview_options
+    let options = s:fzf_preview_options
   endif
+
+  let spec = s:Fzf_preview_window_opts({ 'options': options }, a:fullscreen)
+  let a:spec.options = a:spec.options + spec.options
 
   return a:spec
 endfunction
@@ -694,6 +705,7 @@ function! RipgrepFzf(query, fullscreen)
     let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
   else
     let spec = fzf#vim#with_preview(spec)
+    let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
     let spec.options = spec.options + s:fzf_bind_options
   endif
 
@@ -742,6 +754,7 @@ function! RipgrepFuzzy(query, fullscreen)
       let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
     else
       let spec = fzf#vim#with_preview(spec)
+      let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
       let spec.options = spec.options + s:fzf_bind_options
     endif
 
