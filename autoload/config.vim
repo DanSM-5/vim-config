@@ -814,10 +814,9 @@ func! s:SetVimSystemCopyMaps () abort
   " TODO: Update path correctly for (n)vim
   " when project is configured
   " source ~/projects/vim-config/utils/system-copy-maps.vim
-  echo 'before Rsource'
   " Rsource utils/system-copy-maps.vim
   " call g:RelativeSource('utils/system-copy-maps.vim')
-  runtime utils/clipboard.vim
+  runtime utils/system-copy-maps.vim
 endf
 
 func! s:SetCtrlSFMaps () abort
