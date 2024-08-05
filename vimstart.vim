@@ -197,6 +197,7 @@ call plug#begin()
     Plug 'neovim/nvim-lspconfig'
     Plug 'williamboman/mason.nvim'
     Plug 'williamboman/mason-lspconfig.nvim'
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
     " Plugins to consider
     " Plug 'lukas-reineke/indent-blankline.nvim'
