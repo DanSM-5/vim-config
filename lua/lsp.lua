@@ -1,10 +1,15 @@
+local language_servers = {
+  'lua_ls',
+  -- 'tsserver'
+}
+
 -- Load meson
 require('mason').setup({})
 
 -- Load mason-lspconfig
 require('mason-lspconfig').setup({
   -- Prevent nvim load before lsp is ready
-  ensure_installed = { 'lua_ls' },
+  ensure_installed = language_servers,
   handlers = {
     function(server_name)
       require('lspconfig')[server_name].setup({})
