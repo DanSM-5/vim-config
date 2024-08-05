@@ -59,7 +59,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     set_map('n', 'gd', vim.lsp.buf.declaration, 'LSP: Go to declaration')
     set_map('n', 'gD', vim.lsp.buf.definition, 'LSP: Go to definition')
-    set_map('n', 'GD', '<cmd>vsplit | lua vim.lsp.buf.definition()<CR>', 'LSP: Go to definition in vsplit')
+    set_map('n', 'gV', '<cmd>vsplit | lua vim.lsp.buf.definition()<CR>', 'LSP: Go to definition in vsplit')
     set_map('n', 'K', vim.lsp.buf.hover, 'LSP: Hover action')
     set_map('n', 'gi', vim.lsp.buf.implementation, 'LSP: Go to implementation')
     set_map('n', '<C-k>', vim.lsp.buf.signature_help, 'LSP: Show signature help')
