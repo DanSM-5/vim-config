@@ -20,6 +20,8 @@ require('mason-lspconfig').setup({
   }
 })
 
+require('fzf_lsp').setup()
+
 -- https://github.com/DanSM-5/vim-config
 -- Setup the lsp config
 -- See: `:help lspconfig-setup`

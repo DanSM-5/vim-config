@@ -176,6 +176,9 @@ call plug#begin()
     Plug 'williamboman/mason-lspconfig.nvim'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
+    Plug 'gfanto/fzf-lsp.nvim'
+    Plug 'nvim-lua/plenary.nvim'
+
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
     " Plug 'nvim-neotest/nvim-nio'
