@@ -89,6 +89,12 @@ func! s:SetConfigurationsBefore () abort
   silent call s:SetRG()
   silent call s:SetCtrlSF()
   silent call s:DefineCommands()
+
+  " Load utility clipboard functions
+  runtime utils/clipboard.vim
+
+  " Set relative numbers
+  set number relativenumber
 endf
 
 func! s:SetConfigurationsAfter () abort
@@ -138,6 +144,13 @@ func! s:Set_user_keybindings () abort
   silent call s:SetVimSystemCopyMaps()
   silent call s:SetCtrlSFMaps()
 
+  " Map clipboard functions
+  xnoremap <silent> <Leader>y :<C-u>call clipboard#yank()<cr>
+  nnoremap <expr> <Leader>p clipboard#paste('p')
+  nnoremap <expr> <Leader>P clipboard#paste('P')
+  xnoremap <expr> <Leader>p clipboard#paste('p')
+  xnoremap <expr> <Leader>P clipboard#paste('P')
+
   " Quick buffer overview an completion to change
   nnoremap gb :ls<CR>:b<Space>
 
@@ -156,6 +169,13 @@ func! s:Set_user_keybindings () abort
   " Move between buffers with tab
   nnoremap <silent> <tab> :bn<cr>
   nnoremap <silent> <s-tab> :bN<cr>
+
+  " Wipe current buffer
+  noremap <Leader><Tab> <cmd>Bw<CR>
+  " Wipe all buffers but current
+  noremap <Leader><S-Tab> <cmd>Bonly<CR>
+" noremap <Leader><S-Tab> :Bw!<CR>
+" noremap <C-t> :tabnew split<CR>
 
   " vim-asterisk
   let g:asterisk#keeppos = 1
@@ -177,7 +197,48 @@ func! s:Set_user_keybindings () abort
   " Command mode open in buffer ctrl+e
   cnoremap <C-e> <C-f>
   " Command mode open in buffer leader+t+e from normal mode
-  nnoremap <Leader>te q:
+  nnoremap <leader>te q:
+
+  " Call vim commentary
+  nnoremap <leader>gg <cmd>Git
+
+  " ]<End> or ]<Home> move current line to the end or the begin of current buffer
+  nnoremap <silent>]<End> ddGp``
+  nnoremap <silent>]<Home> ddggP``
+  vnoremap <silent>]<End> dGp``
+  vnoremap <silent>]<Home> dggP``
+
+  " Select blocks after indenting
+  xnoremap < <gv
+  xnoremap > >gv|
+
+  " Use tab for indenting in visual mode
+  xnoremap <Tab> >gv|
+  xnoremap <S-Tab> <gv
+  nnoremap > >>_
+  nnoremap < <<_
+
+  " smart up and down
+  nmap <silent><down> gj
+  nmap <silent><up> gk
+  " nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+  " nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+
+  " Fast saving
+  nnoremap <C-s> :<C-u>w<CR>
+  vnoremap <C-s> :<C-u>w<CR>
+  cnoremap <C-s> <C-u>w<CR>
+
+  " Toggle scrolloff
+  nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
+
+  " VimSmoothie remap
+  vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
+  nnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
+  vnoremap <S-up> <cmd>call smoothie#do("\<C-U>")<CR>
+  nnoremap <S-up> <cmd>call smoothie#do("\<C-U>")<CR>
+  vnoremap zz <Cmd>call smoothie#do("zz")<CR>
+  nnoremap zz <Cmd>call smoothie#do("zz")<CR>
 endf
 
 func! s:FixCursorShapeOnExitNvim () abort
@@ -257,9 +318,11 @@ func! s:Windows_conf_before () abort
 endf
 
 func! s:Windows_conf_after () abort
-  " Set paste command with pwsh core
-  let g:system_copy#paste_command = 'pbpaste.exe'
-  let g:system_copy#copy_command = 'pbcopy.exe'
+  if executable('pbcopy.exe')
+    " Set paste command with pwsh core
+    let g:system_copy#paste_command = 'pbpaste.exe'
+    let g:system_copy#copy_command = 'pbcopy.exe'
+  else
 
   if executable('tldr')
     set keywordprg=tldr
@@ -377,6 +440,10 @@ func! s:Mac_conf_before () abort
 endf
 
 func! s:Mac_conf_after () abort
+  " Set system_copy variables
+  let g:system_copy#paste_command = 'pbpaste'
+  let g:system_copy#copy_command = 'pbcopy'
+
   if $TERM_PROGRAM =~? 'iTerm.app'
     " do not remap
   else
@@ -1108,14 +1175,5 @@ func! config#after () abort
   silent call s:Set_user_keybindings()
   silent call s:Set_os_specific_after()
   silent call s:SetConfigurationsAfter()
-  " Add to force 2 spaces with tab
-  " filetype plugin indent on
-  " " On pressing tab, insert 2 spaces
-  " set expandtab
-  " " show existing tab with 2 spaces width
-  " set tabstop=2
-  " set softtabstop=2
-  " " when indenting with '>', use 2 spaces width
-  " set shiftwidth=2
 endf
 

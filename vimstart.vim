@@ -38,6 +38,9 @@ let g:camelcasemotion_key = '<leader>'
 let g:asterisk#keeppos = 1
 " Disable vim-smoothie remaps
 let g:smoothie_no_default_mappings = 1
+" Airline configs
+let g:airline_theme = 'onehalfdark'
+let g:airline_powerline_fonts = 1
 
 ": }}} :------------------------------------------------------------------
 
@@ -110,48 +113,6 @@ autocmd VimEnter * call g:OnVimEnter()
 " let g:vscode_loaded = 1
 " VSCode extension
 
-" Useful keybindings
-" Replace word under the cursor with content of register 0
-" nmap <leader>v ciw<C-r>0<ESC>
-
-" ]<End> or ]<Home> move current line to the end or the begin of current buffer
-nnoremap <silent>]<End> ddGp``
-nnoremap <silent>]<Home> ddggP``
-vnoremap <silent>]<End> dGp``
-vnoremap <silent>]<Home> dggP``
-
-" Select blocks after indenting
-xnoremap < <gv
-xnoremap > >gv|
-
-" Use tab for indenting in visual mode
-xnoremap <Tab> >gv|
-xnoremap <S-Tab> <gv
-nnoremap > >>_
-nnoremap < <<_
-
-" smart up and down
-nmap <silent><down> gj
-nmap <silent><up> gk
-" nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
-" nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
-
-" Fast saving
-nnoremap <C-s> :<C-u>w<CR>
-vnoremap <C-s> :<C-u>w<CR>
-cnoremap <C-s> <C-u>w<CR>
-
-" Toggle scrolloff
-nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
-
-" VimSmoothie remap
-vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
-nnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
-vnoremap <S-up> <cmd>call smoothie#do("\<C-U>")<CR>
-nnoremap <S-up> <cmd>call smoothie#do("\<C-U>")<CR>
-vnoremap zz <Cmd>call smoothie#do("zz")<CR>
-nnoremap zz <Cmd>call smoothie#do("zz")<CR>
-
 ": Plugings {{{ :-------------------------------------------------
 
 " Automatically install VimPlug from within (n)vim
@@ -185,6 +146,7 @@ call plug#begin()
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-repeat'
   Plug 'inkarkat/vim-ReplaceWithRegister'
   Plug 'christoomey/vim-sort-motion'
   Plug 'DanSM-5/vim-system-copy'
@@ -200,6 +162,7 @@ call plug#begin()
   Plug 'airblade/vim-gitgutter'
 
   " Color scheme
+  " NOTE: Preserve order!
   Plug 'sonph/onehalf', { 'rtp': 'vim' }
   Plug 'vim-airline/vim-airline'
   Plug 'ryanoasis/vim-devicons'
@@ -235,117 +198,47 @@ set t_Co=256
 set cursorline
 " colorscheme onehalfdark
 silent! colorscheme onehalfdark
-let g:airline_theme = 'onehalfdark'
-let g:airline_powerline_fonts = 1
-
 if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
   set termguicolors
 endif
 
-" " Load plugins
-" set runtimepath^=~/.cache/vimfiles/repos/github.com/DanSM-5/vim-system-copy
-" set runtimepath^=~/.config/vscode-nvim/plugins/vim-repeat
-" set runtimepath^=~/.cache/vimfiles/repos/github.com/bkad/CamelCaseMotion
-" set runtimepath^=~/.cache/vimfiles/repos/github.com/tpope/vim-surround
-" " set runtimepath^=~/.cache/vimfiles/repos/github.com/christoomey/vim-sort-motion
-" set runtimepath^=~/.cache/vimfiles/repos/github.com/kreskij/Repeatable.vim
-" set runtimepath^=~/.cache/vimfiles/repos/github.com/haya14busa/vim-asterisk
-" set runtimepath^=~/.config/vscode-nvim/plugins/vim-smoothie
+" TODO: Remove if no issues with clipboard
+" if $IS_WINSHELL == 'true'
+"   " Windows specific
+"   set shell=cmd
+"   set shellcmdflag=/c
 
-" source ~/.cache/vimfiles/repos/github.com/DanSM-5/vim-system-copy/plugin/system_copy.vim
-" source ~/.cache/vimfiles/repos/github.com/bkad/CamelCaseMotion/plugin/camelcasemotion.vim
-" source ~/.cache/vimfiles/repos/github.com/tpope/vim-surround/plugin/surround.vim
-" " source ~/.cache/vimfiles/repos/github.com/christoomey/vim-sort-motion/sort_motion.vim
-" source ~/.cache/vimfiles/repos/github.com/kreskij/Repeatable.vim/plugin/repeatable.vim
-" source ~/.cache/vimfiles/repos/github.com/haya14busa/vim-asterisk/plugin/asterisk.vim
-" source ~/.config/vscode-nvim/plugins/vim-smoothie/plugin/smoothie.vim
-
-" Move line up/down
-" Require repeatable.vim
-" Repeatable nnoremap mlu :<C-U>m-2<CR>==
-" Repeatable nnoremap mld :<C-U>m+<CR>==
-
-" Load utility clipboard functions
-" Rsource utils/clipboard.vim
-runtime utils/clipboard.vim
-" source ~/vim-config/utils/clipboard.vim
-
-" Map clipboard functions
-xnoremap <silent> <Leader>y :<C-u>call clipboard#yank()<cr>
-nnoremap <expr> <Leader>p clipboard#paste('p')
-nnoremap <expr> <Leader>P clipboard#paste('P')
-xnoremap <expr> <Leader>p clipboard#paste('p')
-xnoremap <expr> <Leader>P clipboard#paste('P')
-
-if $IS_WINSHELL == 'true'
-  " Windows specific
-  set shell=cmd
-  set shellcmdflag=/c
-
-  " Set system_copy variables
-  let g:system_copy#paste_command = 'pbpaste.exe'
-  let g:system_copy#copy_command = 'pbcopy.exe'
-elseif $IS_FROM_CONTAINER == 'true'
-  " Set system_copy variables
-  let g:system_copy#paste_command = 'fs-paste'
-  let g:system_copy#copy_command = 'fs-copy'
-  call clipboard#set(g:system_copy#copy_command, g:system_copy#paste_command)
-elseif has('wsl') && $IS_WSL1 == 'true'
-  " Set system_copy variables
-  let g:system_copy#paste_command = 'pbpaste.exe'
-  let g:system_copy#copy_command = 'pbcopy.exe'
-elseif !empty($DISPLAY) && executable('xsel')
-  let g:system_copy#copy_command = 'xsel -i -b'
-  let g:system_copy#paste_command = 'xsel -o -b'
-elseif !empty($DISPLAY) && executable('xclip')
-  let g:system_copy#copy_command = 'xclip -i -selection clipboard'
-  let g:system_copy#paste_command = 'xclip -o -selection clipboard'
-elseif !empty($WAYLAND_DISPLAY) && executable('wl-copy') && executable('wl-paste')
-  let g:system_copy#copy_command = 'wl-copy --foreground --type text/plain'
-  let g:system_copy#paste_command = 'wl-paste --no-newline'
-elseif has('mac')
-  " Set system_copy variables
-  let g:system_copy#paste_command = 'pbpaste'
-  let g:system_copy#copy_command = 'pbcopy'
-elseif executable('pbcopy.exe')
-  let g:system_copy#paste_command = 'pbpaste.exe'
-  let g:system_copy#copy_command = 'pbcopy.exe'
-endif
-
-" Set relative numbers
-set number relativenumber
-
-" Prevent open dialog
-" let g:system_copy_silent = 1
-
-" Clean trailing whitespace in file
-" nnoremap <silent> <Leader>c :%s/\s\+$//e<cr>
-" Clean carriage returns '^M'
-" nnoremap <silent> <Leader>r :%s/\r$//g<cr>
-" Quick buffer overview an completion to change
-" nnoremap gb :ls<CR>:b<Space>
-" Move between buffers with tab
-" nnoremap <silent> <tab> :bn<cr>
-" nnoremap <silent> <s-tab> :bN<cr>
-
-" Wipe current buffer
-noremap <Leader><Tab> <cmd>Bw<CR>
-" Wipe all buffers but current
-noremap <Leader><S-Tab> <cmd>Bonly<CR>
-" noremap <Leader><S-Tab> :Bw!<CR>
-" noremap <C-t> :tabnew split<CR>
-
-" vim-asterisk
-" map *   <Plug>(asterisk-*)
-" map #   <Plug>(asterisk-#)
-" map g*  <Plug>(asterisk-g*)
-" map g#  <Plug>(asterisk-g#)
-" map z*  <Plug>(asterisk-z*)
-" map gz* <Plug>(asterisk-gz*)
-" map z#  <Plug>(asterisk-z#)
-" map gz# <Plug>(asterisk-gz#)
+"   " Set system_copy variables
+"   let g:system_copy#paste_command = 'pbpaste.exe'
+"   let g:system_copy#copy_command = 'pbcopy.exe'
+" elseif $IS_FROM_CONTAINER == 'true'
+"   " Set system_copy variables
+"   let g:system_copy#paste_command = 'fs-paste'
+"   let g:system_copy#copy_command = 'fs-copy'
+"   call clipboard#set(g:system_copy#copy_command, g:system_copy#paste_command)
+" elseif has('wsl') && $IS_WSL1 == 'true'
+"   " Set system_copy variables
+"   let g:system_copy#paste_command = 'pbpaste.exe'
+"   let g:system_copy#copy_command = 'pbcopy.exe'
+" elseif !empty($DISPLAY) && executable('xsel')
+"   let g:system_copy#copy_command = 'xsel -i -b'
+"   let g:system_copy#paste_command = 'xsel -o -b'
+" elseif !empty($DISPLAY) && executable('xclip')
+"   let g:system_copy#copy_command = 'xclip -i -selection clipboard'
+"   let g:system_copy#paste_command = 'xclip -o -selection clipboard'
+" elseif !empty($WAYLAND_DISPLAY) && executable('wl-copy') && executable('wl-paste')
+"   let g:system_copy#copy_command = 'wl-copy --foreground --type text/plain'
+"   let g:system_copy#paste_command = 'wl-paste --no-newline'
+" elseif has('mac')
+"   " Set system_copy variables
+"   let g:system_copy#paste_command = 'pbpaste'
+"   let g:system_copy#copy_command = 'pbcopy'
+" elseif executable('pbcopy.exe')
+"   let g:system_copy#paste_command = 'pbpaste.exe'
+"   let g:system_copy#copy_command = 'pbcopy.exe'
+" endif
 
 if has('nvim')
   " Entry poing for lua config for nvim
