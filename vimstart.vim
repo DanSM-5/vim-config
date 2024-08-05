@@ -140,6 +140,19 @@ cnoremap <C-s> <C-u>w<CR>
 "" move current line down in insert mode
 "inoremap <A-Down> <Esc>:m .+1<CR>==gi
 
+" Toggle scrolloff
+nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
+
+" Disable vim-smoothie remaps
+g:smoothie_no_default_mappings = 1
+" VimSmoothie remap
+vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
+nnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
+vnoremap <S-up> <cmd>call smoothie#do("\<C-U>")<CR>
+nnoremap <S-up> <cmd>call smoothie#do("\<C-U>")<CR>
+vnoremap zz <Cmd>call smoothie#do("zz")<CR>
+nnoremap zz <Cmd>call smoothie#do("zz")<CR>
+
 ": Plugings {{{ :-------------------------------------------------
 
 " Automatically install VimPlug from within (n)vim
@@ -162,7 +175,7 @@ function! s:plug_help_sink(line)
   execute 'Explore' dir
 endfunction
 
-command! -nargs=1 PlugHelp call fzf#run(fzf#wrap({
+command! -nargs=? PlugHelp call fzf#run(fzf#wrap({
   \ 'source': sort(keys(g:plugs)),
   \ 'options': ['--query', <q-args>],
   \ 'sink':   function('s:plug_help_sink')}))
@@ -333,9 +346,9 @@ set number relativenumber
 " nnoremap <silent> <s-tab> :bN<cr>
 
 " Wipe current buffer
-noremap <Leader><Tab> :Bw<CR>
+noremap <Leader><Tab> <cmd>Bw<CR>
 " Wipe all buffers but current
-noremap <Leader><S-Tab> :Bonly<CR>
+noremap <Leader><S-Tab> <cmd>Bonly<CR>
 " noremap <Leader><S-Tab> :Bw!<CR>
 " noremap <C-t> :tabnew split<CR>
 
@@ -350,8 +363,7 @@ noremap <Leader><S-Tab> :Bonly<CR>
 " map gz# <Plug>(asterisk-gz#)
 
 if has('nvim')
-  " source ./lua/init.lua
-  " Rsource lua/init.lua
+  " Entry poing for lua config for nvim
   runtime lua/init.lua
 endif
 
