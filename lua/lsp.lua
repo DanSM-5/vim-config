@@ -1,5 +1,7 @@
 local language_servers = {
   'lua_ls',
+  'vimls',
+  'biome',
   -- 'tsserver'
 }
 
