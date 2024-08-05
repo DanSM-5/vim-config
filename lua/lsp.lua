@@ -77,11 +77,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, 'LSP: Format buffer')
     set_map('n', '<space>Ic', vim.lsp.buf.incoming_calls, 'LSP: Incoming Calls')
     set_map('n', '<space>Oc', vim.lsp.buf.outgoing_calls, 'LSP: Outgoing Calls')
-    -- set_map('n', '<space>br', require('dap').toggle_breakpoint, "LSP: Toggle Breakpoint")
 
     -- Below seem to be the default
-    -- set_map('n', '[d', vim.diagnostic.goto_prev, 'LSP: Go to previous diagnostic message')
-    -- set_map('n', ']d', vim.diagnostic.goto_next, 'LSP: Go to next diagnostic message')
+    set_map('n', '[d', vim.diagnostic.goto_prev, 'LSP: Go to previous diagnostic message')
+    set_map('n', ']d', vim.diagnostic.goto_next, 'LSP: Go to next diagnostic message')
   end
 })
 

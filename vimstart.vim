@@ -176,6 +176,11 @@ call plug#begin()
     Plug 'williamboman/mason-lspconfig.nvim'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
+    " Debugger protocol
+    " Plug 'mfussenegger/nvim-dap'
+    " Plug 'nvim-neotest/nvim-nio'
+    " Plug 'rcarriga/nvim-dap-ui'
+
     " Plugins to consider
     " Plug 'lukas-reineke/indent-blankline.nvim'
 
