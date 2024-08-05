@@ -200,7 +200,7 @@ func! s:Set_user_keybindings () abort
   nnoremap <leader>te q:
 
   " Call vim commentary
-  nnoremap <leader>gg <cmd>Git
+  nnoremap <leader>gg <cmd>Git<cr>
 
   " ]<End> or ]<Home> move current line to the end or the begin of current buffer
   nnoremap <silent>]<End> ddGp``
