@@ -842,6 +842,10 @@ func! s:SetFZF () abort
   nnoremap <C-o>p :CPrj<CR>
   " Set usual ctrl-o behavior to double the sequence
   nnoremap <C-o><C-o> <C-o>
+
+  " Set live greep commands
+  nnoremap <leader>lG <cmd>RG<cr>
+  nnoremap <leader>lg <cmd>Rg<cr>
 endf
 
 func! s:SetVimSystemCopyMaps () abort
