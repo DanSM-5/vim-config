@@ -28,7 +28,27 @@ require('mason-lspconfig').setup({
   }
 })
 
+-- Add fzf menus for LSP functions
+-- This replace native lsp handlers so fzf handler
+-- functions are called async
 require('fzf_lsp').setup()
+
+local function is_executable(file)
+  local v = vim.api.nvim_exec2("!file " .. file, {output = true})
+  if string.find(v.output, "executable", 0, true) then
+    return true;
+  else
+    return false;
+  end
+end
+
+-- NOTE:
+-- installing lua server from mason fails in container due to nix
+-- being based on musl rather than gnu, though the server can be
+-- manually installed and hooked like this
+if os.getenv('IS_FROM_CONTAINER') == 'true' and is_executable('lua-language-server') then
+  require('lspconfig').lua_ls.setup({})
+end
 
 -- https://github.com/DanSM-5/vim-config
 -- Setup the lsp config
