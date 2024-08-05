@@ -13,9 +13,6 @@ set nocompatible
 " Default encoding
 set encoding=UTF-8
 
-" TODO: Remove later
-set runtimepath^=~/projects/vim-config
-
 ": Global variables {{{ :-------------------------------------------------
 
 " Most global variables defined in this file should be place here unless
@@ -49,6 +46,7 @@ let g:airline_powerline_fonts = 1
 " Config after run on VimEnter
 call config#before()
 
+": Global functions {{{ :-------------------------------------------------
 func! g:ToggleBg ()
   let highlight_value = execute('hi Normal')
   let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
@@ -107,6 +105,8 @@ function! g:OnVimEnter()
   " Update colors for vim buffet
   call g:BuffetSetCustomColors()
 endfunction
+
+": }}} :------------------------------------------------------------------
 
 autocmd VimEnter * call g:OnVimEnter()
 
