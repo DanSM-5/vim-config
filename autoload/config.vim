@@ -845,7 +845,7 @@ func! s:DefineCommands () abort
   nnoremap <silent><leader>tb :ToggleBg<CR>
 
   " Tab config toggle
-  command! SetTab call s:SetTab()
+  command! SetTab call g:SetTab()
   nnoremap <silent><leader>st :SetTab<CR>
 
   " Call SudoSave (Vim only)

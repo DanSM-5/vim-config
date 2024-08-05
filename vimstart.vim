@@ -61,7 +61,7 @@ endfunction
 function g:SetTab ()
   set tabstop=2 softtabstop=2 shiftwidth=2
   set expandtab
-  set number ruler
+  set ruler
   set autoindent smartindent
   filetype plugin indent on
 endfunction
