@@ -26,7 +26,19 @@ symlink_locations=(
 for loc in "${symlink_locations[@]}"; do
   # replace directory if exist
   [ -d "$loc" ] && mv "$loc" "$loc.bac"
+  [ -L "$loc" ] && continue
 
   ln -s "$location" "$loc"
 done
+
+# Nvim from scoop reads from APPDATA
+if [ -n "$APPDATA" ]; then
+  appdata="${APPDATA//\\//}"
+  nvim="$appdata/nvim"
+  # replace directory if exist
+  [ -d "$nvim" ] && mv "$nvim" "$nvim.bac"
+  [ -L "$nvim" ] && continue
+
+  ln -s "$location" "$nvim"
+fi
 
