@@ -7,7 +7,15 @@ local language_servers = {
 }
 
 -- Load meson
-require('mason').setup({})
+require('mason').setup({
+  ui = {
+    icons = {
+      package_installed = "✓",
+      package_pending = "➜",
+      package_uninstalled = "✗"
+    }
+  }
+})
 
 -- Load mason-lspconfig
 require('mason-lspconfig').setup({
