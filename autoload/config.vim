@@ -28,17 +28,18 @@ let s:fzf_bind_options = s:fzf_base_options + ['--bind', 'ctrl-l:change-preview-
       \                                        '--bind', 'alt-l:last',
       \                                        '--bind', 'alt-a:select-all',
       \                                        '--bind', 'alt-d:deselect-all']
-let s:fzf_preview_options = ['--layout=reverse', '--preview', 'bat -pp --color=always --style=numbers {}'] + s:fzf_bind_options
+let s:fzf_preview_options = [
+      \ '--layout=reverse',
+      \ '--preview-window', '60%',
+      \ '--preview', 'bat -pp --color=always --style=numbers {}'
+      \ ] + s:fzf_bind_options
 let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
-" let g:bg_value = ''
 
 " Options with only bind commands
 let s:fzf_options_with_binds = { 'options': s:fzf_bind_options }
-" let s:preview_options_bang_bind = { 'options': s:fzf_bind_options }
 
 " Options with bindings + preview
 let s:fzf_options_with_preview = {'options': s:fzf_preview_options }
-" let s:preview_options_bang_preview = { 'options': s:fzf_preview_options }
 
 " Test options for formationg window
 " let g:fzf_preview_window = ['right:60%', 'ctrl-/']
@@ -542,47 +543,14 @@ func! GitPath () abort
   endif
 endf
 
-func! s:RestoreFzfDefaultArgs (config) abort
-  let $FZF_DEFAULT_OPTS = s:fzf_original_default_opts
-  return a:config
-endf
-
-func! s:UpdateFzfDefaultArgs (config, set_up) abort
-  if a:set_up
-    let $FZF_DEFAULT_OPTS = s:fzf_original_default_opts . " --preview-window=up,60%"
-  else
-    let $FZF_DEFAULT_OPTS = s:fzf_original_default_opts . " --preview-window=right,60%"
-  endif
-
-  return a:config
-endf
-
-" func! s:GetFzfOptionsPreview (fullscreen) abort
-"   if a:fullscreen
-"     return s:UpdateFzfDefaultArgs(s:preview_options_bang_preview, a:fullscreen)
-"   else
-"     return s:UpdateFzfDefaultArgs(s:fzf_options_with_preview, a:fullscreen)
-"   endif
-" endf
-
-" func! s:GetFzfOptionsBind (fullscreen) abort
-"   if a:fullscreen
-"     return s:UpdateFzfDefaultArgs(s:preview_options_bang_bind, a:fullscreen)
-"   else
-"     return s:UpdateFzfDefaultArgs(s:fzf_options_with_binds, a:fullscreen)
-"   endif
-" endf
-
 function! s:Fzf_vim_files(query, options, fullscreen) abort
   let spec = fzf#vim#with_preview({ 'options': [] }, a:fullscreen)
   " Append options after to get better keybindings for 'ctrl-/'
   let spec.options = spec.options + a:options
 
   try
-    call s:UpdateFzfDefaultArgs({}, a:fullscreen)
     call fzf#vim#files(a:query, spec, a:fullscreen)
   finally
-    call s:RestoreFzfDefaultArgs({})
   endtry
 endfunction
 
@@ -675,9 +643,9 @@ function! s:FzfRgWindows_preview(spec, fullscreen) abort
   " echo command_preview
 
   if has_key(a:spec, 'options')
-    let a:spec.options = a:spec.options + ['--preview',  command_preview] + s:UpdateFzfDefaultArgs(s:fzf_bind_options, a:fullscreen)
+    let a:spec.options = a:spec.options + ['--preview',  command_preview] + s:fzf_bind_options
   else
-    let a:spec.options = s:UpdateFzfDefaultArgs(s:fzf_preview_options, a:fullscreen)
+    let a:spec.options = s:fzf_preview_options
   endif
 
   return a:spec
@@ -725,7 +693,7 @@ function! RipgrepFzf(query, fullscreen)
   if g:is_windows
     let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
   else
-    let spec = fzf#vim#with_preview(s:UpdateFzfDefaultArgs(spec, a:fullscreen))
+    let spec = fzf#vim#with_preview(spec)
     let spec.options = spec.options + s:fzf_bind_options
   endif
 
@@ -753,7 +721,6 @@ function! RipgrepFzf(query, fullscreen)
     call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
   finally
     exec 'cd '. curr_path
-    call s:RestoreFzfDefaultArgs({})
   endtry
 endfunction
 
@@ -774,16 +741,13 @@ function! RipgrepFuzzy(query, fullscreen)
     if g:is_windows
       let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
     else
-      " let spec.options = s:FzfRg_bindings(spec.options)
-      " call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(s:UpdateFzfDefaultArgs(spec, a:fullscreen)), a:fullscreen)
-      let spec = fzf#vim#with_preview(s:UpdateFzfDefaultArgs(spec, a:fullscreen))
+      let spec = fzf#vim#with_preview(spec)
       let spec.options = spec.options + s:fzf_bind_options
     endif
 
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
   finally
     exec 'cd '. curr_path
-    call s:RestoreFzfDefaultArgs({})
   endtry
 endfunction
 
@@ -835,11 +799,6 @@ func! s:SetFZF () abort
     command! -bang -nargs=? -complete=dir GitFZF
       \ call s:Fzf_vim_files(GitPath(), s:fzf_bind_options, <bang>0)
 
-    " command! -bang -nargs=* Rg
-    "   \ call fzf#vim#grep(
-    "   \   'rg' . s:rg_args . '-- ' . shellescape(<q-args>) . ' ' . GitPath(), 1,
-    "   \   fzf#vim#with_preview(s:UpdateFzfDefaultArgs(s:fzf_options_with_binds, <bang>0)), <bang>0)
-
     if ! has('nvim')
       execute "set <M-p>=π"
     endif
@@ -850,11 +809,6 @@ func! s:SetFZF () abort
       \ call s:Fzf_vim_files(<q-args>, s:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
       \ call s:Fzf_vim_files(GitPath(), s:fzf_bind_options, <bang>0)
-
-    " command! -bang -nargs=* Rg
-    "   \ call fzf#vim#grep(
-    "   \   'rg' . s:rg_args . '-- ' . shellescape(<q-args>) . ' ' . GitPath(), 1,
-    "   \   fzf#vim#with_preview(s:UpdateFzfDefaultArgs(s:fzf_options_with_binds, <bang>0)), <bang>0)
 
     if ! has('nvim')
       execute "set <M-p>=\ep"
