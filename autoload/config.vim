@@ -840,20 +840,15 @@ func! s:DefineCommands () abort
   command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
   command! CleanCR call s:CleanCR()
 
-  " Set toggle background to transparent by default and mapping and function
-  " to toggle it.
-  " command! ToggleBg call s:ToggleBg()
-  " nnoremap <silent><leader>tb :ToggleBg<CR>
-  " autocmd vimenter * let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
-  " autocmd vimenter * ToggleBg
+  " Background color toggle
+  command! ToggleBg call g:ToggleBg()
+  nnoremap <silent><leader>tb :ToggleBg<CR>
 
+  " Tab config toggle
   command! SetTab call s:SetTab()
   nnoremap <silent><leader>st :SetTab<CR>
-  " NOTE: if needed uncomment next line
-  " but I should check if I can force always 2 spaces for indent
-  " with SpaceVim built-ins
-  " autocmd vimenter * SetTab
 
+  " Call SudoSave (Vim only)
   command! -nargs=? -complete=buffer SudoSave
         \ call SudoSave(<q-args>)
 
@@ -1055,15 +1050,6 @@ endfunction
 "     silent execute('hi Normal guibg=NONE ctermbg=NONE')
 "   endif
 " endfunction
-
-function s:SetTab ()
-  set tabstop=2 softtabstop=2 shiftwidth=2
-  set expandtab
-  " set number ruler
-  " set autoindent smartindent
-  " syntax enable
-  filetype plugin indent on
-endfunction
 
 function! LF()
   if has('nvim')

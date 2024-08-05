@@ -16,11 +16,31 @@ set encoding=UTF-8
 " TODO: Remove later
 set runtimepath^=~/projects/vim-config
 
+": Global variables {{{ :-------------------------------------------------
 
-" Global variables
+" Most global variables defined in this file should be place here unless
+" it is needed to be defined upon confiditional logic
+
+" Store the value of the background in Normal mode
 let g:bg_value = ''
 " Enable detection
 let g:host_os = config#CurrentOS()
+
+" Vim Buffet icons
+let g:buffet_powerline_separators = 1
+let g:buffet_tab_icon = "\uf00a"
+let g:buffet_left_trunc_icon = "\uf0a8"
+let g:buffet_right_trunc_icon = "\uf0a9"
+
+" Camel case motion keybindings
+let g:camelcasemotion_key = '<leader>'
+" Vim-Asterisk keep cursor position under current letter with
+let g:asterisk#keeppos = 1
+" Disable vim-smoothie remaps
+let g:smoothie_no_default_mappings = 1
+
+": }}} :------------------------------------------------------------------
+
 " Setting up config setup
 " Config before runs on startup
 " Config after run on VimEnter
@@ -38,9 +58,13 @@ func! g:ToggleBg ()
   endif
 endfunction
 
-" Background
-command! ToggleBg call g:ToggleBg()
-nnoremap <silent><leader>tb :ToggleBg<CR>
+function g:SetTab ()
+  set tabstop=2 softtabstop=2 shiftwidth=2
+  set expandtab
+  set number ruler
+  set autoindent smartindent
+  filetype plugin indent on
+endfunction
 
 " Note: Make sure the function is defined before `vim-buffet` is loaded.
 function! g:BuffetSetCustomColors()
@@ -55,23 +79,29 @@ function! g:BuffetSetCustomColors()
   hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#5d677a guibg=#999999
 endfunction
 
-let g:buffet_powerline_separators = 1
-let g:buffet_tab_icon = "\uf00a"
-let g:buffet_left_trunc_icon = "\uf0a8"
-let g:buffet_right_trunc_icon = "\uf0a9"
-
-
 function! g:OnVimEnter()
+  " Get background settings of normal mode
   let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
+  " Make background transparen
   ToggleBg
+  " Set tab to 2 paces
   SetTab
 
   if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
     PlugInstall --sync | q
   endif
 
+  " Call config after on vim enter
   call config#after()
 
+  " Single line version of above
+  " autocmd VimEnter *
+  "   \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  "   \|   PlugInstall --sync | q
+  "   \| endif
+  "   \| call config#after()
+
+  " Update colors for vim buffet
   call g:BuffetSetCustomColors()
 endfunction
 
@@ -83,19 +113,6 @@ autocmd VimEnter * call g:OnVimEnter()
 " Useful keybindings
 " Replace word under the cursor with content of register 0
 " nmap <leader>v ciw<C-r>0<ESC>
-
-" Camel case motion keybindings
-let g:camelcasemotion_key = '<leader>'
-" Vim-Asterisk keep cursor position under current letter with
-let g:asterisk#keeppos = 1
-
-""Ctrl+Shift+Up/Down to move up and down
-" nmap <silent><C-S-Down> :m .+1<CR>==
-" nmap <silent><C-S-Up> :m .-2<CR>==
-" imap <silent><C-S-Down> <Esc>:m .+1<CR>==gi
-" imap <silent><C-S-Up> <Esc>:m .-2<CR>==gi
-" vmap <silent><C-S-Down> :m '>+1<CR>gv=gv
-" vmap <silent><C-S-Up> :m '<-2<CR>gv=gv
 
 " ]<End> or ]<Home> move current line to the end or the begin of current buffer
 nnoremap <silent>]<End> ddGp``
@@ -114,8 +131,8 @@ nnoremap > >>_
 nnoremap < <<_
 
 " smart up and down
-nmap <silent><DOWN> gj
-nmap <silent><UP> gk
+nmap <silent><down> gj
+nmap <silent><up> gk
 " nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 " nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 
@@ -124,27 +141,9 @@ nnoremap <C-s> :<C-u>w<CR>
 vnoremap <C-s> :<C-u>w<CR>
 cnoremap <C-s> <C-u>w<CR>
 
-" System copy maps
-" source ~/vim-config/utils/system-copy-maps.vim
-
-"" move selected lines up one line
-"xnoremap <A-Up> :m-2<CR>gv=gv
-"" move selected lines down one line
-"xnoremap <A-Down> :m'>+<CR>gv=gv
-"" move current line up one line
-"noremap <A-Up> :<C-u>m-2<CR>==
-"" move current line down one line
-"nnoremap <A-Down> :<C-u>m+<CR>==
-"" move current line up in insert mode
-"inoremap <A-Up> <Esc>:m .-2<CR>==gi
-"" move current line down in insert mode
-"inoremap <A-Down> <Esc>:m .+1<CR>==gi
-
 " Toggle scrolloff
 nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
 
-" Disable vim-smoothie remaps
-let g:smoothie_no_default_mappings = 1
 " VimSmoothie remap
 vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
 nnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
@@ -229,20 +228,6 @@ call plug#end()
 
 
 ": }}} :----------------------------------------------------------
-
-" Set after VimPlug
-
-
-
-" Automatically install plugins on startup
-" autocmd VimEnter *
-"   \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-"   \|   PlugInstall --sync | q
-"   \| endif
-"   \| call config#after()
-" Load config after plugins are available
-" autocmd VimEnter * call config#after()
-
 
 " Color schemes should be loaded after plug#end call
 " syntax on
@@ -372,5 +357,4 @@ autocmd BufReadPost *
      \ if line("'\"") > 0 && line("'\"") <= line("$") |
      \   exe "normal! g`\"zz" |
      \ endif
-
 
