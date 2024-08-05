@@ -3,18 +3,73 @@
 
 " Change location of shada
 " with nvim profile in terminal
-" set shada+='1000,n$HOME/.cache/vim-config/main.shada
+set shada+='1000,n$HOME/.cache/vim-config/main.shada
 
 " Make nocompatible explisit
 set nocompatible
 
+" Default encoding
+set encoding=UTF-8
+
+" TODO: Remove later
+set runtimepath^=~/projects/vim-config
+
+
+" Global variables
+let g:bg_value = ''
 " Enable detection
 let g:host_os = config#CurrentOS()
 " Setting up config setup
 " Config before runs on startup
 " Config after run on VimEnter
 call config#before()
-autocmd VimEnter * call config#after()
+
+func! g:ToggleBg ()
+  let highlight_value = execute('hi Normal')
+  let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
+  let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
+
+  if ctermbg_value == '' && guibg_value ==? ''
+    silent execute('hi ' . g:bg_value)
+  else
+    silent execute('hi Normal guibg=NONE ctermbg=NONE')
+  endif
+endfunction
+
+" Background
+command! ToggleBg call g:ToggleBg()
+nnoremap <silent><leader>tb :ToggleBg<CR>
+
+" Note: Make sure the function is defined before `vim-buffet` is loaded.
+function! g:BuffetSetCustomColors()
+  " NOTE: This functions runs before VimEnter, so cannot take values
+  " from g:bg_value
+
+  " let bg_val = substitute(g:bg_value, 'Normal', '', '')
+  " silent execute('hi! BuffetCurrentBuffer cterm=NONE ' . bg_val)
+  hi! BuffetCurrentBuffer cterm=NONE ctermbg=236 ctermfg=188 guibg=#282c34 guifg=#dcdfe4
+endfunction
+
+let g:buffet_powerline_separators = 1
+let g:buffet_tab_icon = "\uf00a"
+let g:buffet_left_trunc_icon = "\uf0a8"
+let g:buffet_right_trunc_icon = "\uf0a9"
+
+
+function! g:OnVimEnter()
+  let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
+  ToggleBg
+
+  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+    PlugInstall --sync | q
+  endif
+
+  call config#after()
+
+  call g:BuffetSetCustomColors()
+endfunction
+
+autocmd VimEnter * call g:OnVimEnter()
 
 " let g:vscode_loaded = 1
 " VSCode extension
@@ -81,28 +136,107 @@ cnoremap <C-s> <C-u>w<CR>
 
 ": Plugings {{{ :-------------------------------------------------
 
+" Automatically install VimPlug from within (n)vim
+" let data_dir = has('nvim') ? stdpath('data') : '~/.vim'
+" if empty(glob(data_dir . '/autoload/plug.vim'))
+"   silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+"   " autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+" endif
+
+function! s:plug_help_sink(line)
+  let dir = g:plugs[a:line].dir
+  for pat in ['doc/*.txt', 'README.md']
+    let match = get(split(globpath(dir, pat), "\n"), 0, '')
+    if len(match)
+      execute 'tabedit' match
+      return
+    endif
+  endfor
+  tabnew
+  execute 'Explore' dir
+endfunction
+
+command! -nargs=1 PlugHelp call fzf#run(fzf#wrap({
+  \ 'source': sort(keys(g:plugs)),
+  \ 'options': ['--query', <q-args>],
+  \ 'sink':   function('s:plug_help_sink')}))
+
 call plug#begin()
+  " List your plugins here
+  " Plug 'tpope/vim-sensible'
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-fugitive'
+  Plug 'inkarkat/vim-ReplaceWithRegister'
+  Plug 'christoomey/vim-sort-motion'
+  Plug 'DanSM-5/vim-system-copy'
+  Plug 'junegunn/fzf'
+  Plug 'junegunn/fzf.vim'
+  Plug 'mg979/vim-visual-multi'
+  Plug 'dyng/ctrlsf.vim'
+  Plug 'kreskij/Repeatable.vim'
+  Plug 'bkad/CamelCaseMotion'
+  Plug 'haya14busa/vim-asterisk'
+  Plug 'lambdalisue/vim-suda'
+  Plug 'psliwka/vim-smoothie'
 
-" List your plugins here
-" Plug 'tpope/vim-sensible'
-Plug "tpope/vim-commentary"
-Plug "tpope/vim-surround"
-Plug "tpope/vim-fugitive"
-Plug "inkarkat/vim-ReplaceWithRegister"
-Plug "christoomey/vim-sort-motion"
-Plug "DanSM-5/vim-system-copy"
-Plug "junegunn/fzf"
-Plug "junegunn/fzf.vim"
-Plug "mg979/vim-visual-multi"
-Plug "dyng/ctrlsf.vim"
-Plug "kreskij/Repeatable.vim"
-Plug "bkad/CamelCaseMotion"
-Plug "haya14busa/vim-asterisk"
-Plug "lambdalisue/vim-suda"
+  " Color scheme
+  Plug 'sonph/onehalf', { 'rtp': 'vim' }
+  Plug 'vim-airline/vim-airline'
+  Plug 'ryanoasis/vim-devicons'
+  Plug 'bagrat/vim-buffet'
 
+
+  if has('nvim')
+    " LSP plugings for neovim
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'williamboman/mason.nvim'
+    Plug 'williamboman/mason-lspconfig.nvim'
+
+    " Plugins to consider
+    " Plug 'lukas-reineke/indent-blankline.nvim'
+
+    " Copied from example
+    " Plug 'hrsh7th/nvim-cmp'
+    " Plug 'hrsh7th/cmp-nvim-lsp'
+    " Plug 'L3MON4D3/LuaSnip'
+    " Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
+  " else
+  "   Plug 'prabirshrestha/vim-lsp'
+  endif
 call plug#end()
 
+
 ": }}} :----------------------------------------------------------
+
+" Set after VimPlug
+
+
+
+" Automatically install plugins on startup
+" autocmd VimEnter *
+"   \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+"   \|   PlugInstall --sync | q
+"   \| endif
+"   \| call config#after()
+" Load config after plugins are available
+" autocmd VimEnter * call config#after()
+
+
+" Color schemes should be loaded after plug#end call
+" syntax on
+set t_Co=256
+set cursorline
+" colorscheme onehalfdark
+silent! colorscheme onehalfdark
+let g:airline_theme = 'onehalfdark'
+let g:airline_powerline_fonts = 1
+
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
 
 " " Load plugins
 " set runtimepath^=~/.cache/vimfiles/repos/github.com/DanSM-5/vim-system-copy
@@ -128,7 +262,9 @@ call plug#end()
 " Repeatable nnoremap mld :<C-U>m+<CR>==
 
 " Load utility clipboard functions
-source ~/vim-config/utils/clipboard.vim
+" Rsource utils/clipboard.vim
+runtime utils/clipboard.vim
+" source ~/vim-config/utils/clipboard.vim
 
 " Map clipboard functions
 xnoremap <silent> <Leader>y :<C-u>call clipboard#yank()<cr>
@@ -172,6 +308,9 @@ elseif executable('pbcopy.exe')
   let g:system_copy#copy_command = 'pbcopy.exe'
 endif
 
+" Set relative numbers
+set number relativenumber
+
 " Prevent open dialog
 " let g:system_copy_silent = 1
 
@@ -194,4 +333,12 @@ endif
 " map gz* <Plug>(asterisk-gz*)
 " map z#  <Plug>(asterisk-z#)
 " map gz# <Plug>(asterisk-gz#)
+
+if has('nvim')
+  " source ./lua/init.lua
+  " Rsource lua/init.lua
+  runtime lua/init.lua
+endif
+
+" call config#after()
 

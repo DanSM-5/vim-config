@@ -1,0 +1,7 @@
+
+# VimPlug
+autoload/plug.vim
+
+# Pluggins
+plugged
+

@@ -30,7 +30,7 @@ let s:fzf_bind_options = s:fzf_base_options + ['--bind', 'ctrl-l:change-preview-
       \                                        '--bind', 'alt-d:deselect-all']
 let s:fzf_preview_options = ['--layout=reverse', '--preview', 'bat -pp --color=always --style=numbers {}'] + s:fzf_bind_options
 let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
-let g:bg_value = ''
+" let g:bg_value = ''
 
 " Options with only bind commands
 let s:fzf_options_with_binds = { 'options': s:fzf_bind_options }
@@ -811,7 +811,13 @@ func! s:SetFZF () abort
 endf
 
 func! s:SetVimSystemCopyMaps () abort
-  source ~/vim-config/utils/system-copy-maps.vim
+  " TODO: Update path correctly for (n)vim
+  " when project is configured
+  " source ~/projects/vim-config/utils/system-copy-maps.vim
+  echo 'before Rsource'
+  " Rsource utils/system-copy-maps.vim
+  " call g:RelativeSource('utils/system-copy-maps.vim')
+  runtime utils/clipboard.vim
 endf
 
 func! s:SetCtrlSFMaps () abort
@@ -837,10 +843,10 @@ func! s:DefineCommands () abort
 
   " Set toggle background to transparent by default and mapping and function
   " to toggle it.
-  command! ToggleBg call s:ToggleBg()
-  nnoremap <silent><leader>tb :ToggleBg<CR>
-  autocmd vimenter * let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
-  autocmd vimenter * ToggleBg
+  " command! ToggleBg call s:ToggleBg()
+  " nnoremap <silent><leader>tb :ToggleBg<CR>
+  " autocmd vimenter * let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
+  " autocmd vimenter * ToggleBg
 
   command! SetTab call s:SetTab()
   nnoremap <silent><leader>st :SetTab<CR>
@@ -1039,17 +1045,17 @@ function! config#CurrentOS ()
   return known_os
 endfunction
 
-func! s:ToggleBg ()
-  let highlight_value = execute('hi Normal')
-  let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
-  let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
+" func! s:ToggleBg ()
+"   let highlight_value = execute('hi Normal')
+"   let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
+"   let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
-  if ctermbg_value == '' && guibg_value ==? ''
-    silent execute('hi ' . g:bg_value)
-  else
-    silent execute('hi Normal guibg=NONE ctermbg=NONE')
-  endif
-endfunction
+"   if ctermbg_value == '' && guibg_value ==? ''
+"     silent execute('hi ' . g:bg_value)
+"   else
+"     silent execute('hi Normal guibg=NONE ctermbg=NONE')
+"   endif
+" endfunction
 
 function s:SetTab ()
   set tabstop=2 softtabstop=2 shiftwidth=2
