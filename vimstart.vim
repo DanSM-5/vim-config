@@ -48,6 +48,9 @@ function! g:BuffetSetCustomColors()
   " let bg_val = substitute(g:bg_value, 'Normal', '', '')
   " silent execute('hi! BuffetCurrentBuffer cterm=NONE ' . bg_val)
   hi! BuffetCurrentBuffer cterm=NONE ctermbg=236 ctermfg=188 guibg=#282c34 guifg=#dcdfe4
+  " hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#00ff00 guibg=#999999
+  " hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#98c379 guibg=#999999
+  hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#5d677a guibg=#999999
 endfunction
 
 let g:buffet_powerline_separators = 1
@@ -179,6 +182,7 @@ call plug#begin()
   Plug 'haya14busa/vim-asterisk'
   Plug 'lambdalisue/vim-suda'
   Plug 'psliwka/vim-smoothie'
+  Plug 'airblade/vim-gitgutter'
 
   " Color scheme
   Plug 'sonph/onehalf', { 'rtp': 'vim' }
@@ -324,6 +328,13 @@ set number relativenumber
 " nnoremap <silent> <tab> :bn<cr>
 " nnoremap <silent> <s-tab> :bN<cr>
 
+" Wipe current buffer
+noremap <Leader><Tab> :Bw<CR>
+" Wipe all buffers but current
+noremap <Leader><S-Tab> :Bonly<CR>
+" noremap <Leader><S-Tab> :Bw!<CR>
+" noremap <C-t> :tabnew split<CR>
+
 " vim-asterisk
 " map *   <Plug>(asterisk-*)
 " map #   <Plug>(asterisk-#)
@@ -340,5 +351,10 @@ if has('nvim')
   runtime lua/init.lua
 endif
 
-" call config#after()
+" Return to last edit position when opening files
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"zz" |
+     \ endif
+
 
