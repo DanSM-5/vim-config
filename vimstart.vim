@@ -144,7 +144,7 @@ cnoremap <C-s> <C-u>w<CR>
 nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
 
 " Disable vim-smoothie remaps
-g:smoothie_no_default_mappings = 1
+let g:smoothie_no_default_mappings = 1
 " VimSmoothie remap
 vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
 nnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
