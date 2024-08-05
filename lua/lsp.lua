@@ -32,10 +32,10 @@ require('fzf_lsp').setup()
 
 -- Global mappings
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>', vim.diagnostic.setloclist)
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, { desc = 'LSP: Open float window' })
+vim.keymap.set('n', '<space>l', vim.diagnostic.setloclist, { desc = 'LSP: Open diagnostic list' })
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'LSP: Go to previous diagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'LSP: Go to next diagnostic message' })
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
@@ -79,10 +79,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, 'LSP: Format buffer')
     set_map('n', '<space>Ic', vim.lsp.buf.incoming_calls, 'LSP: Incoming Calls')
     set_map('n', '<space>Oc', vim.lsp.buf.outgoing_calls, 'LSP: Outgoing Calls')
-
-    -- Below seem to be the default
-    set_map('n', '[d', vim.diagnostic.goto_prev, 'LSP: Go to previous diagnostic message')
-    set_map('n', ']d', vim.diagnostic.goto_next, 'LSP: Go to next diagnostic message')
   end
 })
 
