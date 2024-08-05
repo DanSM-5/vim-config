@@ -62,6 +62,7 @@ let g:buffet_right_trunc_icon = "\uf0a9"
 function! g:OnVimEnter()
   let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
   ToggleBg
+  SetTab
 
   if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
     PlugInstall --sync | q
