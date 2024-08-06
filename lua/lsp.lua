@@ -38,7 +38,8 @@ require('fzf_lsp').setup()
 -- installing lua server from mason fails in container due to nix
 -- being based on musl rather than gnu, though the server can be
 -- manually installed and hooked like this
-if os.getenv('IS_FROM_CONTAINER') == 'true' and vim.fn.executable('lua-language-server') == 1 then
+if (os.getenv('IS_FROM_CONTAINER') == 'true' or os.getenv('IS_TERMUX') == 'true') and
+  vim.fn.executable('lua-language-server') == 1 then
   require('lspconfig').lua_ls.setup({})
 end
 
