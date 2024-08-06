@@ -1,3 +1,9 @@
+-- https://github.com/DanSM-5/vim-config
+-- Setup the lsp config
+-- See: `:help lspconfig-setup`
+-- local lspconfig = require('lspconfig')
+-- lspconfig.lua_ls.setup({})
+
 local language_servers = {
   'lua_ls',
   'vimls',
@@ -5,6 +11,19 @@ local language_servers = {
   'bashls',
   -- 'tsserver'
 }
+
+if (vim.g.is_termux == 1) then
+  language_servers = { 'vimls', 'biome' }
+  require('lsp-servers.termux').setup()
+elseif vim.env.IS_FROM_CONTAINER == 'true' then
+  -- NOTE:
+  -- installing lua server from mason fails in container due to nix
+  -- being based on musl rather than gnu, though the server can be
+  -- manually installed and hooked like this
+  if vim.fn.executable('lua-language-server') == 1 then
+    require('lspconfig').lua_ls.setup({})
+  end
+end
 
 -- Load meson
 require('mason').setup({
@@ -23,16 +42,7 @@ require('mason-lspconfig').setup({
   ensure_installed = language_servers,
   handlers = {
     function(server_name)
-      local config = {}
-
-      if (server_name == 'bashls') then
-        config.settings = {
-          bashIde = {
-            globPattern = '*@(.sh|.inc|.bash|.command|.zsh|.uconfrc|.uconfgrc|.ualiasrc|.ualiasgrc)'
-          }
-        }
-      end
-
+      local config = require('lsp-servers.config').get_config()[server_name] or {}
       require('lspconfig')[server_name].setup(config)
     end
   }
@@ -44,7 +54,7 @@ require('mason-lspconfig').setup({
 require('fzf_lsp').setup()
 
 -- Set defualt lsp keybindings
-require('.lsp-servers.keymaps').setup()
+require('lsp-servers.keymaps').setup()
 
 -- Buffer information
 -- See `:help vim.lsp.buf`
