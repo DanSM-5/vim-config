@@ -23,7 +23,17 @@ require('mason-lspconfig').setup({
   ensure_installed = language_servers,
   handlers = {
     function(server_name)
-      require('lspconfig')[server_name].setup({})
+      local config = {}
+
+      if (server_name == 'bashls') then
+        config.settings = {
+          bashIde = {
+            globPattern = '*@(.sh|.inc|.bash|.command|.zsh|.uconfrc|.uconfgrc|.ualiasrc|.ualiasgrc)'
+          }
+        }
+      end
+
+      require('lspconfig')[server_name].setup(config)
     end
   }
 })
