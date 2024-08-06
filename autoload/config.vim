@@ -159,7 +159,7 @@ func! s:Set_user_keybindings () abort
   nnoremap <silent> <Leader>r :%s/\r$//g<cr>
 
   " Paste text override word under the cursor
-  nmap <leader>v ciw<C-r>0<ESC>
+  nmap <leader>vp ciw<C-r>0<ESC>
 
   " Remove all trailing spaces in current buffer
   nnoremap <silent> <leader>c :%s/\s\+$//e<cr>
@@ -1129,6 +1129,26 @@ function! SudoSave (fileName) abort
   exec 'write !sudo tee ' . file
 endfunction
 
+" func! s:NetrwMapping () abort
+"   nnoremap <leader>q <cmd>quit<cr>
+" endfunction
+
+func! s:Set_netrw () abort
+  let g:netrw_banner = 0
+  let g:netrw_liststyle = 3
+  let g:netrw_browse_split = 4
+  let g:netrw_altv = 1
+  let g:netrw_winsize = 25
+
+  nnoremap <leader>ve <cmd>Vex<cr>
+  nnoremap <leader>se <cmd>Sex<cr>
+
+  " augroup netrw_mapping
+  "   autocmd!
+  "   autocmd filetype netrw call s:NetrwMapping()
+  " augroup END
+endfunction
+
 func! config#before () abort
   " Can be used to set different undodir between vim and nvim
   " silent call s:SetUndodir()
@@ -1137,6 +1157,7 @@ func! config#before () abort
   let g:fzf_vim = {}
   let g:fzf_history_dir = '~/.cache/fzf-history'
 
+  silent call s:Set_netrw()
   silent call s:Set_os_specific_before()
   silent call s:SetBufferOptions()
   silent call s:SetConfigurationsBefore()
