@@ -17,7 +17,7 @@ let g:is_termux = 0
 let g:is_container = 0
 
 " General options
-let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!.git" --glob "!node_modules" '
+let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
 let s:fzf_base_options = [ '--multi', '--ansi', '--info=inline', '--bind', 'alt-c:clear-query' ]
 let s:fzf_bind_options = s:fzf_base_options + ['--bind', 'ctrl-l:change-preview-window(down|hidden|),ctrl-/:change-preview-window(down|hidden|),alt-up:preview-page-up,alt-down:preview-page-down', '--bind', 'ctrl-s:toggle-sort',
       \                                        '--cycle',
@@ -464,22 +464,8 @@ endf
 func! s:SetRG () abort
   if executable('rg')
     " In-built grep functionality
-    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ --no-ignore\ --hidden\ -g\ '!.git'\ -g\ '!node_modules'
+    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ --no-ignore\ --hidden\ -g\ '!plugged'\ -g\ '!.git'\ -g\ '!node_modules'
     set grepformat=%f:%l:%c:%m
-
-    " For Ctrl-P plugin
-    let g:crtlp_user_command = 'rg %s --no-ignore --hidden --files --color=never --glob "!.git" --glob "!node_modules" --follow'
-
-    " No need for caching with rg
-    let g:ctrlp_use_caching = 0
-
-    let g:ctrlp_clear_cache_on_exit = 1
-
-    " For SpaceVim search options
-    " let profile = SpaceVim#mapping#search#getprofile('rg')
-    " let default_opt = profile.default_opts + ['--no-ignore-vcs']
-    " call SpaceVim#mapping#search#profile({ 'rg': { 'default_opts': default_opt } })
-
   endif
 endf
 
@@ -493,9 +479,9 @@ func! s:SetCtrlSF () abort
   let g:ctrlsf_default_root = 'cwd'
   let g:ctrlsf_backend = 'rg'
   let g:ctrlsf_extra_backend_args = {
-      \ 'rg': '--hidden --glob "!.git" --glob "!node_modules"'
+      \ 'rg': '--hidden --glob "!plugged" --glob "!.git" --glob "!node_modules"'
       \ }
-  let g:ctrlsf_ignore_dir = ['.git', 'node_modules']
+  let g:ctrlsf_ignore_dir = ['.git', 'node_modules', 'plugged']
 
   let g:ctrlsf_mapping = {
     \ "open"    : ["<CR>", "o"],
@@ -591,7 +577,7 @@ function! FzfChangeProject() abort
   let preview = user_conf_path . '/utils/fzf-preview.sh {}'
   let getprojects = user_conf_path . '/utils/getprojects'
   let reload_command = getprojects
-  let files_command = "fd --type file --color=always --no-ignore --hidden --exclude node_modules --exclude .git "
+  let files_command = "fd --type file --color=always --no-ignore --hidden --exclude plugged --exclude node_modules --exclude .git "
 
   " NOTE: Windows only block
   " The below if handles the function when called from powershell (pwsh)
@@ -668,11 +654,6 @@ endfunction
 
 function! RipgrepFzf(query, fullscreen)
   let fzf_rg_args = s:rg_args
-
-  " if g:is_windows
-    " let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob="!.git" --glob="!node_modules" '
-    " let fzf_rg_args = ' --glob="!.git" --glob="!node_modules" --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden '
-  " endif
 
   let command_fmt = 'rg' . fzf_rg_args . '-- %s || true'
   " Fixed initial load. It seems it broke on windows using fzf#shellescape
