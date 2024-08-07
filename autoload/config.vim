@@ -156,13 +156,13 @@ func! s:Set_user_keybindings () abort
   tnoremap <leader><Esc> <C-\><C-n>
 
   " Clean carriage returns '^M'
-  nnoremap <silent> <Leader>r :%s/\r$//g<cr>
+  nnoremap <silent> <Leader>cr :%s/\r$//g<cr>
 
   " Paste text override word under the cursor
   nmap <leader>vp ciw<C-r>0<ESC>
 
   " Remove all trailing spaces in current buffer
-  nnoremap <silent> <leader>c :%s/\s\+$//e<cr>
+  nnoremap <silent> <leader>cc :%s/\s\+$//e<cr>
 
   " Move between buffers with tab
   nnoremap <silent> <tab> :bn<cr>
@@ -873,10 +873,20 @@ func! s:SetCtrlSFMaps () abort
   inoremap <C-O>t <Esc>:CtrlSFToggle<CR>
 endf
 
+func! BufferCd () abort
+  let buffer_path = GitPath()
+  if buffer_path
+    cd buffer_path
+  endif
+endf
+
 func! s:DefineCommands () abort
-  " Define user commands
+  " Call command and remove carriage return
   command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
   command! CleanCR call s:CleanCR()
+
+  command! Bcd call BufferCd()
+  nnoremap <silent> <leader>cd <cmd>Bcd<cr>
 
   " Background color toggle
   command! ToggleBg call g:ToggleBg()
