@@ -875,8 +875,11 @@ endf
 
 func! BufferCd () abort
   let buffer_path = GitPath()
-  if buffer_path
-    cd buffer_path
+  if !empty(buffer_path)
+    exec 'cd '. buffer_path
+    echon 'Changed to: ' . buffer_path
+  else
+    echon 'Unable to cd into: ' . buffer_path
   endif
 endf
 
