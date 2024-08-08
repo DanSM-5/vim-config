@@ -20,6 +20,7 @@ cmd('set syntax=on')
 g.mapleader = '\\'
 -- Store the value of the background in Normal mode
 g.bg_value = ''
+g.bg_value_visual = ''
 -- Enable detection
 g.host_os = fn['config#CurrentOS']()
 
@@ -58,16 +59,22 @@ cmd('let &t_8b = "\\<Esc>[48;2;%lu;%lu;%lum"')
 vim.cmd [[
   func! g:ToggleBg ()
     let highlight_value = execute('hi Normal')
+    " let visual_value = execute('hi Visual')
     let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
     let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
+
+    " let ctermbg_visual = matchstr(visual_value, 'ctermbg=\zs\S*')
+    " let guibg_visual = matchstr(visual_value, 'guibg=\zs\S*')
 
     " OneHalf
     " Visual         xxx ctermfg=0 ctermbg=239 guibg=#474e5d
     " when hidden #5d677a
     if ctermbg_value == '' && guibg_value ==? ''
       silent execute('hi ' . g:bg_value)
+      silent execute('hi ' . g:bg_value_visual)
     else
       silent execute('hi Normal guibg=NONE ctermbg=NONE')
+      silent execute('hi Visual guibg=#5d677a')
     endif
   endfunction
 
@@ -82,6 +89,7 @@ vim.cmd [[
   function! g:OnVimEnter()
     " Get background settings of normal mode
     let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
+    let g:bg_value_visual = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
     " Make background transparen
     ToggleBg
     " Set tab to 2 paces
