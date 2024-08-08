@@ -860,6 +860,7 @@ func! s:DefineCommands () abort
       autocmd TermOpen * setlocal nonumber norelativenumber bufhidden=hide
     augroup END
   else
+    " in Vim you can list open terminal windows with 'call term_open()'
     command! Term :terminal ++curwin
     command! Vterm :vert term
     command! Sterm :term
