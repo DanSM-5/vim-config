@@ -28,6 +28,8 @@ let g:buffet_powerline_separators = 1
 let g:buffet_tab_icon = "\uf00a"
 let g:buffet_left_trunc_icon = "\uf0a8"
 let g:buffet_right_trunc_icon = "\uf0a9"
+" Only hide quickfix buffers. Can be found with :ls!
+let g:buffet_hidden_buffers = ['quickfix']
 
 " Camel case motion keybindings
 let g:camelcasemotion_key = '<leader>'

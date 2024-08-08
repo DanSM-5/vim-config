@@ -43,45 +43,6 @@ let s:fzf_options_with_preview = {'options': s:fzf_preview_options }
 " let s:fzf_options_with_binds = { 'window': { 'width': 0.9, 'height': 0.6 } }
 " let s:fzf_options_with_binds = { 'window': { 'up': '60%' } }
 
-" Uncomment for debug
-" echo 'FZF default opts: ' . $FZF_DEFAULT_OPTS
-
-" INFO: Original values before nvim 0.8.0+
-" let s:preview_options = {'options': s:fzf_preview_options }
-" let s:fzf_options_with_binds = { 'options': ['--preview-window=right,60%', '--height=80%'] + s:fzf_bind_options }
-" let s:fzf_options_with_binds = { 'options': ['--preview-window=up,60%'] + s:fzf_bind_options }
-" let s:preview_options_bang_preview = { 'options': ['--preview-window=up,60%'] + s:fzf_preview_options }
-
-" WARNING: Error on nvim from 0.8.0+ with fzf and space vim
-"
-" Issue is related to set status line which fails if fzf args
-" contain a '%' (e.g. '--preview-window=right,60%' or '--height=80%')
-"
-" The issue shows a the message 'Illegal character <'>'
-" It fails first on SpaceVim#layers#core#statusline#get
-" in shell.vim (see snippet below)
-"
-" function! s:on_term_open() abort
-"   startinsert
-"   let &l:statusline = SpaceVim#layers#core#statusline#get(1)
-" endfunction
-"
-" If omitted, the error will occur in two places in fzf.vim (s:execute_term)
-"
-" First on 'call termopen(command, fzf)'
-" Second on 'setf fzf'
-"
-" The parsing of '%' is somehow escaping one single quote (') breaking
-" the string.
-"
-" The error is not present on windows (powershel, pwsh, gitbash)
-" Error is reproducible in termux, linux, steamdeck, wsl and mac
-" if both SapceVim and Fzf are used in neovim 0.8.0+
-" It won't happen with an empty config
-"
-" Current workaound is to modify FZF_DEFAULT_OPTS when executing the commands
-" as those will be applied by fzf itself and are not parsed by neovim
-
 func! s:SetConfigurationsBefore () abort
   silent call s:SetCamelCaseMotion()
   silent call s:SetRG()
@@ -90,6 +51,9 @@ func! s:SetConfigurationsBefore () abort
 
   " Load utility clipboard functions
   runtime utils/clipboard.vim
+
+  " Enable fold method using marker
+  set foldmethod=marker
 
   " Set relative numbers
   set number relativenumber
@@ -195,7 +159,7 @@ func! s:Set_user_keybindings () abort
   " Command mode open in buffer ctrl+e
   cnoremap <C-e> <C-f>
   " Command mode open in buffer leader+t+e from normal mode
-  nnoremap <leader>te q:
+  nnoremap <leader>cl q:
 
   " Call vim commentary
   nnoremap <leader>gg <cmd>Git<cr>
@@ -883,6 +847,31 @@ func! s:DefineCommands () abort
   " Call SudoSave (Vim only)
   command! -nargs=? -complete=buffer SudoSave
         \ call SudoSave(<q-args>)
+
+  " Open terminal
+  set splitright " always open on the right
+
+  if has('nvim')
+    command! Term :term
+    command! -bar Vterm :vs|te
+    command! -bar Sterm :sp|te
+    augroup custom_term
+      autocmd!
+      autocmd TermOpen * setlocal nonumber norelativenumber bufhidden=hide
+    augroup END
+  else
+    command! Term :terminal ++curwin
+    command! Vterm :vert term
+    command! Sterm :term
+    augroup custom_term
+      autocmd!
+      autocmd TerminalOpen * setlocal nonumber norelativenumber bufhidden=hide
+    augroup END
+  endif
+
+  nnoremap <leader>te :Term<cr>
+  nnoremap <leader>tv :Vterm<cr>
+  nnoremap <leader>ts :Sterm<cr>
 
   " Use lf to select files to open in vim
   " NOTE: It does not work on nvim
