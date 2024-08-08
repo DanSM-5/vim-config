@@ -40,6 +40,8 @@ let g:smoothie_no_default_mappings = 1
 " Airline configs
 let g:airline_theme = 'onehalfdark'
 let g:airline_powerline_fonts = 1
+" One dark color config
+" let g:onedark_termcolors = 256
 
 ": }}} :------------------------------------------------------------------
 
@@ -54,6 +56,9 @@ func! g:ToggleBg ()
   let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
   let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
+  " OneHalf
+  " Visual         xxx ctermfg=0 ctermbg=239 guibg=#474e5d
+  " when hidden #5d677a
   if ctermbg_value == '' && guibg_value ==? ''
     silent execute('hi ' . g:bg_value)
   else
