@@ -7,6 +7,10 @@ cmd('set nocompatible')
 -- Default encoding
 cmd('set encoding=UTF-8')
 
+cmd('set cursorline')
+
+cmd('set syntax=on')
+
 --: Global variables {{{ :-------------------------------------------------
 
 -- Most global variables defined in this file should be place here unless

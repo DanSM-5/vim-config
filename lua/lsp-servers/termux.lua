@@ -13,6 +13,8 @@ return {
       lspconfig.bashls.setup(servers_config.bashls)
     end
 
+    lspconfig.vimls.setup(servers_config.bashls)
+
     --if vim.fn.executable('bash-language-server') == 1 then
     --  local bashls_opts = servers_config.bashls
 
