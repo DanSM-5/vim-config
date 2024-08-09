@@ -9,9 +9,21 @@ endif
 
 " Make nocompatible explisit
 set nocompatible
-
 " Default encoding
 set encoding=UTF-8
+set t_Co=256
+set cursorline
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
+
+" NOTE: Set by VimPlug
+" enable syntax highlight
+" > syntax enabled
+" enable filetype base indentation
+" > filetype plugin indent on
 
 ": Global variables {{{ :-------------------------------------------------
 
@@ -20,6 +32,8 @@ set encoding=UTF-8
 
 " Store the value of the background in Normal mode
 let g:bg_value = ''
+" Store the value of the Visual mode
+let g:bg_visual_selection = ''
 " Enable detection
 let g:host_os = config#CurrentOS()
 
@@ -56,13 +70,12 @@ func! g:ToggleBg ()
   let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
   let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
-  " OneHalf
-  " Visual         xxx ctermfg=0 ctermbg=239 guibg=#474e5d
-  " when hidden #5d677a
   if ctermbg_value == '' && guibg_value ==? ''
     silent execute('hi ' . g:bg_value)
+    silent execute('hi' . g:bg_visual_selection)
   else
     silent execute('hi Normal guibg=NONE ctermbg=NONE')
+    silent execute('hi Visual guibg=#5d677a')
   endif
 endfunction
 
@@ -90,6 +103,7 @@ endfunction
 function! g:OnVimEnter()
   " Get background settings of normal mode
   let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
+  let g:bg_visual_selection = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
   " Make background transparen
   ToggleBg
   " Set tab to 2 paces
@@ -208,52 +222,8 @@ call plug#end()
 ": }}} :----------------------------------------------------------
 
 " Color schemes should be loaded after plug#end call
-" syntax on
-set t_Co=256
-set cursorline
 " colorscheme onehalfdark
 silent! colorscheme onehalfdark
-if exists('+termguicolors')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
-
-" TODO: Remove if no issues with clipboard
-" if $IS_WINSHELL == 'true'
-"   " Windows specific
-"   set shell=cmd
-"   set shellcmdflag=/c
-
-"   " Set system_copy variables
-"   let g:system_copy#paste_command = 'pbpaste.exe'
-"   let g:system_copy#copy_command = 'pbcopy.exe'
-" elseif $IS_FROM_CONTAINER == 'true'
-"   " Set system_copy variables
-"   let g:system_copy#paste_command = 'fs-paste'
-"   let g:system_copy#copy_command = 'fs-copy'
-"   call clipboard#set(g:system_copy#copy_command, g:system_copy#paste_command)
-" elseif has('wsl') && $IS_WSL1 == 'true'
-"   " Set system_copy variables
-"   let g:system_copy#paste_command = 'pbpaste.exe'
-"   let g:system_copy#copy_command = 'pbcopy.exe'
-" elseif !empty($DISPLAY) && executable('xsel')
-"   let g:system_copy#copy_command = 'xsel -i -b'
-"   let g:system_copy#paste_command = 'xsel -o -b'
-" elseif !empty($DISPLAY) && executable('xclip')
-"   let g:system_copy#copy_command = 'xclip -i -selection clipboard'
-"   let g:system_copy#paste_command = 'xclip -o -selection clipboard'
-" elseif !empty($WAYLAND_DISPLAY) && executable('wl-copy') && executable('wl-paste')
-"   let g:system_copy#copy_command = 'wl-copy --foreground --type text/plain'
-"   let g:system_copy#paste_command = 'wl-paste --no-newline'
-" elseif has('mac')
-"   " Set system_copy variables
-"   let g:system_copy#paste_command = 'pbpaste'
-"   let g:system_copy#copy_command = 'pbcopy'
-" elseif executable('pbcopy.exe')
-"   let g:system_copy#paste_command = 'pbpaste.exe'
-"   let g:system_copy#copy_command = 'pbcopy.exe'
-" endif
 
 if has('nvim')
   " Entry poing for lua config for nvim

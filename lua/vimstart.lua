@@ -1,15 +1,22 @@
 local fn, g, cmd = vim.fn, vim.g, vim.cmd
 
+-- Set custom shada file location
 cmd("set shada+='1000,n$HOME/.cache/vim-config/main.shada")
 -- Make nocompatible explisit
 cmd('set nocompatible')
-
 -- Default encoding
 cmd('set encoding=UTF-8')
-
+-- show line under the cursor
 cmd('set cursorline')
-
-cmd('set syntax=on')
+-- enable syntax highlight
+cmd('syntax enabled')
+-- enable filetype base indentation
+cmd('filetype plugin indent on')
+-- Gui colos config
+-- cmd('set t_Co=256')
+cmd('let &t_8f = "\\<Esc>[38;2;%lu;%lu;%lum"')
+cmd('let &t_8b = "\\<Esc>[48;2;%lu;%lu;%lum"')
+vim.opt.termguicolors = true
 
 --: Global variables {{{ :-------------------------------------------------
 
@@ -20,7 +27,8 @@ cmd('set syntax=on')
 g.mapleader = '\\'
 -- Store the value of the background in Normal mode
 g.bg_value = ''
-g.bg_value_visual = ''
+-- Store the value of the Visual mode
+g.bg_visual_selection = ''
 -- Enable detection
 g.host_os = fn['config#CurrentOS']()
 
@@ -39,8 +47,8 @@ g['asterisk#keeppos'] = 1
 -- Disable vim-smoothie remaps
 g.smoothie_no_default_mappings = 1
 -- Airline configs
-g.airline_theme = 'onehalfdark'
-g.airline_powerline_fonts = 1
+-- g.airline_theme = 'onehalfdark'
+-- g.airline_powerline_fonts = 1
 -- One dark color config
 -- let g:onedark_termcolors = 256
 
@@ -52,26 +60,15 @@ g.airline_powerline_fonts = 1
 fn['config#before']()
 
 --: Global functions {{{ :-------------------------------------------------
-vim.opt.termguicolors = true
-cmd('let &t_8f = "\\<Esc>[38;2;%lu;%lu;%lum"')
-cmd('let &t_8b = "\\<Esc>[48;2;%lu;%lu;%lum"')
-
 vim.cmd [[
   func! g:ToggleBg ()
     let highlight_value = execute('hi Normal')
-    " let visual_value = execute('hi Visual')
     let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
     let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
-    " let ctermbg_visual = matchstr(visual_value, 'ctermbg=\zs\S*')
-    " let guibg_visual = matchstr(visual_value, 'guibg=\zs\S*')
-
-    " OneHalf
-    " Visual         xxx ctermfg=0 ctermbg=239 guibg=#474e5d
-    " when hidden #5d677a
     if ctermbg_value == '' && guibg_value ==? ''
       silent execute('hi ' . g:bg_value)
-      silent execute('hi ' . g:bg_value_visual)
+      silent execute('hi ' . g:bg_visual_selection)
     else
       silent execute('hi Normal guibg=NONE ctermbg=NONE')
       silent execute('hi Visual guibg=#5d677a')
@@ -89,7 +86,7 @@ vim.cmd [[
   function! g:OnVimEnter()
     " Get background settings of normal mode
     let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
-    let g:bg_value_visual = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
+    let g:bg_visual_selection = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
     " Make background transparen
     ToggleBg
     " Set tab to 2 paces
@@ -109,3 +106,13 @@ vim.cmd [[
 
 ]]
 --: }}} :------------------------------------------------------------------
+
+-- TODO: Verify if below autocmd is equivalent to vimscript one
+-- vim.api.nvim_create_autocmd('BufReadPost', {
+--   pattern = { '*' },
+--   callback = function ()
+--     if (fn.line("'\"") > 0 and fn.line("'\"") <= fn.line("$")) then
+--       fn.execute("normal! g`\"zz")
+--     end
+--   end
+-- })
