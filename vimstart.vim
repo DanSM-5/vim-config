@@ -72,7 +72,7 @@ func! g:ToggleBg ()
 
   if ctermbg_value == '' && guibg_value ==? ''
     silent execute('hi ' . g:bg_value)
-    silent execute('hi' . g:bg_visual_selection)
+    silent execute('hi ' . g:bg_visual_selection)
   else
     silent execute('hi Normal guibg=NONE ctermbg=NONE')
     silent execute('hi Visual guibg=#5d677a')
