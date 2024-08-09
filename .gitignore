@@ -5,3 +5,6 @@ autoload/plug.vim
 # Pluggins
 plugged
 
+# Do not track lazy-lock
+lazy-lock.json
+
