@@ -2,9 +2,9 @@ return {
   {
     'tpope/vim-commentary'
   },
-  {
-    'tpope/vim-surround'
-  },
+  -- {
+  --   'tpope/vim-surround'
+  -- },
   {
     'tpope/vim-fugitive'
   },
@@ -33,10 +33,7 @@ return {
     'dyng/ctrlsf.vim'
   },
   {
-    'kreskij/Repeatable.vim',
-    dependencies = {
-      'tpope/vim-repeat'
-    }
+    'kreskij/Repeatable.vim'
   },
   {
     'bkad/CamelCaseMotion'

@@ -8,7 +8,7 @@ local language_servers = {
 
 -- change language servers for termux
 if (vim.g.is_termux == 1) then
-  language_servers = { 'biome' }
+  language_servers = {}
 end
 
 return {
