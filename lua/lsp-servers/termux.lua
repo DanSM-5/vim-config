@@ -1,3 +1,7 @@
+-- NOTE: Termux cannot load lsp from Mason
+-- or it will it will try to install incompatible
+-- binaries and lsp will fail.
+
 return {
   setup = function()
     -- local util = require('lspconfig.util')
@@ -13,7 +17,13 @@ return {
       lspconfig.bashls.setup(servers_config.bashls)
     end
 
-    lspconfig.vimls.setup(servers_config.bashls)
+    if vim.fn.executable('vim-language-server') == 1 then
+      lspconfig.vimls.setup(servers_config.vimls)
+    end
+
+    if vim.fn.executable('biome') == 1 then
+      lspconfig.vimls.setup(servers_config.biome)
+    end
 
     --if vim.fn.executable('bash-language-server') == 1 then
     --  local bashls_opts = servers_config.bashls

@@ -13,7 +13,7 @@ local language_servers = {
 }
 
 if (vim.g.is_termux == 1) then
-  language_servers = { 'vimls', 'biome' }
+  language_servers = {}
   require('lsp-servers.termux').setup()
 elseif vim.env.IS_FROM_CONTAINER == 'true' then
   -- NOTE:
