@@ -710,7 +710,9 @@ function! RipgrepFuzzy(query, fullscreen)
 endfunction
 
 func! s:SetFZF () abort
-
+  " TODO: decide the better map
+  nnoremap <leader>gb <cmd>Buffers<cr>
+  nnoremap <C-o>b <cmd>Buffers<cr>
   " command! -bang -nargs=* Rg
   "   \ call fzf#vim#grep(
   "   \   'rg' . s:rg_args . '-- ' . shellescape(<q-args>) . ' ' . GitPath(), 1,
