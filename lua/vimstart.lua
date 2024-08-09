@@ -80,7 +80,7 @@ vim.cmd [[
     set expandtab
     set ruler
     set autoindent smartindent
-    filetype plugin indent on
+    " filetype plugin indent on
   endfunction
 
   function! g:OnVimEnter()
@@ -99,20 +99,20 @@ vim.cmd [[
   autocmd VimEnter * call g:OnVimEnter()
 
 	" Return to last edit position when opening files
-	autocmd BufReadPost *
-	     \ if line("'\"") > 0 && line("'\"") <= line("$") |
-	     \   exe "normal! g`\"zz" |
-	     \ endif
+	" autocmd BufReadPost *
+	"      \ if line("'\"") > 0 && line("'\"") <= line("$") |
+	"      \   exe "normal! g`\"zz" |
+	"      \ endif
 
 ]]
 --: }}} :------------------------------------------------------------------
 
--- TODO: Verify if below autocmd is equivalent to vimscript one
--- vim.api.nvim_create_autocmd('BufReadPost', {
---   pattern = { '*' },
---   callback = function ()
---     if (fn.line("'\"") > 0 and fn.line("'\"") <= fn.line("$")) then
---       fn.execute("normal! g`\"zz")
---     end
---   end
--- })
+-- Return to last edit position when opening files
+vim.api.nvim_create_autocmd('BufReadPost', {
+  pattern = { '*' },
+  callback = function ()
+    if (fn.line("'\"") > 0 and fn.line("'\"") <= fn.line("$")) then
+      fn.execute("normal! g`\"zz")
+    end
+  end
+})

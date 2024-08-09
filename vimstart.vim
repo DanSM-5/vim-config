@@ -84,7 +84,7 @@ function g:SetTab ()
   set expandtab
   set ruler
   set autoindent smartindent
-  filetype plugin indent on
+  " filetype plugin indent on
 endfunction
 
 " Note: Make sure the function is defined before `vim-buffet` is loaded.
