@@ -35,13 +35,13 @@ return {
       --   },
       --   char = ''
       -- },
-      whitespace = {
-        highlight = {
-          'CursorColumn',
-          'Whitespace',
-        },
-        remove_blankline_trail = false,
-      },
+      -- whitespace = {
+      --   highlight = {
+      --     'CursorColumn',
+      --     'Whitespace',
+      --   },
+      --   remove_blankline_trail = false,
+      -- },
       -- indent = { highlight = highlight }
       scope = {
         -- enabled = false
