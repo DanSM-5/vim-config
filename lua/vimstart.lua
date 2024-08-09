@@ -9,7 +9,7 @@ cmd('set encoding=UTF-8')
 -- show line under the cursor
 cmd('set cursorline')
 -- enable syntax highlight
-cmd('syntax enabled')
+-- cmd('syntax enable')
 -- enable filetype base indentation
 cmd('filetype plugin indent on')
 -- Gui colos config
