@@ -100,7 +100,7 @@ func! g:ToggleBg ()
     silent execute('hi ' . g:theme_lineNr)
     silent execute('hi ' . g:theme_cursorLineNr)
     silent execute('hi ' . g:theme_cursorLine)
-    silent execute('hi ' . g:theme_signColumn)
+    " silent execute('hi ' . g:theme_signColumn)
   else
     silent execute(g:theme_hidden_normal)
     silent execute(g:theme_hidden_visual)
@@ -108,7 +108,7 @@ func! g:ToggleBg ()
     silent execute(g:theme_hidden_lineNr)
     silent execute(g:theme_hidden_cursorLineNr)
     silent execute(g:theme_hidden_cursorLine)
-    silent execute(g:theme_hidden_signColumn)
+    " silent execute(g:theme_hidden_signColumn)
   endif
 endfunction
 
@@ -141,7 +141,7 @@ function! g:OnVimEnter()
   let g:theme_lineNr = substitute(trim(execute("hi LineNr")), 'xxx', '', 'g')
   let g:theme_cursorLineNr = substitute(trim(execute("hi CursorLineNr")), 'xxx', '', 'g')
   let g:theme_cursorLine = substitute(trim(execute("hi CursorLine")), 'xxx', '', 'g')
-  let g:theme_signColumn = substitute(trim(execute("hi SingColumn")), 'xxx', '', 'g')
+  " let g:theme_signColumn = substitute(trim(execute("hi SingColumn")), 'xxx', '', 'g')
   " Set comments color
   hi Comment guifg=#7f848e cterm=NONE
 
@@ -269,6 +269,8 @@ silent! colorscheme onehalfdark
 if has('nvim')
   " Entry poing for lua config for nvim
   runtime lua/init.lua
+else
+  hi NormalNC guibg=NONE
 endif
 
 " Return to last edit position when opening files
