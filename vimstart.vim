@@ -143,7 +143,7 @@ function! g:OnVimEnter()
   let g:theme_cursorLine = substitute(trim(execute("hi CursorLine")), 'xxx', '', 'g')
   " let g:theme_signColumn = substitute(trim(execute("hi SingColumn")), 'xxx', '', 'g')
   " Set comments color
-  hi Comment guifg=#7f848e cterm=NONE
+  hi Comment guifg=#7f848e cterm=NONE gui=NONE
 
   " Make background transparen
   ToggleBg
@@ -265,12 +265,12 @@ call plug#end()
 " Color schemes should be loaded after plug#end call
 " colorscheme onehalfdark
 silent! colorscheme onehalfdark
+" Ensure theme exists for vim and nvim
+hi NormalNC guifg=#abb2bf
 
 if has('nvim')
   " Entry poing for lua config for nvim
   runtime lua/init.lua
-else
-  hi NormalNC guibg=NONE
 endif
 
 " Return to last edit position when opening files
