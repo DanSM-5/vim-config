@@ -1069,7 +1069,7 @@ endfunction
 "   let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
 "   if ctermbg_value == '' && guibg_value ==? ''
-"     silent execute('hi ' . g:bg_value)
+"     silent execute('hi ' . g:theme_normal)
 "   else
 "     silent execute('hi Normal guibg=NONE ctermbg=NONE')
 "   endif

@@ -25,10 +25,34 @@ vim.opt.termguicolors = true
 
 -- vim.g.maplocalleader = ' '
 g.mapleader = '\\'
--- Store the value of the background in Normal mode
-g.bg_value = ''
--- Store the value of the Visual mode
-g.bg_visual_selection = ''
+
+-- Theme variables --
+-- Normal mode styles
+g.theme_normal = ''
+-- Visual mode styles
+g.theme_visual = ''
+-- Normal mode styles of unfocused windows
+g.theme_normalNC = ''
+-- Styles for the numbers line
+g.theme_lineNr = ''
+-- Styles for the numbers line under cursor
+g.theme_cursorLineNr = ''
+-- Styles for the cursor line
+g.theme_cursorLine = ''
+-- Styles for the line left to LineNr
+g.theme_signColumn = ''
+-- Styles for color of comments
+g.theme_comment = 'hi Comment guifg=#7f848e cterm=NONE'
+-- Replacements --
+g.theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
+g.theme_hidden_visual = 'hi Visual guibg=#414858'
+g.theme_hidden_normalNC = ''
+g.theme_hidden_lineNr = ''
+g.theme_hidden_cursorLineNr = ''
+g.theme_hidden_cursorLine = ''
+g.theme_hidden_signColumn = ''
+g.theme_hidden_comment = ''
+
 -- Enable detection
 g.host_os = fn['config#CurrentOS']()
 
@@ -63,15 +87,25 @@ fn['config#before']()
 vim.cmd [[
   func! g:ToggleBg ()
     let highlight_value = execute('hi Normal')
-    let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
+    " let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
     let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
-    if ctermbg_value == '' && guibg_value ==? ''
-      silent execute('hi ' . g:bg_value)
-      silent execute('hi ' . g:bg_visual_selection)
+    if guibg_value ==? ''
+      silent execute('hi ' . g:theme_normal)
+      silent execute('hi ' . g:theme_visual)
+      silent execute('hi ' . g:theme_normalNC)
+      silent execute('hi ' . g:theme_lineNr)
+      silent execute('hi ' . g:theme_cursorLineNr)
+      silent execute('hi ' . g:theme_cursorLine)
+      silent execute('hi ' . g:theme_signColumn)
     else
-      silent execute('hi Normal guibg=NONE ctermbg=NONE')
-      silent execute('hi Visual guibg=#5d677a')
+      silent execute(g:theme_hidden_normal)
+      silent execute(g:theme_hidden_visual)
+      silent execute(g:theme_hidden_normalNC)
+      silent execute(g:theme_hidden_lineNr)
+      silent execute(g:theme_hidden_cursorLineNr)
+      silent execute(g:theme_hidden_cursorLine)
+      silent execute(g:theme_hidden_signColumn)
     endif
   endfunction
 
@@ -84,9 +118,15 @@ vim.cmd [[
   endfunction
 
   function! g:OnVimEnter()
-    " Get background settings of normal mode
-    let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
-    let g:bg_visual_selection = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
+    " Capture styles before calling ToggleBg
+    let g:theme_normal = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
+    let g:theme_visual = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
+    let g:theme_normalNC = substitute(trim(execute("hi NormalNC")), 'xxx', '', 'g')
+    let g:theme_lineNr = substitute(trim(execute("hi LineNr")), 'xxx', '', 'g')
+    let g:theme_cursorLineNr = substitute(trim(execute("hi CursorLineNr")), 'xxx', '', 'g')
+    let g:theme_cursorLine = substitute(trim(execute("hi CursorLine")), 'xxx', '', 'g')
+    let g:theme_signColumn = substitute(trim(execute("hi SignColumn")), 'xxx', '', 'g')
+
     " Make background transparen
     ToggleBg
     " Set tab to 2 paces

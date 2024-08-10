@@ -30,7 +30,64 @@ return {
     lazy = false,
     priority = 1000,
     config = function ()
+      -- For simple use cases, below line is all that's needed
       vim.cmd('colorscheme onedark')
+
+      vim.cmd('hi CursorLine guibg=#313640')
+
+      local g = vim.g
+      g.theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
+      g.theme_hidden_visual = ':'
+      g.theme_hidden_normalNC = 'hi NormalNC guibg=NONE ctermbg=NONE'
+      -- g.theme_hidden_lineNr = 'hi LineNr guibg=NONE guifg=#7f848e'
+      g.theme_hidden_lineNr = 'hi LineNr guibg=NONE guifg=#919baa'
+      g.theme_hidden_signColumn = 'hi SignColumn guibg=NONE'
+      g.theme_hidden_cursorLineNr = 'hi CursorLineNr guibg=#313640'
+      -- g.theme_hidden_cursorLine = ''
+      -- g.theme_comment = ''
+
+      -- Normal, NormalNC, LineNr
+      -- CursorLineNr
+
+      -- NOTE: below code kept as reference
+
+      -- -- NOTE: According to theme documentation
+      -- -- the folloing groups are used to set the transparency
+      -- -- Normal, Folded, SignColumn, Statusline and Tabline
+
+      -- It can be setup manually as well
+      -- local onedarkpro = require('onedarkpro')
+      -- onedarkpro.setup({})
+      -- onedarkpro.load()
+
+      -- -- Remove command created in config
+      -- vim.api.nvim_del_user_command('ToggleBg')
+
+      -- -- Recreate ToggleBg functionality
+      -- local transparent = false
+      -- vim.api.nvim_create_user_command('ToggleBg', function ()
+      --   transparent = not transparent
+      --   onedarkpro.setup({
+      --     options = {
+      --       transparency = transparent
+      --     }
+      --   })
+      --   onedarkpro.load()
+
+      --   -- NOTE: using transparency with this plugging
+      --   -- is causing the following plugins to lose colors
+      --   local todo_comments = require('todo-comments')
+      --   local lualine = require('lualine')
+
+      --   -- Colors get removed on every toggle
+      --   if todo_comments ~= nil then
+      --     todo_comments.setup()
+      --   end
+      --   -- Colors get removed on first call
+      --   if lualine ~= nil then
+      --     lualine.setup()
+      --   end
+      -- end, {})
     end
   }
 }

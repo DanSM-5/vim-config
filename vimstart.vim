@@ -30,10 +30,33 @@ endif
 " Most global variables defined in this file should be place here unless
 " it is needed to be defined upon confiditional logic
 
-" Store the value of the background in Normal mode
-let g:bg_value = ''
-" Store the value of the Visual mode
-let g:bg_visual_selection = ''
+" Theme variables --
+" Normal mode styles
+let g:theme_normal = ''
+" Visual mode styles
+let g:theme_visual = ''
+" Normal mode styles of unfocused windows
+let g:theme_normalNC = ''
+" Styles for the numbers line
+let g:theme_lineNr = ''
+" Styles for the numbers line under cursor
+let g:theme_cursorLineNr = ''
+" Styles for the cursor line
+let g:theme_cursorLine = ''
+" Styles for the line left to LineNr
+let g:theme_signColumn = ''
+" Styles for color of comments
+let g:theme_comment = 'hi Comment guifg=#7f848e cterm=NONE'
+" Replacements --
+let g:theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
+let g:theme_hidden_visual = 'hi Visual guibg=#414858'
+let g:theme_hidden_normalNC = ':'
+let g:theme_hidden_lineNr = ':'
+let g:theme_hidden_cursorLineNr = ':'
+let g:theme_hidden_cursorLine = ':'
+let g:theme_hidden_signColumn = ''
+let g:theme_hidden_comment = ':'
+
 " Enable detection
 let g:host_os = config#CurrentOS()
 
@@ -67,15 +90,25 @@ call config#before()
 ": Global functions {{{ :-------------------------------------------------
 func! g:ToggleBg ()
   let highlight_value = execute('hi Normal')
-  let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
+  " let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
   let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
-  if ctermbg_value == '' && guibg_value ==? ''
-    silent execute('hi ' . g:bg_value)
-    silent execute('hi ' . g:bg_visual_selection)
+  if guibg_value ==? ''
+    silent execute('hi ' . g:theme_normal)
+    silent execute('hi ' . g:theme_visual)
+    silent execute('hi ' . g:theme_normalNC)
+    silent execute('hi ' . g:theme_lineNr)
+    silent execute('hi ' . g:theme_cursorLineNr)
+    silent execute('hi ' . g:theme_cursorLine)
+    silent execute('hi ' . g:theme_signColumn)
   else
-    silent execute('hi Normal guibg=NONE ctermbg=NONE')
-    silent execute('hi Visual guibg=#5d677a')
+    silent execute(g:theme_hidden_normal)
+    silent execute(g:theme_hidden_visual)
+    silent execute(g:theme_hidden_normalNC)
+    silent execute(g:theme_hidden_lineNr)
+    silent execute(g:theme_hidden_cursorLineNr)
+    silent execute(g:theme_hidden_cursorLine)
+    silent execute(g:theme_hidden_signColumn)
   endif
 endfunction
 
@@ -90,9 +123,9 @@ endfunction
 " Note: Make sure the function is defined before `vim-buffet` is loaded.
 function! g:BuffetSetCustomColors()
   " NOTE: This functions runs before VimEnter, so cannot take values
-  " from g:bg_value
+  " from g:theme_normal
 
-  " let bg_val = substitute(g:bg_value, 'Normal', '', '')
+  " let bg_val = substitute(g:theme_normal, 'Normal', '', '')
   " silent execute('hi! BuffetCurrentBuffer cterm=NONE ' . bg_val)
   hi! BuffetCurrentBuffer cterm=NONE ctermbg=236 ctermfg=188 guibg=#282c34 guifg=#dcdfe4
   " hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#00ff00 guibg=#999999
@@ -101,9 +134,17 @@ function! g:BuffetSetCustomColors()
 endfunction
 
 function! g:OnVimEnter()
-  " Get background settings of normal mode
-  let g:bg_value = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
-  let g:bg_visual_selection = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
+  " Capture styles before calling ToggleBg
+  let g:theme_normal = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
+  let g:theme_visual = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
+  let g:theme_normalNC = substitute(trim(execute("hi NormalNC")), 'xxx', '', 'g')
+  let g:theme_lineNr = substitute(trim(execute("hi LineNr")), 'xxx', '', 'g')
+  let g:theme_cursorLineNr = substitute(trim(execute("hi CursorLineNr")), 'xxx', '', 'g')
+  let g:theme_cursorLine = substitute(trim(execute("hi CursorLine")), 'xxx', '', 'g')
+  let g:theme_signColumn = substitute(trim(execute("hi SingColumn")), 'xxx', '', 'g')
+  " Set comments color
+  hi Comment guifg=#7f848e cterm=NONE
+
   " Make background transparen
   ToggleBg
   " Set tab to 2 paces
