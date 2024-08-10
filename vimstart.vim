@@ -270,7 +270,7 @@ hi NormalNC guifg=#abb2bf
 
 if has('nvim')
   " Entry poing for lua config for nvim
-  runtime lua/init.lua
+  runtime lua/nvimstart.lua
 endif
 
 " Return to last edit position when opening files
