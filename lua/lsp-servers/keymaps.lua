@@ -7,6 +7,13 @@ return {
     vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'LSP: Go to previous diagnostic message' })
     vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'LSP: Go to next diagnostic message' })
 
+
+    -- vim.keymap.set("n", "<leader>L", function()
+    --   if vim.fn.search("https*://") > 0 then
+    --     vim.ui.open(vim.fn.expand("<cfile>"))
+    --   end
+    -- end, { desc = "Open next link", silent = true })
+
     -- Use LspAttach autocommand to only map the following keys
     -- after the language server attaches to the current buffer
     vim.api.nvim_create_autocmd('LspAttach', {
