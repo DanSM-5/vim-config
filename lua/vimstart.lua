@@ -84,7 +84,7 @@ g.smoothie_no_default_mappings = 1
 fn['config#before']()
 
 --: Global functions {{{ :-------------------------------------------------
-vim.cmd [[
+vim.cmd([[
   func! g:ToggleBg ()
     let highlight_value = execute('hi Normal')
     " let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
@@ -143,8 +143,8 @@ vim.cmd [[
 	"      \ if line("'\"") > 0 && line("'\"") <= line("$") |
 	"      \   exe "normal! g`\"zz" |
 	"      \ endif
+]])
 
-]]
 --: }}} :------------------------------------------------------------------
 
 -- Return to last edit position when opening files
