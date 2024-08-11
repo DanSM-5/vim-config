@@ -8,3 +8,6 @@ plugged
 # Do not track lazy-lock
 lazy-lock.json
 
+# Don't save netrw history
+.netrwhist
+
