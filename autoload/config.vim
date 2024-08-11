@@ -1133,13 +1133,29 @@ endfunction
 
 func! s:Set_netrw () abort
   let g:netrw_banner = 0
-  let g:netrw_liststyle = 3
   let g:netrw_browse_split = 4
   let g:netrw_altv = 1
   let g:netrw_winsize = 25
+  let g:netrw_liststyle = 3
+  let g:netrw_fastbrowse = 0
+
+  " NOTE: Makes netrw buffer stick around after :bd
+  " let g:netrw_liststyle = 3
+  " Workarounds:
+  " - :%bd to close all opened buffers (it also kills netrw)
+  " - Netrw creates a directory buffer (as showed by buffet) so kille that one
+  "   with :bd <buffer_id> instead of netrw
+  " - Set 'g:netrw_fastbrowse = 0' (buffers hide but still leaves hidden
+  "   orphans)
+  " - Do not use 'g:netrw_listsyle = 3' (treeview) though still leaves hidden
+  "   orphan buffers
+  " More: https://github.com/tpope/vim-vinegar/issues/13
 
   nnoremap <leader>ve <cmd>Vex<cr>
   nnoremap <leader>se <cmd>Sex<cr>
+
+  autocmd FileType netrw setl bufhidden=delete
+  " autocmd FileType netrw setl bufhidden=wipe
 
   " augroup netrw_mapping
   "   autocmd!
