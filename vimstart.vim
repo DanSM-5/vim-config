@@ -240,6 +240,11 @@ call plug#begin()
     Plug 'DanSM-5/fzf-lsp.nvim'
     Plug 'nvim-lua/plenary.nvim'
 
+    " File explorer
+    Plug 'stevearc/oil.nvim'
+    " Imitate vinegar '-' map
+    lua vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
     " Plug 'nvim-neotest/nvim-nio'
@@ -254,10 +259,16 @@ call plug#begin()
     " Plug 'L3MON4D3/LuaSnip'
     " Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
   else
-    " Comment plugin is already built-in in neovim
     " Only load in vim
+
+    " Comment plugin is already built-in in neovim
     Plug 'tpope/vim-commentary'
+    " File explorer
+    Plug 'tpope/vim-vinegar'
+
+    " For lsp within vim
     " Plug 'prabirshrestha/vim-lsp'
+    " Plug 'mattn/vim-lsp-settings'
   endif
 call plug#end()
 
