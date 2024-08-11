@@ -1,7 +1,9 @@
 return {
-  {
-    'tpope/vim-commentary'
-  },
+  -- built-in in neovim 0.10
+  -- {
+  --   'tpope/vim-commentary'
+  -- },
+  -- Using lua version
   -- {
   --   'tpope/vim-surround'
   -- },

@@ -149,10 +149,14 @@ vim.cmd([[
 
 -- Return to last edit position when opening files
 vim.api.nvim_create_autocmd('BufReadPost', {
+  desc = 'Recover previous cursor position in buffer',
   pattern = { '*' },
-  callback = function ()
+  callback = function()
     if (fn.line("'\"") > 0 and fn.line("'\"") <= fn.line("$")) then
       fn.execute("normal! g`\"zz")
     end
   end
 })
+
+require('shared.autocmd')
+

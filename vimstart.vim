@@ -205,7 +205,6 @@ command! -nargs=? PlugHelp call fzf#run(fzf#wrap({
 call plug#begin()
   " List your plugins here
   " Plug 'tpope/vim-sensible'
-  Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-repeat'
@@ -254,8 +253,11 @@ call plug#begin()
     " Plug 'hrsh7th/cmp-nvim-lsp'
     " Plug 'L3MON4D3/LuaSnip'
     " Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
-  " else
-  "   Plug 'prabirshrestha/vim-lsp'
+  else
+    " Comment plugin is already built-in in neovim
+    " Only load in vim
+    Plug 'tpope/vim-commentary'
+    " Plug 'prabirshrestha/vim-lsp'
   endif
 call plug#end()
 

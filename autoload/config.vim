@@ -63,9 +63,21 @@ func! s:SetConfigurationsAfter () abort
   " Configure FZF
   silent call s:SetFZF()
 
+
   " Filter quickfix with :Cfilter :Lfilter
   autocmd QuickFixCmdPost *grep* cwindow
-  packadd cfilter
+  if has('nvim')
+    " NOTE:
+    " Loading modules from neovim from nix causes it to load lua files
+    " with long names which causes issues with the cache loader of neovim
+    " Workaround is to diable the loader temporarily
+    " Ref: https://github.com/neovim/neovim/issues/25008
+    lua vim.loader.disable()
+    packadd cfilter
+    lua vim.loader.enable()
+  else
+    packadd cfilter
+  endif
 
   " For suda.vim to edit with sudo permission in vim and nvim
   " :SudoRead

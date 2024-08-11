@@ -8,5 +8,6 @@
 
 require('./lsp')
 require('./treesitter')
+require('shared.autocmd')
 -- require('./debugger')
 
