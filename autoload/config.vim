@@ -213,6 +213,13 @@ func! s:Set_user_keybindings () abort
   nnoremap <S-up> <cmd>call smoothie#do("\<C-U>")<CR>
   vnoremap zz <Cmd>call smoothie#do("zz")<CR>
   nnoremap zz <Cmd>call smoothie#do("zz")<CR>
+
+  " Quickfix navigation
+  nnoremap <leader>cn <cmd>cnext<cr>zz
+  nnoremap <leader>cp <cmd>cprev<cr>zz
+  " Location list navigation
+  nnoremap <leader>lk <cmd>lnext<cr>zz
+  nnoremap <leader>lj <cmd>lprev<cr>zz
 endf
 
 func! s:FixCursorShapeOnExitNvim () abort
