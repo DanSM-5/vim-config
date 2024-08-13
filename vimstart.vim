@@ -19,6 +19,9 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
+" Enable highlight on search
+set hlsearch
+
 " NOTE: Set by VimPlug
 " enable syntax highlight
 " > syntax enabled
