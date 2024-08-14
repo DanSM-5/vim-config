@@ -763,6 +763,16 @@ func! s:SetFZF () abort
   " Maps
   nnoremap <leader>fm <cmd>Maps<cr>
 
+  " Mapping selecting mappings in respective mode using fzf
+  " nmap <leader><tab> <plug>(fzf-maps-n)
+  " xmap <leader><tab> <plug>(fzf-maps-x)
+  " omap <leader><tab> <plug>(fzf-maps-o)
+
+  " Insert mode completion
+  imap <c-o><c-k> <plug>(fzf-complete-word)
+  imap <c-o><c-f> <plug>(fzf-complete-path)
+  imap <c-o><c-l> <plug>(fzf-complete-line)
+
   " command! -bang -nargs=* Rg
   "   \ call fzf#vim#grep(
   "   \   'rg' . s:rg_args . '-- ' . shellescape(<q-args>) . ' ' . GitPath(), 1,
