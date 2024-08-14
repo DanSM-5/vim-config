@@ -729,9 +729,32 @@ function! RipgrepFuzzy(query, fullscreen)
 endfunction
 
 func! s:SetFZF () abort
-  " TODO: decide the better map
-  nnoremap <leader>gb <cmd>Buffers<cr>
   nnoremap <C-o>b <cmd>Buffers<cr>
+
+  " fzf commands
+  " fzf
+  nnoremap <leader>ff <cmd>Files<cr>
+  " Lines in buffers
+  nnoremap <leader>fl <cmd>Lines<cr>
+  " Lines in current buffer
+  nnoremap <leader>fb <cmd>BLines<cr>
+  " git ls-files
+  nnoremap <leader>fn <cmd>GFiles<cr>
+  " git status
+  nnoremap <leader>fs <cmd>GFiles?<cr>
+  " Themes (color schemes)
+  nnoremap <leader>ft <cmd>Colors<cr>
+  " Open windows
+  nnoremap <leader>fw <cmd>Windows<cr>
+  " Previously Opened files
+  nnoremap <leader>fh <cmd>History<cr>
+  " Previous search
+  nnoremap <leader>f/ <cmd>History/<cr>
+  " Commands
+  nnoremap <leader>f: <cmd>Commands<cr>
+  " Maps
+  nnoremap <leader>fm <cmd>Maps<cr>
+
   " command! -bang -nargs=* Rg
   "   \ call fzf#vim#grep(
   "   \   'rg' . s:rg_args . '-- ' . shellescape(<q-args>) . ' ' . GitPath(), 1,
@@ -802,7 +825,7 @@ func! s:SetFZF () abort
   endif
 
 
-  " Set key mappings
+  " Set keymappings
   nnoremap <A-p> :GitFZF!<CR>
   nnoremap <C-P> :GitFZF<CR>
   nnoremap <C-o>p :CPrj<CR>
@@ -891,9 +914,14 @@ func! s:DefineCommands () abort
     augroup END
   endif
 
+  " Terminal mappings
   nnoremap <leader>te :Term<cr>
   nnoremap <leader>tv :Vterm<cr>
   nnoremap <leader>ts :Sterm<cr>
+
+  " Buffer management
+  command! -bar CloseOthers :%bd|e#
+  command! -bar CloseAllBuffers :%bd
 
   " Use lf to select files to open in vim
   " NOTE: It does not work on nvim
