@@ -114,6 +114,7 @@ func! s:SetBufferOptions () abort
   augroup END
 endf
 
+" keymaps
 func! s:Set_user_keybindings () abort
   silent call s:SetVimSystemCopyMaps()
   silent call s:SetCtrlSFMaps()
@@ -220,6 +221,13 @@ func! s:Set_user_keybindings () abort
   " Location list navigation
   nnoremap <leader>lk <cmd>lnext<cr>zz
   nnoremap <leader>lj <cmd>lprev<cr>zz
+
+  " Window resize vsplit
+  nnoremap <M-,> <C-w>5<
+  nnoremap <M-.> <C-w>5>
+  " Window resize split taller/shorter
+  nnoremap <M-t> <C-w>+
+  nnoremap <M-s> <C-w>-
 endf
 
 func! s:FixCursorShapeOnExitNvim () abort
