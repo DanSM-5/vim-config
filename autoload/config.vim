@@ -1071,10 +1071,26 @@ func! s:MoveLinesBlockMapsMac () abort
 endf
 
 func s:SetUndodir () abort
+  let undo_dir = ''
+
   if has('nvim')
-    set undodir=~/.config/nvim/undodir
+    let undo_dir = expand('~/.cache/nvim/undodir')
   else
-    set undodir=~/.vim/undodir
+    let undo_dir = expand('~/.cache/vim/undodir')
+  endif
+
+  if !isdirectory(undo_dir)
+    if g:is_windows
+      silent call system('powershell -NoLogo -NoProfile -NonInteractive -Command New-Item -Path "' . undo_dir . '" -ItemType Directory -ErrorAction SilentlyContinue')
+    else
+      silent call system('mkdir -p "' . undo_dir . '"')
+    endif
+  endif
+
+  let &undodir = undo_dir
+
+  if has('persistent_undo')
+    set undofile        " keep an undo file (undo changes after closing)
   endif
 endf
 
@@ -1218,7 +1234,7 @@ endfunction
 
 func! config#before () abort
   " Can be used to set different undodir between vim and nvim
-  " silent call s:SetUndodir()
+  silent call s:SetUndodir()
 
   " Fzf configs
   let g:fzf_vim = {}
