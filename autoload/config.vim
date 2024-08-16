@@ -228,6 +228,10 @@ func! s:Set_user_keybindings () abort
   " Window resize split taller/shorter
   nnoremap <M-t> <C-w>+
   nnoremap <M-s> <C-w>-
+
+  " Quick scroll buffer
+  nnoremap <C-d> <C-d>zz
+  nnoremap <C-u> <C-u>zz
 endf
 
 func! s:FixCursorShapeOnExitNvim () abort
