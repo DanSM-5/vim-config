@@ -756,16 +756,11 @@ function! s:OpenTempGitCommit(commits) abort
   endif
 endfunction
 
-function! GitSearchLog(query, fullscreen) abort
-  " git log --grep lazy --oneline
-  " git log -G lazy --branches --oneline
-
-  let cmd = 'git log --oneline --grep %s || true'
-
+function! GitSearch(query, fullscreen, cmd) abort
   " NOTE: fzf#shellescape seems to break on windows.
   " Usual shellescape works fine.
-  let source_command = printf(cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-  let reload_command = printf(cmd, '{q}')
+  let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
+  let reload_command = printf(a:cmd, '{q}')
   let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true' 
   let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
 
@@ -778,7 +773,7 @@ function! GitSearchLog(query, fullscreen) abort
     \     '--layout=reverse',
     \     '--disabled',
     \     '--query', a:query,
-    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(1. 🔎 LogSearch> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(1. 🔎 GitSearch> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
     \     '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(2. ✅ FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)",
     \     '--bind', 'start:reload:'.source_command,
     \     '--bind', 'change:reload:'.reload_command,
@@ -789,37 +784,19 @@ function! GitSearchLog(query, fullscreen) abort
     call fzf#run(fzf#wrap('git', spec, a:fullscreen))
 endfunction
 
-function! GitSearchPickaxe(query, fullscreen) abort
-  " git log --grep lazy --oneline
-  " git log -G lazy --branches --oneline
+function! GitSearchLog(query, fullscreen) abort
+  let cmd = 'git log --oneline --grep %s || true'
+  silent call GitSearch(a:query, a:fullscreen, cmd)
+endfunction
 
+function! GitSearchRegex(query, fullscreen) abort
   let cmd = 'git log --oneline --branches --all -G %s || true'
+  silent call GitSearch(a:query, a:fullscreen, cmd)
+endfunction
 
-  " NOTE: fzf#shellescape seems to break on windows.
-  " Usual shellescape works fine.
-  let source_command = printf(cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-  let reload_command = printf(cmd, '{q}')
-  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true' 
-  let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
-
-  " Notice ctrl-d doesn't work on Windows nvim
-  let spec = {
-    \   'sinklist': function('s:OpenTempGitCommit'),
-    \   'options': s:fzf_bind_options + [
-    \     '--prompt', '1. 🔎 LogSearch> ',
-    \     '--multi', '--ansi',
-    \     '--layout=reverse',
-    \     '--disabled',
-    \     '--query', a:query,
-    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(1. 🔎 LogSearch> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
-    \     '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(2. ✅ FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)",
-    \     '--bind', 'start:reload:'.source_command,
-    \     '--bind', 'change:reload:'.reload_command,
-    \     '--preview-window', preview_window,
-    \     '--preview', preview]
-    \ }
-
-    call fzf#run(fzf#wrap('git', spec, a:fullscreen))
+function! GitSearchString(query, fullscreen) abort
+  let cmd = 'git log --oneline --branches --all -S %s || true'
+  silent call GitSearch(a:query, a:fullscreen, cmd)
 endfunction
 
 func! s:SetFZF () abort
@@ -865,7 +842,8 @@ func! s:SetFZF () abort
   "   \   g:is_windows ? s:FzfRgWindows_preview({}, <bang>0) : fzf#vim#with_preview(), <bang>0)
 
   command! -nargs=* -bang GitSearchLog call GitSearchLog(<q-args>, <bang>0)
-  command! -nargs=* -bang GitSearchPickaxe call GitSearchPickaxe(<q-args>, <bang>0)
+  command! -nargs=* -bang GitSearchRegex call GitSearchRegex(<q-args>, <bang>0)
+  command! -nargs=* -bang GitSearchString call GitSearchString(<q-args>, <bang>0)
 
   command! -nargs=* CPrj call FzfChangeProject()
   command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
