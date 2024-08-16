@@ -1080,11 +1080,17 @@ func s:SetUndodir () abort
   endif
 
   if !isdirectory(undo_dir)
-    if g:is_windows
-      silent call system('powershell -NoLogo -NoProfile -NonInteractive -Command New-Item -Path "' . undo_dir . '" -ItemType Directory -ErrorAction SilentlyContinue')
-    else
-      silent call system('mkdir -p "' . undo_dir . '"')
-    endif
+    " Make directory. This should work in windows and linux
+    " and it should not fail if the directory already exists
+    " Vim used to fail before patch 8.0.1708
+    silent call mkdir(undo_dir, 'p')
+
+    " NOTE: Kept as reference
+    " if g:is_windows
+    "   silent call system('powershell -NoLogo -NoProfile -NonInteractive -Command New-Item -Path "' . undo_dir . '" -ItemType Directory -ErrorAction SilentlyContinue')
+    " else
+    "   silent call system('mkdir -p "' . undo_dir . '"')
+    " endif
   endif
 
   let &undodir = undo_dir
