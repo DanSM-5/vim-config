@@ -1315,8 +1315,8 @@ func! s:Set_netrw () abort
   "   orphan buffers
   " More: https://github.com/tpope/vim-vinegar/issues/13
 
-  nnoremap <leader>ve <cmd>Vex<cr>
-  nnoremap <leader>se <cmd>Sex<cr>
+  nnoremap <leader>ve <cmd>Lex!<cr>
+  nnoremap <leader>se <cmd>Hex<cr>
 
   autocmd FileType netrw setl bufhidden=delete
   " autocmd FileType netrw setl bufhidden=wipe
