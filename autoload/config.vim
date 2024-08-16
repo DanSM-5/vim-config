@@ -768,7 +768,8 @@ function! GitSearch(query, fullscreen, cmd) abort
   let spec = {
     \   'sinklist': function('s:OpenTempGitCommit'),
     \   'options': s:fzf_bind_options + [
-    \     '--prompt', '1. 🔎 LogSearch> ',
+    \     '--prompt', '1. 🔎 GitSearch> ',
+    \     '--header', 'ctrl-r: interactive search | ctrl-f: Fzf filtering of results',
     \     '--multi', '--ansi',
     \     '--layout=reverse',
     \     '--disabled',
