@@ -232,6 +232,16 @@ func! s:Set_user_keybindings () abort
   " Quick scroll buffer
   nnoremap <C-d> <C-d>zz
   nnoremap <C-u> <C-u>zz
+
+  " " line text-objects
+  " xnoremap il g_o0
+  " omap il :<C-u>normal vil<CR>
+  " xnoremap al $o0
+  " omap al :<C-u>normal val<CR>
+
+  " " buffer text-object
+  " xnoremap i% GoggV
+  " omap i% :<C-u>normal vi%<CR>
 endf
 
 func! s:FixCursorShapeOnExitNvim () abort
