@@ -1099,6 +1099,13 @@ func! s:RemapAltUpDownNormal () abort
 endf
 
 func! s:RemapAltUpDownSpecial () abort
+  " NOTE: vim requires extra handling for special maps
+  " (specially alt). The options are mapping the keycode directly
+  " like below or first set the keycode to be used
+  " set <A-up>=[1;3A
+  " Ref: https://superuser.com/questions/508655/map-shift-f3-in-vimrc
+  " Ref: https://vim.fandom.com/wiki/Mapping_fast_keycodes_in_terminal_Vim
+
   " move selected lines up one line
   xnoremap <silent><Esc>[1;3A :m-2<CR>gv=gv
 
