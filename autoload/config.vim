@@ -242,6 +242,9 @@ func! s:Set_user_keybindings () abort
   " " buffer text-object
   " xnoremap i% GoggV
   " omap i% :<C-u>normal vi%<CR>
+
+  " Exit insert mode
+  inoremap jk <Esc>
 endf
 
 func! s:FixCursorShapeOnExitNvim () abort
