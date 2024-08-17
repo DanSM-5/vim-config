@@ -32,5 +32,9 @@ return {
       'n', '<leader>vp', ':Neotree filesystem show toggle dir=$HOME/projects position=right<cr>',
       { desc = 'NeoTree: Open projects directory' }
     )
+
+    -- Use same highlights for NormalNC
+    vim.cmd('highlight clear NeoTreeNormalNC')
+    vim.cmd('highlight link NeoTreeNormalNC NormalNC')
   end
 }
