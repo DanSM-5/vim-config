@@ -774,25 +774,39 @@ function! GitSearch(query, fullscreen, cmd) abort
   let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true' 
   let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
 
-  " Notice ctrl-d doesn't work on Windows nvim
+  " NOTE: ctrl-d doesn't work on Windows nvim
+
+  " NOTE: this could use 'start:reload' instead of 'source'
+  " '--bind', 'start:reload:'.source_command,
+  " But git bash never starts the command until the query changes.
+  " So passing the command as source seems like a better option for
+  " cross platfor commands.
+
   let spec = {
+    \   'source': source_command,
     \   'sinklist': function('s:OpenTempGitCommit'),
     \   'options': s:fzf_bind_options + [
-    \     '--prompt', '1. 🔎 GitSearch> ',
+    \     '--prompt', 'GitSearch> ',
     \     '--header', 'ctrl-r: interactive search | ctrl-f: Fzf filtering of results',
     \     '--multi', '--ansi',
     \     '--layout=reverse',
     \     '--disabled',
     \     '--query', a:query,
-    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(1. 🔎 GitSearch> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
-    \     '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(2. ✅ FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)",
-    \     '--bind', 'start:reload:'.source_command,
+    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(GitSearch> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+    \     '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)",
     \     '--bind', 'change:reload:'.reload_command,
     \     '--preview-window', preview_window,
     \     '--preview', preview]
     \ }
 
-    call fzf#run(fzf#wrap('git', spec, a:fullscreen))
+    let curr_path = getcwd()
+    let gitpath = GitPath()
+    try
+      exec 'cd ' . gitpath
+      call fzf#run(fzf#wrap('git', spec, a:fullscreen))
+    finally
+      exec 'cd ' . curr_path
+    endtry
 endfunction
 
 function! GitSearchLog(query, fullscreen) abort
