@@ -713,10 +713,14 @@ function! RipgrepFzf(query, fullscreen)
   let spec = {
         \     'options': ['--disabled', '--query', a:query,
         \                 '--ansi', '--prompt', 'RG> ',
+        \                 '--header', '╱ CTRL-R (RG mode) ╱ CTRL-F (FZF mode) ╱',
         \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2',
+        \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(RG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+        \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
         \                 '--bind', 'start:reload:'.initial_command,
         \                 '--bind', 'change:reload:'.reload_command]
         \}
+
 
   " TODO: From fzf.vim
   " The g:fzf_vim dictionary can be used to alter the behavior of the
@@ -772,20 +776,20 @@ function! RipgrepFuzzy(query, fullscreen)
   " let spec = {'options': ['--query', a:query]}
   let spec = {'options': []}
 
+  if g:is_windows
+    let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
+  else
+    let spec = fzf#vim#with_preview(spec)
+    let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
+    let spec.options = spec.options + s:fzf_bind_options
+  endif
+
   " Change path to get relative 'short' paths in the fzf search
   let curr_path = getcwd()
   let gitpath = GitPath()
 
   try
     exec 'cd '. gitpath
-
-    if g:is_windows
-      let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
-    else
-      let spec = fzf#vim#with_preview(spec)
-      let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
-      let spec.options = spec.options + s:fzf_bind_options
-    endif
 
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
   finally
@@ -894,6 +898,11 @@ func! s:SetFZF () abort
   " Maps
   nnoremap <leader>fm <cmd>Maps<cr>
 
+  " Set live greep commands
+  nnoremap <leader>lg <cmd>RG<cr>
+  nnoremap <leader>fg <cmd>RG<cr>
+  nnoremap <leader>lG <cmd>Rg<cr>
+
   " Mapping selecting mappings in respective mode using fzf
   " nmap <leader><tab> <plug>(fzf-maps-n)
   " xmap <leader><tab> <plug>(fzf-maps-x)
@@ -984,10 +993,6 @@ func! s:SetFZF () abort
   nnoremap <C-o>p :CPrj<CR>
   " Set usual ctrl-o behavior to double the sequence
   nnoremap <C-o><C-o> <C-o>
-
-  " Set live greep commands
-  nnoremap <leader>lG <cmd>RG<cr>
-  nnoremap <leader>lg <cmd>Rg<cr>
 endf
 
 func! s:SetVimSystemCopyMaps () abort
