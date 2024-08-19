@@ -85,20 +85,39 @@ func! s:SetConfigurationsAfter () abort
   let g:suda_smart_edit = 1
 
   " Change cursor.
-  if ! has('nvim') && ! has('gui_mac') && ! has('gui_win32')
+  " if ! has('nvim') && ! has('gui_mac') && ! has('gui_win32')
+  "
+  "   " Set up vertical vs block cursor for insert/normal mode
+  "   if &term =~ "screen."
+  "     let &t_ti.="\eP\e[1 q\e\\"
+  "     let &t_SI.="\eP\e[5 q\e\\"
+  "     let &t_EI.="\eP\e[1 q\e\\"
+  "     let &t_te.="\eP\e[0 q\e\\"
+  "   else
+  "     let &t_ti.="\<Esc>[1 q"
+  "     let &t_SI.="\<Esc>[5 q"
+  "     let &t_EI.="\<Esc>[1 q"
+  "     let &t_te.="\<Esc>[0 q"
+  "   endif
+  " endif
+  " let &t_SI = "\<esc>[5 q"  " blinking I-beam in insert mode
+  " let &t_SR = "\<esc>[3 q"  " blinking underline in replace mode
+  " let &t_EI = "\<esc>[ q"  " default cursor (usually blinking block) otherwise
 
-    " Set up vertical vs block cursor for insert/normal mode
-    if &term =~ "screen."
-      let &t_ti.="\eP\e[1 q\e\\"
-      let &t_SI.="\eP\e[5 q\e\\"
-      let &t_EI.="\eP\e[1 q\e\\"
-      let &t_te.="\eP\e[0 q\e\\"
-    else
-      let &t_ti.="\<Esc>[1 q"
-      let &t_SI.="\<Esc>[5 q"
-      let &t_EI.="\<Esc>[1 q"
-      let &t_te.="\<Esc>[0 q"
-    endif
+  let &t_SI = "\<esc>[5 q" " I beam cursor for insert mode
+  let &t_EI = "\<esc>[1 q" " block cursor for normal mode
+  let &t_SR = "\<esc>[3 q" " underline cursor for replace mode
+
+  if has('nvim')
+  " Enable blinking together with different cursor shapes for insert/command mode, and cursor highlighting:
+    set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+      \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+      \,sm:block-blinkwait175-blinkoff150-blinkon175
+  else
+    " Fix cursor shape in command mode vim
+    " WARN: it does not work in the editor when pressing <C-f>
+    au CmdlineEnter * call echoraw(&t_SI)
+    au CmdlineLeave * call echoraw(&t_EI)
   endif
 
 "   if has('nvim')
