@@ -32,12 +32,11 @@ return {
     config = function ()
       -- For simple use cases, below line is all that's needed
       vim.cmd('colorscheme onedark')
-
       vim.cmd('hi CursorLine guibg=#313640')
 
       local g = vim.g
       g.theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
-      g.theme_hidden_visual = ':'
+      g.theme_hidden_visual = 'hi Visual guibg=#39496e'
       g.theme_hidden_normalNC = 'hi NormalNC guibg=NONE ctermbg=NONE'
       -- g.theme_hidden_lineNr = 'hi LineNr guibg=NONE guifg=#7f848e'
       g.theme_hidden_lineNr = 'hi LineNr guibg=NONE guifg=#919baa'
