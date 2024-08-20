@@ -113,11 +113,24 @@ func! s:SetConfigurationsAfter () abort
     set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
       \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
       \,sm:block-blinkwait175-blinkoff150-blinkon175
+
+    " Fix cursor shape on exit
+    " Windows version of neovim won't set back the cursor shape
+    augroup RestoreCursorShapeOnExit
+      autocmd!
+      autocmd VimLeave * set guicursor=a:ver100
+    augroup END
   else
     " Fix cursor shape in command mode vim
     " WARN: it does not work in the editor when pressing <C-f>
     au CmdlineEnter * call echoraw(&t_SI)
     au CmdlineLeave * call echoraw(&t_EI)
+
+    " Fix cursor shape on exit
+    " autocmd VimLeave * let &t_te="\e[?1049l\e[23;0;0t"
+    " autocmd VimLeave * let &t_ti="\e[?1049h\e[22;0;0t"
+    " autocmd VimLeave * silent !echo -ne "\e[5 q"
+    autocmd VimLeave * call echoraw(&t_SI)
   endif
 
 "   if has('nvim')
@@ -266,23 +279,6 @@ func! s:Set_user_keybindings () abort
   inoremap jk <Esc>
 endf
 
-func! s:FixCursorShapeOnExitNvim () abort
-    augroup RestoreCursorShapeOnExit
-      autocmd!
-      autocmd VimLeave * set guicursor=a:ver100
-    augroup END
-endf
-
-func! s:FixCursorShapeOnExitVim () abort
-  " let &t_ti .= \e[2 q"
-  " let &t_te .= \e[4 q"
-  autocmd VimLeave * let &t_te="\e[?1049l\e[23;0;0t"
-  autocmd VimLeave * let &t_ti="\e[?1049h\e[22;0;0t"
-  autocmd VimLeave * silent !echo -ne "\e[5 q"
-  " autocmd VimLeave * silent !echo -ne \033]112\007"
-  " autocmd VimLeave * :!touch /tmp/vimleave
-endf
-
 func! s:Set_os_specific_before () abort
   let os = g:host_os
   if g:is_wsl
@@ -358,11 +354,6 @@ func! s:Windows_conf_after () abort
   else
     silent call s:MoveLinesBlockMapsWin()
   endif
-
-  " Windows version of neovim won't set back the cursor shape
-  if has('nvim')
-    silent call s:FixCursorShapeOnExitNvim()
-  endif
 endf
 
 " **************  WSL specific ********************
@@ -409,10 +400,6 @@ func! s:WSL_conf_after () abort
   endif
 
   silent call s:MoveLinesBlockMapsLinux()
-
-  if ! has('nvim') && ! has('gui_mac') && ! has('gui_win32')
-    silent call s:FixCursorShapeOnExitVim()
-  endif
 endf
 
 " **************  TERMUX specific ********************
