@@ -6,8 +6,9 @@
 -- :h lua-guide
 -- :h lspconfig-all
 
-require('./lsp')
-require('./treesitter')
+require('config.lsp_settings').setup()
+require('config.treesitter').setup()
+require('config.neo_tree').setup()
 require('shared.autocmd')
 -- require('./debugger')
 
