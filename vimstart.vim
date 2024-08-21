@@ -249,6 +249,11 @@ call plug#begin()
     " Imitate vinegar '-' map
     lua vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
+    " TODO: Should we add NeoTree? It needs nvim-web-devicons
+    " Plug 'nvim-neo-tree/neo-tree.nvim'
+    " Plug 'nvim-tree/nvim-web-devicons'
+    " Plug 'MunifTanjim/nui.nvim'
+
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
     " Plug 'nvim-neotest/nvim-nio'
