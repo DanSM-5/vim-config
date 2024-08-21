@@ -30,7 +30,7 @@ return {
 
     for _, settings in ipairs(servers) do
       local server, lsp = settings.server, settings.lsp
-      if vim.fn.executable(server) then
+      if vim.fn.executable(server) == 1 then
         lspconfig[lsp].setup(servers_config[lsp])
       end
     end
