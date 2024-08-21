@@ -6,53 +6,31 @@ local language_servers = {
   -- 'tsserver'
 }
 
+local manual_setup = vim.g.is_termux == 1 or vim.env.IS_FROM_CONTAINER == 'true'
+
 -- change language servers for termux
-if (vim.g.is_termux == 1) then
+if (manual_setup) then
   language_servers = {}
 end
+
+local mason_opts = require('config.nvim_mason').get_config()
+local mason_lspconfig_opts = require('config.nvim_mason_lspconfig').get_config({
+  ensure_installed = language_servers
+})
 
 return {
   {
     'williamboman/mason.nvim',
-    opts = {
-      ui = {
-        icons = {
-          package_installed = "✓",
-          package_pending = "➜",
-          package_uninstalled = "✗"
-        }
-      }
-    }
+    opts = mason_opts,
   },
   {
     'williamboman/mason-lspconfig.nvim',
-    opts = {
-      -- Prevent nvim load before lsp is ready
-      ensure_installed = language_servers,
-      handlers = {
-        function(server_name)
-          local config = require('lsp-servers.config').get_config()[server_name] or {}
-          require('lspconfig')[server_name].setup(config)
-        end
-      }
-    }
+    opts = mason_lspconfig_opts,
   },
   {
     'neovim/nvim-lspconfig',
     config = function()
-      require('lsp-servers.keymaps').setup()
-      if (vim.g.is_termux == 1) then
-        require('lsp-servers.termux').setup()
-      elseif vim.env.IS_FROM_CONTAINER == 'true' then
-        -- NOTE:
-        -- installing lua server from mason fails in container due to nix
-        -- being based on musl rather than gnu, though the server can be
-        -- manually installed and hooked like this
-        if vim.fn.executable('lua-language-server') == 1 then
-          require('lspconfig').lua_ls.setup({})
-        end
-      end
-      require('lsp-servers.termux').setup()
+      require('config.nvim_lspconfig').setup({ manual_setup = manual_setup })
     end
   },
   {
@@ -63,4 +41,3 @@ return {
     opts = {}
   }
 }
-

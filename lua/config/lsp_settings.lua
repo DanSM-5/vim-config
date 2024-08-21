@@ -1,4 +1,5 @@
 -- Manual lsp-config
+-- This runs when loading lsp from VimPlug
 
 -- https://github.com/DanSM-5/vim-config
 -- Setup the lsp config
@@ -15,50 +16,25 @@ return {
       'bashls',
       -- 'tsserver'
     }
-
-    if (vim.g.is_termux == 1) then
-      language_servers = {}
-      require('lsp-servers.termux').setup()
-    elseif vim.env.IS_FROM_CONTAINER == 'true' then
-      -- NOTE:
-      -- installing lua server from mason fails in container due to nix
-      -- being based on musl rather than gnu, though the server can be
-      -- manually installed and hooked like this
-      if vim.fn.executable('lua-language-server') == 1 then
-        require('lspconfig').lua_ls.setup({})
-      end
-    end
+    local manual_setup = vim.g.is_termux == 1 or vim.env.IS_FROM_CONTAINER == 'true'
+    local mason_opts = require('config.nvim_mason').get_config()
+    local mason_lspconfig_opts = require('config.nvim_mason_lspconfig').get_config({
+      ensure_installed = language_servers
+    })
 
     -- Load meson
-    require('mason').setup({
-      ui = {
-        icons = {
-          package_installed = "✓",
-          package_pending = "➜",
-          package_uninstalled = "✗"
-        }
-      }
-    })
+    require('mason').setup(mason_opts)
 
     -- Load mason-lspconfig
-    require('mason-lspconfig').setup({
-      -- Prevent nvim load before lsp is ready
-      ensure_installed = language_servers,
-      handlers = {
-        function(server_name)
-          local config = require('lsp-servers.config').get_config()[server_name] or {}
-          require('lspconfig')[server_name].setup(config)
-        end
-      }
-    })
+    require('mason-lspconfig').setup(mason_lspconfig_opts)
 
     -- Add fzf menus for LSP functions
     -- This replace native lsp handlers so fzf handler
     -- functions are called async
     require('fzf_lsp').setup()
 
-    -- Set defualt lsp keybindings
-    require('lsp-servers.keymaps').setup()
+    -- Setup lsp servers
+    require('config.nvim_lspconfig').setup({ manual_setup = manual_setup })
 
     -- Buffer information
     -- See `:help vim.lsp.buf`
