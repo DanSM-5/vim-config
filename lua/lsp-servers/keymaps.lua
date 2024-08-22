@@ -7,7 +7,6 @@ return {
     vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'LSP: Go to previous diagnostic message' })
     vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'LSP: Go to next diagnostic message' })
 
-
     -- vim.keymap.set("n", "<leader>L", function()
     --   if vim.fn.search("https*://") > 0 then
     --     vim.ui.open(vim.fn.expand("<cfile>"))
@@ -56,6 +55,26 @@ return {
         end, 'LSP: Format buffer')
         set_map('n', '<space>Ic', vim.lsp.buf.incoming_calls, 'LSP: Incoming Calls')
         set_map('n', '<space>Oc', vim.lsp.buf.outgoing_calls, 'LSP: Outgoing Calls')
+
+        vim.keymap.set('n', '<space>ne', function ()
+          vim.diagnostic.goto_next( { severity = vim.diagnostic.severity.ERROR, wrap = true } )
+        end, { desc = 'LSP: Go to next error' })
+        vim.keymap.set('n', '<space>nw', function ()
+          vim.diagnostic.goto_next( { severity = vim.diagnostic.severity.WARN, wrap = true } )
+        end, { desc = 'LSP: Go to next warning' })
+        vim.keymap.set('n', '<space>nh', function ()
+          vim.diagnostic.goto_next( { severity = vim.diagnostic.severity.HINT } )
+        end, { desc = 'LSP: Go to next hint' })
+
+        vim.keymap.set('n', '<space>nE', function ()
+          vim.diagnostic.goto_prev( { severity = vim.diagnostic.severity.ERROR, wrap = true } )
+        end, { desc = 'LSP: Go to next error' })
+        vim.keymap.set('n', '<space>nW', function ()
+          vim.diagnostic.goto_prev( { severity = vim.diagnostic.severity.WARN, wrap = true } )
+        end, { desc = 'LSP: Go to next warning' })
+        vim.keymap.set('n', '<space>nH', function ()
+          vim.diagnostic.goto_prev( { severity = vim.diagnostic.severity.HINT } )
+        end, { desc = 'LSP: Go to next hint' })
       end
     })
   end
