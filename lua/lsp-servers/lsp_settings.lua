@@ -22,7 +22,7 @@ return {
     }
 
     -- Setup lsp servers
-    require('config.nvim_lspconfig').setup({ manual_setup = manual_setup })
+    require('config.nvim_lspconfig').setup()
 
     -- Buffer information
     -- See `:help vim.lsp.buf`
