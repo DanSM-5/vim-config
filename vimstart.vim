@@ -240,8 +240,9 @@ call plug#begin()
     Plug 'williamboman/mason.nvim'
     Plug 'williamboman/mason-lspconfig.nvim'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'hrsh7th/nvim-cmp',
-    Plug 'hrsh7th/cmp-nvim-lsp',
+    Plug 'hrsh7th/nvim-cmp'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'L3MON4D3/LuaSnip'
 
     Plug 'DanSM-5/fzf-lsp.nvim'
     Plug 'nvim-lua/plenary.nvim'
