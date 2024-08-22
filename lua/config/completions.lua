@@ -1,6 +1,6 @@
 return {
-  get_lazydev_config = function()
-    return {
+  set_lazydev = function ()
+    local lazydev_config = {
       library = {
         '~/vim-config',
         '~/.config/nvim',
@@ -34,5 +34,8 @@ return {
       --   return not vim.uv.fs_stat(root_dir .. '/.luarc.json')
       -- end,
     }
-  end
+
+    local lazydev = require('lazydev')
+    lazydev.setup(lazydev_config)
+  end,
 }

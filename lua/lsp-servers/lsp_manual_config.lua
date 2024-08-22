@@ -23,15 +23,12 @@ local servers = {
 }
 
 return {
-  setup = function()
-    -- local util = require('lspconfig.util')
-    local servers_config = require('lsp-servers.config').get_config()
-    local lspconfig = require('lspconfig')
-
+  ---@param config { lspconfig_handler: fun(server: string) }
+  setup = function(config)
     for _, settings in ipairs(servers) do
       local server, lsp = settings.server, settings.lsp
       if vim.fn.executable(server) == 1 then
-        lspconfig[lsp].setup(servers_config[lsp])
+        config.lspconfig_handler(lsp)
       end
     end
 
