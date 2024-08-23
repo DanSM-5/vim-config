@@ -27,8 +27,12 @@ return {
     -- Buffer information
     -- See `:help vim.lsp.buf`
 
+    -- NOTE: For css-variable set the global variable files with
+    -- vim.g.css_variables_files = { 'variables.css', 'other/path' }
+
     local sources = {
-      { name = 'nvim_lsp' }
+      { name = 'nvim_lsp' },
+      -- { name = 'css-variables' },
     }
     local cmp = require('cmp')
     local cmp_lsp = require('cmp_nvim_lsp')
