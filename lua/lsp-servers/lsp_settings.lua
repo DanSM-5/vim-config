@@ -16,9 +16,9 @@ return {
     local language_servers = manual_setup and {} or {
       'lua_ls',
       'vimls',
-      'biome',
+      -- 'biome',
       'bashls',
-      -- 'tsserver'
+      'tsserver'
     }
 
     -- Setup lsp servers
@@ -32,7 +32,7 @@ return {
 
     local sources = {
       { name = 'nvim_lsp' },
-      -- { name = 'css-variables' },
+      { name = 'css-variables' },
     }
     local cmp = require('cmp')
     local cmp_lsp = require('cmp_nvim_lsp')

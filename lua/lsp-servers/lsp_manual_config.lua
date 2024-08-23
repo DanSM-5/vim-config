@@ -17,9 +17,13 @@ local servers = {
     lsp = 'vimls',
   },
   {
-    server = 'biome',
-    lsp = 'biome',
-  },
+    server = 'typescript-language-server',
+    lsp = 'tsserver',
+  }
+  -- {
+  --   server = 'biome',
+  --   lsp = 'biome',
+  -- },
 }
 
 return {

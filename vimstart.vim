@@ -243,6 +243,7 @@ call plug#begin()
     Plug 'hrsh7th/nvim-cmp'
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'L3MON4D3/LuaSnip'
+    Plug 'roginfarrer/cmp-css-variables'
 
     Plug 'DanSM-5/fzf-lsp.nvim'
     Plug 'nvim-lua/plenary.nvim'

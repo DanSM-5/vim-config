@@ -1,18 +1,4 @@
--- local language_servers = {
---   'lua_ls',
---   'vimls',
---   'biome',
---   'bashls',
---   -- 'tsserver'
--- }
---
--- local manual_setup = vim.g.is_termux == 1 or vim.env.IS_FROM_CONTAINER == 'true'
---
--- -- change language servers for termux
--- if (manual_setup) then
---   language_servers = {}
--- end
-
+-- Entry point of lsp related plugins
 return {
   {
     'williamboman/mason.nvim',
@@ -27,7 +13,7 @@ return {
       'hrsh7th/cmp-nvim-lsp',
       'williamboman/mason-lspconfig.nvim',
       'L3MON4D3/LuaSnip',
-      -- 'roginfarrer/cmp-css-variables'
+      'roginfarrer/cmp-css-variables'
     },
     config = function()
       require('lsp-servers.lsp_settings').setup({ enable_lazydev = true })
