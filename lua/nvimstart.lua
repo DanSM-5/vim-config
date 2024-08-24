@@ -11,6 +11,14 @@ require('lsp-servers.lsp_settings').setup()
 require('lsp-servers.nvim_fzf_lsp').setup()
 require('config.treesitter').setup()
 require('config.neo_tree').setup()
-require('shared.autocmd')
+require('config.nvim_comments').setup()
+
+-- Call plugins that need setup
+-- require('Comment').setup({})
+
+-- Imitate vinegar '-' map
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
+-- require('shared.autocmd')
 -- require('./debugger')
 

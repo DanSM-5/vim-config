@@ -236,6 +236,7 @@ call plug#begin()
 
   if has('nvim')
     " LSP plugings for neovim
+    Plug 'nvim-lua/plenary.nvim'
     Plug 'neovim/nvim-lspconfig'
     Plug 'williamboman/mason.nvim'
     Plug 'williamboman/mason-lspconfig.nvim'
@@ -244,14 +245,13 @@ call plug#begin()
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'L3MON4D3/LuaSnip'
     Plug 'roginfarrer/cmp-css-variables'
-
+    Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+    Plug 'numToStr/Comment.nvim'
+    Plug 'JoosepAlviste/nvim-ts-context-commentstring'
     Plug 'DanSM-5/fzf-lsp.nvim'
-    Plug 'nvim-lua/plenary.nvim'
 
     " File explorer
     Plug 'stevearc/oil.nvim'
-    " Imitate vinegar '-' map
-    lua vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
     " TODO: Should we add NeoTree? It needs nvim-web-devicons
     " Plug 'nvim-neo-tree/neo-tree.nvim'
@@ -267,12 +267,10 @@ call plug#begin()
     " Plug 'lukas-reineke/indent-blankline.nvim'
 
     " Copied from example
-    " Plug 'L3MON4D3/LuaSnip'
     " Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
   else
     " Only load in vim
 
-    " Comment plugin is already built-in in neovim
     Plug 'tpope/vim-commentary'
     " File explorer
     Plug 'tpope/vim-vinegar'
