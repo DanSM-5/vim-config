@@ -275,6 +275,9 @@ call plug#begin()
     " File explorer
     Plug 'tpope/vim-vinegar'
 
+    " Show matching words under the cursor
+    " Plug 'itchyny/vim-cursorword'
+
     " For lsp within vim
     " Plug 'prabirshrestha/vim-lsp'
     " Plug 'mattn/vim-lsp-settings'

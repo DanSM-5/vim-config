@@ -51,5 +51,12 @@ return {
   },
   -- {
   --   'airblade/vim-gitgutter'
-  -- }
+  -- },
+  {
+    'xiyaowong/nvim-cursorword',
+    config = function ()
+      -- NOTE: consider to keep or remove the background color and just keep the underline
+      vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
+    end
+  },
 }
