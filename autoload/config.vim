@@ -706,11 +706,13 @@ function! s:FzfRg_bindings(options) abort
   return a:options + s:fzf_bind_options
 endfunction
 
+" Variation of RipgrepFzf that searches on the current buffer only
 function! LiveGrep(query, fullscreen)
   let fzf_rg_args = s:rg_args . ' --with-filename '
+  let curr_path = getcwd()
+  let buff_path = expand('%:p:h')
 
   try
-    let buff_path = expand('%:p:h')
     " Change path to get relative 'short' paths in the fzf search
     exec 'cd '. buff_path
 
@@ -722,10 +724,10 @@ function! LiveGrep(query, fullscreen)
     let reload_command = printf(command_fmt, '{q}')
     let spec = {
           \     'options': ['--disabled', '--query', a:query,
-          \                 '--ansi', '--prompt', 'RG> ',
-          \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
+          \                 '--ansi', '--prompt', 'LG> ',
+          \                 '--header', '| CTRL-R (LG mode) | CTRL-F (FZF mode) |',
           \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2',
-          \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(RG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+          \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(LG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
           \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
           \                 '--bind', 'start:reload:'.initial_command,
           \                 '--bind', 'change:reload:'.reload_command]
@@ -739,9 +741,9 @@ function! LiveGrep(query, fullscreen)
       let spec.options = spec.options + s:fzf_bind_options
     endif
 
-    let curr_path = getcwd()
     call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
   finally
+    " Recover cwd on end
     exec 'cd '. curr_path
   endtry
 endfunction
