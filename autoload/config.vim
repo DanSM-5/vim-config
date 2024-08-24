@@ -706,6 +706,46 @@ function! s:FzfRg_bindings(options) abort
   return a:options + s:fzf_bind_options
 endfunction
 
+function! LiveGrep(query, fullscreen)
+  let fzf_rg_args = s:rg_args . ' --with-filename '
+
+  let buff_path = expand('%:p:h')
+  let curr_file = g:is_windows ? shellescape(expand('%')) : fzf#shellescape(expand('%'))
+  let command_fmt = 'rg' . fzf_rg_args . '-- %s ' . curr_file  . ' || true'
+  " Fixed initial load. It seems it broke on windows using fzf#shellescape
+  " Usual shellescape works fine.
+  let initial_command = printf(command_fmt, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {
+        \     'options': ['--disabled', '--query', a:query,
+        \                 '--ansi', '--prompt', 'RG> ',
+        \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
+        \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2',
+        \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(RG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+        \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
+        \                 '--bind', 'start:reload:'.initial_command,
+        \                 '--bind', 'change:reload:'.reload_command]
+        \}
+
+  if g:is_windows
+    let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
+  else
+    let spec = fzf#vim#with_preview(spec)
+    let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
+    let spec.options = spec.options + s:fzf_bind_options
+  endif
+
+  let curr_path = getcwd()
+
+  try
+    " Change path to get relative 'short' paths in the fzf search
+    exec 'cd '. buff_path
+    call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
+  finally
+    exec 'cd '. curr_path
+  endtry
+endfunction
+
 function! RipgrepFzf(query, fullscreen)
   let fzf_rg_args = s:rg_args
 
@@ -904,10 +944,10 @@ func! s:SetFZF () abort
   " Maps
   nnoremap <leader>fm <cmd>Maps<cr>
 
-  " Set live greep commands
-  nnoremap <leader>lg <cmd>RG<cr>
+  " Set grep commands
+  nnoremap <leader>lg <cmd>Lg<cr>
   nnoremap <leader>fg <cmd>RG<cr>
-  nnoremap <leader>lG <cmd>Rg<cr>
+  nnoremap <leader>fG <cmd>Rg<cr>
 
   " Mapping selecting mappings in respective mode using fzf
   " nmap <leader><tab> <plug>(fzf-maps-n)
@@ -931,6 +971,7 @@ func! s:SetFZF () abort
   command! -nargs=* CPrj call FzfChangeProject()
   command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
   command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
+  command! -nargs=* -bang Lg call LiveGrep(<q-args>, <bang>0)
 
   command! -bang -nargs=? -complete=dir Files
     \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
