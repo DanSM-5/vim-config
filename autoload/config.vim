@@ -719,7 +719,7 @@ function! RipgrepFzf(query, fullscreen)
   let spec = {
         \     'options': ['--disabled', '--query', a:query,
         \                 '--ansi', '--prompt', 'RG> ',
-        \                 '--header', '╱ CTRL-R (RG mode) ╱ CTRL-F (FZF mode) ╱',
+        \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
         \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2',
         \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(RG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
         \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
