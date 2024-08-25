@@ -19,6 +19,21 @@ return {
       require('lsp-servers.lsp_settings').setup({ enable_lazydev = true })
     end
   },
+  -- TODO: Review how to use powershell editor services
+  -- {
+  --   "TheLeoP/powershell.nvim",
+  --   config = function ()
+  --     ---@type powershell.user_config
+  --     local opts = {
+  --       bundle_path = vim.fn.stdpath('data') .. '/mason/packages/powershell-editor-services'
+  --     }
+  --
+  --     local powershell_nvim = require('powershell')
+  --     powershell_nvim.setup(opts)
+  --   end,
+  --   enabled = vim.fn.executable('pwsh'),
+  --   ft = 'ps1'
+  -- },
   {
     'DanSM-5/fzf-lsp.nvim',
     dependencies = {
