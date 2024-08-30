@@ -177,12 +177,18 @@ func! s:Set_user_keybindings () abort
   nnoremap <silent> <tab> :bn<cr>
   nnoremap <silent> <s-tab> :bN<cr>
 
-  " Wipe current buffer
-  noremap <Leader><Tab> <cmd>Bw<CR>
-  " Wipe all buffers but current
-  noremap <Leader><S-Tab> <cmd>Bonly<CR>
-" noremap <Leader><S-Tab> :Bw!<CR>
-" noremap <C-t> :tabnew split<CR>
+  " Close current buffer without affecting opened windows
+  " See definition in plugin/bclose.vim
+  nmap <leader><Tab> <Plug>BCloseCurrent
+  " Close all buffers but current one
+  command -bar BCloseOthers :%bd|e#
+  noremap <leader><S-Tab> <cmd>BCloseOthers<CR>
+
+  " Vim buffet similar commands
+  " noremap <leader><Tab> :Bw<CR>
+  " noremap <Leader><S-Tab> :Bonly<CR>
+  " noremap <Leader><S-Tab> :Bw!<CR>
+  " noremap <C-t> :tabnew split<CR>
 
   " vim-asterisk
   let g:asterisk#keeppos = 1
