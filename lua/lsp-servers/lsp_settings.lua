@@ -64,8 +64,8 @@ return {
         ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(cmp_select), { 'i' }),
         ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(cmp_select), { 'i' }),
         ['<C-Space>'] = cmp.mapping.complete(),
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<S-up>'] = cmp.mapping.scroll_docs(-4),
+        ['<S-down>'] = cmp.mapping.scroll_docs(4),
         ['<C-e>'] = cmp.mapping.abort(),
         -- ['<CR>'] = cmp.mapping.confirm({ select = true }),
         -- ['<Tab>'] = function(fallback)
