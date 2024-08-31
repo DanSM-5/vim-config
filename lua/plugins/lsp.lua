@@ -40,6 +40,17 @@ return {
   --   ft = 'ps1'
   -- },
   {
+    'mrcjkb/rustaceanvim',
+    version = '^5', -- Recommended (avoid breaking changes)
+    lazy = false, -- Already lazy
+    ['rust-analyzer'] = {
+      cargo = {
+        allFeatures = true,
+      },
+    },
+    ft = 'rust',
+  },
+  {
     'DanSM-5/fzf-lsp.nvim',
     dependencies = {
       'nvim-lua/plenary.nvim'

@@ -126,6 +126,12 @@ return {
 
     ---@param server_name string
     local lspconfig_handler = function(server_name)
+      -- Prevent mason-lspconfig from trying to start the LSP server
+      -- for rust_analyzer. This is done through mrcjkb/rustaceanvim plugin
+      if server_name == 'rust_analyzer' then
+        return
+      end
+
       local base_config = require('lsp-servers.config').get_config()[server_name] or {}
       local config = vim.tbl_deep_extend('force', {}, base_config, { capabilities = capabilities })
       require('lspconfig')[server_name].setup(config)
