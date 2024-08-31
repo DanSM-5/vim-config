@@ -1170,16 +1170,16 @@ func! s:RemapAltUpDownSpecial () abort
   " Ref: https://vim.fandom.com/wiki/Mapping_fast_keycodes_in_terminal_Vim
 
   " move selected lines up one line
-  xnoremap <silent><Esc>[1;3A :m-2<CR>gv=gv
+  vnoremap <silent><Esc>[1;3A :m '<-2<CR>gv=gv
 
   " move selected lines down one line
-  xnoremap <silent><Esc>[1;3B :m'>+<CR>gv=gv
+  vnoremap <silent><Esc>[1;3B :m '>+1<CR>gv=gv
 
   " move current line up one line
-  nnoremap <silent><Esc>[1;3A :<C-u>m-2<CR>==
+  nnoremap <silent><Esc>[1;3A :<C-u>m .-2<CR>==
 
   " move current line down one line
-  nnoremap <silent><Esc>[1;3B :<C-u>m+<CR>==
+  nnoremap <silent><Esc>[1;3B :<C-u>m .+1<CR>==
 
   " move current line up in insert mode
   inoremap <silent><Esc>[1;3A <Esc>:m .-2<CR>==gi
@@ -1190,22 +1190,22 @@ endf
 
 func! s:RemapAltUpDownJK () abort
   " move selected lines up one line
-  xnoremap <silent><C-K> :m-2<CR>gv=gv
+  vnoremap <silent><C-k> :m '<-2<CR>gv=gv
 
   " move selected lines down one line
-  xnoremap <silent><C-J> :m'>+<CR>gv=gv
+  vnoremap <silent><C-j> :m '>+1<CR>gv=gv
 
   " move current line up one line
-  nnoremap <silent><C-K> :<C-u>m-2<CR>==
+  nnoremap <silent><C-k> :<C-u>m .-2<CR>==
 
   " move current line down one line
-  nnoremap <silent><C-J> :<C-u>m+<CR>==
+  nnoremap <silent><C-j> :<C-u>m .+1<CR>==
 
   " move current line up in insert mode
-  inoremap <silent><C-K> <Esc>:m .-2<CR>==gi
+  inoremap <silent><C-k> <Esc>:m .-2<CR>==gi
 
   " move current line down in insert mode
-  inoremap <silent><C-J> <Esc>:m .+1<CR>==gi
+  inoremap <silent><C-j> <Esc>:m .+1<CR>==gi
 endf
 
 func! s:RemapVisualMultiUpDown () abort
