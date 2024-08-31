@@ -1333,7 +1333,7 @@ function! config#CurrentOS ()
     let known_os = s:linux
     let g:is_linux = 1
     if $IS_FROM_CONTAINER == 'true'
-      let is_container = 1
+      let g:is_container = 1
     elseif has('wsl') || system('cat /proc/version') =~ '[Mm]icrosoft'
       let g:is_wsl = 1
     elseif $IS_TERMUX =~ 'true'
