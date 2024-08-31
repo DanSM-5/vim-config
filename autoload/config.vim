@@ -623,7 +623,7 @@ function! s:WindowsShortPath(path) abort
   return split(system('for %A in ("'. a:path .'") do @echo %~sA'), "\n")[0]
 endfunction
 
-function! FzfChangeProject() abort
+function! FzfChangeProject(query, fullscreen) abort
   let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
   let preview = user_conf_path . '/utils/fzf-preview.sh {}'
   let getprojects = user_conf_path . '/utils/getprojects'
@@ -666,6 +666,7 @@ function! FzfChangeProject() abort
     \   'options': [
     \     '--prompt', 'Projs> ',
     \     '--no-multi', '--ansi',
+    \     '--query', a:query,
     \     '--layout=reverse',
     \     '--bind', 'ctrl-f:change-prompt(Files> )+reload(' . files_command . ' . {})+clear-query+change-multi+unbind(ctrl-f)',
     \     '--bind', 'ctrl-r:change-prompt(Projs> )+reload(' . reload_command . ')+rebind(ctrl-f)+clear-query+change-multi(0)',
@@ -675,7 +676,7 @@ function! FzfChangeProject() abort
   let spec.options = s:fzf_bind_options + spec.options
 
   " Hope for the best
-  call fzf#run(fzf#wrap(spec))
+  call fzf#run(fzf#wrap('cproj', spec, a:fullscreen))
 endfunction
 
 function! s:FzfRgWindows_preview(spec, fullscreen) abort
@@ -863,7 +864,7 @@ function! GitSearch(query, fullscreen, cmd) abort
   " Usual shellescape works fine.
   let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
   let reload_command = printf(a:cmd, '{q}')
-  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true' 
+  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
   let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
 
   " NOTE: ctrl-d doesn't work on Windows nvim
@@ -914,6 +915,51 @@ endfunction
 function! GitSearchString(query, fullscreen) abort
   let cmd = 'git log --oneline --branches --all -S %s || true'
   silent call GitSearch(a:query, a:fullscreen, cmd)
+endfunction
+
+function! FzfTxt(query, fullscreen) abort
+  let curr_path = getcwd()
+  let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
+  let preview = user_conf_path . '/utils/fzf-preview.sh {}'
+  let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
+  let source_command = 'fd --color=always -tf '
+  " let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+  " \     '--preview-window', preview_window,
+
+  silent call mkdir(txt_dir, 'p')
+
+  if g:is_windows
+    let gitenv = substitute(system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
+    let gitenv = s:WindowsShortPath(gitenv)
+    let gitenv = shellescape(substitute(gitenv, '\\', '/', 'g'))
+    let bash = substitute(s:WindowsShortPath(g:bash), '\\', '/', 'g')
+    let preview = bash . ' ' . preview
+    if !g:is_gitbash
+      let source_command = source_command . ' --path-separator "/" '
+    endif
+  endif
+
+  try
+    exec 'cd ' . txt_dir
+
+    let spec = {
+      \   'source': source_command,
+      \   'sinklist': function('s:FzfSelectedList'),
+      \   'options': s:fzf_bind_options + [
+      \     '--prompt', 'Open Txt> ',
+      \     '--multi', '--ansi',
+      \     '--layout=reverse',
+      \     '--preview-window', '60%',
+      \     '--query', a:query,
+      \     '--preview', preview]
+      \ }
+
+    " Hope for the best
+    call fzf#run(fzf#wrap('ftxt', spec, a:fullscreen))
+  finally
+    " Recover cwd on end
+    exec 'cd '. curr_path
+  endtry
 endfunction
 
 func! s:SetFZF () abort
@@ -967,7 +1013,8 @@ func! s:SetFZF () abort
   command! -nargs=* -bang GitSearchRegex call GitSearchRegex(<q-args>, <bang>0)
   command! -nargs=* -bang GitSearchString call GitSearchString(<q-args>, <bang>0)
 
-  command! -nargs=* CPrj call FzfChangeProject()
+  command! -nargs=* -bang FTxt call FzfTxt(<q-args>, <bang>0)
+  command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)
   command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
   command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
   command! -nargs=* -bang Lg call LiveGrep(<q-args>, <bang>0)
@@ -1037,6 +1084,7 @@ func! s:SetFZF () abort
   nnoremap <A-p> :GitFZF!<CR>
   nnoremap <C-P> :GitFZF<CR>
   nnoremap <C-o>p :CPrj<CR>
+  nnoremap <C-o>t :FTxt<CR>
   " Set usual ctrl-o behavior to double the sequence
   nnoremap <C-o><C-o> <C-o>
 endf
