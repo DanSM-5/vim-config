@@ -110,12 +110,12 @@ vim.cmd([[
     endif
   endfunction
 
-  function g:SetTab ()
-    set tabstop=2 softtabstop=2 shiftwidth=2
+  function g:SetTab (space)
+    let space = empty(a:space) ? '2' : a:space
+    exec 'set tabstop=' . space . ' softtabstop=' . space . ' shiftwidth=' . space
     set expandtab
     set ruler
     set autoindent smartindent
-    " filetype plugin indent on
   endfunction
 
   function! g:OnVimEnter()

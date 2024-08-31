@@ -19,14 +19,15 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
+" enable filetype base indentation
+filetype plugin indent on
+
 " Enable highlight on search
 set hlsearch
 
 " NOTE: Set by VimPlug
 " enable syntax highlight
 " > syntax enabled
-" enable filetype base indentation
-" > filetype plugin indent on
 
 ": Global variables {{{ :-------------------------------------------------
 
@@ -116,12 +117,12 @@ func! g:ToggleBg ()
   endif
 endfunction
 
-function g:SetTab ()
-  set tabstop=2 softtabstop=2 shiftwidth=2
+function g:SetTab (space)
+  let space = empty(a:space) ? '2' : a:space
+  exec 'set tabstop=' . space . ' softtabstop=' . space . ' shiftwidth=' . space
   set expandtab
   set ruler
   set autoindent smartindent
-  " filetype plugin indent on
 endfunction
 
 " Note: Make sure the function is defined before `vim-buffet` is loaded.
