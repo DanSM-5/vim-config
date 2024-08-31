@@ -917,6 +917,24 @@ function! GitSearchString(query, fullscreen) abort
   silent call GitSearch(a:query, a:fullscreen, cmd)
 endfunction
 
+function! NewTxt(filename) abort
+  let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
+  silent call mkdir(txt_dir, 'p')
+  
+  let filename = ''
+
+  if empty(a:filename)
+    let temp_name = trim(system('uuidgen 2>/dev/null || date +%d-%m-%Y_%H-%M-%S'))
+    let filename = 'tmp-' . temp_name . '.md'
+  else
+    let filename = a:filename
+  endif
+
+  let filename = txt_dir . '/' . filename
+
+  exec 'edit ' . filename
+endfunction
+
 function! FzfTxt(query, fullscreen) abort
   let curr_path = getcwd()
   let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
@@ -1178,6 +1196,9 @@ func! s:DefineCommands () abort
   " Use lf to select files to open in vim
   " NOTE: It does not work on nvim
   command! -bar LF call LF()
+
+  " Create new txt file
+  command! -nargs=? NText call NewTxt(<q-args>)
 endf
 
 func! s:RemapAltUpDownNormal () abort
