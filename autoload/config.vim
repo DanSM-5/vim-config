@@ -450,6 +450,7 @@ endf
 
 func! s:Linux_conf_after () abort
   " Run after
+  silent call s:MoveLinesBlockMapsLinux()
 endf
 
 " **************  MAC specific ********************
@@ -1221,6 +1222,8 @@ func! s:RemapVisualMultiUpDown () abort
 endf
 
 func! s:MoveLinesBlockMapsWin () abort
+  silent call s:RemapAltUpDownJK()
+
   if has('nvim')
     silent call s:RemapAltUpDownNormal()
 
@@ -1244,6 +1247,8 @@ func! s:MoveLinesBlockMapsLinux () abort
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
 
+  silent call s:RemapAltUpDownJK()
+
   " <A-UP> | <Esc>[1;3A
   " <A-Down> | <Esc>[1;3B
   if has('nvim')
@@ -1258,6 +1263,7 @@ func! s:MoveLinesBlockMapsGvim () abort
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
 
+  silent call s:RemapAltUpDownJK()
   silent call s:RemapAltUpDownNormal()
 endf
 
@@ -1265,6 +1271,8 @@ func! s:MoveLinesBlockMapsMac () abort
   " Allow motion mlu/d
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+
+  silent call s:RemapAltUpDownJK()
 
   " Not needed remap on regular vim
   if has('nvim')
