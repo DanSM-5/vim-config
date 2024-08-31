@@ -367,16 +367,6 @@ func! s:WSL_conf_before () abort
   if has('nvim')
     let g:python3_host_prog = 'python3'
   endif
-
-  " let g:rooter_change_directory_for_non_project_files = 'current'
-  " let g:rooter_patterns = ["!.SpaceVim.d/",".git/","/home/".$USER."/.SpaceVim.d"]
-
-  " Prevent changing to .SpaceVim.d directory on /mnt/c/
-  " let g:spacevim_project_rooter_patterns = ["!.SpaceVim.d/"] + g:spacevim_project_rooter_patterns
-  " Not implemented
-  " let g:spacevim_custom_plugins = [
-  "   \ ['/home/linuxbrew/.linuxbrew/opt/fzf'],
-  "   \ ]
 endf
 
 func! s:WSL_conf_after () abort
@@ -439,16 +429,16 @@ func! s:Linux_conf_before () abort
   endif
 
   let g:rooter_change_directory_for_non_project_files = 'current'
+endf
 
+func! s:Linux_conf_after () abort
   " Use filesystem clipboard in container
   if g:is_container
     let g:system_copy#paste_command = 'fs-paste'
     let g:system_copy#copy_command = 'fs-copy'
     call clipboard#set(g:system_copy#copy_command, g:system_copy#paste_command)
   endif
-endf
 
-func! s:Linux_conf_after () abort
   " Run after
   silent call s:MoveLinesBlockMapsLinux()
 endf
