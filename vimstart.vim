@@ -297,6 +297,18 @@ hi NormalNC guifg=#abb2bf
 if has('nvim')
   " Entry poing for lua config for nvim
   runtime lua/nvimstart.lua
+else
+  if g:is_windows
+    " NOTE:
+    " Vim from scoop is compiled with lua
+    " but lua binary from scoop is not in the path (shimmed)
+    " The alternative is to set &luadll manually
+    " Check if exists and add it. This will cause `has('lua')` to return 1.
+    let lua_dll_dir = expand('~/scoop/apps/lua/current/bin')
+    if isdirectory(lua_dll_dir)
+      let &luadll = lua_dll_dir . '\lua54.dll'
+    endif
+  endif
 endif
 
 " Return to last edit position when opening files
