@@ -919,8 +919,6 @@ endfunction
 
 function! NewTxt(filename) abort
   let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
-  silent call mkdir(txt_dir, 'p')
-  
   let filename = ''
 
   if empty(a:filename)
@@ -931,6 +929,9 @@ function! NewTxt(filename) abort
   endif
 
   let filename = txt_dir . '/' . filename
+  let dirlocation = fnamemodify(filename, ':h')
+
+  silent call mkdir(dirlocation, 'p')
 
   exec 'edit ' . filename
 endfunction
