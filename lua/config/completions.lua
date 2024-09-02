@@ -38,4 +38,13 @@ return {
     local lazydev = require('lazydev')
     lazydev.setup(lazydev_config)
   end,
+  -- set_crates = function ()
+  --   require('crates').setup({
+  --     completion = {
+  --       cmp = {
+  --         enabled = true
+  --       }
+  --     }
+  --   })
+  -- end
 }

@@ -20,5 +20,5 @@ require('config.nvim_comments').setup()
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
 -- require('shared.autocmd')
--- require('./debugger')
+-- require('debugger').setup()
 

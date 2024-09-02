@@ -7,11 +7,28 @@
 -- local lspconfig = require('lspconfig')
 -- lspconfig.lua_ls.setup({})
 
+---@class CompletionsOpts
+---@field enable { lazydev: boolean; crates: boolean }
+
+---@class LspSetupOpts
+---@field completions CompletionsOpts
+
+---@type LspSetupOpts
+local defaultLspSetupOpts = {
+  completions = {
+    enable = {
+      lazydev = false,
+      crates = false,
+    },
+  },
+}
+
 return {
   ---Options when setting lsp features
-  ---@param opts { enable_lazydev: boolean } | nil
+  ---@param opts LspSetupOpts | nil
   setup = function(opts)
-    opts = opts or {}
+    ---@type LspSetupOpts
+    opts = vim.tbl_deep_extend('force', defaultLspSetupOpts, opts or {})
     local manual_setup = vim.g.is_termux == 1 or vim.env.IS_FROM_CONTAINER == 'true'
     local language_servers = manual_setup and {} or {
       'lua_ls',
@@ -46,12 +63,16 @@ return {
     )
     local cmp_select = { behavior = cmp.SelectBehavior.Replace }
 
-    if opts.enable_lazydev then
+    if opts.completions.enable.lazydev then
       table.insert(sources, {
         name = "lazydev",
         group_index = 0, -- set group index to 0 to skip loading LuaLS completions
       })
     end
+
+    -- if opts.completions.enable.crates then
+    --   table.insert(sources, { name = 'crates' })
+    -- end
 
     -- local has_words_before = function()
     --   unpack = unpack or table.unpack
