@@ -136,6 +136,15 @@ function! g:BuffetSetCustomColors()
   " hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#00ff00 guibg=#999999
   " hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#98c379 guibg=#999999
   hi! BuffetActiveBuffer ctermfg=2 ctermbg=10 guifg=#5d677a guibg=#999999
+
+  hi! BuffetTab ctermfg=8 ctermbg=4 guifg=#000000 guibg=#258bd3
+
+  " Other groups
+  " BuffetBuffer
+  " BuffetModCurrentBuffer
+  " BuffetModActiveBuffer
+  " BuffetModBuffer
+  " BuffetTrunc
 endfunction
 
 function! g:OnVimEnter()
