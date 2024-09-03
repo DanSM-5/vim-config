@@ -12,6 +12,7 @@ require('lsp-servers.nvim_fzf_lsp').setup()
 require('config.treesitter').setup()
 require('config.neo_tree').setup()
 require('config.nvim_comments').setup()
+require('config.nvim_gitsigns').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
