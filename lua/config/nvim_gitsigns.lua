@@ -3,7 +3,12 @@ return {
     local gitsigns = require('gitsigns')
 
     -- Quickfix command
-    vim.api.nvim_create_user_command('Gqf', gitsigns.setqflist, {})
+    vim.api.nvim_create_user_command('Gqf', function (opts)
+      -- NOTE: to use quickfix on buffer only use
+      -- :Gitsigns setqflist
+      local target = opts.bang and 'attached' or 'all'
+      gitsigns.setqflist(target)
+    end, { bang = true })
 
     -- Set mappings
     gitsigns.setup({
