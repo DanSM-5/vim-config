@@ -91,7 +91,7 @@ let g:airline_powerline_fonts = 1
 
 " Disable signs limit for gitgutter
 let g:gitgutter_max_signs = -1
-let g:gitgutter_log = 1
+" let g:gitgutter_log = 1
 " Use custom grep
 " let g:gitgutter_grep = 'rg'
 
