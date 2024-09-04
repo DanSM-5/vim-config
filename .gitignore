@@ -11,3 +11,5 @@ lazy-lock.json
 # Don't save netrw history
 .netrwhist
 
+# Swap files
+*.swp
