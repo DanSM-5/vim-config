@@ -19,6 +19,8 @@ require('config.nvim_gitsigns').setup()
 
 -- Imitate vinegar '-' map
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+-- Set color for cursor word
+vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
 
 -- require('shared.autocmd')
 -- require('debugger').setup()

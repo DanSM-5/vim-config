@@ -21,13 +21,17 @@ endif
 
 " enable filetype base indentation
 filetype plugin indent on
-
 " Enable highlight on search
 set hlsearch
 
 " NOTE: Set by VimPlug
 " enable syntax highlight
 " > syntax enabled
+
+" Set backspace normal behavior
+set backspace=indent,eol,start
+" Set hidden on
+set hidden
 
 ": Global variables {{{ :-------------------------------------------------
 
@@ -84,6 +88,9 @@ let g:airline_theme = 'onehalfdark'
 let g:airline_powerline_fonts = 1
 " One dark color config
 " let g:onedark_termcolors = 256
+
+" Disable signs limit for gitgutter
+let g:gitgutter_max_signs = -1
 
 ": }}} :------------------------------------------------------------------
 
@@ -234,7 +241,6 @@ call plug#begin()
   Plug 'haya14busa/vim-asterisk'
   Plug 'lambdalisue/vim-suda'
   Plug 'psliwka/vim-smoothie'
-  Plug 'airblade/vim-gitgutter'
 
   " Color scheme
   " NOTE: Preserve order!
@@ -259,6 +265,8 @@ call plug#begin()
     Plug 'numToStr/Comment.nvim'
     Plug 'JoosepAlviste/nvim-ts-context-commentstring'
     Plug 'DanSM-5/fzf-lsp.nvim'
+    Plug 'lewis6991/gitsigns.nvim'
+    Plug 'xiyaowong/nvim-cursorword'
 
     " File explorer
     Plug 'stevearc/oil.nvim'
@@ -281,12 +289,14 @@ call plug#begin()
   else
     " Only load in vim
 
+    " Comments plugin
     Plug 'tpope/vim-commentary'
     " File explorer
     Plug 'tpope/vim-vinegar'
-
+    " Git signs on the left
+    Plug 'airblade/vim-gitgutter'
     " Show matching words under the cursor
-    " Plug 'itchyny/vim-cursorword'
+    Plug 'itchyny/vim-cursorword'
 
     " For lsp within vim
     " Plug 'prabirshrestha/vim-lsp'
@@ -307,17 +317,7 @@ if has('nvim')
   " Entry poing for lua config for nvim
   runtime lua/nvimstart.lua
 else
-  if g:is_windows
-    " NOTE:
-    " Vim from scoop is compiled with lua
-    " but lua binary from scoop is not in the path (shimmed)
-    " The alternative is to set &luadll manually
-    " Check if exists and add it. This will cause `has('lua')` to return 1.
-    let lua_dll_dir = expand('~/scoop/apps/lua/current/bin')
-    if isdirectory(lua_dll_dir)
-      let &luadll = lua_dll_dir . '\lua54.dll'
-    endif
-  endif
+  runtime vimonly.vim
 endif
 
 " Return to last edit position when opening files

@@ -17,6 +17,10 @@ vim.cmd('filetype plugin indent on')
 vim.cmd('let &t_8f = "\\<Esc>[38;2;%lu;%lu;%lum"')
 vim.cmd('let &t_8b = "\\<Esc>[48;2;%lu;%lu;%lum"')
 vim.opt.termguicolors = true
+-- Set backspace normal behavior
+vim.cmd('set backspace=indent,eol,start')
+-- Set hidden on
+vim.cmd('set hidden')
 
 --: Global variables {{{ :-------------------------------------------------
 
