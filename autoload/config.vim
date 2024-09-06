@@ -484,6 +484,24 @@ func! s:SetCtrlSF () abort
   " Plugin help
   " :h CtrlSF
 
+  " In CtrlSF window:
+  "
+  " Enter, o, double-click - Open corresponding file of current line in the window which CtrlSF is launched from.
+  " <C-O> - Like Enter but open file in a horizontal split window.
+  " t - Like Enter but open file in a new tab.
+  " p - Like Enter but open file in a preview window.
+  " P - Like Enter but open file in a preview window and switch focus to it.
+  " O - Like Enter but always leave CtrlSF window opening.
+  " T - Like t but focus CtrlSF window instead of new opened tab.
+  " M - Switch result window between normal view and compact view.
+  " q - Quit CtrlSF window.
+  " <C-J> - Move cursor to next match.
+  " <C-N> - Move cursor to next file's first match.
+  " <C-K> - Move cursor to previous match.
+  " <C-P> - Move cursor to previous file's first match.
+  " <C-C> - Stop a background searching process.
+  " <C-T> - (If you have fzf installed) Use fzf for faster navigation. In the fzf window, use <Enter> to focus specific match and <C-O> to open matched file.
+
   " let g:ctrlsf_toggle_map_key = '\t'
   " Highligth matching line in file and preview window
   let g:ctrlsf_selected_line_hl = 'op'
@@ -1127,15 +1145,13 @@ func! s:SetCtrlSFMaps () abort
   " Note: <C-M> and <Enter> (also <CR>) are the same
   " for vim and nvim
 
-  " TODO: Consider changing maps to <C-O> to avoid
-  " clashes with enter
-  nmap     <C-M>f <Plug>CtrlSFPrompt
-  vmap     <C-M>f <Plug>CtrlSFVwordPath
-  vmap     <C-M>F <Plug>CtrlSFVwordExec
-  nmap     <C-M>m <Plug>CtrlSFCwordPath
-  nmap     <C-M>p <Plug>CtrlSFPwordPath
-  nnoremap <C-M>o :CtrlSFOpen<CR>
-  nnoremap <C-M>t :CtrlSFToggle<CR>
+  nmap     <C-t>f <Plug>CtrlSFPrompt
+  vmap     <C-t>f <Plug>CtrlSFVwordPath
+  vmap     <C-t>F <Plug>CtrlSFVwordExec
+  nmap     <C-t>m <Plug>CtrlSFCwordPath
+  nmap     <C-t>p <Plug>CtrlSFPwordPath
+  nnoremap <C-t>o :CtrlSFOpen<CR>
+  nnoremap <C-t>t :CtrlSFToggle<CR>
   inoremap <C-O>t <Esc>:CtrlSFToggle<CR>
 endf
 
