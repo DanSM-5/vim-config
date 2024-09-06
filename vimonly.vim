@@ -22,7 +22,7 @@ xmap ah <Plug>(GitGutterTextObjectOuterVisual)
 " Quickfix
 command! Gqf GitGutterQuickFix | copen
 " Change update time to reflect gitgutter changes
-set updatetime=100
+set updatetime=1000
 
 if g:is_windows
   " NOTE:
