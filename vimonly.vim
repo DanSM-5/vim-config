@@ -24,7 +24,12 @@ command! Gqf GitGutterQuickFix | copen
 " Change update time to reflect gitgutter changes
 set updatetime=1000
 
+" NOTE: Uncomment to enable gitgutter logs
+" let g:gitgutter_log = 1
+
 if g:is_windows
+  let g:gitgutter_grep = ''
+
   " NOTE:
   " Vim from scoop is compiled with lua
   " but lua binary from scoop is not in the path (shimmed)
@@ -34,5 +39,7 @@ if g:is_windows
   if isdirectory(lua_dll_dir)
     let &luadll = lua_dll_dir . '\lua54.dll'
   endif
+else
+  let g:gitgutter_grp = 'rg'
 endif
 
