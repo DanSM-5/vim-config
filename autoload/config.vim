@@ -52,8 +52,21 @@ func! s:SetConfigurationsBefore () abort
   " Load utility clipboard functions
   runtime utils/clipboard.vim
 
-  " Enable fold method using marker
-  set foldmethod=marker
+  " Enable fold method using indent
+  " Ref: https://www.reddit.com/r/neovim/comments/10q2mjq/comment/j6nmuw8
+  " also consider plugin: https://github.com/kevinhwang91/nvim-ufo
+  exec 'set fillchars=fold:\ '
+  set foldmethod=indent
+  set nofoldenable
+  set foldlevel=99
+  " enable markdown folding
+  let g:markdown_folding = 1
+  " lua version:
+  " vim.opt.fillchars = { fold = ' ' }
+  " vim.opt.foldmethod = 'indent'
+  " vim.opt.foldenable = false
+  " vim.opt.foldlevel = 99
+  " g.markdown_folding = 1 -- enable markdown folding
 
   " Set relative numbers
   set number relativenumber
