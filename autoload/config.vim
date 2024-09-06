@@ -1293,9 +1293,9 @@ func! s:MoveLinesBlockMapsWin () abort
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
 
-  if !has('nvim')
-    silent call s:RemapVisualMultiUpDown()
-  endif
+  " if !has('nvim')
+  "   silent call s:RemapVisualMultiUpDown()
+  " endif
 endf
 
 func! s:MoveLinesBlockMapsLinux () abort
