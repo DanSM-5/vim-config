@@ -2,9 +2,15 @@ return {
   get_config = function()
     return {
       lua_ls = {
+        ---@diagnostic disable-next-line: unused-local
+        -- on_attach = function(client, bufnr)
+        --   client.server_capabilities.documentFormattingProvider = true
+        --   client.server_capabilities.documentRangeFormattingProvider = true
+        -- end,
         settings = {
           Lua = {
             format = {
+              -- enable = true,
               defaultConfig = {
                 insert_final_newline = true
               }
