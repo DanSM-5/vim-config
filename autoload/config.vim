@@ -1283,23 +1283,13 @@ endf
 
 func! s:MoveLinesBlockMapsWin () abort
   silent call s:RemapAltUpDownJK()
+  silent call s:RemapAltUpDownNormal()
+  Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
+  Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
 
-  if has('nvim')
-    silent call s:RemapAltUpDownNormal()
-
-    Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
-    Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
-  else
-    silent call s:RemapAltUpDownJK()
+  if !has('nvim')
     silent call s:RemapVisualMultiUpDown()
-
-    " TODO: Verify unreachable block below
-    if ! g:host_os ==? s:windows
-      Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
-      Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
-    endif
   endif
-
 endf
 
 func! s:MoveLinesBlockMapsLinux () abort
