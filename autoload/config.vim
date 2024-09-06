@@ -994,7 +994,7 @@ func! s:SetFZF () abort
   " git ls-files
   nnoremap <leader>fn <cmd>GFiles<cr>
   " git status
-  nnoremap <leader>fs <cmd>GFiles?<cr>
+  nnoremap <leader>gs <cmd>GFiles?<cr>
   " Themes (color schemes)
   nnoremap <leader>ft <cmd>Colors<cr>
   " Open windows
@@ -1003,10 +1003,16 @@ func! s:SetFZF () abort
   nnoremap <leader>fh <cmd>History<cr>
   " Previous search
   nnoremap <leader>f/ <cmd>History/<cr>
+  " Command history
+  nnoremap <leader>f; <cmd>History:<cr>
   " Commands
   nnoremap <leader>f: <cmd>Commands<cr>
   " Maps
   nnoremap <leader>fm <cmd>Maps<cr>
+  " Jump list
+  nnoremap <leader>fj <cmd>Jumps<cr>
+  " Changes across buffers
+  nnoremap <leader>fc <cmd>Changes<cr>
 
   " Set grep commands
   nnoremap <leader>lg <cmd>Lg<cr>
