@@ -1,5 +1,5 @@
 
-" vim:fileencoding=utf-8:foldmethod=marker
+" vim:fileencoding=utf-8:foldmethod=marker:foldenable
 
 " Change location of shada
 " with nvim profile in terminal
