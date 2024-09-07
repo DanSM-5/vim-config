@@ -68,6 +68,14 @@ func! s:SetConfigurationsBefore () abort
   " vim.opt.foldlevel = 99
   " g.markdown_folding = 1 -- enable markdown folding
 
+  " Ignore casing when typing in command mode
+  set ignorecase
+
+  " always open on the right
+  set splitright
+  " always split below
+  " set splitbelow
+
   " Set relative numbers
   set number relativenumber
 endf
@@ -190,19 +198,6 @@ func! s:Set_user_keybindings () abort
   nnoremap <silent> <tab> :bn<cr>
   nnoremap <silent> <s-tab> :bN<cr>
 
-  " Close current buffer without affecting opened windows
-  " See definition in plugin/bclose.vim
-  nmap <leader><Tab> <Plug>BCloseCurrent
-  " Close all buffers but current one
-  command -bar BCloseOthers :%bd|e#
-  noremap <leader><S-Tab> <cmd>BCloseOthers<CR>
-
-  " Vim buffet similar commands
-  " noremap <leader><Tab> :Bw<CR>
-  " noremap <Leader><S-Tab> :Bonly<CR>
-  " noremap <Leader><S-Tab> :Bw!<CR>
-  " noremap <C-t> :tabnew split<CR>
-
   " vim-asterisk
   let g:asterisk#keeppos = 1
   map *   <Plug>(asterisk-*)
@@ -270,8 +265,8 @@ func! s:Set_user_keybindings () abort
   nnoremap <leader>cn <cmd>cnext<cr>zz
   nnoremap <leader>cp <cmd>cprev<cr>zz
   " Location list navigation
-  nnoremap <leader>lk <cmd>lnext<cr>zz
-  nnoremap <leader>lj <cmd>lprev<cr>zz
+  nnoremap <leader>ln <cmd>lnext<cr>zz
+  nnoremap <leader>lp <cmd>lprev<cr>zz
 
   " Window resize vsplit
   nnoremap <M-,> <C-w>5<
@@ -1199,8 +1194,6 @@ func! s:DefineCommands () abort
         \ call SudoSave(<q-args>)
 
   " Open terminal
-  set splitright " always open on the right
-
   if has('nvim')
     command! Term :term
     command! -bar Vterm :vs|te
@@ -1226,8 +1219,22 @@ func! s:DefineCommands () abort
   nnoremap <leader>ts :Sterm<cr>
 
   " Buffer management
-  command! -bar CloseOthers :%bd|e#
-  command! -bar CloseAllBuffers :%bd
+  " BCloseCurrent defined in plugin/bclose.vim
+  command -bar BCloseOthers :%bd|e#
+  command! -bar BCloseAllBuffers :%bd
+
+  " Close all buffers but current one
+  " noremap <leader><S-Tab> <cmd>BCloseOthers<CR>
+  " Close current buffer without affecting opened windows
+  " See definition in plugin/bclose.vim
+  " nmap <leader><Tab> <Plug>BCloseCurrent
+
+  " Vim buffet similar commands
+  " noremap <leader><Tab> :Bw<CR>
+  " noremap <Leader><S-Tab> :Bonly<CR>
+  " noremap <Leader><S-Tab> :Bw!<CR>
+  " noremap <C-t> :tabnew split<CR>
+
 
   " Use lf to select files to open in vim
   " NOTE: It does not work on nvim
