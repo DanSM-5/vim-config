@@ -552,7 +552,14 @@ func! GetCurrentBufferPath () abort
 endf
 
 func! GitPath () abort
-  let gitpath = trim(system('cd '.shellescape(expand('%:p:h')).' && git rev-parse --show-toplevel'))
+  let gitcmd = 'cd '.shellescape(expand('%:p:h')).' && git rev-parse --show-toplevel'
+  if g:is_windows && !has('nvim')
+    " WARN: Weird behavior started to occur in which vim in windows
+    " requires an additional shellescape to run when command has parenthesis
+    " or when it has quotations
+    let gitcmd = shellescape(gitcmd)
+  endif
+  let gitpath = trim(system(gitcmd))
   " exe 'FZF ' . path
   " For debug
   " echohl String | echon 'Path: ' . gitpath | echohl None
@@ -1508,6 +1515,33 @@ endfunction
 "   nnoremap <leader>q <cmd>quit<cr>
 " endfunction
 
+function OpenNetrw() abort
+  let cur_dir = getcwd()
+  let cur_file = expand('%:t')
+  let file_dir = expand('%:p:h')
+
+  try
+    set nohidden
+
+    if cur_file != 'NetrwTreeListing'
+      exec 'cd ' . file_dir
+      let gitpath = GitPath()
+      Lex!
+      exec 'Ntree ' . file_dir
+      exec 'cd ' . gitpath
+      silent call search(' ' . cur_file . '$')
+      echo 'Opening ' . cur_file
+    else
+      Lex!
+    endif
+  catch /.*/
+    " rollback to curr dir
+    exec 'cd ' . cur_dir
+  finally
+    set hidden
+  endtry
+endfunction
+
 func! s:Set_netrw () abort
   let g:netrw_banner = 0
   let g:netrw_browse_split = 4
@@ -1528,7 +1562,8 @@ func! s:Set_netrw () abort
   "   orphan buffers
   " More: https://github.com/tpope/vim-vinegar/issues/13
 
-  nnoremap <leader>ve <cmd>Lex!<cr>
+  " nnoremap <leader>ve <cmd>Lex!<cr>
+  nnoremap <leader>ve <cmd>call OpenNetrw()<cr>
   nnoremap <leader>se <cmd>Hex<cr>
 
   autocmd FileType netrw setl bufhidden=delete
