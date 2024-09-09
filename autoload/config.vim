@@ -68,8 +68,8 @@ func! s:SetConfigurationsBefore () abort
   " vim.opt.foldlevel = 99
   " g.markdown_folding = 1 -- enable markdown folding
 
-  " Ignore casing when typing in command mode
-  set ignorecase
+  " Ignore casing unless using uppercase characters
+  set smartcase
 
   " always open on the right
   set splitright
