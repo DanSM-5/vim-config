@@ -296,7 +296,16 @@ call plug#begin()
     " File explorer
     Plug 'tpope/vim-vinegar'
     " Git signs on the left
-    Plug 'airblade/vim-gitgutter'
+    " NOTE: Currently there is an issue in vim for windows
+    " which requires an extra shellescape. Use forked version
+    " with additional patch to workaround the issue.
+    " Ref: https://github.com/airblade/vim-gitgutter/issues/896
+    if g:is_windows
+      Plug 'DanSM-5/vim-gitgutter'
+    else
+      Plug 'airblade/vim-gitgutter'
+    endif
+
     " Show matching words under the cursor
     Plug 'itchyny/vim-cursorword'
 
