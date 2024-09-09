@@ -701,6 +701,7 @@ function! FzfChangeProject(query, fullscreen) abort
     \     '--no-multi', '--ansi',
     \     '--query', a:query,
     \     '--layout=reverse',
+    \     '--header', 'ctrl-f: Files | ctrl-r: Projects',
     \     '--bind', 'ctrl-f:change-prompt(Files> )+reload(' . files_command . ' . {})+clear-query+change-multi+unbind(ctrl-f)',
     \     '--bind', 'ctrl-r:change-prompt(Projs> )+reload(' . reload_command . ')+rebind(ctrl-f)+clear-query+change-multi(0)',
     \     '--preview', preview]
