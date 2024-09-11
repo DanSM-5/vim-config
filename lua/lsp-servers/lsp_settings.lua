@@ -30,13 +30,14 @@ return {
     ---@type LspSetupOpts
     opts = vim.tbl_deep_extend('force', defaultLspSetupOpts, opts or {})
     local manual_setup = vim.g.is_termux == 1 or vim.env.IS_FROM_CONTAINER == 'true'
-    local language_servers = manual_setup and {} or {
-      'lua_ls',
-      'vimls',
-      -- 'biome',
-      'bashls',
-      'ts_ls',
-    }
+    local language_servers = manual_setup and {}
+      or {
+        'lua_ls',
+        'vimls',
+        -- 'biome',
+        'bashls',
+        'ts_ls',
+      }
 
     -- Setup lsp servers
     require('config.nvim_lspconfig').setup()
@@ -53,18 +54,14 @@ return {
     }
     local cmp = require('cmp')
     local cmp_lsp = require('cmp_nvim_lsp')
-    local luasnip = require("luasnip")
-    local capabilities = vim.tbl_deep_extend(
-      'force',
-      {},
-      vim.lsp.protocol.make_client_capabilities(),
-      cmp_lsp.default_capabilities()
-    )
+    local luasnip = require('luasnip')
+    local capabilities =
+      vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
     local cmp_select = { behavior = cmp.SelectBehavior.Replace }
 
     if opts.completions.enable.lazydev then
       table.insert(sources, {
-        name = "lazydev",
+        name = 'lazydev',
         group_index = 0, -- set group index to 0 to skip loading LuaLS completions
       })
     end
@@ -120,7 +117,7 @@ return {
           end
         end),
 
-        ["<Tab>"] = cmp.mapping(function(fallback)
+        ['<Tab>'] = cmp.mapping(function(fallback)
           if cmp.visible() then
             cmp.select_next_item()
           elseif luasnip.locally_jumpable(1) then
@@ -128,9 +125,9 @@ return {
           else
             fallback()
           end
-        end, { "i", "s" }),
+        end, { 'i', 's' }),
 
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
+        ['<S-Tab>'] = cmp.mapping(function(fallback)
           if cmp.visible() then
             cmp.select_prev_item()
           elseif luasnip.locally_jumpable(-1) then
@@ -138,11 +135,11 @@ return {
           else
             fallback()
           end
-        end, { "i", "s" }),
+        end, { 'i', 's' }),
       }),
     })
 
-    require("luasnip.loaders.from_vscode").lazy_load()
+    require('luasnip.loaders.from_vscode').lazy_load()
 
     ---@param server_name string
     local lspconfig_handler = function(server_name)
@@ -160,8 +157,8 @@ return {
     local mason_lspconfig_opts = {
       ensure_installed = language_servers,
       handlers = {
-        lspconfig_handler
-      }
+        lspconfig_handler,
+      },
     }
 
     -- Setup mason_lspconfig to activate lsp servers
@@ -175,13 +172,13 @@ return {
         none_ls.builtins.formatting.stylua,
         -- none_ls.builtins.formatting.eslint,
         -- none_ls.builtins.diagnostics.prettier,
-      }
+      },
     })
 
     if manual_setup then
       require('lsp-servers.lsp_manual_config').setup({
-        lspconfig_handler = lspconfig_handler
+        lspconfig_handler = lspconfig_handler,
       })
     end
-  end
+  end,
 }
