@@ -18,6 +18,11 @@ return {
           }
         }
       },
+      ts_ls = {
+        on_attach = function (client)
+          client.server_capabilities.document_formatting = false
+        end
+      },
       vimls = {},
       biome = {},
       -- For bash lsp

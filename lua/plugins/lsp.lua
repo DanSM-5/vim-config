@@ -19,6 +19,7 @@ return {
       'williamboman/mason-lspconfig.nvim',
       'L3MON4D3/LuaSnip',
       'roginfarrer/cmp-css-variables',
+      'nvimtools/none-ls.nvim',
     },
     config = function()
       require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })

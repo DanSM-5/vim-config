@@ -269,6 +269,7 @@ call plug#begin()
     Plug 'DanSM-5/fzf-lsp.nvim'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'xiyaowong/nvim-cursorword'
+    Plug 'nvimtools/none-ls.nvim'
 
     " File explorer
     Plug 'stevearc/oil.nvim'

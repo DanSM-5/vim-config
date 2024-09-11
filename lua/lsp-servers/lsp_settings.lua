@@ -35,7 +35,7 @@ return {
       'vimls',
       -- 'biome',
       'bashls',
-      'tsserver'
+      'ts_ls',
     }
 
     -- Setup lsp servers
@@ -53,7 +53,6 @@ return {
     }
     local cmp = require('cmp')
     local cmp_lsp = require('cmp_nvim_lsp')
-    local mason_lsp = require('mason-lspconfig')
     local luasnip = require("luasnip")
     local capabilities = vim.tbl_deep_extend(
       'force',
@@ -167,7 +166,17 @@ return {
 
     -- Setup mason_lspconfig to activate lsp servers
     -- automatically
+    local mason_lsp = require('mason-lspconfig')
     mason_lsp.setup(mason_lspconfig_opts)
+
+    local none_ls = require('null-ls')
+    none_ls.setup({
+      sources = {
+        none_ls.builtins.formatting.stylua,
+        -- none_ls.builtins.formatting.eslint,
+        -- none_ls.builtins.diagnostics.prettier,
+      }
+    })
 
     if manual_setup then
       require('lsp-servers.lsp_manual_config').setup({
