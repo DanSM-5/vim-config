@@ -59,4 +59,12 @@ return {
       vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
     end
   },
+  {
+    "rbong/vim-flog",
+    lazy = true,
+    cmd = { "Flog", "Flogsplit", "Floggit" },
+    dependencies = {
+      "tpope/vim-fugitive",
+    },
+  },
 }

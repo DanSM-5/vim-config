@@ -243,6 +243,7 @@ call plug#begin()
   Plug 'haya14busa/vim-asterisk'
   Plug 'lambdalisue/vim-suda'
   Plug 'psliwka/vim-smoothie'
+  Plug 'rbong/vim-flog'
 
   " Color scheme
   " NOTE: Preserve order!
@@ -250,7 +251,6 @@ call plug#begin()
   Plug 'vim-airline/vim-airline'
   Plug 'ryanoasis/vim-devicons'
   Plug 'bagrat/vim-buffet'
-
 
   if has('nvim')
     " LSP plugings for neovim
