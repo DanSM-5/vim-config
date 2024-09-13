@@ -68,6 +68,8 @@ func! s:SetConfigurationsBefore () abort
   " vim.opt.foldlevel = 99
   " g.markdown_folding = 1 -- enable markdown folding
 
+  " ignore case in searches
+  set ignorecase
   " Ignore casing unless using uppercase characters
   set smartcase
 
