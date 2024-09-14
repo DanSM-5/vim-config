@@ -38,6 +38,14 @@ if g:is_windows
   let lua_dll_dir = expand('~/scoop/apps/lua/current/bin')
   if isdirectory(lua_dll_dir)
     let &luadll = lua_dll_dir . '\lua54.dll'
+
+    " use embedded lua for `:Flog`
+    let g:flog_use_internal_lua = 1
+  endif
+else
+  if has('lua')
+    " If vim is compiled with lua, use that one
+    let g:flog_use_internal_lua = 1
   endif
 endif
 
