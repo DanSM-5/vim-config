@@ -1565,8 +1565,12 @@ func! s:Set_netrw () abort
   "   orphan buffers
   " More: https://github.com/tpope/vim-vinegar/issues/13
 
-  " nnoremap <leader>ve <cmd>Lex!<cr>
-  nnoremap <leader>ve <cmd>call OpenNetrw()<cr>
+  if has('win32')
+    nnoremap <leader>ve <cmd>call OpenNetrw()<cr>
+  else
+    nnoremap <leader>ve <cmd>Lex!<cr>
+  endif
+
   nnoremap <leader>se <cmd>Hex<cr>
 
   autocmd FileType netrw setl bufhidden=delete
