@@ -13,12 +13,11 @@ require('config.treesitter').setup()
 require('config.neo_tree').setup()
 require('config.nvim_comments').setup()
 require('config.nvim_gitsigns').setup()
+require('config.oil_nvim').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
 
--- Imitate vinegar '-' map
-vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 -- Set color for cursor word
 vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
 

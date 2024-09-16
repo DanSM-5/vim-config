@@ -67,4 +67,8 @@ return {
       "tpope/vim-fugitive",
     },
   },
+  {
+    'stevearc/oil.nvim',
+    config = require('config.oil_nvim').setup,
+  },
 }
