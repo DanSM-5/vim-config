@@ -19,17 +19,22 @@ let g:is_container = 0
 " General options
 let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
 let s:fzf_base_options = [ '--multi', '--ansi', '--info=inline', '--bind', 'alt-c:clear-query' ]
-let s:fzf_bind_options = s:fzf_base_options + ['--bind', 'ctrl-l:change-preview-window(down|hidden|),ctrl-/:change-preview-window(down|hidden|),alt-up:preview-page-up,alt-down:preview-page-down', '--bind', 'ctrl-s:toggle-sort',
-      \                                        '--cycle',
-      \                                        '--bind', 'alt-f:first',
-      \                                        '--bind', 'alt-l:last',
-      \                                        '--bind', 'alt-a:select-all',
-      \                                        '--bind', 'alt-d:deselect-all']
-let s:fzf_preview_options = [
+let s:fzf_bind_options = s:fzf_base_options + [
+      \      '--bind',
+      \      'ctrl-l:change-preview-window(down|hidden|),ctrl-/:change-preview-window(down|hidden|),alt-up:preview-page-up,alt-down:preview-page-down',
+      \      '--bind', 'ctrl-s:toggle-sort',
+      \      '--cycle',
+      \      '--bind', '0:change-preview-window(down|hidden|)',
+      \      '--bind', '1:toggle-preview',
+      \      '--bind', 'alt-f:first',
+      \      '--bind', 'alt-l:last',
+      \      '--bind', 'alt-a:select-all',
+      \      '--bind', 'alt-d:deselect-all']
+let s:fzf_preview_options = s:fzf_bind_options + [
       \ '--layout=reverse',
       \ '--preview-window', '60%',
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
-      \ ] + s:fzf_bind_options
+      \ ]
 let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
 
 " Options with only bind commands
@@ -1076,11 +1081,6 @@ func! s:SetFZF () abort
   imap <c-o><c-f> <plug>(fzf-complete-path)
   imap <c-o><c-l> <plug>(fzf-complete-line)
 
-  " command! -bang -nargs=* Rg
-  "   \ call fzf#vim#grep(
-  "   \   'rg' . s:rg_args . '-- ' . shellescape(<q-args>) . ' ' . GitPath(), 1,
-  "   \   g:is_windows ? s:FzfRgWindows_preview({}, <bang>0) : fzf#vim#with_preview(), <bang>0)
-
   command! -nargs=* -bang GitSearchLog call GitSearchLog(<q-args>, <bang>0)
   command! -nargs=* -bang GitSearchRegex call GitSearchRegex(<q-args>, <bang>0)
   command! -nargs=* -bang GitSearchString call GitSearchString(<q-args>, <bang>0)
@@ -1094,67 +1094,38 @@ func! s:SetFZF () abort
   command! -bang -nargs=? -complete=dir Files
     \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
 
+  " NOTE: Under gitbash previews doesn't work due to how fzf.vim
+  " builds the paths for the bash.exe executable
+  " On powershell, however, vim has issues not showing preview window
+  " and it may get stuck as in git bash if called before fzf#vim#with_preview
   if g:is_gitbash || (!has('nvim') && g:is_windows)
     command! -bang -nargs=? GFiles
       \ call s:Fzf_vim_gitfiles(<q-args>, <bang>0)
   endif
 
-
-  if g:is_windows
-
-    " command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-    " command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
-
-    command! -bang -nargs=? -complete=dir FzfFiles
-      \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
-    command! -bang -nargs=? -complete=dir GitFZF
-      \ call s:Fzf_vim_files(GitPath(), s:fzf_preview_options, <bang>0)
-
-    if ! has('nvim')
-      execute "set <M-p>=\ep"
-    endif
-
-  elseif g:is_termux
-
-    " command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
-
-    command! -bang -nargs=? -complete=dir FzfFiles
-      \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
-    command! -bang -nargs=? -complete=dir GitFZF
-      \ call s:Fzf_vim_files(GitPath(), s:fzf_preview_options, <bang>0)
-
-    if ! has('nvim')
-      execute "set <M-p>=\ep"
-    endif
-
-  elseif g:is_mac
-
-    command! -bang -nargs=? -complete=dir FzfFiles
-      \ call s:Fzf_vim_files(<q-args>, s:fzf_bind_options, <bang>0)
-    command! -bang -nargs=? -complete=dir GitFZF
-      \ call s:Fzf_vim_files(GitPath(), s:fzf_bind_options, <bang>0)
-
-    if ! has('nvim')
+  " configure Alt-p
+  if ! has('nvim')
+    if g:is_mac
       execute "set <M-p>=π"
+    else
+      execute "set <M-p>=\ep"
     endif
+  endif
 
+  " fzf options with custom preview
+  if g:is_windows || g:is_termux
+    command! -bang -nargs=? -complete=dir FzfFiles
+      \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
+    command! -bang -nargs=? -complete=dir GitFZF
+      \ call s:Fzf_vim_files(GitPath(), s:fzf_preview_options, <bang>0)
+
+  " fzf options that only include common bindings
   else
-    " Linux
+
     command! -bang -nargs=? -complete=dir FzfFiles
       \ call s:Fzf_vim_files(<q-args>, s:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
       \ call s:Fzf_vim_files(GitPath(), s:fzf_bind_options, <bang>0)
-
-    if ! has('nvim')
-      execute "set <M-p>=\ep"
-    endif
-
-    " else
-    " command! -bang -nargs=? -complete=dir FzfFiles
-    "       \ call fzf#vim#files(<q-args>, <bang>0 ? s:fzf_options_with_binds : s:fzf_options_with_preview, <bang>0)
-    " command! -bang -nargs=? -complete=dir GitFZF
-    "       \ call fzf#vim#files(GitPath(), fzf#vim#with_preview(<bang>0 ? s:fzf_options_with_binds : s:fzf_options_with_preview), <bang>0)
-
   endif
 
 
