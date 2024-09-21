@@ -594,6 +594,17 @@ function! s:Fzf_vim_files(query, options, fullscreen) abort
   endtry
 endfunction
 
+function! s:Fzf_vim_gitfiles(query, fullscreen) abort
+  let placeholder = a:query == '?' ? '{2..}' : '{}'
+  let options = s:fzf_preview_options + [
+        \ '--layout=reverse',
+        \ '--preview', 'bat -pp --color=always --style=numbers ' . placeholder
+        \ ]
+  let spec = a:query == '?' ? { 'placeholder': '', 'options': options } : { 'options': options }
+  let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
+  call fzf#vim#gitfiles(a:query, spec, a:fullscreen)
+endfunction
+
 " For quick path transformation as calling cygpath
 " will be slower. This has some assuptions like
 " the path being absolute.
@@ -1082,6 +1093,12 @@ func! s:SetFZF () abort
 
   command! -bang -nargs=? -complete=dir Files
     \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
+
+  if g:is_gitbash || (!has('nvim') && g:is_windows)
+    command! -bang -nargs=? GFiles
+      \ call s:Fzf_vim_gitfiles(<q-args>, <bang>0)
+  endif
+
 
   if g:is_windows
 
