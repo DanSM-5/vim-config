@@ -14,6 +14,7 @@ require('config.neo_tree').setup()
 require('config.nvim_comments').setup()
 require('config.nvim_gitsigns').setup()
 require('config.oil_nvim').setup()
+require('config.nvim_autopairs').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
