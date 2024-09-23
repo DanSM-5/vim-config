@@ -8,67 +8,78 @@ return {
   --   'tpope/vim-surround'
   -- },
   {
-    'tpope/vim-fugitive'
+    'tpope/vim-fugitive',
   },
   {
-    'tpope/vim-repeat'
+    'tpope/vim-repeat',
   },
   {
-    'inkarkat/vim-ReplaceWithRegister'
+    'inkarkat/vim-ReplaceWithRegister',
   },
   {
-    'christoomey/vim-sort-motion'
+    'christoomey/vim-sort-motion',
   },
   {
-    'DanSM-5/vim-system-copy'
+    'DanSM-5/vim-system-copy',
   },
   {
-    'junegunn/fzf'
+    'junegunn/fzf',
   },
   {
-    'junegunn/fzf.vim'
+    'junegunn/fzf.vim',
   },
   {
-    'mg979/vim-visual-multi'
+    'mg979/vim-visual-multi',
   },
   {
-    'dyng/ctrlsf.vim'
+    'dyng/ctrlsf.vim',
   },
   {
-    'kreskij/Repeatable.vim'
+    'kreskij/Repeatable.vim',
   },
   {
-    'bkad/CamelCaseMotion'
+    'bkad/CamelCaseMotion',
   },
   {
-    'haya14busa/vim-asterisk'
+    'haya14busa/vim-asterisk',
   },
   {
-    'lambdalisue/vim-suda'
+    'lambdalisue/vim-suda',
   },
   {
-    'psliwka/vim-smoothie'
+    'psliwka/vim-smoothie',
   },
   -- {
   --   'airblade/vim-gitgutter'
   -- },
   {
     'xiyaowong/nvim-cursorword',
-    config = function ()
+    config = function()
       -- NOTE: consider to keep or remove the background color and just keep the underline
       vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
-    end
+    end,
   },
   {
-    "rbong/vim-flog",
+    'rbong/vim-flog',
     lazy = true,
-    cmd = { "Flog", "Flogsplit", "Floggit" },
+    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
     dependencies = {
-      "tpope/vim-fugitive",
+      'tpope/vim-fugitive',
     },
   },
   {
     'stevearc/oil.nvim',
     config = require('config.oil_nvim').setup,
+  },
+  {
+    'OXY2DEV/helpview.nvim',
+    lazy = false, -- Recommended
+
+    -- In case you still want to lazy load
+    -- ft = "help",
+
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+    },
   },
 }

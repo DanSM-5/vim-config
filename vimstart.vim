@@ -270,6 +270,7 @@ call plug#begin()
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'xiyaowong/nvim-cursorword'
     Plug 'nvimtools/none-ls.nvim'
+    Plug 'OXY2DEV/helpview.nvim'
 
     " File explorer
     Plug 'stevearc/oil.nvim'
