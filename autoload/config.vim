@@ -299,7 +299,14 @@ func! s:Set_user_keybindings () abort
   " Exit insert mode
   inoremap jk <Esc>
 
+  " clear search
   nnoremap <leader>es <cmd>nohlsearch<CR>
+
+  " windows navigation
+  nnoremap <c-k> <c-w><ck>
+  nnoremap <c-j> <c-w><cj>
+  nnoremap <c-h> <c-w><ch>
+  nnoremap <c-l> <c-w><cl>
 endf
 
 func! s:Set_os_specific_before () abort
