@@ -7,7 +7,7 @@ if has('nvim')
   set shada+='1000,n$HOME/.cache/vim-config/main.shada
 endif
 
-" Make nocompatible explisit
+" Make nocompatible explicit
 set nocompatible
 " Default encoding
 set encoding=UTF-8
@@ -32,6 +32,13 @@ set hlsearch
 set backspace=indent,eol,start
 " Set hidden on
 set hidden
+
+" Set workable mouse scroll
+" For selecting text hold shift while selecting text
+" or set mouse=r and then select text in command mode (:)
+" NOTE: This prevents right click paste.
+" use ctrl+shift+v, <leader>p or zp/zP
+set mouse=a
 
 ": Global variables {{{ :-------------------------------------------------
 

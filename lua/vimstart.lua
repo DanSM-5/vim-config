@@ -2,7 +2,7 @@ local fn, g = vim.fn, vim.g
 
 -- Set custom shada file location
 vim.cmd("set shada+='1000,n$HOME/.cache/vim-config/main.shada")
--- Make nocompatible explisit
+-- Make nocompatible explicit
 vim.cmd('set nocompatible')
 -- Default encoding
 vim.cmd('set encoding=UTF-8')
@@ -21,6 +21,8 @@ vim.opt.termguicolors = true
 vim.cmd('set backspace=indent,eol,start')
 -- Set hidden on
 vim.cmd('set hidden')
+-- Explicit mouse behavior
+vim.cmd('set mouse=a')
 
 --: Global variables {{{ :-------------------------------------------------
 

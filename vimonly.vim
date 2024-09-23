@@ -1,13 +1,6 @@
 " Equivalent of lua/nvimstart.lua for neovim
 " This script loads vim only code
 
-" Set workable mouse scroll
-" For selecting text hold shift while selecting text
-" or set mouse=r and then select text in command mode (:)
-" NOTE: This prevents right click paste.
-" use ctrl+shift+v, <leader>p or zp/zP
-set mouse=a
-
 " Git gutter settings
 " Navigation
 nmap ]g <Plug>(GitGutterNextHunk)
