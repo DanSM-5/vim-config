@@ -24,6 +24,8 @@ vim.cmd('set hidden')
 -- Explicit mouse behavior
 vim.cmd('set mouse=a')
 
+vim.opt.breakindent = true
+
 --: Global variables {{{ :-------------------------------------------------
 
 -- Most global variables defined in this file should be place here unless

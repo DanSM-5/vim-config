@@ -298,6 +298,8 @@ func! s:Set_user_keybindings () abort
 
   " Exit insert mode
   inoremap jk <Esc>
+
+  nnoremap <leader>es <cmd>nohlsearch<CR>
 endf
 
 func! s:Set_os_specific_before () abort

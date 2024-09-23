@@ -40,6 +40,8 @@ set hidden
 " use ctrl+shift+v, <leader>p or zp/zP
 set mouse=a
 
+set breakindent
+
 ": Global variables {{{ :-------------------------------------------------
 
 " Most global variables defined in this file should be place here unless
