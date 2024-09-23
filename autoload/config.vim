@@ -1324,7 +1324,7 @@ func! s:RemapVisualMultiUpDown () abort
 endf
 
 func! s:MoveLinesBlockMapsWin () abort
-  silent call s:RemapAltUpDownJK()
+  " silent call s:RemapAltUpDownJK()
   silent call s:RemapAltUpDownNormal()
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
@@ -1339,7 +1339,7 @@ func! s:MoveLinesBlockMapsLinux () abort
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
 
-  silent call s:RemapAltUpDownJK()
+  " silent call s:RemapAltUpDownJK()
 
   " <A-UP> | <Esc>[1;3A
   " <A-Down> | <Esc>[1;3B
@@ -1355,7 +1355,7 @@ func! s:MoveLinesBlockMapsGvim () abort
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
 
-  silent call s:RemapAltUpDownJK()
+  " silent call s:RemapAltUpDownJK()
   silent call s:RemapAltUpDownNormal()
 endf
 
@@ -1364,7 +1364,7 @@ func! s:MoveLinesBlockMapsMac () abort
   Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
 
-  silent call s:RemapAltUpDownJK()
+  " silent call s:RemapAltUpDownJK()
 
   " Not needed remap on regular vim
   if has('nvim')
