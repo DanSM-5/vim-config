@@ -303,10 +303,10 @@ func! s:Set_user_keybindings () abort
   nnoremap <leader>es <cmd>nohlsearch<CR>
 
   " windows navigation
-  nnoremap <c-k> <c-w><ck>
-  nnoremap <c-j> <c-w><cj>
-  nnoremap <c-h> <c-w><ch>
-  nnoremap <c-l> <c-w><cl>
+  nnoremap <c-k> <c-w><c-k>
+  nnoremap <c-j> <c-w><c-j>
+  nnoremap <c-h> <c-w><c-h>
+  nnoremap <c-l> <c-w><c-l>
 endf
 
 func! s:Set_os_specific_before () abort
