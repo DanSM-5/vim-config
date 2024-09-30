@@ -276,11 +276,11 @@ func! s:Set_user_keybindings () abort
   nnoremap <leader>lp <cmd>lprev<cr>zz
 
   " Window resize vsplit
-  nnoremap <M-,> <C-w>5<
-  nnoremap <M-.> <C-w>5>
+  nnoremap <A-,> <C-w>5<
+  nnoremap <A-.> <C-w>5>
   " Window resize split taller/shorter
-  nnoremap <M-t> <C-w>+
-  nnoremap <M-s> <C-w>-
+  nnoremap <A-t> <C-w>+
+  nnoremap <A-s> <C-w>-
 
   " Quick scroll buffer
   nnoremap <C-d> <C-d>zz
@@ -307,6 +307,18 @@ func! s:Set_user_keybindings () abort
   nnoremap <A-j> <c-w><c-j>
   nnoremap <A-h> <c-w><c-h>
   nnoremap <A-l> <c-w><c-l>
+
+  " Set key codes for vim
+  if g:is_linux && !has('nvim')
+    execute "set <A-j>=\ej"
+    execute "set <A-k>=\ek"
+    execute "set <A-h>=\eh"
+    execute "set <A-l>=\el"
+    execute "set <A-,>=\e,"
+    execute "set <A-.>=\e."
+    execute "set <A-t>=\et"
+    execute "set <A-s>=\es"
+  endif
 endf
 
 func! s:Set_os_specific_before () abort
