@@ -20,7 +20,9 @@ set updatetime=1000
 " NOTE: Uncomment to enable gitgutter logs
 " let g:gitgutter_log = 1
 
-let g:gitgutter_grep = 'rg'
+if executable('rg')
+  let g:gitgutter_grep = 'rg'
+endif
 
 if g:is_windows
   " NOTE:
