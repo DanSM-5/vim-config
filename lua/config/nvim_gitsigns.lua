@@ -36,7 +36,7 @@ return {
           { desc = 'Gitsigns: Preview hunk, repeat to enter preview window', buffer = bufnr })
         vim.keymap.set('n', '<leader>hb', function() gitsigns.blame_line { full = true } end,
           { desc = 'Gitsigns: Blame line', buffer = bufnr })
-        vim.keymap.set('n', '<leader>tb', gitsigns.toggle_current_line_blame,
+        vim.keymap.set('n', '<leader>hB', gitsigns.toggle_current_line_blame,
           { desc = 'Gitsigns: Toggle line blame', buffer = bufnr })
         vim.keymap.set('n', '<leader>hd', gitsigns.diffthis, { desc = 'Gitsigns: Diff hunk', buffer = bufnr })
         vim.keymap.set('n', '<leader>hD', function() gitsigns.diffthis('~') end,

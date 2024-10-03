@@ -33,7 +33,9 @@ return {
       -- For simple use cases, below line is all that's needed
       vim.cmd('colorscheme onedark')
       vim.cmd('hi CursorLine guibg=#313640')
+      require('config.treesitter_context').setup()
 
+      -- Set variables for ToggleBg
       local g = vim.g
       g.theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
       g.theme_hidden_visual = 'hi Visual guibg=#39496e'

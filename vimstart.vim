@@ -280,6 +280,7 @@ call plug#begin()
     Plug 'xiyaowong/nvim-cursorword'
     Plug 'nvimtools/none-ls.nvim'
     Plug 'OXY2DEV/helpview.nvim'
+    Plug 'nvim-treesitter/nvim-treesitter-context'
 
     " File explorer
     Plug 'stevearc/oil.nvim'
@@ -319,6 +320,9 @@ call plug#begin()
 
     " Show matching words under the cursor
     Plug 'itchyny/vim-cursorword'
+
+    " Context
+    Plug 'wellle/context.vim'
 
     " For lsp within vim
     " Plug 'prabirshrestha/vim-lsp'
