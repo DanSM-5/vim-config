@@ -1,2 +1,2 @@
-require('vimstart')
+require('nvimstart')
 require('config.lazy')

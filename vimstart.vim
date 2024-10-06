@@ -271,6 +271,7 @@ call plug#begin()
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
     Plug 'numToStr/Comment.nvim'
     Plug 'JoosepAlviste/nvim-ts-context-commentstring'
+    Plug 'windwp/nvim-autopairs'
     " Usign fork for issue https://github.com/gfanto/fzf-lsp.nvim/pull/38
     Plug 'DanSM-5/fzf-lsp.nvim'
     " Plug 'gfanto/fzf-lsp.nvim'
@@ -344,7 +345,7 @@ hi NormalNC guifg=#abb2bf
 
 if has('nvim')
   " Entry poing for lua config for nvim
-  runtime lua/nvimstart.lua
+  runtime lua/nvimonly.lua
 else
   runtime vimonly.vim
 endif
