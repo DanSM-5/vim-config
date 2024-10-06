@@ -1,6 +1,8 @@
 return {
   setup = function ()
-    require('oil').setup()
+    require('oil').setup({
+      -- Set to empty table to hide icons
+    })
     -- Imitate vinegar '-' map
     vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
   end
