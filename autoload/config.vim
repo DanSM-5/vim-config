@@ -300,13 +300,21 @@ func! s:Set_user_keybindings () abort
   inoremap jk <Esc>
 
   " clear search
-  nnoremap <leader>es <cmd>nohlsearch<CR>
+  nnoremap <leader>es <cmd>CleanSearch<cr>
 
   " windows navigation
   nnoremap <A-k> <c-w><c-k>
   nnoremap <A-j> <c-w><c-j>
   nnoremap <A-h> <c-w><c-h>
   nnoremap <A-l> <c-w><c-l>
+
+  " Set common behavior in vim and nvim
+  " :help Y-default
+  nnoremap Y y$
+  " :help i_CTRL-U-default
+  inoremap <C-U> <C-G>u<C-U>
+  " :help i_CTRL-W-default
+  inoremap <C-W> <C-G>u<C-W>
 
   " Set key codes for vim
   if g:is_linux && !has('nvim')
@@ -1261,6 +1269,9 @@ func! s:DefineCommands () abort
 
   " Create new txt file
   command! -nargs=? NText call NewTxt(<q-args>)
+
+  " clear search
+  command! -nargs=0 CleanSearch :nohlsearch
 endf
 
 func! s:RemapAltUpDownNormal () abort
