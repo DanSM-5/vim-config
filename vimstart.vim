@@ -268,19 +268,22 @@ call plug#begin()
     Plug 'williamboman/mason.nvim'
     Plug 'williamboman/mason-lspconfig.nvim'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'hrsh7th/nvim-cmp'
-    Plug 'hrsh7th/cmp-nvim-lsp'
-    Plug 'L3MON4D3/LuaSnip'
-    Plug 'roginfarrer/cmp-css-variables'
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
     Plug 'numToStr/Comment.nvim'
     Plug 'JoosepAlviste/nvim-ts-context-commentstring'
+    " Usign fork for issue https://github.com/gfanto/fzf-lsp.nvim/pull/38
     Plug 'DanSM-5/fzf-lsp.nvim'
+    " Plug 'gfanto/fzf-lsp.nvim'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'xiyaowong/nvim-cursorword'
     Plug 'nvimtools/none-ls.nvim'
     Plug 'OXY2DEV/helpview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
+    Plug 'L3MON4D3/LuaSnip'
+    Plug 'hrsh7th/nvim-cmp'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+    Plug 'roginfarrer/cmp-css-variables'
 
     " File explorer
     Plug 'stevearc/oil.nvim'

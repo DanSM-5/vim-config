@@ -51,6 +51,7 @@ return {
     local sources = {
       { name = 'nvim_lsp' },
       { name = 'css-variables' },
+      { name = 'nvim_lsp_signature_help' },
     }
     local cmp = require('cmp')
     local cmp_lsp = require('cmp_nvim_lsp')

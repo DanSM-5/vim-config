@@ -14,12 +14,13 @@ return {
   {
     'neovim/nvim-lspconfig',
     dependencies = {
+      'williamboman/mason-lspconfig.nvim',
+      'nvimtools/none-ls.nvim',
+      'L3MON4D3/LuaSnip',
       'hrsh7th/nvim-cmp',
       'hrsh7th/cmp-nvim-lsp',
-      'williamboman/mason-lspconfig.nvim',
-      'L3MON4D3/LuaSnip',
+      'hrsh7th/cmp-nvim-lsp-signature-help',
       'roginfarrer/cmp-css-variables',
-      'nvimtools/none-ls.nvim',
     },
     config = function()
       require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
