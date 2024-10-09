@@ -280,8 +280,11 @@ call plug#begin()
     Plug 'nvimtools/none-ls.nvim'
     Plug 'OXY2DEV/helpview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
+    Plug 'lukas-reineke/indent-blankline.nvim'
     Plug 'L3MON4D3/LuaSnip'
-    Plug 'hrsh7th/nvim-cmp'
+    " NOTE: Using magazine.nvim as as nvim-cmp replacement
+    " Plug 'hrsh7th/nvim-cmp'
+    Plug 'iguanacucumber/magazine.nvim', { 'dir': stdpath('data') . '/plugged/nvim-cmp' }
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
     Plug 'roginfarrer/cmp-css-variables'

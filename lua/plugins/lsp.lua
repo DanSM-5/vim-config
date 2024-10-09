@@ -4,12 +4,17 @@ return {
     'williamboman/mason.nvim',
     config = function()
       require('lsp-servers.nvim_mason').setup()
-    end
+    end,
   },
   {
     'mawkler/refjump.nvim',
     -- keys = { ']r', '[r' }, -- Uncomment to lazy load
-    opts = {}
+    opts = {},
+  },
+  -- NOTE: Using magazine.nvim as as nvim-cmp replacement
+  {
+    'iguanacucumber/magazine.nvim',
+    name = 'nvim-cmp',
   },
   {
     'neovim/nvim-lspconfig',
@@ -17,14 +22,14 @@ return {
       'williamboman/mason-lspconfig.nvim',
       'nvimtools/none-ls.nvim',
       'L3MON4D3/LuaSnip',
-      'hrsh7th/nvim-cmp',
+      -- 'hrsh7th/nvim-cmp',
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-nvim-lsp-signature-help',
       'roginfarrer/cmp-css-variables',
     },
     config = function()
       require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
-    end
+    end,
   },
   -- TODO: Review how to use powershell editor services
   -- {
@@ -82,10 +87,10 @@ return {
   {
     'DanSM-5/fzf-lsp.nvim',
     dependencies = {
-      'nvim-lua/plenary.nvim'
+      'nvim-lua/plenary.nvim',
     },
     config = function()
       require('lsp-servers.nvim_fzf_lsp').setup()
-    end
-  }
+    end,
+  },
 }
