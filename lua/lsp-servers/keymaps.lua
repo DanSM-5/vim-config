@@ -48,6 +48,7 @@ return {
         end, 'LSP: List workspaces')
         set_map('n', '<space>D', vim.lsp.buf.type_definition, 'LSP: Go to type definition')
         set_map('n', '<space>rn', vim.lsp.buf.rename, 'LSP: Rename symbol')
+        set_map('n', '<f2>', vim.lsp.buf.rename, 'LSP: Rename symbol')
         set_map({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, 'LSP: Code Actions')
         set_map('n', 'gr', vim.lsp.buf.references, 'LSP: Go to references')
         set_map('n', '<space>f', function()
