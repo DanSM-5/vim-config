@@ -2,14 +2,12 @@
 return {
   {
     'williamboman/mason.nvim',
-    config = function()
-      require('lsp-servers.nvim_mason').setup()
-    end,
+    config = require('lsp-servers.nvim_mason').setup
   },
   {
     'mawkler/refjump.nvim',
     -- keys = { ']r', '[r' }, -- Uncomment to lazy load
-    opts = {},
+    config = require('config.nvim_refjump').setup
   },
   -- NOTE: Using magazine.nvim as as nvim-cmp replacement
   {

@@ -280,6 +280,7 @@ call plug#begin()
     Plug 'nvimtools/none-ls.nvim'
     Plug 'OXY2DEV/helpview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
+    Plug 'mawkler/demicolon.nvim'
     Plug 'lukas-reineke/indent-blankline.nvim'
     Plug 'L3MON4D3/LuaSnip'
     " NOTE: Using magazine.nvim as as nvim-cmp replacement

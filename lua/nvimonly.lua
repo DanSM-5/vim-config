@@ -17,6 +17,7 @@ require('config.oil_nvim').setup()
 require('config.nvim_autopairs').setup()
 require('config.treesitter_context').setup()
 require('config.nvim_indent-blankline').setup()
+require('config.nvim_refjump').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
