@@ -21,6 +21,7 @@ require('config.nvim_refjump').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
+require('demicolon').setup({})
 
 -- Set color for cursor word
 vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
