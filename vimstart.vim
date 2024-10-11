@@ -176,6 +176,8 @@ function! g:OnVimEnter()
   " let g:theme_signColumn = substitute(trim(execute("hi SingColumn")), 'xxx', '', 'g')
   " Set comments color
   hi Comment guifg=#7f848e cterm=NONE gui=NONE
+  " Completion menu (otherwise displayed with whitish background)
+  hi Pmenu ctermfg=188 ctermbg=0 guifg=#dcdfe4 guibg=#21252b
 
   " Make background transparen
   ToggleBg
