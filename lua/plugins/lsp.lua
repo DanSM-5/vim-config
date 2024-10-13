@@ -6,7 +6,7 @@ return {
   },
   {
     'mawkler/refjump.nvim',
-    -- keys = { ']r', '[r' }, -- Uncomment to lazy load
+    keys = { ']r', '[r' }, -- Uncomment to lazy load
     config = require('config.nvim_refjump').setup
   },
   -- NOTE: Using magazine.nvim as as nvim-cmp replacement
