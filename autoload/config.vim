@@ -81,7 +81,7 @@ func! s:SetConfigurationsBefore () abort
   " always open on the right
   set splitright
   " always split below
-  " set splitbelow
+  set splitbelow
 
   " Set relative numbers
   set number relativenumber
