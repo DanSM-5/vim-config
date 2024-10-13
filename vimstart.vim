@@ -255,6 +255,7 @@ call plug#begin()
   Plug 'lambdalisue/vim-suda'
   Plug 'psliwka/vim-smoothie'
   Plug 'rbong/vim-flog'
+  Plug 'mbbill/undotree'
 
   " Color scheme
   " NOTE: Preserve order!

@@ -316,6 +316,9 @@ func! s:Set_user_keybindings () abort
   " :help i_CTRL-W-default
   inoremap <C-W> <C-G>u<C-W>
 
+  " Toggle undo tree
+  nnoremap <leader>u <cmd>UndotreeToggle<cr>
+
   " Set key codes for vim
   if g:is_linux && !has('nvim')
     execute "set <A-j>=\ej"
