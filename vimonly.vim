@@ -24,6 +24,13 @@ if executable('rg')
   let g:gitgutter_grep = 'rg'
 endif
 
+" Remap vinegar to <leader>-
+autocmd VimEnter *
+    \  if hasmapto('<Plug>VinegarUp')
+    \|   nunmap -
+    \|   nmap <leader>- <Plug>VinegarUp
+    \| endif
+
 if g:is_windows
   " NOTE:
   " Vim from scoop is compiled with lua
