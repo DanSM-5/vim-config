@@ -188,6 +188,12 @@ return {
       },
     })
 
+    -- Completes words in buffer, paths and snippets
+    -- not in mason, so call it manually
+    if vim.fn.executable('basics-language-server') == 1 then
+      lspconfig_handler('basics_ls')
+    end
+
     if manual_setup then
       require('lsp-servers.lsp_manual_config').setup({
         lspconfig_handler = lspconfig_handler,
