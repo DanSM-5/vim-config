@@ -54,6 +54,11 @@ func! s:SetConfigurationsBefore () abort
   silent call s:SetCtrlSF()
   silent call s:DefineCommands()
 
+  " Paste with register bindings
+  nmap gp  <Plug>ReplaceWithRegisterOperator
+  nmap gpp <Plug>ReplaceWithRegisterLine
+  xmap gp  <Plug>ReplaceWithRegisterVisual
+
   " Load utility clipboard functions
   runtime utils/clipboard.vim
 
