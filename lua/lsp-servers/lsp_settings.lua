@@ -191,8 +191,13 @@ return {
     -- Completes words in buffer, paths and snippets
     -- not in mason, so call it manually
     if vim.fn.executable('basics-language-server') == 1 then
+      -- WARN: basics_ls attaches to all buffers which could cause issues due to additional keybindings
+      -- Exclusions can be added in `./lua/lsp-servers/keymaps.lua`
       lspconfig_handler('basics_ls')
     end
+
+    -- Configure aerial.nvim
+    require('config.nvim_aerial').setup()
 
     if manual_setup then
       require('lsp-servers.lsp_manual_config').setup({

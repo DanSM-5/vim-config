@@ -24,6 +24,7 @@ return {
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-nvim-lsp-signature-help',
       'roginfarrer/cmp-css-variables',
+      'stevearc/aerial.nvim',
     },
     config = function()
       require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
