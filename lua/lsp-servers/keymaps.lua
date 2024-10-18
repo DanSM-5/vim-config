@@ -1,3 +1,7 @@
+local exclude_filetypes = {
+  'help',
+}
+
 return {
   setup = function()
     -- Global mappings
@@ -18,6 +22,15 @@ return {
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('UserLspConfig', {}),
       callback = function(ev)
+
+        -- Prevent adding keymaps if we are excluding specific file types such as help
+        if
+          vim.tbl_contains(exclude_filetypes, vim.bo[ev.buf].buftype)
+          or vim.tbl_contains(exclude_filetypes, vim.bo[ev.buf].filetype)
+        then
+          return
+        end
+
         -- Enable completion triggered by <C-x><C-o>
         vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
@@ -28,7 +41,6 @@ return {
           if desc then
             opts.desc = desc
           end
-
 
           vim.keymap.set(mode, key, func, opts)
         end
@@ -57,26 +69,26 @@ return {
         set_map('n', '<space>Ic', vim.lsp.buf.incoming_calls, 'LSP: Incoming Calls')
         set_map('n', '<space>Oc', vim.lsp.buf.outgoing_calls, 'LSP: Outgoing Calls')
 
-        vim.keymap.set('n', '<space>ne', function ()
-          vim.diagnostic.goto_next( { severity = vim.diagnostic.severity.ERROR, wrap = true } )
+        vim.keymap.set('n', '<space>ne', function()
+          vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR, wrap = true })
         end, { desc = 'LSP: Go to next error' })
-        vim.keymap.set('n', '<space>nw', function ()
-          vim.diagnostic.goto_next( { severity = vim.diagnostic.severity.WARN, wrap = true } )
+        vim.keymap.set('n', '<space>nw', function()
+          vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN, wrap = true })
         end, { desc = 'LSP: Go to next warning' })
-        vim.keymap.set('n', '<space>ni', function ()
-          vim.diagnostic.goto_next( { severity = vim.diagnostic.severity.HINT } )
+        vim.keymap.set('n', '<space>ni', function()
+          vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.HINT })
         end, { desc = 'LSP: Go to next hint' })
 
-        vim.keymap.set('n', '<space>nE', function ()
-          vim.diagnostic.goto_prev( { severity = vim.diagnostic.severity.ERROR, wrap = true } )
+        vim.keymap.set('n', '<space>nE', function()
+          vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR, wrap = true })
         end, { desc = 'LSP: Go to previous error' })
-        vim.keymap.set('n', '<space>nW', function ()
-          vim.diagnostic.goto_prev( { severity = vim.diagnostic.severity.WARN, wrap = true } )
+        vim.keymap.set('n', '<space>nW', function()
+          vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN, wrap = true })
         end, { desc = 'LSP: Go to previous warning' })
-        vim.keymap.set('n', '<space>nI', function ()
-          vim.diagnostic.goto_prev( { severity = vim.diagnostic.severity.HINT } )
+        vim.keymap.set('n', '<space>nI', function()
+          vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.HINT })
         end, { desc = 'LSP: Go to previous hint' })
-      end
+      end,
     })
-  end
+  end,
 }
