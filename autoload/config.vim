@@ -59,6 +59,14 @@ func! s:SetConfigurationsBefore () abort
   nmap gpp <Plug>ReplaceWithRegisterLine
   xmap gp  <Plug>ReplaceWithRegisterVisual
 
+  " Jump conflict bindings
+  nmap [n <Plug>(jumpconflict-context-previous)
+  nmap ]n <Plug>(jumpconflict-context-next)
+  xmap [n <Plug>(jumpconflict-context-previous)
+  xmap ]n <Plug>(jumpconflict-context-next)
+  omap [n <Plug>(jumpconflict-context-previous)
+  omap ]n <Plug>(jumpconflict-context-next)
+
   " Load utility clipboard functions
   runtime utils/clipboard.vim
 
