@@ -1,6 +1,12 @@
 " Close current buffer without affecting window layout
 " Ref: https://vim.fandom.com/wiki/Deleting_a_buffer_without_closing_the_window
 
+if exists('g:loaded_bclose')
+  finish
+endif
+
+let g:loaded_bclose = 1
+
 " NOTE: Comments from author
 " here is a more exotic version of my original Kwbd script
 " delete the buffer; keep windows; create a scratch buffer if no buffers left
