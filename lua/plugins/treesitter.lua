@@ -17,6 +17,6 @@ return {
       'nvim-treesitter/nvim-treesitter',
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
-    opts = {}
+    config = require('config.nvim_demicolon').setup
   }
 }
