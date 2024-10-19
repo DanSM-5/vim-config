@@ -24,6 +24,16 @@ return {
       callback = function(ev)
 
         -- Prevent adding keymaps if we are excluding specific file types such as help
+        -- Other options could be trying to set negative pattern in filetype
+        -- See: https://groups.google.com/g/vim_use/c/I_ssfzT8FD8
+        -- e.g.
+        -- ```
+        -- something like below fails
+        -- autocmd BufReadPost *, !.git/COMMIT_EDITMSG  <do stuff>
+        --
+        -- but it is possible like
+        -- :autocmd BufReadPost *\(.git/COMMIT_EDITMSG\)\@<! <do stuff>
+        -- ```
         if
           vim.tbl_contains(exclude_filetypes, vim.bo[ev.buf].buftype)
           or vim.tbl_contains(exclude_filetypes, vim.bo[ev.buf].filetype)
