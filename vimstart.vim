@@ -331,6 +331,9 @@ call plug#begin()
       Plug 'airblade/vim-gitgutter'
     endif
 
+    " Update commentstring in buffers with multiple syntax
+    Plug 'suy/vim-context-commentstring'
+
     " Show matching words under the cursor
     Plug 'itchyny/vim-cursorword'
 
