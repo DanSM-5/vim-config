@@ -249,7 +249,7 @@ call plug#begin()
   Plug 'junegunn/fzf.vim'
   Plug 'mg979/vim-visual-multi'
   Plug 'dyng/ctrlsf.vim'
-  Plug 'kreskij/Repeatable.vim'
+  Plug 'kreskij/Repeatable.vim', { 'on': 'Repeatable' }
   Plug 'bkad/CamelCaseMotion'
   Plug 'haya14busa/vim-asterisk'
   Plug 'lambdalisue/vim-suda'

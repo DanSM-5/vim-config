@@ -1373,8 +1373,10 @@ endf
 func! s:MoveLinesBlockMapsWin () abort
   " silent call s:RemapAltUpDownJK()
   silent call s:RemapAltUpDownNormal()
-  Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
-  Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  if exists(':Repeatable')
+    Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
+    Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  endif
 
   " if !has('nvim')
   "   silent call s:RemapVisualMultiUpDown()
@@ -1383,8 +1385,10 @@ endf
 
 func! s:MoveLinesBlockMapsLinux () abort
   " Allow motion mlu/d
-  Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
-  Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  if exists(':Repeatable')
+    Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
+    Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  endif
 
   " silent call s:RemapAltUpDownJK()
 
@@ -1399,8 +1403,10 @@ endf
 
 func! s:MoveLinesBlockMapsGvim () abort
   " Allow motion mlu/d
-  Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
-  Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  if exists(':Repeatable')
+    Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
+    Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  endif
 
   " silent call s:RemapAltUpDownJK()
   silent call s:RemapAltUpDownNormal()
@@ -1408,8 +1414,10 @@ endf
 
 func! s:MoveLinesBlockMapsMac () abort
   " Allow motion mlu/d
-  Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
-  Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  if exists(':Repeatable')
+    Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
+    Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
+  endif
 
   " silent call s:RemapAltUpDownJK()
 

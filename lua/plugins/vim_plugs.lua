@@ -36,6 +36,7 @@ return {
   },
   {
     'kreskij/Repeatable.vim',
+    cmd = { 'Repeatable' },
   },
   {
     'bkad/CamelCaseMotion',
