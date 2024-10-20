@@ -6,6 +6,7 @@
 -- :h lua-guide
 -- :h lspconfig-all
 
+require('shared.big_files').setup()
 require('lsp-servers.nvim_mason').setup()
 require('lsp-servers.lsp_settings').setup()
 require('lsp-servers.nvim_fzf_lsp').setup()
@@ -18,10 +19,10 @@ require('config.nvim_autopairs').setup()
 require('config.treesitter_context').setup()
 require('config.nvim_indent-blankline').setup()
 require('config.nvim_refjump').setup()
+require('config.nvim_demicolon').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
-require('demicolon').setup({})
 
 -- Set color for cursor word
 vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
