@@ -162,7 +162,7 @@ return {
         return
       end
 
-      local base_config = require('lsp-servers.config').get_config()[server_name] or {}
+      local base_config = require('lsp-servers.config').get_config(server_name) or {}
       local config = vim.tbl_deep_extend('force', {}, base_config, { capabilities = capabilities })
       require('lspconfig')[server_name].setup(config)
     end
