@@ -326,7 +326,7 @@ call plug#begin()
     " with additional patch to workaround the issue.
     " Ref: https://github.com/airblade/vim-gitgutter/issues/896
     if g:is_windows
-      Plug 'DanSM-5/vim-gitgutter'
+      Plug 'DanSM-5/vim-gitgutter', { 'branch': 'main' }
     else
       Plug 'airblade/vim-gitgutter'
     endif
@@ -339,6 +339,9 @@ call plug#begin()
 
     " Context
     Plug 'wellle/context.vim'
+
+    " command-line completion
+    " Plug 'girishji/vimsuggest', { 'branch': 'main' }
 
     " For lsp within vim
     " Plug 'prabirshrestha/vim-lsp'

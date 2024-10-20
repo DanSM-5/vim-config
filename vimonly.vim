@@ -24,12 +24,24 @@ if executable('rg')
   let g:gitgutter_grep = 'rg'
 endif
 
+function! s:VimConfig() abort
+  " Remap vinegar to <leader>-
+  if hasmapto('<Plug>VinegarUp')
+    nunmap -
+    nmap <leader>- <Plug>VinegarUp
+  endif
+
+  " runtime utils/vimsuggest_config.vim
+endfunction
+
+autocmd VimEnter * call s:VimConfig()
+
 " Remap vinegar to <leader>-
-autocmd VimEnter *
-    \  if hasmapto('<Plug>VinegarUp')
-    \|   nunmap -
-    \|   nmap <leader>- <Plug>VinegarUp
-    \| endif
+" autocmd VimEnter *
+"     \  if hasmapto('<Plug>VinegarUp')
+"     \|   nunmap -
+"     \|   nmap <leader>- <Plug>VinegarUp
+"     \| endif
 
 if g:is_windows
   " NOTE:
