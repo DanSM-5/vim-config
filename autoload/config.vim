@@ -525,8 +525,11 @@ func! s:CallCleanCommand (comm) abort
 endf
 
 func! s:CleanCR () abort
-  normal :%s/\r$//g<cr>
-  " silent exec '%s/\r//g'
+  " normal :%s/\r$//g<cr>
+  try
+    silent exec '%s/\r$//g'
+  catch
+  endtry
 endf
 
 func! s:SetCamelCaseMotion () abort
