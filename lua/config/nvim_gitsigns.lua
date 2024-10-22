@@ -16,7 +16,7 @@ return {
         -- Navigation
         vim.keymap.set('n', '<space>nh', gitsigns.next_hunk, { desc = 'Gitsigns: Go to next hunk', buffer = bufnr })
         vim.keymap.set('n', '<space>nH', gitsigns.prev_hunk, { desc = 'Gitsigns: Go to previous hunk', buffer = bufnr })
-        -- NOTE: Commented in favor of demicolon keybindings
+        -- NOTE: Commented in favor of repeatable keybindings
         -- vim.keymap.set('n', ']g', gitsigns.next_hunk, { desc = 'Gitsigns: Go to next hunk', buffer = bufnr })
         -- vim.keymap.set('n', '[g', gitsigns.prev_hunk, { desc = 'Gitsigns: Go to previous hunk', buffer = bufnr })
 
