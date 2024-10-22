@@ -73,6 +73,50 @@ return {
       },
     })
 
+    -- Create repeatable mappings using nvim-treesitter-textobjects
+    vim.api.nvim_create_autocmd('VimEnter', {
+      desc = 'Create repeatable bindings',
+      pattern = { '*' },
+      callback = function()
+        local repeat_pair = require('utils.repeat_motion').repeat_pair
+        -- NOTE: Letting demicolon set the motion keys but otherwise motions can be repeated by calling
+        -- the following function
+        -- require('utils.repeat_motion').set_motion_keys()
+
+        -- Jump to next conflict
+        local jumpconflict_next = function()
+          vim.cmd([[execute "normal \<Plug>JumpconflictContextNext"]])
+        end
+        local jumpconflict_prev = function()
+          vim.cmd([[execute "normal \<Plug>JumpconflictContextPrevious"]])
+        end
+
+        repeat_pair({
+          keys = 'n',
+          desc_forward = '[JumpConflict] Move to next conflict marker',
+          desc_backward = '[JumpConflict] Move to previous conflict marker',
+          on_forward = jumpconflict_next,
+          on_backward = jumpconflict_prev,
+        })
+
+        -- Move items in quickfix
+        local quickfix_next = function()
+          vim.cmd('silent! cnext')
+        end
+        local quickfix_prev = function()
+          vim.cmd('silent! cprev')
+        end
+
+        repeat_pair({
+          keys = 'q',
+          desc_forward = '[Quickfix] Move to next error',
+          desc_backward = '[Quickfix] Move to previous error',
+          on_forward = quickfix_next,
+          on_backward = quickfix_prev,
+        })
+      end,
+    })
+
     -- NOTE: For custom powershell treesitter parser:
     -- local treesitter_parser_config = require('nvim-treesitter.parsers').get_parser_configs()
     -- treesitter_parser_config.powershell = {
