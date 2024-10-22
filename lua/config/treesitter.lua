@@ -114,6 +114,23 @@ return {
           on_forward = quickfix_next,
           on_backward = quickfix_prev,
         })
+
+        -- Move to next todo comment
+        local todo_next = function ()
+          require('todo-comments').jump_next()
+        end
+        local todo_prev = function ()
+          require('todo-comments').jump_prev()
+        end
+
+        repeat_pair({
+          keys = 'j',
+          desc_forward = '[TodoComments] Move to next todo comment',
+          desc_backward = '[TodoComments] Move to previous todo comment',
+          on_forward = todo_next,
+          on_backward = todo_prev,
+        })
+
       end,
     })
 
