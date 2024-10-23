@@ -95,6 +95,12 @@ return {
         'vimls',
         -- 'biome',
         'bashls',
+        -- 'css-lsp',
+        'css_variables',
+        'eslint',
+        -- 'eslint_d',
+        -- 'powershell_es',
+        -- 'stylua',
         'ts_ls',
       }
 
