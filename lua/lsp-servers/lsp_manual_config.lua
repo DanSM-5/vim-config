@@ -18,7 +18,7 @@ local servers = {
   },
   {
     server = 'typescript-language-server',
-    lsp = 'tsserver',
+    lsp = 'ts_ls',
   }
   -- {
   --   server = 'biome',
