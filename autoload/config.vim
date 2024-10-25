@@ -1501,7 +1501,7 @@ function! config#CurrentOS ()
       let g:is_container = 1
     elseif has('wsl') || system('cat /proc/version') =~ '[Mm]icrosoft'
       let g:is_wsl = 1
-    elseif $IS_TERMUX =~ 'true'
+    elseif executable('termux-open-url') || $IS_TERMUX =~ 'true'
       " Don't want to relay on config settings but it will do for now
       " untested way: command -v termux-setup-storage &> /dev/null
       " the termux-setup-storage should only exist on termux
