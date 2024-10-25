@@ -532,6 +532,10 @@ func! s:CleanCR () abort
   endtry
 endf
 
+func! s:CleanTrailingSpaces () abort
+  silent exec '%s/\s\+$//e'
+endf
+
 func! s:SetCamelCaseMotion () abort
   let g:camelcasemotion_key = '<leader>'
 endf
@@ -1224,6 +1228,7 @@ func! s:DefineCommands () abort
   " Call command and remove carriage return
   command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
   command! CleanCR call s:CleanCR()
+  command! CleanTrailingSpaces call s:CleanTrailingSpaces()
 
   command! Bcd call BufferCd()
   nnoremap <silent> <leader>cd <cmd>Bcd<cr>
