@@ -5,6 +5,9 @@ autoload/plug.vim
 # Pluggins
 plugged
 
+# Special configuration files
+lua/lsp-servers/servers.lua
+
 # Do not track lazy-lock
 lazy-lock.json
 
@@ -13,3 +16,4 @@ lazy-lock.json
 
 # Swap files
 *.swp
+

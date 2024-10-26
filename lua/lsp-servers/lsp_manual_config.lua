@@ -3,6 +3,7 @@
 -- binaries and lsp will fail.
 -- Setting manually here the list of servers that we may want to configure.
 
+---@type { server: string; lsp: string }[]
 local servers = {
   {
     server = 'lua-language-server',

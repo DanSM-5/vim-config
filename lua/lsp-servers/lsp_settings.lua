@@ -280,5 +280,12 @@ return {
         lspconfig_handler = lspconfig_handler,
       })
     end
+
+    -- Setup lsp servers using lspconfig and cmp
+    -- which are specific for the device and are not in mason registry
+    require('lsp-servers.device_specific_lsp').configure({
+      lspconfig_handler = lspconfig_handler,
+    })
   end,
 }
+
