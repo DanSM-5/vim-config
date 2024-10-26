@@ -241,6 +241,7 @@ call plug#begin()
   " Plug 'tpope/vim-sensible'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-rhubarb'
   Plug 'tpope/vim-repeat'
   Plug 'inkarkat/vim-ReplaceWithRegister'
   Plug 'christoomey/vim-sort-motion'

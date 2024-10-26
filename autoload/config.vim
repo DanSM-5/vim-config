@@ -185,6 +185,11 @@ func! s:SetBufferOptions () abort
     au!
     au BufNewFile,BufRead *.uconfrc,*.uconfgrc,*.ualiasrc,*.ualiasgrc setfiletype sh
   augroup END
+
+  augroup flog
+    " autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#run_command("GBrowse %(h)")<CR>
+    autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#Exec("GBrowse <cword>")<CR>
+  augroup END
 endf
 
 " keymaps
