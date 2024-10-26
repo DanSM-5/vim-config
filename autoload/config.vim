@@ -1583,9 +1583,27 @@ function OpenNetrw() abort
   let file_dir = expand('%:p:h')
 
   try
+    " NOTE: set nohidden to avoid orphan buffers
     set nohidden
 
-    if cur_file != 'NetrwTreeListing'
+    " Check if Netrw is open
+    let netrw_open = 0
+    " let buffers = range(1, bufnr('$'))
+    " for buffer in buffers
+    "   if bufname(buffer) =~ 'NetrwTreeListing'
+    "     let netrw_open = 1
+    "     break
+    "   endif
+    " endfor
+    let buffers = getbufinfo()
+    for buffer in buffers
+      if buffer.name =~ 'NetrwTreeListing'
+        let netrw_open = 1
+        break
+      endif
+    endfor
+
+    if cur_file != 'NetrwTreeListing' && !netrw_open
       exec 'cd ' . file_dir
       let gitpath = GitPath()
       Lex!
