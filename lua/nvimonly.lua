@@ -20,6 +20,7 @@ require('config.treesitter_context').setup()
 require('config.nvim_indent-blankline').setup()
 require('config.nvim_refjump').setup()
 require('config.nvim_demicolon').setup()
+require('config.nvim_prelive').setup()
 
 -- NOTE: At some point I thought, why not put everything in an array
 -- and load like below. Then I figured it messed up the lsp as it

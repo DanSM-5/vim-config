@@ -97,7 +97,6 @@ return {
   },
   {
     'hat0uma/prelive.nvim',
-    opts = {},
     cmd = {
       'PreLiveGo',
       'PreLiveStatus',
@@ -105,5 +104,6 @@ return {
       'PreLiveCloseAll',
       'PreLiveLog',
     },
+    config = require('config.nvim_prelive').setup
   }
 }
