@@ -295,6 +295,7 @@ call plug#begin()
     Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
     Plug 'roginfarrer/cmp-css-variables'
     Plug 'stevearc/aerial.nvim'
+    Plug 'hat0uma/prelive.nvim' { 'on': [ 'PreLiveGo', 'PreLiveStatus', 'PreLiveClose', 'PreLiveCloseAll', 'PreLiveLog' ] },
 
     " File explorer
     Plug 'stevearc/oil.nvim'

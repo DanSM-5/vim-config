@@ -85,14 +85,25 @@ return {
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
     },
-    {
-      'mbbill/undotree',
-      lazy = true,
-      keys = { '<leader>u' },
-      cmd = { 'UndotreeToggle', 'UndotreeShow' },
-      -- config = function ()
-      --   vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = '[UndoTree] Toggle undo tree' })
-      -- end
-    }
   },
+  {
+    'mbbill/undotree',
+    lazy = true,
+    keys = { '<leader>u' },
+    cmd = { 'UndotreeToggle', 'UndotreeShow' },
+    -- config = function ()
+    --   vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = '[UndoTree] Toggle undo tree' })
+    -- end
+  },
+  {
+    'hat0uma/prelive.nvim',
+    opts = {},
+    cmd = {
+      'PreLiveGo',
+      'PreLiveStatus',
+      'PreLiveClose',
+      'PreLiveCloseAll',
+      'PreLiveLog',
+    },
+  }
 }
