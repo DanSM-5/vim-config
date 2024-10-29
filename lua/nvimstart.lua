@@ -3,11 +3,11 @@ local fn, g = vim.fn, vim.g
 -- Set custom shada file location
 vim.cmd("set shada+='1000,n$HOME/.cache/vim-config/main.shada")
 -- Make nocompatible explicit
-vim.cmd('set nocompatible')
+vim.o.compatible = false
 -- Default encoding
-vim.cmd('set encoding=UTF-8')
+vim.o.encoding = 'UTF-8'
 -- show line under the cursor
-vim.cmd('set cursorline')
+vim.o.cursorline = true
 -- enable syntax highlight
 -- cmd('syntax enable')
 -- enable filetype base indentation
@@ -18,11 +18,11 @@ vim.cmd('let &t_8f = "\\<Esc>[38;2;%lu;%lu;%lum"')
 vim.cmd('let &t_8b = "\\<Esc>[48;2;%lu;%lu;%lum"')
 vim.opt.termguicolors = true
 -- Set backspace normal behavior
-vim.cmd('set backspace=indent,eol,start')
+vim.o.backspace = 'indent,eol,start'
 -- Set hidden on
-vim.cmd('set hidden')
+vim.o.hidden = true
 -- Explicit mouse behavior
-vim.cmd('set mouse=a')
+vim.o.mouse = 'a'
 
 vim.opt.breakindent = true
 
