@@ -33,6 +33,25 @@ return {
   },
   {
     'mg979/vim-visual-multi',
+    config = function ()
+      -- Create highlight groups for VM
+      vim.api.nvim_set_hl(0, 'VM_Custom_Cursor', { ctermfg = 0, ctermbg = 239, bg = '#39496e' })
+      vim.api.nvim_set_hl(0, 'VM_Custom_Extend', { ctermfg = 188, ctermbg = 75, fg = '#dcdfe4', bg = '#61afef', blend = 0 })
+      -- Cursro color: guifg=#282c34 guibg=#c678dd
+      -- vim.api.nvim_set_hl(0, 'VM_Custom_Extend', { ctermfg = 188, ctermbg = 75, fg = '#282c34', bg = '#c678dd', blend = 0 })
+      -- vim.api.nvim_set_hl(0, 'VM_Custom_Extend', { ctermfg = 188, ctermbg = 75, fg = '#282c34', bg = '#39496e', blend = 0 })
+      vim.api.nvim_set_hl(0, 'VM_Custom_Insert', { ctermfg = 180, fg = '#e5c07b' })
+      vim.api.nvim_set_hl(0, 'VM_Custom_Mono', { ctermfg = 236, ctermbg = 180, fg = '#282c34', bg = '#e5c07b' })
+      -- NOTE: Global variables seems to have no effect?
+      -- vim.g.VM_Cursor_hl = 'VM_Custom_Cursor'
+      -- vim.g.VM_Extend_hl = 'VM_Custom_Extend'
+      -- vim.g.VM_Insert_hl = 'VM_Custom_Insert'
+      -- vim.g.VM_Mono_hl = 'VM_Custom_Mono'
+      vim.api.nvim_set_hl(0, 'VM_Cursor', { link = 'VM_Custom_Cursor', force = true })
+      vim.api.nvim_set_hl(0, 'VM_Extend', { link = 'VM_Custom_Extend', force = true })
+      vim.api.nvim_set_hl(0, 'VM_Insert', { link = 'VM_Custom_Insert', force = true })
+      vim.api.nvim_set_hl(0, 'VM_Mono', { link = 'VM_Custom_Mono', force = true })
+    end
   },
   {
     'dyng/ctrlsf.vim',
