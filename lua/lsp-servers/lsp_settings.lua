@@ -82,6 +82,30 @@ local get_cmp_format = function ()
   end
 end
 
+-- NOTE: Consider for the future
+-- Auto install servers by filetype
+-- local known_filetypes = {
+--   python = { "jedi_language_server", "ruff" },
+--   lua = { "lua-language-server", "stylua" },
+--   typescript = { "ts_ls", "biome" },
+--   -- To complete with every language
+-- }
+--
+-- vim.api.nvim_create_autocmd("FileType", {
+--   callback = function()
+--     local ft_tools = known_filetypes[vim.bo.filetype]
+--     if not ft_tools then
+--       return
+--     end
+--
+--     for _, tool in ipairs(ft_tools) do
+--       if not require("mason-registry").is_installed(tool) then
+--         vim.cmd("MasonInstall " .. tool)
+--       end
+--     end
+--   end,
+-- })
+
 return {
   ---Options when setting lsp features
   ---@param opts LspSetupOpts | nil
