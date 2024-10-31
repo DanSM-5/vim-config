@@ -68,6 +68,7 @@ return {
   },
   {
     'lambdalisue/vim-suda',
+    cmd = { 'SudaRead', 'SudaWrite' }
   },
   {
     'psliwka/vim-smoothie',
