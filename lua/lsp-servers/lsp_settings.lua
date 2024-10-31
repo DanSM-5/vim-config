@@ -256,6 +256,11 @@ return {
 
     ---@param server_name string
     local lspconfig_handler = function(server_name)
+      if server_name == nil or type(server_name) ~= 'string' then
+        vim.notify('No valid server name provided', vim.log.levels.WARN)
+        return
+      end
+
       -- Prevent mason-lspconfig from trying to start the LSP server
       -- for rust_analyzer. This is done through mrcjkb/rustaceanvim plugin
       if server_name == 'rust_analyzer' then
@@ -266,6 +271,11 @@ return {
       local config = vim.tbl_deep_extend('force', {}, base_config, { capabilities = capabilities })
       require('lspconfig')[server_name].setup(config)
     end
+
+    -- Add setup function available globally 😎
+    -- This is so it is available to start new lsp servers
+    -- with cmp capabilities on the fly
+    vim.g.SetupLsp = lspconfig_handler
 
     local mason_lspconfig_opts = {
       ensure_installed = language_servers,
