@@ -47,6 +47,7 @@ local fzf_options_with_preview = { options = fzf_preview_options }
 
 -- Lua integration with fzf.vim
 -- Ref: https://github.com/ojroques/nvim-lspfuzzy/blob/6ec09a2072044c19addce7a560b50ba8c2e1beed/lua/lspfuzzy.lua#L40
+-- https://github.com/creativenull/dotfiles/blob/930b79cb0d07b552b4b8e6b3a7db14f1097d049f/config/nvim/lua/user/fzf.lua#L34
 
 -- if using expect then the first prop will be the string key
 -- local key = table.remove(entries, 1)
