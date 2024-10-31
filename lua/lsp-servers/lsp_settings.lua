@@ -299,6 +299,8 @@ return {
     -- Configure aerial.nvim
     require('config.nvim_aerial').setup()
 
+    -- Load lsp manually from the manual selected list for environments such
+    -- as termux which uses lsps not built with gnu libraries
     if manual_setup then
       require('lsp-servers.lsp_manual_config').setup({
         lspconfig_handler = lspconfig_handler,
@@ -306,7 +308,7 @@ return {
     end
 
     -- Setup lsp servers using lspconfig and cmp
-    -- which are specific for the device and are not in mason registry
+    -- which are specific for the device or not available in mason registry
     require('lsp-servers.device_specific_lsp').configure({
       lspconfig_handler = lspconfig_handler,
     })
