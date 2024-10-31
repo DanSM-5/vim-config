@@ -60,7 +60,6 @@ local select_client_fzf = function()
     if #selected < 2 then
       return
     end
-    vim.print(selected)
     render_lsp_info(selected[2])
   end)
 end
