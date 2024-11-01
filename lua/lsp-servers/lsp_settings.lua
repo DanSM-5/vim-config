@@ -137,6 +137,12 @@ return {
     -- NOTE: For css-variable set the global variable files with
     -- vim.g.css_variables_files = { 'variables.css', 'other/path' }
 
+    -- TODO: Do we need path and buffer?
+    -- Plug 'hrsh7th/cmp-buffer'
+    -- Plug 'hrsh7th/cmp-path'
+    -- { name = 'path' },
+    -- { name = 'buffer' },
+
     local sources = {
       { name = 'nvim_lsp' },
       { name = 'css-variables' },
