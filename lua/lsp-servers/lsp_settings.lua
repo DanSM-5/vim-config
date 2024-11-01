@@ -147,6 +147,7 @@ return {
       { name = 'nvim_lsp' },
       { name = 'css-variables' },
       { name = 'nvim_lsp_signature_help' },
+      { name = 'luasnip' },
     }
     -- if opts.completions.enable.crates then
     --   table.insert(sources, { name = 'crates' })
@@ -191,6 +192,16 @@ return {
           luasnip.jump(-1)
         end
       end, { 'i', 's' }),
+      -- ['C-k'] = cmp.mapping(function ()
+      --   if luasnip.expand_or_jumpable() then
+      --     luasnip.expand_or_jump()
+      --   end
+      -- end, { 'i', 's' }),
+      -- ['C-j'] = cmp.mapping(function ()
+      --   if luasnip.jumpable(-1) then
+      --     luasnip.jump(-1)
+      --   end
+      -- end, { 'i', 's' }),
       -- ['<CR>'] = cmp.mapping.confirm({ select = true }),
       -- ['<Tab>'] = function(fallback)
       --   if not cmp.select_next_item() then
@@ -255,6 +266,11 @@ return {
       },
       formatting = {
         format = cmp_format
+      },
+      snippet = {
+        expand = function (args)
+          luasnip.lsp_expand(args.body)
+        end
       }
     })
 
