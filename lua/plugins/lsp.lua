@@ -17,15 +17,28 @@ return {
   {
     'neovim/nvim-lspconfig',
     dependencies = {
+      -- Hook to mason
       'williamboman/mason-lspconfig.nvim',
+      -- Lsp for linters/formatters
       'nvimtools/none-ls.nvim',
+      -- Snippets
       'L3MON4D3/LuaSnip',
       'saadparwaiz1/cmp_luasnip',
-      -- 'hrsh7th/nvim-cmp',
+      -- Completions and sources
+      -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-nvim-lsp-signature-help',
       'roginfarrer/cmp-css-variables',
+      'lukas-reineke/cmp-rg',
+      -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
+      -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
+      -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
+      -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
+      -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
+      -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
+      -- Find symbols
       'stevearc/aerial.nvim',
+      -- Dependency
       'nvim-tree/nvim-web-devicons',
     },
     config = function()

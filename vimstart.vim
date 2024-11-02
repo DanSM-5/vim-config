@@ -266,36 +266,53 @@ call plug#begin()
   Plug 'bagrat/vim-buffet'
 
   if has('nvim')
-    " LSP plugings for neovim
+    " Shared libraries
     Plug 'nvim-lua/plenary.nvim'
+    " LSP plugings for neovim
     Plug 'neovim/nvim-lspconfig'
     Plug 'williamboman/mason.nvim'
     Plug 'williamboman/mason-lspconfig.nvim'
+    " Lsp for linters/formatters
+    Plug 'nvimtools/none-ls.nvim'
+    " syntax highlight
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+    " Comment lines
     Plug 'numToStr/Comment.nvim'
     Plug 'JoosepAlviste/nvim-ts-context-commentstring'
+    " Close common paird symbols
     Plug 'windwp/nvim-autopairs'
+
     " Usign fork for issue https://github.com/gfanto/fzf-lsp.nvim/pull/38
     Plug 'DanSM-5/fzf-lsp.nvim'
     " Plug 'gfanto/fzf-lsp.nvim'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'xiyaowong/nvim-cursorword'
-    Plug 'nvimtools/none-ls.nvim'
     Plug 'OXY2DEV/helpview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
     Plug 'mawkler/demicolon.nvim'
     Plug 'mawkler/refjump.nvim'
     Plug 'lukas-reineke/indent-blankline.nvim'
+    " Snippets
     Plug 'L3MON4D3/LuaSnip'
     Plug 'saadparwaiz1/cmp_luasnip'
+    " Completions and sources
     " NOTE: Using magazine.nvim as as nvim-cmp replacement
     " Plug 'hrsh7th/nvim-cmp'
     Plug 'iguanacucumber/magazine.nvim', { 'dir': stdpath('data') . '/plugged/nvim-cmp' }
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
     Plug 'roginfarrer/cmp-css-variables'
+    Plug 'lukas-reineke/cmp-rg',
+    " Plug 'hrsh7th/cmp-nvim-lua' " { name = 'nvim_lua'  }
+    " Plug 'hrsh7th/cmp-buffer' " { name = 'path' }
+    " Plug 'https://codeberg.org/FelipeLema/cmp-async-path' " { name = 'async_path' }
+    " Plug 'hrsh7th/cmp-path' " { name = 'buffer' }
+    " Plug 'hrsh7th/cmp-cmdline' " { name = 'cmd' }
+    " Plug 'Jezda1337/nvim-html-css' " { name = 'html-css' }
+    " Find symbols
     Plug 'stevearc/aerial.nvim'
+    " Live server
     Plug 'hat0uma/prelive.nvim'
     " { 'on': [ 'PreLiveGo', 'PreLiveStatus', 'PreLiveClose', 'PreLiveCloseAll', 'PreLiveLog' ] }
 

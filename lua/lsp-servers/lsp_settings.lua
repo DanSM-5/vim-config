@@ -55,10 +55,11 @@ local cmp_formatting_menu = {
   buffer = '[Buffer]',
   nvim_lsp = '[LSP]',
   luasnip = '[LuaSnip]',
-  nvim_lua = '[Lua]',
-  latex_symbols = '[LaTeX]',
+  -- nvim_lua = '[Lua]',
+  -- latex_symbols = '[LaTeX]',
   ['css-variables'] = '[CssVar]',
   nvim_lsp_signature_help = '[LspSignature]',
+  rg = '[RipGrep]',
 }
 
 local get_cmp_format = function ()
@@ -137,12 +138,6 @@ return {
     -- NOTE: For css-variable set the global variable files with
     -- vim.g.css_variables_files = { 'variables.css', 'other/path' }
 
-    -- TODO: Do we need path and buffer?
-    -- Plug 'hrsh7th/cmp-buffer'
-    -- Plug 'hrsh7th/cmp-path'
-    -- { name = 'path' },
-    -- { name = 'buffer' },
-
     local sources = {
       { name = 'nvim_lsp' },
       { name = 'css-variables' },
@@ -158,6 +153,11 @@ return {
     local luasnip = require('luasnip')
     local capabilities =
       vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
+
+    -- Add ripgrep source if binary is available
+    if vim.fn.executable('rg') then
+      table.insert(sources, { name = 'rg', keyword_length = 3 })
+    end
 
     if opts.completions.enable.lazydev then
       table.insert(sources, {
