@@ -93,6 +93,25 @@ local fzf = function (source, sink, fzf_opts)
   vim.fn['fzf#run'](fzf_opts_wrap)
 end
 
+---Get the parameter --history for fzf taking into account g:fzf_history_dir if exists
+---It accepts a custom file name or a default name if no name is provided
+---@param file string Name of a custom file for saving the history
+---@return string History param for command
+local function get_history_param (file)
+  local hist_file = file or 'fzf-history-default'
+  local hist_path = '--history='
+  local home = string.gsub(vim.env.HOME, [[\]], [[/]]) -- force '/' in windows
+  local base_path = vim.g.fzf_history_dir and vim.g.fzf_history_dir or home .. '/.cache/fzf-history'
+  if string.find(base_path, '~') then
+    base_path = string.gsub(base_path, '~', home)
+  end
+
+  -- combine  --history= + /path/to/cache + /filename
+  hist_path = hist_path .. base_path .. '/' .. hist_file
+
+  return hist_path
+end
+
 ---@param sink fun(options: string[]): nil
 ---@return nil
 local select_buffer_lsp = function (sink)
@@ -113,8 +132,8 @@ local select_buffer_lsp = function (sink)
     return
   end
 
-  local home = string.gsub(vim.env.HOME, [[\]], [[/]])
-  local hist_path = '--history=' .. home .. '/.cache/fzf-history/fzf-select-lsp-client'
+  local hist_file = 'fzf-select-lsp-client'
+  local hist_path = get_history_param(hist_file)
   local options = array_concat(fzf_bind_options, {
     '--prompt',
     'Buffer Clients> ',
