@@ -85,10 +85,12 @@ return {
 
         -- Jump to next conflict
         local jumpconflict_next = function()
-          vim.cmd([[execute "normal \<Plug>JumpconflictContextNext"]])
+          -- vim.cmd([[execute "normal \<Plug>JumpconflictContextNext"]])
+          vim.cmd.normal(vim.keycode('<Plug>JumpconflictContextNext'))
         end
         local jumpconflict_prev = function()
-          vim.cmd([[execute "normal \<Plug>JumpconflictContextPrevious"]])
+          -- vim.cmd([[execute "normal \<Plug>JumpconflictContextPrevious"]])
+          vim.cmd.normal(vim.keycode('<Plug>JumpconflictContextPrevious'))
         end
 
         repeat_pair({
