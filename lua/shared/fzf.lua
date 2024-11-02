@@ -115,7 +115,12 @@ local select_buffer_lsp = function (sink)
 
   local home = string.gsub(vim.env.HOME, [[\]], [[/]])
   local hist_path = '--history=' .. home .. '/.cache/fzf-history/fzf-select-lsp-client'
-  local options = array_concat(fzf_bind_options, { '--prompt', 'Buffer Clients> ', hist_path })
+  local options = array_concat(fzf_bind_options, {
+    '--prompt',
+    'Buffer Clients> ',
+    hist_path,
+    '--no-multi',
+  })
 
   -- return client_names
   fzf(client_names, sink, options)
