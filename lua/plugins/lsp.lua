@@ -24,6 +24,7 @@ return {
       -- Snippets
       'L3MON4D3/LuaSnip',
       'saadparwaiz1/cmp_luasnip',
+      'rafamadriz/friendly-snippets',
       -- Completions and sources
       -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
       'hrsh7th/cmp-nvim-lsp',

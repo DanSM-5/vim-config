@@ -296,6 +296,7 @@ call plug#begin()
     " Snippets
     Plug 'L3MON4D3/LuaSnip'
     Plug 'saadparwaiz1/cmp_luasnip'
+    Plug 'rafamadriz/friendly-snippets'
     " Completions and sources
     " NOTE: Using magazine.nvim as as nvim-cmp replacement
     " Plug 'hrsh7th/nvim-cmp'
