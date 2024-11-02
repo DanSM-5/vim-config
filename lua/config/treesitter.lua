@@ -133,6 +133,11 @@ return {
           on_backward = todo_prev,
         })
 
+        -- NOTE: Override default fold config from config based on indentation
+        -- This will use the treesitter parser to create folds
+        vim.o.foldmethod = 'expr'
+        vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
+        -- vim.o.foldlevelstart = 99
       end,
     })
 
