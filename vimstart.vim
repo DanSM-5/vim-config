@@ -288,6 +288,7 @@ call plug#begin()
     Plug 'mawkler/refjump.nvim'
     Plug 'lukas-reineke/indent-blankline.nvim'
     Plug 'L3MON4D3/LuaSnip'
+    Plug 'saadparwaiz1/cmp_luasnip'
     " NOTE: Using magazine.nvim as as nvim-cmp replacement
     " Plug 'hrsh7th/nvim-cmp'
     Plug 'iguanacucumber/magazine.nvim', { 'dir': stdpath('data') . '/plugged/nvim-cmp' }
