@@ -617,6 +617,19 @@ func! GetCurrentBufferPath () abort
   " return trim(shellescape(expand('%:p:h')))
 endf
 
+" Find a directory containing 'lookFor'
+function! FindProjectRoot(lookFor) abort
+  let pathMaker = '%:p'
+  while(len(expand(pathMaker)) > len(expand(pathMaker.':h')))
+    let pathMaker = pathMaker.':h'
+    let fileToCheck = expand(pathMaker).'/'.a:lookFor
+    if filereadable(fileToCheck) || isdirectory(fileToCheck)
+      return expand(pathMaker)
+    endif
+  endwhile
+  return 0
+endfunction
+
 func! GitPath () abort
   let gitcmd = 'cd '.shellescape(expand('%:p:h')).' && git rev-parse --show-toplevel'
   if g:is_windows && !has('nvim')
