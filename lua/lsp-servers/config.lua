@@ -25,9 +25,10 @@ local configs = {
   biome = {},
   -- For bash lsp
   bashls = {
+    filetypes = { 'sh', 'bash', 'zsh' },
     settings = {
       bashIde = {
-        globPattern = '*@(.sh|.inc|.bash|.command|.zsh|.uconfrc|.uconfgrc|.ualiasrc|.ualiasgrc)'
+        globPattern = '*@(.sh|.inc|.bash|.command|.zsh|.uconfrc|.uconfgrc|.ualiasrc|.ualiasgrc|.zsh_conf)'
       }
     }
   }
