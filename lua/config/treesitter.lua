@@ -2,9 +2,33 @@
 
 return {
   setup = function()
+    require('nvim-treesitter').define_modules({
+      fold_treesiter = {
+        attach = function (buf, lang)
+          -- Options set only for buffers with treesitter parser
+          vim.opt_local.foldmethod = 'expr'
+          vim.opt_local.foldexpr = 'nvim_treesitter#foldexpr()'
+          -- Options set in global config
+          -- exec 'set fillchars=fold:\ '
+          -- set foldmethod=indent
+          -- set nofoldenable
+          -- set foldlevel=99
+        end,
+        detach = function (buf)
+          -- nothing
+        end,
+        is_supported = function (lang)
+          return true
+        end,
+      }
+    })
+
     local config = require('nvim-treesitter.configs')
     ---@diagnostic disable-next-line: missing-fields
     config.setup({
+      fold_treesiter = {
+        enable = true,
+      },
       ignore_install = {},
       sync_install = true,
       ensure_installed = {
@@ -133,13 +157,21 @@ return {
           on_backward = todo_prev,
         })
 
-        -- NOTE: Override default fold config from config based on indentation
-        -- This will use the treesitter parser to create folds
-        vim.o.foldmethod = 'expr'
-        vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
-        -- vim.o.foldlevelstart = 99
       end,
     })
+
+    -- local treesitterKeymaps = vim.api.nvim_create_augroup('TreesitterKeymaps', { clear = true })
+    -- vim.api.nvim_create_autocmd('BufEnter', {
+    --   group = treesitterKeymaps,
+    --   pattern = '*',
+    --   callback = function (event)
+    --     -- NOTE: Override default fold config from config based on indentation
+    --     -- This will use the treesitter parser to create folds
+    --
+    --     if vim.api.nvim_buf_get_option(event.buf, 'filetype') ~= '' and vim.treesitter.get_parser(event.buf) then
+    --     end
+    --   end,
+    -- })
 
     -- NOTE: For custom powershell treesitter parser:
     -- local treesitter_parser_config = require('nvim-treesitter.parsers').get_parser_configs()
