@@ -304,7 +304,9 @@ call plug#begin()
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
     Plug 'roginfarrer/cmp-css-variables'
-    Plug 'lukas-reineke/cmp-rg',
+    " NOTE: Use fork until fix for windows cmd is merged
+    " Plug 'lukas-reineke/cmp-rg'
+    Plug 'DanSM-5/cmp-rg'
     " Plug 'hrsh7th/cmp-nvim-lua' " { name = 'nvim_lua'  }
     " Plug 'hrsh7th/cmp-buffer' " { name = 'path' }
     " Plug 'https://codeberg.org/FelipeLema/cmp-async-path' " { name = 'async_path' }

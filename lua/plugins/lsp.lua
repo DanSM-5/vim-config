@@ -30,7 +30,9 @@ return {
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-nvim-lsp-signature-help',
       'roginfarrer/cmp-css-variables',
-      'lukas-reineke/cmp-rg',
+      -- NOTE: Use fork until fix for windows cmd is merged
+      -- 'lukas-reineke/cmp-rg',
+      'DanSM-5/cmp-rg',
       -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
       -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
       -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
