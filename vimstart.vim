@@ -325,6 +325,9 @@ call plug#begin()
     Plug 'nvim-tree/nvim-web-devicons'
     " Plug 'MunifTanjim/nui.nvim'
 
+    " HTML auto closing tags
+    Plug 'windwp/nvim-ts-autotag'
+
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
     " Plug 'nvim-neotest/nvim-nio'
