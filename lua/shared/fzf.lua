@@ -128,7 +128,7 @@ local select_buffer_lsp = function (sink)
     return
   elseif #client_names == 1 then
     -- single client open settings directly
-    sink(client_names)
+    sink({ '', client_names[1] })
     return
   end
 
