@@ -126,7 +126,15 @@ vim.cmd([[
     set autoindent smartindent
   endfunction
 
-  function! g:OnVimEnter()
+	" Return to last edit position when opening files
+	" autocmd BufReadPost *
+	"      \ if line("'\"") > 0 && line("'\"") <= line("$") |
+	"      \   exe "normal! g`\"zz" |
+	"      \ endif
+]])
+
+vim.fn.OnVimEnter = function ()
+  vim.cmd([[
     " Capture styles before calling ToggleBg
     let g:theme_normal = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
     let g:theme_visual = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
@@ -135,24 +143,18 @@ vim.cmd([[
     let g:theme_cursorLineNr = substitute(trim(execute("hi CursorLineNr")), 'xxx', '', 'g')
     let g:theme_cursorLine = substitute(trim(execute("hi CursorLine")), 'xxx', '', 'g')
     let g:theme_signColumn = substitute(trim(execute("hi SignColumn")), 'xxx', '', 'g')
+  ]])
 
-    " Make background transparen
-    ToggleBg
-    " Set tab to 2 paces
-    SetTab
+  vim.cmd.ToggleBg()
+  vim.cmd.SetTab()
+  vim.fn['config#after']()
+end
 
-    " Call config after on vim enter
-    call config#after()
-  endfunction
-
-  autocmd VimEnter * call g:OnVimEnter()
-
-	" Return to last edit position when opening files
-	" autocmd BufReadPost *
-	"      \ if line("'\"") > 0 && line("'\"") <= line("$") |
-	"      \   exe "normal! g`\"zz" |
-	"      \ endif
-]])
+vim.api.nvim_create_autocmd('VimEnter', {
+  pattern = { '*' },
+  desc = 'Run startup config after plugins are loaded',
+  callback = vim.fn.OnVimEnter
+})
 
 --: }}} :------------------------------------------------------------------
 
@@ -167,6 +169,6 @@ vim.api.nvim_create_autocmd('BufReadPost', {
   end
 })
 
--- require('shared.autocmd')
+require('shared.autocmd')
 require('shared.big_files').setup()
 

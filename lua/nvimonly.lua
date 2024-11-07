@@ -75,6 +75,6 @@ require('nvim-ts-autotag').setup({
 -- Set color for cursor word
 vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
 
--- require('shared.autocmd')
+require('shared.autocmd')
 -- require('debugger').setup()
 
