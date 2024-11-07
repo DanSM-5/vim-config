@@ -2,6 +2,12 @@ local lf = function()
   local temp = vim.fn.tempname()
   local buf = vim.api.nvim_create_buf(false, true)
   local cwd = vim.fn.GitPath() or vim.fn.expand('%:p:h')
+  if not vim.fn.isdirectory(cwd) then
+    cwd = vim.fn.FindProjectRoot('.git')
+    if not cwd then
+      cwd = vim.fn.expand('~')
+    end
+  end
   pcall(vim.api.nvim_set_option_value, 'filetype', 'lf_buffer', { buf = buf })
 
   -- Enable insert mode on open
