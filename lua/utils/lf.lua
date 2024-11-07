@@ -35,7 +35,8 @@ local lf = function()
         local ok_fileredable = pcall(vim.fn.filereadable, temp)
         if not ok_fileredable then
           -- Needed to remove "[Process exited 0]"
-          vim.fn.feedkeys('i')
+          -- vim.fn.feedkeys('i')
+          vim.cmd.bnext()
           return
         end
 
@@ -43,13 +44,15 @@ local lf = function()
 
         if not ok_names then
           -- Needed to remove "[Process exited 0]"
-          vim.fn.feedkeys('i')
+          -- vim.fn.feedkeys('i')
+          vim.cmd.bnext()
           return
         end
 
         if #names == 0 then
           -- Needed to remove "[Process exited 0]"
-          vim.fn.feedkeys('i')
+          -- vim.fn.feedkeys('i')
+          vim.cmd.bnext()
           return
         end
 
