@@ -47,8 +47,6 @@ local lf = function()
           return
         end
 
-        vim.print(names)
-
         if #names == 0 then
           -- Needed to remove "[Process exited 0]"
           vim.fn.feedkeys('i')
