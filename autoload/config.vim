@@ -1546,6 +1546,7 @@ endfunction
 "   endif
 " endfunction
 
+" Vim only version
 function! LF()
   if has('nvim')
     echo 'Cannot open in nvim'
