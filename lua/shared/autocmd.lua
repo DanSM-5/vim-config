@@ -12,5 +12,5 @@
 -- Override regular LF autocommand
 vim.api.nvim_create_user_command('LF', function ()
   require('utils.lf').lf()
-end, { force = true })
+end, { force = true, bar = true })
 
