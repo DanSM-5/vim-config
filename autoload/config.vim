@@ -1270,12 +1270,12 @@ func! s:DefineCommands () abort
     command! -bar Vterm :vs|te
     command! -bar Sterm :sp|te
     augroup custom_term
-      function NeovimTerminalStartup() abort
+      function s:NeovimTerminalStartup() abort
         setlocal nonumber norelativenumber bufhidden=hide
         startinsert
       endfunction
       autocmd!
-      autocmd TermOpen * call NeovimTerminalStartup()
+      autocmd TermOpen * call s:NeovimTerminalStartup()
     augroup END
   else
     " in Vim you can list open terminal windows with 'call term_open()'
