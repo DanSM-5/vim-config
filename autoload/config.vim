@@ -1313,7 +1313,7 @@ func! s:DefineCommands () abort
 
   " Use lf to select files to open in vim
   " NOTE: It does not work on nvim
-  command! -bar LF call LF()
+  command! -bar -complete=dir -nargs=? LF call LF(<q-args>)
 
   " Create new txt file
   command! -nargs=? NText call NewTxt(<q-args>)
@@ -1551,13 +1551,38 @@ endfunction
 " endfunction
 
 " Vim only version
-function! LF()
+function! LF(path)
   if has('nvim')
     echo 'Cannot open in nvim. Use require("utils.lf").lf() instead.'
     return
   endif
   let temp = tempname()
-  exec 'silent !lf -selection-path=' . shellescape(temp)
+  let path = ''
+
+  " Logic to set the starting path
+  if a:path == '.' || a:path == '%'
+    let path = expand('%:p:h')
+  elseif a:path == '~'
+    let path = expand('~')
+  elseif !empty(a:path)
+    let path = fnamemodify(a:path, ':p:h')
+  else
+    let path = GitPath()
+  endif
+
+  let path = !empty(path) ? path : expand('%:p:h')
+  if !isdirectory(path)
+    let path = FindProjectRoot('.git')
+    if empty(path)
+      let path = expand('~')
+    endif
+  endif
+
+  " Add padding space
+  let path = empty(path) ? '' : ' ' . shellescape(path)
+
+  exec 'silent !lf -selection-path=' . shellescape(temp) . path
+
   if !filereadable(temp)
     redraw!
     return
