@@ -1551,7 +1551,7 @@ endfunction
 " endfunction
 
 " Vim only version
-function! LF(path)
+function! LF(path = '')
   if has('nvim')
     echo 'Cannot open in nvim. Use require("utils.lf").lf() instead.'
     return
