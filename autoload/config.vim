@@ -972,6 +972,7 @@ function! s:OpenTempGitCommit(commits) abort
     return
   else
     enew
+    exec 'file Commits'
     for commit in a:commits
       let hash = split(commit)[0]
       pu = system('git show ' . hash)
