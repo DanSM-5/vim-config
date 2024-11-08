@@ -55,7 +55,7 @@ local render_lsp_info = function(client_name)
 end
 
 local select_client_fzf = function()
-  require('shared.fzf').select_buffer_lsp(function(selected)
+  require('utils.fzf').select_buffer_lsp(function(selected)
     -- NOTE: sink function always return an empty string on first position
     if #selected < 2 then
       return
