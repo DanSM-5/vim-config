@@ -338,6 +338,17 @@ func! s:Set_user_keybindings () abort
   " Toggle undo tree
   nnoremap <leader>u <cmd>UndotreeToggle<cr>
 
+  " Duplicate line above and below without moving cursor
+  nnoremap <A-d> :<C-U>t.<CR>
+  nnoremap <A-u> :<C-U>t-1<CR>
+  inoremap <A-d> <esc>:<C-U>t.<CR>
+  inoremap <A-u> <esc>:<C-U>t-1<CR>
+
+  " Keycodes
+  " <A-UP> | <Esc>[1;3A
+  " <A-Down> | <Esc>[1;3B
+  " <Esc> == \e
+
   " Set key codes for vim
   if g:is_linux && !has('nvim')
     execute "set <A-j>=\ej"
@@ -348,6 +359,15 @@ func! s:Set_user_keybindings () abort
     execute "set <A-.>=\e."
     execute "set <A-t>=\et"
     execute "set <A-s>=\es"
+    execute "set <A-u>=\eu"
+    execute "set <A-d>=\ed"
+    execute "set <A-p>=\ep"
+    execute "set <A-Up>=\e[1;3A"
+    execute "set <A-Down>=\e[1;3B"
+    execute "set <A-Right>=\e[1;3C"
+    execute "set <A-Left>=\e[1;3D"
+  elseif g:is_mac && !has('nvim')
+    execute "set <A-p>=π"
   endif
 endf
 
@@ -1177,15 +1197,6 @@ func! s:SetFZF () abort
       \ call s:Fzf_vim_gitfiles(<q-args>, <bang>0)
   endif
 
-  " configure Alt-p
-  if ! has('nvim')
-    if g:is_mac
-      execute "set <M-p>=π"
-    else
-      execute "set <M-p>=\ep"
-    endif
-  endif
-
   " fzf options with custom preview
   if g:is_windows || g:is_termux
     command! -bang -nargs=? -complete=dir FzfFiles
@@ -1204,10 +1215,10 @@ func! s:SetFZF () abort
 
 
   " Set keymappings
-  nnoremap <A-p> :GitFZF!<CR>
-  nnoremap <C-P> :GitFZF<CR>
-  nnoremap <C-o>p :CPrj<CR>
-  nnoremap <C-o>t :FTxt<CR>
+  nnoremap <A-p> :<C-u>GitFZF!<CR>
+  nnoremap <C-P> :<C-u>GitFZF<CR>
+  nnoremap <C-o>p :<C-u>CPrj<CR>
+  nnoremap <C-o>t :<C-u>FTxt<CR>
   " Set usual ctrl-o behavior to double the sequence
   nnoremap <C-o><C-o> <C-o>
 endf
@@ -1374,25 +1385,26 @@ func! s:RemapAltUpDownSpecial () abort
   inoremap <silent><Esc>[1;3B <Esc>:m .+1<CR>==gi
 endf
 
-func! s:RemapAltUpDownJK () abort
-  " move selected lines up one line
-  vnoremap <silent><C-k> :m '<-2<CR>gv=gv
-
-  " move selected lines down one line
-  vnoremap <silent><C-j> :m '>+1<CR>gv=gv
-
-  " move current line up one line
-  nnoremap <silent><C-k> :<C-u>m .-2<CR>==
-
-  " move current line down one line
-  nnoremap <silent><C-j> :<C-u>m .+1<CR>==
-
-  " move current line up in insert mode
-  inoremap <silent><C-k> <Esc>:m .-2<CR>==gi
-
-  " move current line down in insert mode
-  inoremap <silent><C-j> <Esc>:m .+1<CR>==gi
-endf
+" No longer in used
+" func! s:RemapAltUpDownJK () abort
+"   " move selected lines up one line
+"   vnoremap <silent><C-k> :m '<-2<CR>gv=gv
+"
+"   " move selected lines down one line
+"   vnoremap <silent><C-j> :m '>+1<CR>gv=gv
+"
+"   " move current line up one line
+"   nnoremap <silent><C-k> :<C-u>m .-2<CR>==
+"
+"   " move current line down one line
+"   nnoremap <silent><C-j> :<C-u>m .+1<CR>==
+"
+"   " move current line up in insert mode
+"   inoremap <silent><C-k> <Esc>:m .-2<CR>==gi
+"
+"   " move current line down in insert mode
+"   inoremap <silent><C-j> <Esc>:m .+1<CR>==gi
+" endf
 
 func! s:RemapVisualMultiUpDown () abort
   " Map usual <C-Up> <C-Down> to <C-y> and <C-h> for use in vim windows
@@ -1426,15 +1438,14 @@ func! s:MoveLinesBlockMapsLinux () abort
     Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
   endif
 
+  silent call s:RemapAltUpDownNormal()
+ 
   " silent call s:RemapAltUpDownJK()
-
-  " <A-UP> | <Esc>[1;3A
-  " <A-Down> | <Esc>[1;3B
-  if has('nvim')
-    silent call s:RemapAltUpDownNormal()
-  else
-    silent call s:RemapAltUpDownSpecial()
-  endif
+  " if has('nvim')
+  "   silent call s:RemapAltUpDownNormal()
+  " else
+  "   silent call s:RemapAltUpDownSpecial()
+  " endif
 endf
 
 func! s:MoveLinesBlockMapsGvim () abort
