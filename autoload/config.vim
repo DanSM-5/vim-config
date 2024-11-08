@@ -980,6 +980,7 @@ function! s:OpenTempGitCommit(commits) abort
     silent call execute('normal ggdd')
     setlocal nomod readonly
     setlocal filetype=git
+    setlocal foldmethod=syntax
   endif
 endfunction
 
