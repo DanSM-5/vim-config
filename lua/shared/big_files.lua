@@ -4,7 +4,7 @@ local FILETYPE = 'bigfile'
 return {
   setup = function()
     -- Disable certain features when opening large files
-    local big_file = vim.api.autogroup('BigFile', { clear = true })
+    local big_file = vim.api.nvim_create_augroup('BigFile', { clear = true })
     vim.filetype.add({
       pattern = {
         ['.*'] = {
@@ -20,7 +20,7 @@ return {
       },
     })
 
-    vim.api.autocmd({ 'FileType' }, {
+    vim.api.nvim_create_autocmd({ 'FileType' }, {
       group = big_file,
       pattern = FILETYPE,
       ---Turn off features that affect working in big files
