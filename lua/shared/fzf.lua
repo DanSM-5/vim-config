@@ -1,8 +1,11 @@
-local function echo(hlgroup, msg)
-  vim.cmd('echohl ' .. hlgroup)
-  vim.cmd('echo "lspfuzzy: ' .. msg .. '"')
-  vim.cmd('echohl None')
-end
+-- Kept as example
+-- local function echo(hlgroup, msg)
+--   vim.cmd('echohl ' .. hlgroup)
+--   vim.cmd('echo "lspfuzzy: ' .. msg .. '"')
+--   vim.cmd('echohl None')
+-- end
+-- Usage:
+-- echo('WarningMsg', 'Some message')
 
 ---Concatenates 2 arrays
 ---@generic T
@@ -56,15 +59,31 @@ local fzf_options_with_preview = { options = fzf_preview_options }
 --   cmd(fzf_actions[key])
 -- end
 
+---@class FzfOptions
+---@field source (fun(): table) | table
+---@field sink fun(options: string[]): nil
+---@field fzf_opts string[]
+---@field name? string
+---@field fullscreen? boolean
+
 ---Wraper command for fzf#run(fzf#wrap({}))
----@param source function | table
----@param sink fun(options: string[]): nil
----@param fzf_opts string[]
+---@param opts FzfOptions
 ---@return nil
-local fzf = function (source, sink, fzf_opts)
+local fzf = function (opts)
   if not vim.g.loaded_fzf then
-    echo('WarningMsg', 'FZF is not loaded.')
+    vim.notify('Fzf plugin is not laoded!', vim.log.levels.WARN)
     return
+  end
+
+  -- Default history file
+  local name = opts.name or 'fzf-history-default'
+  local fullscreen = opts.fullscreen and 1 or 0
+  local source = opts.source
+  local options = opts.fzf_opts
+  local sink = opts.sink or function (tbl)
+    for _, value in ipairs(tbl) do
+      vim.notify(value)
+    end
   end
 
   -- local fzf_opts = opts.fzf_options
@@ -88,7 +107,7 @@ local fzf = function (source, sink, fzf_opts)
   --   end
   -- end
 
-  local fzf_opts_wrap = vim.fn['fzf#wrap']({ source = source, options = fzf_opts })
+  local fzf_opts_wrap = vim.fn['fzf#wrap'](name, { source = source, options = options }, fullscreen)
   fzf_opts_wrap['sink*'] = sink -- 'sink*' needs to be assigned outside wrap()
   vim.fn['fzf#run'](fzf_opts_wrap)
 end
@@ -105,6 +124,7 @@ local function get_history_param (file)
   if string.find(base_path, '~') then
     base_path = string.gsub(base_path, '~', home)
   end
+  -- local base_path = vim.env.FZF_HIST_DIR
 
   -- combine  --history= + /path/to/cache + /filename
   hist_path = hist_path .. base_path .. '/' .. hist_file
@@ -124,7 +144,7 @@ local select_buffer_lsp = function (sink)
   end
 
   if #client_names == 0 then
-    echo('WarningMsg', 'No lsp clients attached in current buffer')
+    vim.notify('No lsp clients attached in current buffer', vim.log.levels.WARN)
     return
   elseif #client_names == 1 then
     -- single client open settings directly
@@ -142,7 +162,7 @@ local select_buffer_lsp = function (sink)
   })
 
   -- return client_names
-  fzf(client_names, sink, options)
+  fzf({ source = client_names, sink = sink, fzf_opts = options })
 end
 
 return {
