@@ -15,7 +15,9 @@ return {
           -- set foldlevel=99
         end,
         detach = function (buf)
-          -- nothing
+          -- Unset changes
+          vim.opt_local.foldmethod = 'indent'
+          vim.opt_local.foldexpr = ''
         end,
         is_supported = function (lang)
           return true
