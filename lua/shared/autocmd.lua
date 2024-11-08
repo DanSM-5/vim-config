@@ -10,7 +10,9 @@
 -- })
 
 -- Override regular LF autocommand
-vim.api.nvim_create_user_command('LF', function ()
-  require('utils.lf').lf()
-end, { force = true, bar = true })
+---Create LF command to use lf binary to select files
+---@param opts { fargs: string[] }
+vim.api.nvim_create_user_command('LF', function (opts)
+  require('utils.lf').lf(opts.fargs[1])
+end, { force = true, bar = true, nargs = '?', complete = 'dir' })
 

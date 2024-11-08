@@ -1,14 +1,30 @@
-local lf = function()
+---Use lf in neovim to select and open files for editing
+---@param dir? string Directory to start lf from
+local lf = function(dir)
   -- Store current buffer reference for navigating back
   local curr_buf = vim.api.nvim_get_current_buf()
   local temp = vim.fn.tempname()
   local buf = vim.api.nvim_create_buf(false, true)
   -- Priorities
   -- repository > buffer dir > home directory
-  local cwd = vim.fn.GitPath() or vim.fn.expand('%:p:h')
+  local cwd = ''
+  if dir == '.' or dir == '%' then
+    -- dot (.) and buffer (%) expand to current dir
+    cwd = vim.fn.expand('%:p:h')
+  elseif dir == '~' then
+    -- tilda (~) expand to home
+    cwd = vim.fn.expand('~')
+  elseif dir ~= nil then
+    -- get absolute path always in case it passed relative
+    cwd = vim.fn.fnamemodify(dir, ':p:h')
+  end
+  -- Check if cwd is assinged, if not try to guess a suitable directory
+  cwd = cwd or vim.fn.GitPath() or vim.fn.expand('%:p:h')
   if not vim.fn.isdirectory(cwd) then
+    -- Try find root of git directory by .git file/dir
     cwd = vim.fn.FindProjectRoot('.git')
     if not cwd then
+      -- Fallback to home
       cwd = vim.fn.expand('~')
     end
   end
