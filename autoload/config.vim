@@ -1320,6 +1320,9 @@ func! s:DefineCommands () abort
 
   " clear search
   command! -nargs=0 CleanSearch :nohlsearch
+
+  " BlameLine
+  command! -bar -nargs=? BlameLine call BlameLine(<q-args>)
 endf
 
 func! s:RemapAltUpDownNormal () abort
@@ -1549,6 +1552,35 @@ endfunction
 "     silent execute('hi Normal guibg=NONE ctermbg=NONE')
 "   endif
 " endfunction
+
+function BlameLine(...) abort
+  let count = empty(a:1) ? '5' : a:1
+  let root = FindProjectRoot('.git')
+  let line = line('.')
+  let file = expand('%:p')
+  let name = expand('%:t')
+  if !filereadable(file)
+    return
+  endif
+
+  " Command
+  let args = 'git -C ' . shellescape(root) . ' log -n ' . count . ' -u -L ' . line .. ',+1:' .. shellescape(file)
+  let blame_out = system(args)
+  if empty(blame_out)
+    return
+  endif
+  let buff_name = 'Blame ' . name
+
+  " Display blame on buffer
+  enew
+  exec 'file ' . buff_name
+  pu = blame_out
+  pu = ''
+  silent call execute('normal ggdd')
+  setlocal nomod readonly
+  setlocal filetype=git
+  setlocal foldmethod=syntax
+endfunction
 
 " Vim only version
 function! LF(path = '')
