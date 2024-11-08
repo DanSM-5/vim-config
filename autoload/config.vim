@@ -788,7 +788,6 @@ function! FzfChangeProject(query, fullscreen) abort
     \   'source': getprojects,
     \   'options': [
     \     '--prompt', 'Projs> ',
-    \     '--history=' . $FZF_HIST_DIR . '/fzf-change-prj',
     \     '--no-multi', '--ansi',
     \     '--query', a:query,
     \     '--layout=reverse',
