@@ -344,10 +344,11 @@ func! s:Set_user_keybindings () abort
   inoremap <A-d> <esc>:<C-U>t.<CR>
   inoremap <A-u> <esc>:<C-U>t-1<CR>
 
-  " Keycodes
+  " Keycode examples
   " <A-UP> | <Esc>[1;3A
   " <A-Down> | <Esc>[1;3B
-  " <Esc> == \e
+  " <A-b>=^[b
+  " <Esc> == \e == ^[
 
   " Set key codes for vim
   if g:is_linux && !has('nvim')
@@ -362,10 +363,10 @@ func! s:Set_user_keybindings () abort
     execute "set <A-u>=\eu"
     execute "set <A-d>=\ed"
     execute "set <A-p>=\ep"
-    execute "set <A-Up>=\e[1;3A"
-    execute "set <A-Down>=\e[1;3B"
-    execute "set <A-Right>=\e[1;3C"
-    execute "set <A-Left>=\e[1;3D"
+    " execute "set <A-Up>=\e[1;3A"
+    " execute "set <A-Down>=\e[1;3B"
+    " execute "set <A-Right>=\e[1;3C"
+    " execute "set <A-Left>=\e[1;3D"
   elseif g:is_mac && !has('nvim')
     execute "set <A-p>=π"
   endif
