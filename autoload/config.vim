@@ -1554,7 +1554,7 @@ endfunction
 " endfunction
 
 function BlameLine(...) abort
-  let count = empty(a:1) ? '5' : a:1
+  let commit_count = empty(a:1) ? '5' : a:1
   let root = FindProjectRoot('.git')
   let line = line('.')
   let file = expand('%:p')
@@ -1564,7 +1564,7 @@ function BlameLine(...) abort
   endif
 
   " Command
-  let args = 'git -C ' . shellescape(root) . ' log -n ' . count . ' -u -L ' . line .. ',+1:' .. shellescape(file)
+  let args = 'git -C ' . shellescape(root) . ' log -n ' . commit_count . ' -u -L ' . line .. ',+1:' .. shellescape(file)
   let blame_out = system(args)
   if empty(blame_out)
     return
@@ -1573,7 +1573,7 @@ function BlameLine(...) abort
 
   " Display blame on buffer
   enew
-  exec 'file ' . buff_name
+  exec 'silent! file ' . buff_name
   pu = blame_out
   pu = ''
   silent call execute('normal ggdd')
