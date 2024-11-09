@@ -339,10 +339,17 @@ func! s:Set_user_keybindings () abort
   nnoremap <leader>u <cmd>UndotreeToggle<cr>
 
   " Duplicate line above and below without moving cursor
-  nnoremap <A-d> :<C-U>t.<CR>
-  nnoremap <A-u> :<C-U>t-1<CR>
-  inoremap <A-d> <esc>:<C-U>t.<CR>
-  inoremap <A-u> <esc>:<C-U>t-1<CR>
+  if has('nvim')
+    nnoremap <A-d> :<C-U>t.<CR>
+    nnoremap <A-u> :<C-U>t-1<CR>
+    inoremap <A-d> <esc>:<C-U>t.<CR>
+    inoremap <A-u> <esc>:<C-U>t-1<CR>
+  else
+    nnoremap <A-d> v0yO<esc>pjly$kp`[jh
+    nnoremap <A-u> v0yO<esc>pjly$kp`[h
+    inoremap <A-d> <esc>lv0yO<esc>pjly$kp`[jhi
+    inoremap <A-u> <esc>lv0yO<esc>pjly$kp`[hi
+  endif
 
   " Keycode examples
   " <A-UP> | <Esc>[1;3A
