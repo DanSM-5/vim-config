@@ -170,5 +170,6 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 })
 
 require('shared.autocmd')
+require('shared.commands')
 require('shared.big_files').setup()
 
