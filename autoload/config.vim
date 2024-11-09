@@ -352,17 +352,14 @@ func! s:Set_user_keybindings () abort
 
   " Set key codes for vim
   if g:is_linux && !has('nvim')
-    execute "set <A-j>=\ej"
-    execute "set <A-k>=\ek"
-    execute "set <A-h>=\eh"
-    execute "set <A-l>=\el"
     execute "set <A-,>=\e,"
     execute "set <A-.>=\e."
-    execute "set <A-t>=\et"
-    execute "set <A-s>=\es"
-    execute "set <A-u>=\eu"
-    execute "set <A-d>=\ed"
-    execute "set <A-p>=\ep"
+    " a-z
+    for i in range(97,122)
+      let c = nr2char(i)
+      execute "set <A-".c.">=\e".c
+    endfor
+    " Alt-arrow combinations throw error
     " execute "set <A-Up>=\e[1;3A"
     " execute "set <A-Down>=\e[1;3B"
     " execute "set <A-Right>=\e[1;3C"
