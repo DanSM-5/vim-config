@@ -8,7 +8,7 @@ return {
       -- :Gitsigns setqflist
       local target = opts.bang and 'attached' or 'all'
       gitsigns.setqflist(target)
-    end, { bang = true })
+    end, { bang = true, bar = true })
 
     -- Set mappings
     gitsigns.setup({
