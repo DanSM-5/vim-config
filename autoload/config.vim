@@ -55,9 +55,9 @@ func! s:SetConfigurationsBefore () abort
   silent call s:DefineCommands()
 
   " Paste with register bindings
-  nmap gp  <Plug>ReplaceWithRegisterOperator
-  nmap gpp <Plug>ReplaceWithRegisterLine
-  xmap gp  <Plug>ReplaceWithRegisterVisual
+  nmap cm  <Plug>ReplaceWithRegisterOperator
+  nmap cmm <Plug>ReplaceWithRegisterLine
+  xmap cm  <Plug>ReplaceWithRegisterVisual
 
   " Jump conflict bindings
   nmap [n <Plug>(jumpconflict-context-previous)
