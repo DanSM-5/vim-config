@@ -351,6 +351,13 @@ func! s:Set_user_keybindings () abort
     inoremap <A-u> <esc>lv0yO<esc>pjly$kp`[hi
   endif
 
+  " We use the map <C-o> specially which conflict with jump
+  " list backward function. The regular motion still works
+  " but with a delay or double <C-o> will execute it immediately.
+  " However, there is no easy way to cancel when in operation pending mode
+  " (o-pending). Thus this map exists as a hack for NOOP with <C-o>.
+  nnoremap <C-o><esc> <esc>
+
   " Keycode examples
   " <A-UP> | <Esc>[1;3A
   " <A-Down> | <Esc>[1;3B
@@ -1220,10 +1227,16 @@ func! s:SetFZF () abort
 
 
   " Set keymappings
+  " Open File fullscreen
   nnoremap <A-p> :<C-u>GitFZF!<CR>
+  " Open File
   nnoremap <C-P> :<C-u>GitFZF<CR>
+  " Open from project
   nnoremap <C-o>p :<C-u>CPrj<CR>
+  " Open from notes (txt)
   nnoremap <C-o>t :<C-u>FTxt<CR>
+  " Search word under the cursor (RG)
+  nnoremap <C-o>f :execute 'RG '.expand('<cword>')<cr>
   " Set usual ctrl-o behavior to double the sequence
   nnoremap <C-o><C-o> <C-o>
 endf
