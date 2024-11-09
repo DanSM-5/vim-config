@@ -12,8 +12,18 @@ omap ih <Plug>(GitGutterTextObjectInnerPending)
 omap ah <Plug>(GitGutterTextObjectOuterPending)
 xmap ih <Plug>(GitGutterTextObjectInnerVisual)
 xmap ah <Plug>(GitGutterTextObjectOuterVisual)
+" Actions
+nnoremap <leader>hr <Plug>(GitGutterUndoHunk)
 " Quickfix
-command! Gqf GitGutterQuickFix | copen
+function s:Gqf(bang) abort
+  if a:bang
+    GitGutterQuickFixCurrentFile | copen
+  else
+    GitGutterQuickFix | copen
+  endif
+endfunction
+
+command! -bang -bar Gqf call s:Gqf(<bang>0)
 " Change update time to reflect gitgutter changes
 set updatetime=1000
 
@@ -23,6 +33,10 @@ set updatetime=1000
 if executable('rg')
   let g:gitgutter_grep = 'rg'
 endif
+
+" Quickfix movement
+nnoremap ]q <cmd>silent! cnext<cr>
+nnoremap [q <cmd>silent! cprev<cr>
 
 function! s:VimConfig() abort
   " Remap vinegar to <leader>-
