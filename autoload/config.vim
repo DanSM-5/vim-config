@@ -333,7 +333,16 @@ func! s:Set_user_keybindings () abort
   " :help i_CTRL-U-default
   inoremap <C-U> <C-G>u<C-U>
   " :help i_CTRL-W-default
+  " Delete word before.
   inoremap <C-W> <C-G>u<C-W>
+
+  if g:is_windows && !has('nvim')
+    " Delete word backward
+    inoremap <c-bs> <c-w>
+  endif
+
+  " Delete word forward
+  inoremap <c-del> <cmd>normal! dw<cr>
 
   " Toggle undo tree
   nnoremap <leader>u <cmd>UndotreeToggle<cr>
