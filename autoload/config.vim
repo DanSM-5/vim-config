@@ -331,6 +331,7 @@ func! s:Set_user_keybindings () abort
   " :help Y-default
   nnoremap Y y$
   " :help i_CTRL-U-default
+  " Delete text before
   inoremap <C-U> <C-G>u<C-U>
   " :help i_CTRL-W-default
   " Delete word before.
