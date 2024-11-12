@@ -315,6 +315,7 @@ return {
     none_ls.setup({
       sources = {
         none_ls.builtins.formatting.stylua,
+        none_ls.builtins.code_actions.gitrebase,
         none_ls.builtins.code_actions.gitsigns.with({
           config = {
             filter_actions = function (title)
