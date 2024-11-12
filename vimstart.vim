@@ -289,6 +289,7 @@ call plug#begin()
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'xiyaowong/nvim-cursorword'
     Plug 'OXY2DEV/helpview.nvim'
+    Plug 'OXY2DEV/markview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
     Plug 'mawkler/demicolon.nvim'
     Plug 'mawkler/refjump.nvim'
