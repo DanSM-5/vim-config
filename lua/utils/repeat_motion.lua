@@ -15,7 +15,16 @@
 ---@field move_forward string Key to be used when repeating a direction motion
 ---@field move_backward string Key to be used when repeating a direction motion
 
+---@class RepeatMotion
+---@field repeat_direction fun(options: RepeatOptions): fun(opts: { forward: boolean }|table): nil
+---@field create_repeatable_func fun(fn: function): function
+---@field repeat_action function|nil DO NOT USE DIRECTLY
+---@field repeat_dot_map fun(map_string: string): nil
+---@field repeat_pair fun(options: RepeatPair): nil
+---@field set_motion_keys fun(opts: MotionKeys|nil): nil
 local repeat_motion = {}
+-- Not listed to preserve generics
+-- -@field create_repeatable_pair fun(forward: TForward, backward: TBackward): TForward, TBackward
 
 ---Creates repeatable function using nvim-treesitter-textobjects
 ---It accepts an object that uses a `forward` for directionality
@@ -29,10 +38,50 @@ end
 
 ---Creates dot repeatable motions using vim-repeat and repeatable.vim
 ---@param map_string string string to be use for mapping e.g. "mode lhs rhs"
-repeat_motion.repeat_dot = function(map_string)
+repeat_motion.repeat_dot_map = function(map_string)
   -- Repeatable nnoremap <silent>mlu :<C-U>m-2<CR>==
   -- vim.cmd.Repeatable('nnoremap <silent>[g :tabprevious')
   vim.cmd.Repeatable(map_string)
+end
+
+---Create dot repeatable function. Requires vim-repeat
+---@param fn function Function to repeat
+---@return function Function that can be repeated with dot
+repeat_motion.create_repeatable_func = function (fn)
+  return function(...)
+    local args = { ... }
+    local nargs = select('#', ...)
+    vim.go.operatorfunc = "v:lua.require'utils.repeat_motion'.repeat_action"
+
+    repeat_motion.repeat_action = function()
+      fn(unpack(args, 1, nargs))
+      if vim.fn.exists('*repeat#set') == 1 then
+        local action = vim.api.nvim_replace_termcodes(
+          string.format('<cmd>call %s()<cr>', vim.go.operatorfunc),
+          true,
+          true,
+          true
+        )
+        pcall(vim.fn['repeat#set'], action, -1)
+      end
+    end
+
+    vim.cmd('normal! g@l')
+  end
+end
+
+---Create a pair of functions that repeat motion forward and backward
+---@generic TForward
+---@generic TBackward
+---@param forward TForward
+---@param backward TBackward
+---@return TForward
+---@return TBackward
+repeat_motion.create_repeatable_pair = function (forward, backward)
+  local rep_forward, rep_backward = require('nvim-treesitter.textobjects.repeatable_move')
+    .make_repeatable_move_pair(forward, backward)
+
+  return rep_forward, rep_backward
 end
 
 ---Create a pair of maps. Square brackers are used by default '[' ']'
