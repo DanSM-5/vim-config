@@ -90,7 +90,7 @@ Sets configurations on startup on `VimEnter` autocmd.
 
 In neovim lsp is configured using `lspconfig` and lsp servers can be added using `:Mason` or manually installing them and calling `require('lspconfig').SERVER.setup({})`.
 
-For vim there is no lsp setup. You can add support for it using `[vim-lsp](https://github.com/prabirshrestha/vim-lsp)` and `[vim-lsp-settings](https://github.com/mattn/vim-lsp-settings)`.
+For vim there is no lsp setup. You can add support for it using [vim-lsp](https://github.com/prabirshrestha/vim-lsp)` and `[vim-lsp-settings](https://github.com/mattn/vim-lsp-settings).
 
 Completions in neovim for instance rely mostly on lsp suggestions displayed using `cmp-nvim`.
 

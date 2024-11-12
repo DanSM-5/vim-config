@@ -113,7 +113,7 @@ return {
   setup = function(opts)
     ---@type LspSetupOpts
     opts = vim.tbl_deep_extend('force', defaultLspSetupOpts, opts or {})
-    local manual_setup = vim.g.is_termux == 1 or vim.env.IS_FROM_CONTAINER == 'true'
+    local manual_setup = vim.g.is_termux == 1 or vim.g.is_container == 1
     local language_servers = manual_setup and {}
       or {
         'lua_ls',
