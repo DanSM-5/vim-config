@@ -316,13 +316,17 @@ return {
       sources = {
         none_ls.builtins.formatting.stylua,
         none_ls.builtins.code_actions.gitrebase,
-        none_ls.builtins.code_actions.gitsigns.with({
-          config = {
-            filter_actions = function (title)
-              return title:lower():match('blame') == nil
-            end
-          }
-        }),
+        -- https://github.com/CKolkey/ts-node-action
+        none_ls.builtins.code_actions.ts_node_action,
+        none_ls.builtins.code_actions.gitsigns,
+        -- With filter
+        -- none_ls.builtins.code_actions.gitsigns.with({
+        --   config = {
+        --     filter_actions = function (title)
+        --       return title:lower():match('blame') == nil
+        --     end
+        --   }
+        -- }),
         -- none_ls.builtins.formatting.eslint,
         -- none_ls.builtins.diagnostics.prettier,
       },

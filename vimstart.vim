@@ -277,6 +277,7 @@ call plug#begin()
     " syntax highlight
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+    Plug 'CKolkey/ts-node-action'
     " Comment lines
     Plug 'numToStr/Comment.nvim'
     Plug 'JoosepAlviste/nvim-ts-context-commentstring'

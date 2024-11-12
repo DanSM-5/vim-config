@@ -62,7 +62,7 @@ require('config.nvim_markview').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
-
+require('ts-node-action').setup({})
 -- Start nvim autotag
 require('nvim-ts-autotag').setup({
   opts = {
