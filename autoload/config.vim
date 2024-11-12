@@ -1284,11 +1284,17 @@ func! BufferCd () abort
   endif
 endf
 
+function s:OpenCommitInBrowser() abort
+  execute 'GBrowse ' . expand('<cword>')
+endfunction
+
 func! s:DefineCommands () abort
   " Call command and remove carriage return
   command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
   command! CleanCR call s:CleanCR()
   command! CleanTrailingSpaces call s:CleanTrailingSpaces()
+
+  command! -bar CBrowse call s:OpenCommitInBrowser()
 
   command! Bcd call BufferCd()
   nnoremap <silent> <leader>cd <cmd>Bcd<cr>
