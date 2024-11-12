@@ -17,7 +17,6 @@
 
 ---@class RepeatMotion
 ---@field repeat_direction fun(options: RepeatOptions): fun(opts: { forward: boolean }|table): nil
----@field create_repeatable_func fun(fn: function): function
 ---@field repeat_action function|nil DO NOT USE DIRECTLY
 ---@field repeat_dot_map fun(map_string: string): nil
 ---@field repeat_pair fun(options: RepeatPair): nil
@@ -25,6 +24,7 @@
 local repeat_motion = {}
 -- Not listed to preserve generics
 -- -@field create_repeatable_pair fun(forward: TForward, backward: TBackward): TForward, TBackward
+-- -@field create_repeatable_func fun(fn: function): function
 
 ---Creates repeatable function using nvim-treesitter-textobjects
 ---It accepts an object that uses a `forward` for directionality
@@ -45,8 +45,9 @@ repeat_motion.repeat_dot_map = function(map_string)
 end
 
 ---Create dot repeatable function. Requires vim-repeat
----@param fn function Function to repeat
----@return function Function that can be repeated with dot
+---@generic TFunc
+---@param fn TFunc Function to repeat
+---@return TFunc Function that can be repeated with dot
 repeat_motion.create_repeatable_func = function (fn)
   return function(...)
     local args = { ... }
