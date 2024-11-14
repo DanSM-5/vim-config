@@ -1217,6 +1217,66 @@ function Emoji(query, use_name, mode) abort
   call fzf#run(fzf#wrap('emoji', spec, 0))
 endfunction
 
+" Return list of listed buffers (bufnr)
+function! GetBuflisted() abort
+  return filter(range(1, bufnr('$')), 'buflisted(v:val) && getbufvar(v:val, "&filetype") != "qf"')
+endfunction
+
+" command! -bar -bang -nargs=? -complete=buffer Buffers         call fzf#vim#buffers(<q-args>, fzf#vim#with_preview({ "placeholder": "{1}" }), <bang>0)',
+
+function Fzf_vim_close_buffers(source) abort
+  if empty(a:source) || !filereadable(a:source)
+    return
+  endif
+
+  let buffers = readfile(a:source)
+  if empty(buffers)
+    return
+  endif
+
+  for bufnr in buffers
+    if bufloaded(bufnr)
+      bdelete bufnr
+    endif
+  endfor
+endfunction
+
+function FzfBuffers(query, fullscreen) abort
+  let buffers = GetBuflisted()
+  let temp_file = tempname()
+  " Use global to use inside :lua
+  " TODO: Investigate a non-global approach
+  let g:remove_list = tempname()
+
+  try
+    if has('nvim')
+      " Use nvim autocmd to use once
+      lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.remove_list) end })
+    else
+      " Using BufLeave and hopping for the best
+      autocmd BufLeave * ++once call Fzf_vim_close_buffers(g:remove_list)
+    endif
+
+    " Store formatted buff names in file
+    call writefile(buffers, temp_file)
+    let remove_buff = $HOME . '/vim-config/utils/remove_buff.sh'
+    if g:is_windows || g:is_gitbash
+      let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
+      let remove_buff = bash_path . ' ' . substitute('/c' . $HOMEPATH . '/vim-config/utils/remove_buff.sh', '\\', '/', 'g')
+    endif
+    " /path/to/remove_buff.sh [line number] [open/buffs] [to/delete/buffs]
+    let remove_buff = remove_buff . ' {n} ' . temp_file . ' ' . g:remove_list
+    let reload_command = 'cat ' . temp_file
+    call fzf#vim#buffers(a:query, buffers, fzf#vim#with_preview({
+      \ 'placeholder': '{1}',
+      \ 'options': ['--ansi', '--bind', 'ctrl-q:execute(' . remove_buff . '):reload(' . reload_command . ')'],
+      \ }))
+  finally
+    " Cleanup global variable
+    unlet g:remove_list
+  endtry
+endfunction
+
 func! s:SetFZF () abort
   nnoremap <C-o>b <cmd>Buffers<cr>
 
