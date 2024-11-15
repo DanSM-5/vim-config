@@ -1231,14 +1231,15 @@ function BufSorterFunc(...) abort
 endfunction
 
 
-" On buff close callback from autocmd for the FzfBuffers function
-function Fzf_vim_close_buffers(source) abort
+" On buff close callback from 'exit' on fzf#run spec
+" Last argument is the exit code of fzf process
+function Fzf_vim_close_buffers(remove_list, opened_buffers, ...) abort
   try
-    if empty(a:source) || !filereadable(a:source)
+    if empty(a:remove_list) || !filereadable(a:remove_list)
       return
     endif
 
-    let buffers = readfile(a:source)
+    let buffers = readfile(a:remove_list)
     if empty(buffers)
       return
     endif
@@ -1253,19 +1254,12 @@ function Fzf_vim_close_buffers(source) abort
       endtry
     endfor
   finally
-    " Cleanup global variables
-    if exists('g:fzf_buffers_remove_list')
-      " Remove temporary file
-      " Buffers to remove
-      call delete(g:fzf_buffers_remove_list)
-      unlet g:fzf_buffers_remove_list
-    endif
-    if exists('g:fzf_buffers_opened_buffers')
-      " Remove temporary file
-      " List of opened buffers
-      call delete(g:fzf_buffers_opened_buffers)
-      unlet g:fzf_buffers_opened_buffers
-    endif
+    " Remove temporary file
+    " Buffers to remove
+    call delete(a:opened_buffers)
+    " Remove temporary file
+    " List of opened buffers
+    call delete(a:remove_list)
   endtry
 endfunction
 
@@ -1273,30 +1267,29 @@ endfunction
 function FzfBuffers(query, fullscreen) abort
   let buffers = GetBuflisted()
   " Keep a list of the currently opened buffers
-  let g:fzf_buffers_opened_buffers = substitute(tempname(), '\\', '/', 'g')
-  let opened_buffers = g:fzf_buffers_opened_buffers
-  " Use global to use inside :lua
-  " TODO: Investigate a non-global approach
-  let g:fzf_buffers_remove_list = substitute(tempname(), '\\', '/', 'g')
-  let remove_list = g:fzf_buffers_remove_list
-  let bash_path = ''
+  let opened_buffers = substitute(tempname(), '\\', '/', 'g')
+  " Keep track of the marked for closing buffers
+  let remove_list = substitute(tempname(), '\\', '/', 'g')
+  let utils_prefix = ''
 
-  if has('nvim')
-    " Use nvim autocmd to use once
-    lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.fzf_buffers_remove_list) end })
-  else
-    " NOTE: In vim it cannot use BufLeave because fzf opens in a popop window
-    " and operations like buff delete are forbidden within a popop window.
-    " We use BufEnter and make sure it is not of type 'terminal'.
-    " For regular flows, this should be enough. It only affects the delete
-    " buffer action which should not be abused.
-    augroup FzfDeleteBuffers
-      au!
-      au BufEnter * ++once if &buftype != 'terminal' | call Fzf_vim_close_buffers(g:fzf_buffers_remove_list) | autocmd! FzfDeleteBuffers | endif
-    augroup END
-  endif
+  " No longer needed. Using 'exit' callback from fzf spec. Leaving comment as
+  " example of how to wrap functions with callbacks using autocmds
+  " Ref: https://github.com/junegunn/fzf/commit/8cb59e6fcac3dce8dfa44b678fdc94cf81efa11b
+  " if has('nvim')
+  "   " Use nvim autocmd to use once
+  "   lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.fzf_buffers_remove_list) end })
+  " else
+  "   " NOTE: In vim it cannot use BufLeave because fzf opens in a popop window
+  "   " and operations like buff delete are forbidden within a popop window.
+  "   " We use BufEnter and make sure it is not of type 'terminal'.
+  "   " For regular flows, this should be enough. It only affects the delete
+  "   " buffer action which should not be abused.
+  "   augroup FzfDeleteBuffers
+  "     au!
+  "     au BufEnter * ++once if &buftype != 'terminal' | call Fzf_vim_close_buffers(g:fzf_buffers_remove_list) | autocmd! FzfDeleteBuffers | endif
+  "   augroup END
+  " endif
 
-  " let buff_formatted = mapnew(buffers, 'join(split(fzf#vim#_format_buffer(v:val), "\t")[2:], "\t")')
   let buff_sorted = sort(buffers, 'BufSorterFunc')
   let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
   " Store formatted buff names in file
@@ -1307,8 +1300,8 @@ function FzfBuffers(query, fullscreen) abort
   if g:is_windows || g:is_gitbash
     let bash_path = s:WindowsShortPath(substitute(g:bash, '\\', '/', 'g'))
     " let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
-    let bash_path = bash_path . ' ' . substitute('/c' . $HOMEPATH, '\\', '/', 'g')
-    let remove_command = bash_path . '/vim-config/utils/remove_buff.sh'
+    let utils_prefix = bash_path . ' /c' . substitute($HOMEPATH, '\\', '/', 'g') . '/vim-config/utils'
+    let remove_command = utils_prefix . '/remove_buff.sh'
   endif
 
   " /path/to/remove_buff.sh [selected/file] [buffs/file] [delete/file]
@@ -1317,7 +1310,7 @@ function FzfBuffers(query, fullscreen) abort
   let reload_command = 'cat ' . opened_buffers
 
   " TODO: Decide which is better between execute-silent and execute
-  " The first one looks nices with no reloads but the second is better as a
+  " The first one looks nicer with no reloads but the second is better as a
   " visual confirmation that the process has ended
   let spec = fzf#vim#with_preview({
     \ 'placeholder': '{1}',
@@ -1325,11 +1318,12 @@ function FzfBuffers(query, fullscreen) abort
     \   '--ansi',
     \   '--no-multi',
     \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+reload:' . reload_command],
+    \  'exit': function('Fzf_vim_close_buffers', [remove_list, opened_buffers])
     \ })
 
   if (g:is_windows || g:is_gitbash) && !has('nvim')
     " preview to be used for vim windows only
-    let preview = bash_path . '/vim-config/utils/preview.sh {1}'
+    let preview = utils_prefix . '/preview.sh {1}'
     let spec.options = spec.options + ['--preview', preview]
   endif
 
