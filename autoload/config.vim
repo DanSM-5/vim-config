@@ -1284,10 +1284,10 @@ function FzfBuffers(query, fullscreen) abort
 
   if has('nvim')
     " Use nvim autocmd to use once
-    lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.remove_list) end })
+    lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.fzf_buffers_remove_list) end })
   else
     " Using BufLeave and hopping for the best
-    autocmd BufLeave * ++once call Fzf_vim_close_buffers(g:remove_list)
+    autocmd BufLeave * ++once call Fzf_vim_close_buffers(g:fzf_buffers_remove_list)
   endif
 
   " let buff_formatted = mapnew(buffers, 'join(split(fzf#vim#_format_buffer(v:val), "\t")[2:], "\t")')
