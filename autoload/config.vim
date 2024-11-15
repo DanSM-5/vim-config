@@ -1247,7 +1247,8 @@ function Fzf_vim_close_buffers(source) abort
       try
         let bufnr = str2nr(buffer)
         if bufloaded(bufnr)
-          execute 'bd! ' . buffer
+          execute 'bd! ' . bufnr
+          " bd! bufnr
         endif
       catch
       endtry
@@ -1285,8 +1286,15 @@ function FzfBuffers(query, fullscreen) abort
     " Use nvim autocmd to use once
     lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.fzf_buffers_remove_list) end })
   else
-    " Using BufLeave and hopping for the best
-    autocmd! BufLeave * ++once call Fzf_vim_close_buffers(g:fzf_buffers_remove_list)
+    " NOTE: In vim it cannot use BufLeave because fzf opens in a popop window
+    " and operations like buff delete are forbidden within a popop window.
+    " We use BufEnter and make sure it is not of type 'terminal'.
+    " For regular flows, this should be enough. It only affects the delete
+    " buffer action which should not be abused.
+    augroup FzfDeleteBuffers
+      au!
+      au BufEnter * ++once if &buftype != 'terminal' | call Fzf_vim_close_buffers(g:fzf_buffers_remove_list) | autocmd! FzfDeleteBuffers | endif
+    augroup END
   endif
 
   " let buff_formatted = mapnew(buffers, 'join(split(fzf#vim#_format_buffer(v:val), "\t")[2:], "\t")')
@@ -1309,13 +1317,15 @@ function FzfBuffers(query, fullscreen) abort
   " Reload command
   let reload_command = 'cat ' . opened_buffers
 
-
+  " TODO: Decide which is better between execute-silent and execute
+  " The first one looks nices with no reloads but the second is better as a
+  " visual confirmation that the process has ended
   let spec = fzf#vim#with_preview({
     \ 'placeholder': '{1}',
     \ 'options': s:fzf_bind_options + [
     \   '--ansi',
     \   '--no-multi',
-    \   '--bind', 'ctrl-q:execute(' . remove_command . ')+reload:' . reload_command],
+    \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+reload:' . reload_command],
     \ })
 
   if (g:is_windows || g:is_gitbash) && !has('nvim')
