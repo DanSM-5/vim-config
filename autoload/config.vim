@@ -1222,64 +1222,103 @@ function! GetBuflisted() abort
   return filter(range(1, bufnr('$')), 'buflisted(v:val) && getbufvar(v:val, "&filetype") != "qf"')
 endfunction
 
-" command! -bar -bang -nargs=? -complete=buffer Buffers         call fzf#vim#buffers(<q-args>, fzf#vim#with_preview({ "placeholder": "{1}" }), <bang>0)',
-
-function Fzf_vim_close_buffers(source) abort
-  if empty(a:source) || !filereadable(a:source)
-    return
-  endif
-
-  let buffers = readfile(a:source)
-  if empty(buffers)
-    return
-  endif
-
-  for bufnr in buffers
-    if bufloaded(bufnr)
-      bdelete bufnr
-    endif
-  endfor
+" Sorter function for buffers
+" Should return first the current buffer
+function BufSorterFunc(...) abort
+  let [b1, b2] = map(copy(a:000), 'get(g:fzf#vim#buffers, v:val, v:val)')
+  " Using minus between a float and a number in a sort function causes an error
+  return b1 < b2 ? 1 : -1
 endfunction
 
-function FzfBuffers(query, fullscreen) abort
-  let buffers = GetBuflisted()
-  let temp_file = tempname()
-  " Use global to use inside :lua
-  " TODO: Investigate a non-global approach
-  let g:remove_list = tempname()
 
+" On buff close callback from autocmd for the FzfBuffers function
+function Fzf_vim_close_buffers(source) abort
   try
-    if has('nvim')
-      " Use nvim autocmd to use once
-      lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.remove_list) end })
-    else
-      " Using BufLeave and hopping for the best
-      autocmd BufLeave * ++once call Fzf_vim_close_buffers(g:remove_list)
+    if empty(a:source) || !filereadable(a:source)
+      return
     endif
 
-    " Store formatted buff names in file
-    call writefile(buffers, temp_file)
-    let remove_buff = $HOME . '/vim-config/utils/remove_buff.sh'
-    if g:is_windows || g:is_gitbash
-      let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
-      let remove_buff = bash_path . ' ' . substitute('/c' . $HOMEPATH . '/vim-config/utils/remove_buff.sh', '\\', '/', 'g')
+    let buffers = readfile(a:source)
+    if empty(buffers)
+      return
     endif
-    " /path/to/remove_buff.sh [line number] [open/buffs] [to/delete/buffs]
-    let remove_buff = remove_buff . ' {n} ' . temp_file . ' ' . g:remove_list
-    let reload_command = 'cat ' . temp_file
-    call fzf#vim#buffers(a:query, buffers, fzf#vim#with_preview({
-      \ 'placeholder': '{1}',
-      \ 'options': ['--ansi', '--bind', 'ctrl-q:execute(' . remove_buff . '):reload(' . reload_command . ')'],
-      \ }))
+
+    for buffer in buffers
+      try
+        lua vim.notify('In loop ', vim.log.levels.WARN)
+        let bufnr = str2nr(buffer)
+        if bufloaded(bufnr)
+          echo bufnr
+          execute 'bdelete ' . bufnr
+        endif
+      catch /.*/
+      endtry
+    endfor
   finally
-    " Cleanup global variable
-    unlet g:remove_list
+    " Cleanup global variables
+    if exists('g:fzf_buffers_remove_list')
+      " Remove temporary file
+      " Buffers to remove
+      call delete(g:fzf_buffers_remove_list)
+      unlet g:fzf_buffers_remove_list
+    endif
+    if exists('g:fzf_buffers_opened_buffers')
+      " Remove temporary file
+      " List of opened buffers
+      call delete(g:fzf_buffers_opened_buffers)
+      unlet g:fzf_buffers_opened_buffers
+    endif
   endtry
 endfunction
 
-func! s:SetFZF () abort
-  nnoremap <C-o>b <cmd>Buffers<cr>
+" Wrapper for fzf#vim#buffers to enable closing buffer with ctrl-q
+function FzfBuffers(query, fullscreen) abort
+  let buffers = GetBuflisted()
+  " Keep a list of the currently opened buffers
+  let g:fzf_buffers_opened_buffers = substitute(tempname(), '\\', '/', 'g')
+  let opened_buffers = g:fzf_buffers_opened_buffers
+  " Use global to use inside :lua
+  " TODO: Investigate a non-global approach
+  let g:fzf_buffers_remove_list = substitute(tempname(), '\\', '/', 'g')
+  let remove_list = g:fzf_buffers_remove_list
 
+  if has('nvim')
+    " Use nvim autocmd to use once
+    lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.remove_list) end })
+  else
+    " Using BufLeave and hopping for the best
+    autocmd BufLeave * ++once call Fzf_vim_close_buffers(g:remove_list)
+  endif
+
+  " let buff_formatted = mapnew(buffers, 'join(split(fzf#vim#_format_buffer(v:val), "\t")[2:], "\t")')
+  let buff_sorted = sort(buffers, 'BufSorterFunc')
+  let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
+  " Store formatted buff names in file
+  call writefile(buff_formatted, opened_buffers)
+
+  " Prepare remove command
+  let remove_command = $HOME . '/vim-config/utils/remove_buff.sh'
+  if g:is_windows || g:is_gitbash
+    let bash_path = s:WindowsShortPath(substitute(g:bash, '\\', '/', 'g'))
+    " let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
+    let remove_command = bash_path . ' ' . substitute('/c' . $HOMEPATH . '/vim-config/utils/remove_buff.sh', '\\', '/', 'g')
+  endif
+
+  " /path/to/remove_buff.sh [selected/file] [buffs/file] [delete/file]
+  let remove_command = remove_command . ' {+f} ' . opened_buffers . ' ' . remove_list
+  " Reload command
+  let reload_command = 'cat ' . opened_buffers
+
+  " Call base command
+  call fzf#vim#buffers(a:query, buff_sorted, fzf#vim#with_preview({
+    \ 'placeholder': '{1}',
+    \ 'options': [
+    \   '--ansi',
+    \   '--bind', 'ctrl-q:execute(' . remove_command . ')+reload:' . reload_command],
+    \ }), a:fullscreen)
+endfunction
+
+func! s:SetFZF () abort
   " fzf commands
   " fzf
   nnoremap <leader>ff <cmd>Files<cr>
@@ -1337,6 +1376,7 @@ func! s:SetFZF () abort
 
   command! -bang -nargs=? -complete=dir Files
     \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
+  command! -bar -bang -nargs=? -complete=buffer Buffers call FzfBuffers(<q-args>, <bang>0)',
 
   " NOTE: Under gitbash previews doesn't work due to how fzf.vim
   " builds the paths for the bash.exe executable
@@ -1375,6 +1415,8 @@ func! s:SetFZF () abort
   nnoremap <C-o>t :<C-u>FTxt<CR>
   " Search word under the cursor (RG)
   nnoremap <C-o>f :execute 'RG '.expand('<cword>')<cr>
+  " Opened buffers
+  nnoremap <C-o>b <cmd>Buffers<cr>
   " Set usual ctrl-o behavior to double the sequence
   nnoremap <C-o><C-o> <C-o>
 endf

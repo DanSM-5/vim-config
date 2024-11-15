@@ -1,18 +1,36 @@
 #!/usr/bin/env bash
 
-line="$1"
-temp_file="$2"
+# Helper for FzfBuffers
+# This script caches the bufnrs to delete when fzf terminal window closes
+
+# Tempfile with current line selected
+selected="$1"
+# Tempfile with content displayed in fzf
+opened_buffers="$2"
+# Tempfile that list bufnrs to remove
 remove_list="$3"
+# Temporary cache
 buff="$(mktemp)"
 
-# cat /tmp/nvim.eduardo/j86QzT/0 | awk '{ $1=""; $2=""; print $0 }' | fzf --ansi --preview "awk -v ignore={n} 'NR != ignore + 1 { print \$0 }' /tmp/nvim.eduardo/j86QzT/0"
+# Find bufnr inside square brackets
+# "filename linenumber [bufnr] somesymbol? buffname"
+bufnr="$(sed -nE 's|.*\[.*([0-9]+).*\].*|\1|p' "$selected")"
 
-# Remove selected line from source
-awk -v toremove="$line" 'NR != toremove + 1 { print $0 }' "$temp_file" > "$buff"
+# Ensure files exist
+touch "$opened_buffers"
+touch "$remove_list"
+
+# Get line of the selected buffer
+# First clean ansi color escapes, then find the line that matches the bufnr
+line="$(sed 's/\x1b\[[0-9;]*[mGKHF]//g' "$opened_buffers" | awk -v toremove="[$bufnr]" '$3 == toremove { print NR }')"
+
+# Filter out buffer to remove
+awk -v toremove="$line" 'NR != toremove { print $0 }' "$opened_buffers" > "$buff"
 # Store selected line for future removal
-echo -e "$(awk -v toremove="$line" 'NR == toremove + 1 { print $0 }' "$temp_file")" >> "$remove_list"
+echo "$bufnr" >> "$remove_list"
+
 # Remove outdated temp_file
-rm -f "$temp_file"
+rm -f "$opened_buffers"
 # Substitute with new updated buffer
-mv "$buff" "$temp_file"
+mv "$buff" "$opened_buffers"
 
