@@ -74,6 +74,9 @@ let g:theme_hidden_cursorLineNr = ':'
 let g:theme_hidden_cursorLine = ':'
 let g:theme_hidden_signColumn = ''
 let g:theme_hidden_comment = ':'
+" New definition, list here themes to toggle
+" [hi name], [hi bg on], [hi bg off]
+let g:theme_toggle_hi = []
 
 " Enable detection
 let g:host_os = config#CurrentOS()
@@ -124,6 +127,10 @@ func! g:ToggleBg ()
     silent execute('hi ' . g:theme_cursorLineNr)
     silent execute('hi ' . g:theme_cursorLine)
     " silent execute('hi ' . g:theme_signColumn)
+
+    for group_toggle in g:theme_toggle_hi
+      silent execute(group_toggle[1])
+    endfor
   else
     silent execute(g:theme_hidden_normal)
     silent execute(g:theme_hidden_visual)
@@ -132,6 +139,10 @@ func! g:ToggleBg ()
     silent execute(g:theme_hidden_cursorLineNr)
     silent execute(g:theme_hidden_cursorLine)
     " silent execute(g:theme_hidden_signColumn)
+
+    for group_toggle in g:theme_toggle_hi
+      silent execute(group_toggle[2])
+    endfor
   endif
 endfunction
 
@@ -178,6 +189,13 @@ function! g:OnVimEnter()
   hi Comment guifg=#7f848e cterm=NONE gui=NONE
   " Completion menu (otherwise displayed with whitish background)
   hi Pmenu ctermfg=188 ctermbg=0 guifg=#dcdfe4 guibg=#21252b
+
+  let g:theme_toggle_hi = g:theme_toggle_hi + [
+    \   ['GitGutterAdd', 'hi ' . substitute(trim(execute('hi GitGutterAdd')), 'xxx', '', 'g'), 'hi GitGutterAdd guibg=NONE'],
+    \   ['GitGutterChange', 'hi ' . substitute(trim(execute('hi GitGutterChange')), 'xxx', '', 'g'), 'hi GitGutterChange guibg=NONE'],
+    \   ['GitGutterDelete', 'hi ' . substitute(trim(execute('hi GitGutterDelete')), 'xxx', '', 'g'), 'hi GitGutterDelete guibg=NONE'],
+    \   ['GitGutterChangeDelete', 'hi ' . substitute(trim(execute('hi GitGutterChangeDelete')), 'xxx', '', 'g'), 'hi GitGutterChangeDelete guibg=NONE']
+    \ ]
 
   " Make background transparen
   ToggleBg
