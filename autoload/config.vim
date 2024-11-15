@@ -1247,7 +1247,7 @@ function Fzf_vim_close_buffers(source) abort
       try
         let bufnr = str2nr(buffer)
         if bufloaded(bufnr)
-          execute 'bdelete' buffer
+          execute 'bd! ' . buffer
         endif
       catch
       endtry
