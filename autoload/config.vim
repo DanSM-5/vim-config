@@ -1245,13 +1245,11 @@ function Fzf_vim_close_buffers(source) abort
 
     for buffer in buffers
       try
-        lua vim.notify('In loop ', vim.log.levels.WARN)
         let bufnr = str2nr(buffer)
         if bufloaded(bufnr)
-          echo bufnr
-          execute 'bdelete ' . bufnr
+          execute 'bdelete' buffer
         endif
-      catch /.*/
+      catch
       endtry
     endfor
   finally
@@ -1281,13 +1279,14 @@ function FzfBuffers(query, fullscreen) abort
   " TODO: Investigate a non-global approach
   let g:fzf_buffers_remove_list = substitute(tempname(), '\\', '/', 'g')
   let remove_list = g:fzf_buffers_remove_list
+  let bash_path = ''
 
   if has('nvim')
     " Use nvim autocmd to use once
     lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn.Fzf_vim_close_buffers(vim.g.fzf_buffers_remove_list) end })
   else
     " Using BufLeave and hopping for the best
-    autocmd BufLeave * ++once call Fzf_vim_close_buffers(g:fzf_buffers_remove_list)
+    autocmd! BufLeave * ++once call Fzf_vim_close_buffers(g:fzf_buffers_remove_list)
   endif
 
   " let buff_formatted = mapnew(buffers, 'join(split(fzf#vim#_format_buffer(v:val), "\t")[2:], "\t")')
@@ -1301,7 +1300,8 @@ function FzfBuffers(query, fullscreen) abort
   if g:is_windows || g:is_gitbash
     let bash_path = s:WindowsShortPath(substitute(g:bash, '\\', '/', 'g'))
     " let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
-    let remove_command = bash_path . ' ' . substitute('/c' . $HOMEPATH . '/vim-config/utils/remove_buff.sh', '\\', '/', 'g')
+    let bash_path = bash_path . ' ' . substitute('/c' . $HOMEPATH, '\\', '/', 'g')
+    let remove_command = bash_path . '/vim-config/utils/remove_buff.sh'
   endif
 
   " /path/to/remove_buff.sh [selected/file] [buffs/file] [delete/file]
@@ -1309,13 +1309,23 @@ function FzfBuffers(query, fullscreen) abort
   " Reload command
   let reload_command = 'cat ' . opened_buffers
 
-  " Call base command
-  call fzf#vim#buffers(a:query, buff_sorted, fzf#vim#with_preview({
+
+  let spec = fzf#vim#with_preview({
     \ 'placeholder': '{1}',
-    \ 'options': [
+    \ 'options': s:fzf_bind_options + [
     \   '--ansi',
+    \   '--no-multi',
     \   '--bind', 'ctrl-q:execute(' . remove_command . ')+reload:' . reload_command],
-    \ }), a:fullscreen)
+    \ })
+
+  if (g:is_windows || g:is_gitbash) && !has('nvim')
+    " preview to be used for vim windows only
+    let preview = bash_path . '/vim-config/utils/preview.sh {1}'
+    let spec.options = spec.options + ['--preview', preview]
+  endif
+
+  " Call base command
+  call fzf#vim#buffers(a:query, buff_sorted, spec, a:fullscreen)
 endfunction
 
 func! s:SetFZF () abort
