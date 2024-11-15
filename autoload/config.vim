@@ -1376,7 +1376,7 @@ func! s:SetFZF () abort
 
   command! -bang -nargs=? -complete=dir Files
     \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
-  command! -bar -bang -nargs=? -complete=buffer Buffers call FzfBuffers(<q-args>, <bang>0)',
+  command! -bar -bang -nargs=? -complete=buffer Buffers call FzfBuffers(<q-args>, <bang>0)
 
   " NOTE: Under gitbash previews doesn't work due to how fzf.vim
   " builds the paths for the bash.exe executable
