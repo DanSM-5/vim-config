@@ -15,6 +15,18 @@ return {
     name = 'nvim-cmp',
   },
   {
+    'L3MON4D3/LuaSnip',
+    -- follow latest release.
+    -- version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+    -- install jsregexp (optional!).
+    build = (function ()
+      if vim.fn.executable('make') == 0 then
+        return
+      end
+      return 'make install_jsregexp'
+    end)(),
+  },
+  {
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Hook to mason

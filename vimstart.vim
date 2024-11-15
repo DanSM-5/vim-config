@@ -296,7 +296,11 @@ call plug#begin()
     Plug 'mawkler/refjump.nvim'
     Plug 'lukas-reineke/indent-blankline.nvim'
     " Snippets
-    Plug 'L3MON4D3/LuaSnip'
+    if executable('make')
+      Plug 'L3MON4D3/LuaSnip', { 'do': 'make install_jsregexp' }
+    else
+      Plug 'L3MON4D3/LuaSnip'
+    endif
     Plug 'saadparwaiz1/cmp_luasnip'
     Plug 'rafamadriz/friendly-snippets'
     " Completions and sources
