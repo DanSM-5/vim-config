@@ -29,4 +29,22 @@ require("lazy").setup({
   -- automatically check for plugin updates
   checker = { enabled = true, notify = false },
   -- change_detection = { enabled = false }
+  ui = {
+    icons = {
+      cmd = '⌘',
+      config = '🛠',
+      event = '📅',
+      ft = '📂',
+      init = '⚙',
+      keys = '🗝',
+      plugin = '🔌',
+      runtime = '💻',
+      require = '🌙',
+      source = '📄',
+      start = '🚀',
+      task = '📌',
+      lazy = '💤 ',
+    },
+  },
 })
+
