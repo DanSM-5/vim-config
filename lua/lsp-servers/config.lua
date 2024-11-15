@@ -7,19 +7,22 @@ local configs = {
     -- end,
     settings = {
       Lua = {
+        runtime = { version = 'LuaJIT' },
+        telemetry = { enabled = false },
+        workspace = { library = vim.api.nvim_get_runtime_file('', true) },
         format = {
           -- enable = true,
           defaultConfig = {
-            insert_final_newline = true
-          }
-        }
-      }
-    }
+            insert_final_newline = true,
+          },
+        },
+      },
+    },
   },
   ts_ls = {
-    on_attach = function (client)
+    on_attach = function(client)
       client.server_capabilities.document_formatting = false
-    end
+    end,
   },
   vimls = {},
   biome = {},
@@ -28,10 +31,10 @@ local configs = {
     filetypes = { 'sh', 'bash', 'zsh' },
     settings = {
       bashIde = {
-        globPattern = '*@(.sh|.inc|.bash|.command|.zsh|.uconfrc|.uconfgrc|.ualiasrc|.ualiasgrc|.zsh_conf)'
-      }
-    }
-  }
+        globPattern = '*@(.sh|.inc|.bash|.command|.zsh|.uconfrc|.uconfgrc|.ualiasrc|.ualiasgrc|.zsh_conf)',
+      },
+    },
+  },
 }
 
 return {
@@ -39,6 +42,6 @@ return {
   ---@param name string
   get_config = function(name)
     return configs[name]
-  end
+  end,
 }
 
