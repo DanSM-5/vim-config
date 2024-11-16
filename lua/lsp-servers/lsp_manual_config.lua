@@ -14,17 +14,17 @@ local servers = {
     lsp = 'bashls',
   },
   {
-    server = 'vimls-language-server',
+    server = 'vim-language-server',
     lsp = 'vimls',
   },
   {
     server = 'typescript-language-server',
     lsp = 'ts_ls',
-  }
-  -- {
-  --   server = 'biome',
-  --   lsp = 'biome',
-  -- },
+  },
+  {
+    server = 'biome',
+    lsp = 'biome',
+  },
 }
 
 return {
