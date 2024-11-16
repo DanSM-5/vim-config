@@ -348,6 +348,10 @@ func! s:Set_user_keybindings () abort
   " Toggle undo tree
   nnoremap <leader>u <cmd>UndotreeToggle<cr>
 
+  " Search and replace word under the cursor
+  " Using : instead of <cmd> so it doesn't need to end with <cr>
+  nnoremap <leader>sw :%s/\<<C-r><C-w>\>//g<Left><Left>
+
   " Duplicate line above and below without moving cursor
   if has('nvim')
     nnoremap <A-d> :<C-U>t.<CR>
