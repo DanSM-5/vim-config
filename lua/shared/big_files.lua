@@ -13,7 +13,7 @@ return {
                 and vim.bo[buf].filetype ~= FILETYPE
                 and path
                 and vim.fn.getfsize(path) > BIG_FILE_SIZE
-                and 'bigfile'
+                and FILETYPE
               or nil -- bigger than 500KB
           end,
         },
