@@ -109,7 +109,9 @@ return {
   {
     'mbbill/undotree',
     lazy = true,
-    keys = { '<leader>u' },
+    keys = {
+      { '<leader>u', '<cmd>UndotreeToggle<cr>', desc = '[Undotree]: Toggle Undotree' }
+    },
     cmd = { 'UndotreeToggle', 'UndotreeShow' },
     -- config = function ()
     --   vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = '[UndoTree] Toggle undo tree' })
