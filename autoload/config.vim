@@ -1567,6 +1567,14 @@ func! s:DefineCommands () abort
 
   " BlameLine
   command! -bar -nargs=? BlameLine call BlameLine(<q-args>)
+
+  " Commands for diffget. Useful when resolving conflicts.
+  " Open fugitive `:Git` and open conflicted file in vsplit `dv` (Gvdiffsplit)
+  " Cursor must be on conflict hunk. E.g. `]n` and `[n`
+  " Select the changes on the left
+  command! -bar GitSelectLeft :diffget //2<cr>
+  " grab the changes on the right
+  command! -bar GitSelectRight :diffget //3<cr>
 endf
 
 func! s:RemapAltUpDownNormal () abort
