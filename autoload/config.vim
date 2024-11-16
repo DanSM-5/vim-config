@@ -372,6 +372,13 @@ func! s:Set_user_keybindings () abort
   " (o-pending). Thus this map exists as a hack for NOOP with <C-o>.
   nnoremap <C-o><esc> <esc>
 
+  " Keymaps for diffget. Useful when resolving conflicts
+  " Cursor must be on conflict hunk
+  " grab the changes on the left
+  " nnoremap gh <cmd>diffget //2<cr>
+  " grab the changes on the right
+  " nnoremap gl <cmd>diffget //3<cr>
+
   " Keycode examples
   " <A-UP> | <Esc>[1;3A
   " <A-Down> | <Esc>[1;3B
