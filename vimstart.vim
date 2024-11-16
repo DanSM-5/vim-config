@@ -352,6 +352,9 @@ call plug#begin()
     " HTML auto closing tags
     Plug 'windwp/nvim-ts-autotag'
 
+    " Fugitive extension for difftool
+    Plug 'jecaro/fugitive-difftool.nvim'
+
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
     " Plug 'nvim-neotest/nvim-nio'
@@ -359,9 +362,6 @@ call plug#begin()
 
     " Plugins to consider
     " Plug 'lukas-reineke/indent-blankline.nvim'
-
-    " Copied from example
-    " Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
   else
     " Only load in vim
 

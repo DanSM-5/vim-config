@@ -10,8 +10,16 @@ return {
   {
     'tpope/vim-fugitive',
     dependencies = {
-      'tpope/vim-rhubarb'
+      'tpope/vim-rhubarb',
     }
+  },
+  {
+    'jecaro/fugitive-difftool.nvim',
+    cmd = { 'Git' },
+    -- Usage
+    -- :Git! difftool --name-status master..my-feature
+    -- :Gcc
+    config = require('config.nvim_figitive-difftool').setup
   },
   {
     'tpope/vim-repeat',
