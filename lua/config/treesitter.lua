@@ -104,7 +104,8 @@ return {
       desc = 'Create repeatable bindings',
       pattern = { '*' },
       callback = function()
-        local repeat_pair = require('utils.repeat_motion').repeat_pair
+        local repeat_motion = require('utils.repeat_motion')
+        local repeat_pair = repeat_motion.repeat_pair
         -- NOTE: Letting demicolon set the motion keys but otherwise motions can be repeated by calling
         -- the following function
         -- require('utils.repeat_motion').set_motion_keys()
@@ -159,6 +160,38 @@ return {
           on_backward = todo_prev,
         })
 
+        local create_repeatable_pair = repeat_motion.create_repeatable_pair
+
+        local ctrl_w = vim.api.nvim_replace_termcodes('<C-w>', true, true, true)
+        local vsplit_bigger, vsplit_smaller  = create_repeatable_pair(function ()
+          vim.fn.feedkeys(ctrl_w .. '5>', 'n')
+        end, function ()
+          vim.fn.feedkeys(ctrl_w .. '5<', 'n')
+        end)
+
+        vim.keymap.set('n', '<A-.>', vsplit_bigger, {
+          desc = '[VSplit] Make vsplit bigger',
+          noremap = true
+        })
+        vim.keymap.set('n', '<A-,>', vsplit_smaller, {
+          desc = '[VSplit] Make vsplit smaller',
+          noremap = true
+        })
+
+        local split_bigger, split_smaller = create_repeatable_pair(function ()
+          vim.fn.feedkeys(ctrl_w .. '+', 'n')
+        end, function ()
+          vim.fn.feedkeys(ctrl_w .. '-', 'n')
+        end)
+
+        vim.keymap.set('n', '<A-t>', split_bigger, {
+          desc = '[Split] Make split bigger',
+          noremap = true
+        })
+        vim.keymap.set('n', '<A-s>', split_smaller, {
+          desc = '[Split] Make split smaller',
+          noremap = true
+        })
       end,
     })
 
