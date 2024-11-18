@@ -1482,6 +1482,28 @@ function s:OpenCommitInBrowser() abort
   execute 'GBrowse ' . expand('<cword>')
 endfunction
 
+" Return output of command in a new buffer
+" Ref: https://stackoverflow.com/questions/49078827/can-listings-in-the-awful-more-be-displayed-instead-in-a-vim-window
+function! Redir(cmd)
+    for win in range(1, winnr('$'))
+        if getwinvar(win, 'scratch')
+            execute win . 'windo close'
+        endif
+    endfor
+    if a:cmd =~ '^!'
+        execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
+    else
+        redir => output
+        execute a:cmd
+        redir END
+    endif
+    vnew
+    let w:scratch = 1
+    setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+    call setline(1, split(output, "\n"))
+endfunction
+
+" User commands
 func! s:DefineCommands () abort
   " Call command and remove carriage return
   command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
@@ -1489,6 +1511,8 @@ func! s:DefineCommands () abort
   command! CleanTrailingSpaces call s:CleanTrailingSpaces()
 
   command! -bar CBrowse call s:OpenCommitInBrowser()
+
+  command! -nargs=1 Redir silent call Redir(<f-args>)
 
   command! Bcd call BufferCd()
   nnoremap <silent> <leader>cd <cmd>Bcd<cr>
