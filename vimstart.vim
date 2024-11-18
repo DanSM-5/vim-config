@@ -47,6 +47,10 @@ set breakindent
 " Most global variables defined in this file should be place here unless
 " it is needed to be defined upon confiditional logic
 
+" Leader keys.
+let g:mapleader = "\\"
+" let g:maplocalleader = ' '
+
 " Theme variables --
 " Normal mode styles
 let g:theme_normal = ''
