@@ -127,6 +127,7 @@ return {
         -- 'powershell_es',
         -- 'stylua',
         'ts_ls',
+        'emmet_language_server'
       }
 
     -- Setup lsp servers

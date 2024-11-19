@@ -22,6 +22,10 @@ local servers = {
     lsp = 'ts_ls',
   },
   {
+    server = 'emmet-language-server ',
+    lsp = 'emmet_language_server '
+  },
+  {
     server = 'biome',
     lsp = 'biome',
   },
