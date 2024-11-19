@@ -1,5 +1,15 @@
+--- Same as lspconfig.Config but to avoid issues if module is not loaded
+--- @class LspConfigExtended : vim.lsp.ClientConfig
+--- @field enabled? boolean
+--- @field single_file_support? boolean
+--- @field filetypes? string[]
+--- @field filetype? string
+--- @field on_new_config? fun(new_config: LspConfigExtended?, new_root_dir: string)
+--- @field autostart? boolean
+--- @field package _on_attach? fun(client: vim.lsp.Client, bufnr: integer)
+--- @field root_dir? string|fun(filename: string, bufnr: number)
 
----@type table<string, lspconfig.Config>
+---@type table<string, LspConfigExtended>
 local configs = {
   lua_ls = {
     on_attach = function(client, bufnr)
@@ -24,6 +34,7 @@ local configs = {
     on_attach = function(client)
       ---@diagnostic disable-next-line: inject-field
       client.server_capabilities.document_formatting = false
+      client.server_capabilities.documentFormattingProvider = false
     end,
   },
   vimls = {},
@@ -42,7 +53,7 @@ local configs = {
 return {
   ---Get the configuration for a given lsp server
   ---@param name string
-  ---@return lspconfig.Config | nil
+  ---@return LspConfigExtended | nil
   get_config = function(name)
     return configs[name]
   end,
