@@ -22,9 +22,8 @@ local configs = {
   },
   ts_ls = {
     on_attach = function(client)
-      -- TODO: Investigate if this field exists
-      -- client.server_capabilities.document_formatting = false
-      client.server_capabilities.documentFormattingProvider = false
+      ---@diagnostic disable-next-line: inject-field
+      client.server_capabilities.document_formatting = false
     end,
   },
   vimls = {},
