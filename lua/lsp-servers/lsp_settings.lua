@@ -148,7 +148,6 @@ return {
     -- if opts.completions.enable.crates then
     --   table.insert(sources, { name = 'crates' })
     -- end
-
     local cmp = require('cmp')
     local cmp_lsp = require('cmp_nvim_lsp')
     local luasnip = require('luasnip')
@@ -292,6 +291,19 @@ return {
 
       local base_config = require('lsp-servers.config').get_config(server_name) or {}
       local config = vim.tbl_deep_extend('force', {}, base_config, { capabilities = capabilities })
+
+      if config.on_attach then
+        local on_attach_from_config = config.on_attach
+        ---@param client vim.lsp.Client
+        ---@param bufnr number
+        config.on_attach = function (client, bufnr)
+          require('lsp-servers.keymaps').setup(client, bufnr)
+          on_attach_from_config(client, bufnr)
+        end
+      elseif server_name ~= 'basics_ls' then
+        config.on_attach = require('lsp-servers.keymaps').setup
+      end
+
       require('lspconfig')[server_name].setup(config)
     end
 
