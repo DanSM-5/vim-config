@@ -3,9 +3,9 @@
 
 " Change location of shada
 " with nvim profile in terminal
-if has('nvim')
-  set shada+='1000,n$HOME/.cache/vim-config/main.shada
-endif
+" if has('nvim')
+"   set shada+='1000,n$HOME/.cache/vim-config/main.shada
+" endif
 
 " Make nocompatible explicit
 set nocompatible

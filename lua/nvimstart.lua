@@ -1,7 +1,7 @@
 local fn, g = vim.fn, vim.g
 
 -- Set custom shada file location
-vim.cmd("set shada+='1000,n$HOME/.cache/vim-config/main.shada")
+-- vim.cmd("set shada+='1000,n$HOME/.cache/vim-config/main.shada")
 -- Make nocompatible explicit
 vim.o.compatible = false
 -- Default encoding
