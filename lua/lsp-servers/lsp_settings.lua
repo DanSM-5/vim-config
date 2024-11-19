@@ -290,10 +290,11 @@ return {
       end
 
       local base_config = require('lsp-servers.config').get_config(server_name) or {}
+      ---@type lspconfig.Config
       local config = vim.tbl_deep_extend('force', {}, base_config, { capabilities = capabilities })
 
-      if config.on_attach then
-        local on_attach_from_config = config.on_attach
+      if config.on_attach ~= nil then
+        local on_attach_from_config = config.on_attach or function () end
         ---@param client vim.lsp.Client
         ---@param bufnr number
         config.on_attach = function (client, bufnr)

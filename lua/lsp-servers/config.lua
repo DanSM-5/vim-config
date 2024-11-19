@@ -1,10 +1,11 @@
+
+---@type table<string, lspconfig.Config>
 local configs = {
   lua_ls = {
-    ---@diagnostic disable-next-line: unused-local
-    -- on_attach = function(client, bufnr)
-    --   client.server_capabilities.documentFormattingProvider = true
-    --   client.server_capabilities.documentRangeFormattingProvider = true
-    -- end,
+    on_attach = function(client, bufnr)
+      client.server_capabilities.documentFormattingProvider = true
+      client.server_capabilities.documentRangeFormattingProvider = true
+    end,
     settings = {
       Lua = {
         runtime = { version = 'LuaJIT' },
@@ -21,7 +22,9 @@ local configs = {
   },
   ts_ls = {
     on_attach = function(client)
-      client.server_capabilities.document_formatting = false
+      -- TODO: Investigate if this field exists
+      -- client.server_capabilities.document_formatting = false
+      client.server_capabilities.documentFormattingProvider = false
     end,
   },
   vimls = {},
@@ -40,6 +43,7 @@ local configs = {
 return {
   ---Get the configuration for a given lsp server
   ---@param name string
+  ---@return lspconfig.Config | nil
   get_config = function(name)
     return configs[name]
   end,
