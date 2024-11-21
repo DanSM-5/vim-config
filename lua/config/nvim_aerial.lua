@@ -25,7 +25,14 @@ return {
       end,
     })
 
-    vim.keymap.set('n', '<leader>ta', '<cmd>AerialToggle!<cr>', { desc = '[Aerial] Toggle window', noremap = true })
-    vim.keymap.set('n', '<leader>fa', '<cmd>call aerial#fzf()<cr>', { desc = '[Aerial] Aerial fzf selector', noremap = true })
+    vim.keymap.set('n', '<leader>ss', '<cmd>AerialToggle<cr>', { desc = '[Aerial] Toggle window', noremap = true })
+    vim.keymap.set('n', '<leader>sS', '<cmd>AerialToggle!<cr>', { desc = '[Aerial] Toggle window no move', noremap = true })
+    vim.keymap.set(
+      'n',
+      '<leader>fa',
+      '<cmd>call aerial#fzf()<cr>',
+      { desc = '[Aerial] Aerial fzf selector', noremap = true }
+    )
   end,
 }
+
