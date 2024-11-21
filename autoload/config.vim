@@ -193,6 +193,16 @@ func! s:SetBufferOptions () abort
   augroup END
 endf
 
+function! s:ToggleScroll() abort
+  if &scrolloff == 0
+    let &scrolloff=5
+  elseif &scrolloff == 5
+    let &scrolloff=999
+  else
+    let &scrolloff=0
+  endif
+endfunction
+
 " keymaps
 func! s:Set_user_keybindings () abort
   silent call s:SetVimSystemCopyMaps()
@@ -275,9 +285,6 @@ func! s:Set_user_keybindings () abort
   nnoremap <C-s> :<C-u>w<CR>
   vnoremap <C-s> :<C-u>w<CR>
   cnoremap <C-s> <C-u>w<CR>
-
-  " Toggle scrolloff
-  nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
 
   " VimSmoothie remap
   vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
@@ -1517,6 +1524,12 @@ func! s:DefineCommands () abort
   command! Bcd call BufferCd()
   nnoremap <silent> <leader>cd <cmd>Bcd<cr>
 
+  " Toggle scrolloff
+  " nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
+  command! -bar ToggleScroll :call s:ToggleScroll()
+  nnoremap <Leader>zz <cmd>ToggleScroll<cr>
+  let &scrolloff=5
+
   " Background color toggle
   command! ToggleBg call g:ToggleBg()
   nnoremap <silent><leader>tb :ToggleBg<CR>
@@ -1702,7 +1715,7 @@ func! s:MoveLinesBlockMapsLinux () abort
   endif
 
   silent call s:RemapAltUpDownNormal()
- 
+
   " silent call s:RemapAltUpDownJK()
   " if has('nvim')
   "   silent call s:RemapAltUpDownNormal()
