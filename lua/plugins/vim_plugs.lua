@@ -27,9 +27,9 @@ return {
   {
     'inkarkat/vim-ReplaceWithRegister',
   },
-  {
-    'christoomey/vim-sort-motion',
-  },
+  -- {
+  --   'christoomey/vim-sort-motion',
+  -- },
   {
     'DanSM-5/vim-system-copy',
   },
