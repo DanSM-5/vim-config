@@ -348,6 +348,9 @@ call plug#begin()
     " File explorer
     Plug 'stevearc/oil.nvim'
 
+    " Split lines
+    Plug 'split.interactivity'
+
     " TODO: Should we add NeoTree? It needs nvim-web-devicons
     " Plug 'nvim-neo-tree/neo-tree.nvim'
     Plug 'nvim-tree/nvim-web-devicons'

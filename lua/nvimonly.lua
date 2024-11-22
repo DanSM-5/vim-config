@@ -63,6 +63,7 @@ require('config.nvim_figitive-difftool').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
+require('split').setup({})
 require('ts-node-action').setup({})
 -- Start nvim autotag
 require('nvim-ts-autotag').setup({
