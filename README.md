@@ -42,7 +42,7 @@ Environment variables that affect this function:
 - `IS_GITBASH`: Fallback to detect gitbash. On startup (before 'VimEnter') calling `uname` may yield a different value from the expected which makes this variable important when running on bash from git for windows.
 - `IS_POWERSHELL`: Used for preventing wrong detections when `uname.exe` is in the path as it will return the expected value for gitbash regardless of the shell that (n)vim was called from.
 - `IS_CMD`: Used for preventing wrong detections when `uname.exe` is in the path as it will return the expected value for gitbash regardless of the shell that (n)vim was called from.
-- `IS_FROM_CONTAINER`: Used for detecting if config is running within a container. This will enable container specifc configs.
+- `IS_FROM_CONTAINER`: Used for detecting if config is running within a container. This will enable container specific configs.
 - `IS_TERMUX`: Used as fallback to detect termux environment on android (return will be `linux`).
 
 For more information about environment variables see [detection](https://github.com/DanSM-5/user-scripts/blob/master/bin/detection) script.
@@ -95,6 +95,26 @@ For vim there is no lsp setup. You can add support for it using [vim-lsp](https:
 Completions in neovim for instance rely mostly on lsp suggestions displayed using `cmp-nvim`.
 
 Completions in vim rely on buildin completions. See `:h complete_info_mode` and [vim-completion](https://georgebrock.github.io/talks/vim-completion) for more information.
+
+### Device specific LSP
+
+Create a file `device_specific.lua` in `./lua/lsp-sources`.
+
+The module must return a table like follows
+
+```lua
+---@type { server: string; lsp: string }[]
+local servers = {
+  {
+    -- Name of command to start the server
+    server = 'lua-language-server',
+    -- Name of entry in lspconfig
+    lsp = 'lua_ls',
+  },
+}
+
+return servers
+```
 
 ## Plugins
 
