@@ -210,6 +210,84 @@ return {
           desc = '[Split] Make split smaller',
           noremap = true
         })
+
+        -- Diagnostic mappings
+        local diagnostic_jump_next = nil
+        local diagnostic_jump_prev = nil
+
+        if vim.diagnostic.jump then
+          diagnostic_jump_next = vim.diagnostic.jump
+          diagnostic_jump_prev = vim.diagnostic.jump
+        else
+          -- Deprecated in favor of `vim.diagnostic.jump` in Neovim 0.11.0
+          diagnostic_jump_next = vim.diagnostic.goto_next
+          diagnostic_jump_prev = vim.diagnostic.goto_prev
+        end
+
+        local diagnostic_next,
+              diagnostic_prev
+        = create_repeatable_pair(
+          ---Move to next diagnostic
+          ---@param options vim.diagnostic.GotoOpts | nil
+          function (options)
+            local opts = options or {}
+            ---@diagnostic disable-next-line
+            opts.count = 1 * vim.v.count1
+            diagnostic_jump_next(opts)
+          end,
+          ---Move to provious diagnostic
+          ---@param options vim.diagnostic.GotoOpts | nil
+          function (options)
+            local opts = options or {}
+            ---@diagnostic disable-next-line
+            opts.count = -1 * vim.v.count1
+            diagnostic_jump_prev(opts)
+          end
+        )
+
+        -- diagnostic
+        vim.keymap.set( 'n', ']d', function ()
+          diagnostic_next({ wrap = true })
+        end,
+          { desc = 'LSP: Go to next diagnostic message', silent = true, noremap = true }
+        )
+        vim.keymap.set( 'n', '[d', function ()
+          diagnostic_prev({ wrap = true })
+        end,
+          { desc = 'LSP: Go to previous diagnostic message', silent = true, noremap = true }
+        )
+
+        -- diagnostic ERROR
+        vim.keymap.set('n', ']e', function()
+          diagnostic_next({ severity = vim.diagnostic.severity.ERROR, wrap = true })
+        end, { desc = 'LSP: Go to next error', silent = true, noremap = true })
+        vim.keymap.set('n', '[e', function()
+          diagnostic_prev({ severity = vim.diagnostic.severity.ERROR, wrap = true })
+        end, { desc = 'LSP: Go to previous error', silent = true, noremap = true })
+
+        -- diagnostic WARN
+        vim.keymap.set('n', ']w', function()
+          diagnostic_next({ severity = vim.diagnostic.severity.WARN, wrap = true })
+        end, { desc = 'LSP: Go to next warning', silent = true, noremap = true })
+        vim.keymap.set('n', '[w', function()
+          diagnostic_prev({ severity = vim.diagnostic.severity.WARN, wrap = true })
+        end, { desc = 'LSP: Go to previous warning', silent = true, noremap = true })
+
+        -- diagnostic INFO
+        vim.keymap.set('n', ']i', function()
+          diagnostic_next({ severity = vim.diagnostic.severity.INFO })
+        end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
+        vim.keymap.set('n', '[i', function()
+          diagnostic_prev({ severity = vim.diagnostic.severity.INFO })
+        end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
+
+        -- diagnostic HINT
+        vim.keymap.set('n', ']i', function()
+          diagnostic_next({ severity = vim.diagnostic.severity.HINT })
+        end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
+        vim.keymap.set('n', '[i', function()
+          diagnostic_prev({ severity = vim.diagnostic.severity.HINT })
+        end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
       end,
     })
 

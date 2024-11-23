@@ -23,6 +23,7 @@ require('config.nvim_demicolon').setup()
 require('config.nvim_prelive').setup()
 require('config.nvim_markview').setup()
 require('config.nvim_figitive-difftool').setup()
+require('config.nvim_cursor-text-objects').setup()
 
 -- NOTE: At some point I thought, why not put everything in an array
 -- and load like below. Then I figured it messed up the lsp as it

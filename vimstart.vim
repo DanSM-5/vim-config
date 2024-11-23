@@ -266,7 +266,7 @@ call plug#begin()
   Plug 'tpope/vim-rhubarb'
   Plug 'tpope/vim-repeat'
   Plug 'inkarkat/vim-ReplaceWithRegister'
-  Plug 'christoomey/vim-sort-motion'
+  " Plug 'christoomey/vim-sort-motion'
   Plug 'DanSM-5/vim-system-copy'
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
@@ -361,6 +361,8 @@ call plug#begin()
 
     " Fugitive extension for difftool
     Plug 'jecaro/fugitive-difftool.nvim'
+
+    Plug 'ColinKennedy/cursor-text-objects.nvim', { tag = 'v1.*' }
 
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
