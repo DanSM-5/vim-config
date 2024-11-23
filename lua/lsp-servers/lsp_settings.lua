@@ -113,8 +113,8 @@ return {
   setup = function(opts)
     ---@type LspSetupOpts
     opts = vim.tbl_deep_extend('force', defaultLspSetupOpts, opts or {})
-    local manual_setup = vim.g.is_termux == 1 or vim.g.is_container == 1
-    local language_servers = manual_setup and {}
+    local special_binaries = vim.g.is_termux == 1 or vim.g.is_container == 1
+    local language_servers = special_binaries and {}
       or {
         'lua_ls',
         'vimls',
@@ -298,11 +298,11 @@ return {
         ---@param client vim.lsp.Client
         ---@param bufnr number
         config.on_attach = function (client, bufnr)
-          require('lsp-servers.keymaps').setup(client, bufnr)
+          require('lsp-servers.keymaps').set_lsp_keys(client, bufnr)
           on_attach_from_config(client, bufnr)
         end
       elseif server_name ~= 'basics_ls' then
-        config.on_attach = require('lsp-servers.keymaps').setup
+        config.on_attach = require('lsp-servers.keymaps').set_lsp_keys
       end
 
       require('lspconfig')[server_name].setup(config)
@@ -346,30 +346,19 @@ return {
       },
     })
 
-    -- Completes words in buffer, paths and snippets
-    -- not in mason, so call it manually
-    if vim.fn.executable('basics-language-server') == 1 then
-      -- WARN: basics_ls attaches to all buffers which could cause issues due to additional keybindings
-      -- Exclusions can be added in `./lua/lsp-servers/keymaps.lua`
-      lspconfig_handler('basics_ls')
-    end
-
-    -- Configure aerial.nvim
-    require('config.nvim_aerial').setup()
+    -- configure when not using mason-lspconfig
+    local manual_setup = require('lsp-servers.lsp_manual_config')
+    local manual_setup_config = {
+      lspconfig_handler = lspconfig_handler,
+    }
 
     -- Load lsp manually from the manual selected list for environments such
     -- as termux which uses lsps not built with gnu libraries
-    if manual_setup then
-      require('lsp-servers.lsp_manual_config').setup({
-        lspconfig_handler = lspconfig_handler,
-      })
+    if special_binaries then
+      manual_setup.set_special_binaries(manual_setup_config)
     end
-
-    -- Setup lsp servers using lspconfig and cmp
-    -- which are specific for the device or not available in mason registry
-    require('lsp-servers.device_specific_lsp').configure({
-      lspconfig_handler = lspconfig_handler,
-    })
+    manual_setup.set_manual_setup(manual_setup_config)
+    manual_setup.set_device_specific(manual_setup_config)
   end,
 }
 

@@ -48,6 +48,10 @@ local configs = {
       },
     },
   },
+  ctags_lsp = {
+    -- Prevent loading for all lsps
+    filetypes = { 'go', 'c' },
+  },
 }
 
 return {

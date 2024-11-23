@@ -12,7 +12,7 @@ return {
   ---Setup keymaps for lsp
   ---@param client vim.lsp.Client
   ---@param bufnr number
-  setup = function(client, bufnr)
+  set_lsp_keys = function(client, bufnr)
     local buf = bufnr
 
     if not buf then

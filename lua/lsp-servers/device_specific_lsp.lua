@@ -2,7 +2,7 @@
 -- Which should return an array of tables with lsp name and server command name.
 
 return {
-  ---@param config { lspconfig_handler: fun(server: string) }
+  ---@param config { lspconfig_handler: fun(server: string); module_name: string }
   configure = function (config)
     ---@type boolean
     local success,
