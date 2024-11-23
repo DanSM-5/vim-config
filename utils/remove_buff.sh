@@ -14,7 +14,7 @@ buff="$(mktemp)"
 
 # Find bufnr inside square brackets
 # "filename linenumber [bufnr] somesymbol? buffname"
-bufnr="$(sed -nE 's|.*\[.*([0-9]+).*\].*|\1|p' "$selected")"
+bufnr="$(sed 's/\x1b\[[0-9;]*[mGKHF]//g' "$selected" | sed -nE 's|.*\[([0-9]+)\].*|\1|p')"
 
 # Ensure files exist
 touch "$opened_buffers"
