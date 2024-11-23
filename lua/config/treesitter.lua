@@ -284,10 +284,10 @@ return {
         end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
 
         -- diagnostic HINT
-        vim.keymap.set('n', ']i', function()
+        vim.keymap.set('n', ']h', function()
           diagnostic_next({ severity = vim.diagnostic.severity.HINT })
         end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
-        vim.keymap.set('n', '[i', function()
+        vim.keymap.set('n', '[h', function()
           diagnostic_prev({ severity = vim.diagnostic.severity.HINT })
         end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
       end,
