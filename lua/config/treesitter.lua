@@ -153,9 +153,9 @@ return {
         end
 
         repeat_pair({
-          keys = 'q',
-          prefix_forward = '<leader>]',
-          prefix_backward = '<leader>[',
+          keys = 'l',
+          -- prefix_forward = '<leader>]',
+          -- prefix_backward = '<leader>[',
           desc_forward = '[Locationlist] Move to next item',
           desc_backward = '[Locationlist] Move to previous item',
           on_forward = locationlist_next,

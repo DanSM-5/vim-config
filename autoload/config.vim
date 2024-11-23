@@ -298,8 +298,8 @@ func! s:Set_user_keybindings () abort
   nnoremap ]q <cmd>cnext<cr>zz
   nnoremap [q <cmd>cprev<cr>zz
   " Location list navigation
-  nnoremap <leader>[q <cmd>lnext<cr>zz
-  nnoremap <leader>]q <cmd>lprev<cr>zz
+  nnoremap [l <cmd>lnext<cr>zz
+  nnoremap ]l <cmd>lprev<cr>zz
 
   " Window resize vsplit
   nnoremap <A-,> <C-w>5<
