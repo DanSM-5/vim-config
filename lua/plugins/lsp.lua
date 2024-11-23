@@ -9,23 +9,6 @@ return {
     keys = { ']r', '[r' }, -- Uncomment to lazy load
     config = require('config.nvim_refjump').setup
   },
-  -- NOTE: Using magazine.nvim as as nvim-cmp replacement
-  {
-    'iguanacucumber/magazine.nvim',
-    name = 'nvim-cmp',
-  },
-  {
-    'L3MON4D3/LuaSnip',
-    -- follow latest release.
-    -- version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-    -- install jsregexp (optional!).
-    build = (function ()
-      if vim.fn.executable('make') == 0 then
-        return
-      end
-      return 'make install_jsregexp'
-    end)(),
-  },
   {
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -39,6 +22,11 @@ return {
       'rafamadriz/friendly-snippets',
       -- Completions and sources
       -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
+      -- NOTE: Using magazine.nvim as as nvim-cmp replacement
+      {
+        'iguanacucumber/magazine.nvim',
+        name = 'nvim-cmp',
+      },
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-nvim-lsp-signature-help',
       'roginfarrer/cmp-css-variables',
@@ -49,10 +37,24 @@ return {
       -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
       -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
       -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
+      {
+        'L3MON4D3/LuaSnip',
+        -- follow latest release.
+        -- version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+        -- install jsregexp (optional!).
+        build = (function ()
+          if vim.fn.executable('make') == 0 then
+            return
+          end
+          return 'make install_jsregexp'
+        end)(),
+      },
       -- Find symbols
       'stevearc/aerial.nvim',
       -- Dependency
       'nvim-tree/nvim-web-devicons',
+      -- Ctags lsp
+      -- 'netmute/ctags-lsp.nvim',
     },
     config = function()
       require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
