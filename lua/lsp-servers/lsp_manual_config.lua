@@ -42,7 +42,7 @@ local setup_servers = function (config)
 end
 
 ---@param config { lspconfig_handler: fun(server: string); }
----@param module_name string 
+---@param module_name string
 local configure = function (config, module_name)
   ---@type boolean
   local success,
