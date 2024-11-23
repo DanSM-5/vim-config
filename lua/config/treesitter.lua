@@ -16,8 +16,10 @@ return {
         end,
         detach = function (buf)
           -- Unset changes
-          vim.opt_local.foldmethod = 'indent'
-          vim.opt_local.foldexpr = ''
+          -- vim.opt_local.foldmethod = 'indent'
+          -- vim.opt_local.foldexpr = ''
+          vim.opt_local.foldmethod = vim.go.foldmethod
+          vim.opt_local.foldexpr = vim.go.foldexpr
         end,
         is_supported = function (lang)
           return true
