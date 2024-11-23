@@ -295,11 +295,11 @@ func! s:Set_user_keybindings () abort
   nnoremap zz <Cmd>call smoothie#do("zz")<CR>
 
   " Quickfix navigation
-  nnoremap <leader>cn <cmd>cnext<cr>zz
-  nnoremap <leader>cp <cmd>cprev<cr>zz
+  nnoremap ]q <cmd>cnext<cr>zz
+  nnoremap [q <cmd>cprev<cr>zz
   " Location list navigation
-  nnoremap <leader>ln <cmd>lnext<cr>zz
-  nnoremap <leader>lp <cmd>lprev<cr>zz
+  nnoremap <leader>[q <cmd>lnext<cr>zz
+  nnoremap <leader>]q <cmd>lprev<cr>zz
 
   " Window resize vsplit
   nnoremap <A-,> <C-w>5<

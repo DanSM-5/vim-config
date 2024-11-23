@@ -144,6 +144,24 @@ return {
           on_backward = quickfix_prev,
         })
 
+        -- Move items in quickfix
+        local locationlist_next = function()
+          vim.cmd('silent! lnext')
+        end
+        local locationlist_prev = function()
+          vim.cmd('silent! lprev')
+        end
+
+        repeat_pair({
+          keys = 'q',
+          prefix_forward = '<leader>]',
+          prefix_backward = '<leader>[',
+          desc_forward = '[Locationlist] Move to next item',
+          desc_backward = '[Locationlist] Move to previous item',
+          on_forward = locationlist_next,
+          on_backward = locationlist_prev,
+        })
+
         -- Move to next todo comment
         local todo_next = function ()
           require('todo-comments').jump_next()
