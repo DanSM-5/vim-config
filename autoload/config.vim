@@ -361,15 +361,15 @@ func! s:Set_user_keybindings () abort
 
   " Duplicate line above and below without moving cursor
   if has('nvim')
-    nnoremap <A-d> :<C-U>t.<CR>
-    nnoremap <A-u> :<C-U>t-1<CR>
-    inoremap <A-d> <esc>:<C-U>t.<CR>
-    inoremap <A-u> <esc>:<C-U>t-1<CR>
+    nnoremap <A-y> :<C-U>t.<CR>
+    nnoremap <A-e> :<C-U>t-1<CR>
+    inoremap <A-y> <esc>:<C-U>t.<CR>
+    inoremap <A-e> <esc>:<C-U>t-1<CR>
   else
-    nnoremap <A-d> v0yO<esc>pjly$kp`[jh
-    nnoremap <A-u> v0yO<esc>pjly$kp`[h
-    inoremap <A-d> <esc>lv0yO<esc>pjly$kp`[jhi
-    inoremap <A-u> <esc>lv0yO<esc>pjly$kp`[hi
+    nnoremap <A-y> v0yO<esc>pjly$kp`[jh
+    nnoremap <A-e> v0yO<esc>pjly$kp`[h
+    inoremap <A-y> <esc>lv0yO<esc>pjly$kp`[jhi
+    inoremap <A-e> <esc>lv0yO<esc>pjly$kp`[hi
   endif
 
   " We use the map <C-o> specially which conflict with jump
@@ -397,10 +397,25 @@ func! s:Set_user_keybindings () abort
     execute "set <A-,>=\e,"
     execute "set <A-.>=\e."
     " a-z
-    for i in range(97,122)
-      let c = nr2char(i)
-      execute "set <A-".c.">=\e".c
-    endfor
+    " for i in range(97,122)
+    "   let c = nr2char(i)
+    "   execute "set <A-".c.">=\e".c
+    " endfor
+
+    " Used alt keys vim
+    " WARN: Do not map common keys like
+    " Alt+o or Alt+u because in vim that alt mappings are
+    " recognized as <esc>KEY
+    execute "set <A-p>=\ep"
+    execute "set <A-l>=\epl"
+    execute "set <A-h>=\eh"
+    execute "set <A-k>=\ek"
+    execute "set <A-j>=\ej"
+    execute "set <A-s>=\es"
+    execute "set <A-t>=\et"
+    execute "set <A-e>=\ee"
+    execute "set <A-y>=\ey"
+
     " Alt-arrow combinations throw error
     " execute "set <A-Up>=\e[1;3A"
     " execute "set <A-Down>=\e[1;3B"
