@@ -38,6 +38,25 @@ function! s:OpenTempGitCommit(commits) abort
   endif
 endfunction
 
+function s:GetCopyCmd() abort
+  let os = substitute(system('uname'), '\n', '', '')
+
+  if has('gui_win32') || has('win32')
+    " NOTE: Manually point to the location of the helper script
+    " Or return the specific command to copy
+    let gitsearch_copy = substitute($USERPROFILE, '\\', '/', 'g') . (has('nvim') ? '/AppData/Local/nvim' : '/vimfiles') . '/utils/gitsearch_copy.ps1'
+    return 'powershell -NoLogo -NonInteractive -NoProfile -File ' . shellescape(gitsearch_copy) . ' "{+f}"'
+  elseif has("gui_mac") || os ==? 'Darwin'
+    return "cat {+f} | awk '{ print $1 }' | pbcopy"
+  elseif !empty($WAYLAND_DISPLAY) && executable('wl-copy')
+    return "cat {+f} | awk '{ print $1 }' | wl-copy --foreground --type text/plain"                             
+  elseif !empty($DISPLAY) && executable('xsel')                                     
+    return "cat {+f} | awk '{ print $1 }' | xsel -i -b"                                                         
+  elseif !empty($DISPLAY) && executable('xclip')                                    
+    return "cat {+f} | awk '{ print $1 }' | xclip -i -selection clipboard"                                      
+  endif
+endfunction
+
 function! gitsearch#search(query, fullscreen, cmd) abort
   let curr_path = getcwd()
   let gitpath = s:GitPath()
@@ -54,6 +73,7 @@ function! gitsearch#search(query, fullscreen, cmd) abort
   let reload_command = printf(a:cmd, '{q}')
   let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
   let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+  let copy_cmd = s:GetCopyCmd()
 
   " NOTE: ctrl-d doesn't work on Windows nvim
 
@@ -86,7 +106,8 @@ function! gitsearch#search(query, fullscreen, cmd) abort
     \     '--bind', 'alt-d:deselect-all',
     \     '--bind', 'alt-c:clear-query',
     \     '--query', a:query,
-    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(GitSearch> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+    \     '--bind', 'ctrl-y:execute-silent:'.copy_cmd,
+    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(GitSearch> )+disable-search+reload(' . reload_command . ')+rebind(change,ctrl-f)',
     \     '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)",
     \     '--bind', 'change:reload:'.reload_command,
     \     '--preview-window', preview_window,
@@ -104,7 +125,7 @@ endfunction
 
 function! gitsearch#log(query, fullscreen) abort
   let query = a:query
-  let cmd = 'git log --oneline --branches --all --grep %s || true'
+  let cmd = 'git log --color=always --oneline --branches --all --grep %s || true'
   if query == '?'
     let query = ''
     let file = shellescape(expand('%:p'))
@@ -115,7 +136,7 @@ endfunction
 
 function! gitsearch#regex(query, fullscreen) abort
   let query = a:query
-  let cmd = 'git log --oneline --branches --all -G %s || true'
+  let cmd = 'git log --color=always --oneline --branches --all -G %s || true'
   if query == '?'
     let query = ''
     let file = shellescape(expand('%:p'))
@@ -126,7 +147,7 @@ endfunction
 
 function! gitsearch#string(query, fullscreen) abort
   let query = a:query
-  let cmd = 'git log --oneline --branches --all -S %s || true'
+  let cmd = 'git log --color=always --oneline --branches --all -S %s || true'
   if query == '?'
     let query = ''
     let file = shellescape(expand('%:p'))
