@@ -5,12 +5,15 @@ local rg_args = ' --column --line-number --no-ignore --no-heading --color=always
 local fzf_base_options = { '--multi', '--ansi', '--info=inline', '--bind', 'alt-c:clear-query' }
 ---@type string[]
 local fzf_bind_options = array_concat(fzf_base_options, {
-            '--bind',
-            'ctrl-l:change-preview-window(down|hidden|),ctrl-/:change-preview-window(down|hidden|),alt-up:preview-page-up,alt-down:preview-page-down',
+            '--bind', 'ctrl-^:toggle-preview',
+            '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
+            '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
+            '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
+            '--bind', 'shift-up:preview-up,shift-down:preview-down',
             '--bind', 'ctrl-s:toggle-sort',
             '--cycle',
-            '--bind', '0:change-preview-window(down|hidden|)',
-            '--bind', '1:toggle-preview',
+            -- '--bind', '0:change-preview-window(down|hidden|)',
+            -- '--bind', '1:toggle-preview',
             '--bind', 'alt-f:first',
             '--bind', 'alt-l:last',
             '--bind', 'alt-a:select-all',
