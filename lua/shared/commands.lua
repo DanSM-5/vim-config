@@ -9,7 +9,12 @@ end, { nargs = '?', bang = true })
 ---@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('NR', function (opts)
   if opts.bang then
-    require('utils.npm').run()
+    local dir = opts.fargs[1]
+    if dir then
+      -- Clean trailing lash or backslash
+      dir = dir:gsub('[\\/]$','')
+    end
+    require('utils.npm').run(dir)
     return
   end
 
@@ -21,7 +26,7 @@ vim.api.nvim_create_user_command('NR', function (opts)
   end
 
   require('utils.npm').open(dir, 'run', opts.fargs)
-end, { bang = true, nargs = '*' })
+end, { bang = true, nargs = '*', complete = 'dir' })
 
 ---Create NR (npm run) command
 ---@param opts { bang: boolean, fargs: string[] }
