@@ -1,24 +1,5 @@
--- Kept as example
--- local function echo(hlgroup, msg)
---   vim.cmd('echohl ' .. hlgroup)
---   vim.cmd('echo "lspfuzzy: ' .. msg .. '"')
---   vim.cmd('echohl None')
--- end
--- Usage:
--- echo('WarningMsg', 'Some message')
 
----Concatenates 2 arrays
----@generic T
----@param t1 T[]
----@param t2 T[]
----@return table
-local function array_concat(t1, t2)
-  local result = {}
-  for _, v in ipairs(t1) do table.insert(result, v) end
-  for _, v in ipairs(t2) do table.insert(result, v) end
-  return result
-end
-
+local array_concat = require('utils.stdlib').concat
 local rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
 ---@type string[]
 local fzf_base_options = { '--multi', '--ansi', '--info=inline', '--bind', 'alt-c:clear-query' }
