@@ -1042,82 +1042,6 @@ function! RipgrepFuzzy(query, fullscreen)
   endtry
 endfunction
 
-function! s:OpenTempGitCommit(commits) abort
-  if len(a:commits) == 0
-    return
-  else
-    enew
-    exec 'file Commits'
-    for commit in a:commits
-      let hash = split(commit)[0]
-      pu = system('git show ' . hash)
-      pu = ''
-    endfor
-    silent call execute('normal ggdd')
-    setlocal nomod readonly
-    setlocal filetype=git
-    setlocal foldmethod=syntax
-  endif
-endfunction
-
-function! GitSearch(query, fullscreen, cmd) abort
-  " NOTE: fzf#shellescape seems to break on windows.
-  " Usual shellescape works fine.
-  let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-  let reload_command = printf(a:cmd, '{q}')
-  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
-  let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
-
-  " NOTE: ctrl-d doesn't work on Windows nvim
-
-  " NOTE: this could use 'start:reload' instead of 'source'
-  " '--bind', 'start:reload:'.source_command,
-  " But git bash never starts the command until the query changes.
-  " So passing the command as source seems like a better option for
-  " cross platfor commands.
-
-  let spec = {
-    \   'source': source_command,
-    \   'sinklist': function('s:OpenTempGitCommit'),
-    \   'options': s:fzf_bind_options + [
-    \     '--prompt', 'GitSearch> ',
-    \     '--header', 'ctrl-r: interactive search | ctrl-f: Fzf filtering of results',
-    \     '--multi', '--ansi',
-    \     '--layout=reverse',
-    \     '--disabled',
-    \     '--query', a:query,
-    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(GitSearch> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
-    \     '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)",
-    \     '--bind', 'change:reload:'.reload_command,
-    \     '--preview-window', preview_window,
-    \     '--preview', preview]
-    \ }
-
-    let curr_path = getcwd()
-    let gitpath = GitPath()
-    try
-      exec 'cd ' . gitpath
-      call fzf#run(fzf#wrap('git', spec, a:fullscreen))
-    finally
-      exec 'cd ' . curr_path
-    endtry
-endfunction
-
-function! GitSearchLog(query, fullscreen) abort
-  let cmd = 'git log --oneline --grep %s || true'
-  silent call GitSearch(a:query, a:fullscreen, cmd)
-endfunction
-
-function! GitSearchRegex(query, fullscreen) abort
-  let cmd = 'git log --oneline --branches --all -G %s || true'
-  silent call GitSearch(a:query, a:fullscreen, cmd)
-endfunction
-
-function! GitSearchString(query, fullscreen) abort
-  let cmd = 'git log --oneline --branches --all -S %s || true'
-  silent call GitSearch(a:query, a:fullscreen, cmd)
-endfunction
-
 function! NewTxt(filename) abort
   let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
   let filename = ''
@@ -1410,9 +1334,9 @@ func! s:SetFZF () abort
   imap <c-o><c-f> <plug>(fzf-complete-path)
   imap <c-o><c-l> <plug>(fzf-complete-line)
 
-  command! -nargs=* -bang GitSearchLog call GitSearchLog(<q-args>, <bang>0)
-  command! -nargs=* -bang GitSearchRegex call GitSearchRegex(<q-args>, <bang>0)
-  command! -nargs=* -bang GitSearchString call GitSearchString(<q-args>, <bang>0)
+  command! -nargs=* -bang -bar GitSearchLog call gitsearch#log(<q-args>, <bang>0)
+  command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
+  command! -nargs=* -bang -bar GitSearchString call gitsearch#string(<q-args>, <bang>0)
 
   command! -nargs=* -bang FTxt call FzfTxt(<q-args>, <bang>0)
   command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)
