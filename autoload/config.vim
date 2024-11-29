@@ -882,7 +882,7 @@ endfunction
 function! s:FzfRgWindows_preview(spec, fullscreen) abort
 
   let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
-  let preview_path = substitute('/c' . $HOMEPATH . '\vim-config\utils\preview.sh', '\\', '/', 'g')
+  let preview_path = substitute('/c' . $HOMEPATH . '/vim-config/utils/preview.sh', '\\', '/', 'g')
   let command_preview = bash_path . ' ' . preview_path . ' {}'
 
   " Keep for debugging
@@ -1038,6 +1038,64 @@ function! RipgrepFuzzy(query, fullscreen)
     exec 'cd '. gitpath
 
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
+  finally
+    exec 'cd '. curr_path
+  endtry
+endfunction
+
+" Ripgrep on recently opened files
+function RipgrepHistory(query, fullscreen) abort
+  let fzf_rg_args = s:rg_args
+  " Get recent files, expand ~, and use forward slash
+  let files = join(map(fzf#vim#_recent_files(), 'substitute(expand(v:val), "\\", "/", "g")'), ' ')
+  let command_fmt = 'rg' . fzf_rg_args . ' -- %s ' . files . ' || true'
+  " Fixed initial load. It seems it broke on windows using fzf#shellescape
+  " Usual shellescape works fine.
+  let initial_command = printf(command_fmt, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {
+        \     'options': ['--disabled', '--query', a:query,
+        \                 '--ansi', '--prompt', 'RgHistory> ',
+        \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
+        \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2',
+        \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(RgHistory> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+        \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
+        \                 '--bind', 'start:reload:'.initial_command,
+        \                 '--bind', 'change:reload:'.reload_command]
+        \}
+
+  if g:is_windows
+    let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
+  else
+    let spec = fzf#vim#with_preview(spec)
+    let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
+    let spec.options = spec.options + s:fzf_bind_options
+  endif
+
+  " echo spec
+
+  " fzf.vim examples
+  " call fzf#vim#grep2("rg --column --line-number --no-heading --color=always --smart-case -- ", <q-args>, fzf#vim#with_preview(), <bang>0)
+  " call fzf#vim#grep2("rg --column --line-number --no-heading --color=always --smart-case -- ", a:query, fzf#vim#with_preview(), a:fullscreen)
+
+  let curr_path = getcwd()
+  let gitpath = GitPath()
+
+  try
+    " Change path to get relative 'short' paths in the fzf search
+    exec 'cd '. gitpath
+    " NOTE: the first argument is not needed. It is overriden by the options
+    " (third argument)
+    " First argument is used to identify a command name
+    "
+    " In theory, we can replace the fzf#vim#grep2 function with the following
+    " fzf#run function BUT there is an issue with the sink function. current
+    " fzf#vim#grep2 is calling some reference functions in fzf.vim
+    " 'sink*': function('499') and 'sinklist': function('500')
+    " Until we know how fzf#vim#grep2 handles selected files to open them,
+    " we need to rely on the fzf#vim#grep2 function to handle things.
+    " call fzf#run(fzf#wrap('rg --column --line-number --no-heading --color=always --smart-case -- ', spec, a:fullscreen))
+    call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
   finally
     exec 'cd '. curr_path
   endtry
