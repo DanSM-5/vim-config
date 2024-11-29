@@ -65,6 +65,7 @@ function! gitsearch#search(query, fullscreen, cmd) abort
     echohl hlgroup
     echo 'WARNING: Not in a git repository'
     echohl None
+    return
   endif
 
   " NOTE: fzf#shellescape seems to break on windows.
