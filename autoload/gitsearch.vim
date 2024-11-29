@@ -1,3 +1,23 @@
+" Search interactively in git repository in the logs
+" or in the patches by regex or literal string.
+"
+" Upon selecting commits the patches will be opened in a new temporary buffer
+" for further inpection.
+"
+" Calling any of the functions with a '%' as query will start the search
+" scoped to the current buffer.
+"
+" Dependencies:
+" - git
+" - fzf
+" - fzf.vim
+" - gitsearch_copy.ps1 for coping (windows only)
+" 
+" Recommended Commands:
+" command! -nargs=* -bang -bar GitSearchLog call gitsearch#log(<q-args>, <bang>0)
+" command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
+" command! -nargs=* -bang -bar GitSearchString call gitsearch#string(<q-args>, <bang>0)
+
 if exists('g:loaded_git_search_commits')
   finish
 endif
@@ -89,7 +109,7 @@ function! gitsearch#search(query, fullscreen, cmd) abort
     \   'sinklist': function('s:OpenTempGitCommit'),
     \   'options': [
     \     '--prompt', 'GitSearch> ',
-    \     '--header', 'ctrl-r: Interactive search | ctrl-f: Filtering results',
+    \     '--header', 'ctrl-r: Interactive search | ctrl-f: Filtering results | ctrl-y: Copy hashes',
     \     '--multi', '--ansi',
     \     '--layout=reverse',
     \     '--disabled',
@@ -118,7 +138,7 @@ function! gitsearch#search(query, fullscreen, cmd) abort
 
     try
       exec 'cd ' . gitpath
-      call fzf#run(fzf#wrap('git', spec, a:fullscreen))
+      call fzf#run(fzf#wrap('git-search-commits', spec, a:fullscreen))
     finally
       exec 'cd ' . curr_path
     endtry
