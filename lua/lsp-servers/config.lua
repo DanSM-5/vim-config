@@ -1,13 +1,4 @@
---- Same as lspconfig.Config but to avoid issues if module is not loaded
---- @class LspConfigExtended : vim.lsp.ClientConfig
---- @field enabled? boolean
---- @field single_file_support? boolean
---- @field filetypes? string[]
---- @field filetype? string
---- @field on_new_config? fun(new_config: LspConfigExtended?, new_root_dir: string)
---- @field autostart? boolean
---- @field package _on_attach? fun(client: vim.lsp.Client, bufnr: integer)
---- @field root_dir? string|fun(filename: string, bufnr: number)
+require('lsp-servers.types')
 
 ---@type table<string, LspConfigExtended>
 local configs = {
@@ -15,6 +6,7 @@ local configs = {
     on_attach = function(client, bufnr)
       client.server_capabilities.documentFormattingProvider = true
       client.server_capabilities.documentRangeFormattingProvider = true
+      require('lsp-servers.keymaps').set_lsp_keys(client, bufnr)
     end,
     settings = {
       Lua = {
@@ -31,10 +23,11 @@ local configs = {
     },
   },
   ts_ls = {
-    on_attach = function(client)
+    on_attach = function(client, bufnr)
       ---@diagnostic disable-next-line: inject-field
       client.server_capabilities.document_formatting = false
       client.server_capabilities.documentFormattingProvider = false
+      require('lsp-servers.keymaps').set_lsp_keys(client, bufnr)
     end,
   },
   vimls = {},

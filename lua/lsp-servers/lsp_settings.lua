@@ -1,3 +1,5 @@
+require('lsp-servers.types')
+
 -- Manual lsp-config
 -- This runs when loading lsp from VimPlug
 
@@ -7,13 +9,7 @@
 -- local lspconfig = require('lspconfig')
 -- lspconfig.lua_ls.setup({})
 
----@class CompletionsOpts
----@field enable { lazydev: boolean; crates: boolean }
-
----@class LspSetupOpts
----@field completions CompletionsOpts
-
----@type LspSetupOpts
+---@type LspSetttings
 local defaultLspSetupOpts = {
   completions = {
     enable = {
@@ -109,9 +105,9 @@ end
 
 return {
   ---Options when setting lsp features
-  ---@param opts LspSetupOpts | nil
+  ---@param opts LspSetttings | nil
   setup = function(opts)
-    ---@type LspSetupOpts
+    ---@type LspSetttings
     opts = vim.tbl_deep_extend('force', defaultLspSetupOpts, opts or {})
     local special_binaries = vim.g.is_termux == 1 or vim.g.is_container == 1
     local language_servers = special_binaries and {}
@@ -279,12 +275,15 @@ return {
 
     require('luasnip.loaders.from_vscode').lazy_load()
 
-    ---@param server_name string
-    local lspconfig_handler = function(server_name)
+    ---@type LspHandlerFunc
+    local lspconfig_handler = function(server_name, options)
       if server_name == nil or type(server_name) ~= 'string' then
         vim.notify('No valid server name provided', vim.log.levels.WARN)
         return
       end
+
+      -- Ensure not null
+      options = options or {}
 
       -- Prevent mason-lspconfig from trying to start the LSP server
       -- for rust_analyzer. This is done through mrcjkb/rustaceanvim plugin
@@ -296,15 +295,10 @@ return {
       ---@type lspconfig.Config
       local config = vim.tbl_deep_extend('force', {}, base_config, { capabilities = capabilities })
 
-      if config.on_attach ~= nil then
-        local on_attach_from_config = config.on_attach or function () end
-        ---@param client vim.lsp.Client
-        ---@param bufnr number
-        config.on_attach = function (client, bufnr)
-          require('lsp-servers.keymaps').set_lsp_keys(client, bufnr)
-          on_attach_from_config(client, bufnr)
-        end
-      elseif server_name ~= 'basics_ls' then
+      -- Add keymaps on buffer with lsp
+      -- NOTE: Only include automatically on configs that do not include a `on_attach`
+      -- If the config has `on_attach`, then it should add the keymaps there
+      if options.keymaps ~= false and config.on_attach == nil then
         config.on_attach = require('lsp-servers.keymaps').set_lsp_keys
       end
 

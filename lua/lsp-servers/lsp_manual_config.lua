@@ -1,3 +1,5 @@
+require('lsp-servers.types')
+
 --Manual lsp configuration example
 --
 --if vim.fn.executable('bash-language-server') == 1 then
@@ -27,22 +29,23 @@
 --  })
 --end -- if bash-language-server == 1 end
 
-
----@param config { lspconfig_handler: fun(server: string); servers: { server: string; lsp: string }[] }
+---@param config { lspconfig_handler: LspHandlerFunc; servers: LspServersSettings[] }
+---@return nil
 local setup_servers = function (config)
   for _, settings in ipairs(config.servers) do
-    local server, lsp = settings.server, settings.lsp
+    local server, lsp, options = settings.server, settings.lsp, settings.options
     if type(server) ~= 'string' or type(lsp) ~= 'string' then
       -- continue;
       -- but lua doesn't have continue :v
     elseif vim.fn.executable(server) == 1 then
-      config.lspconfig_handler(lsp)
+      config.lspconfig_handler(lsp, options)
     end
   end
 end
 
----@param config { lspconfig_handler: fun(server: string); }
----@param module_name string
+---@param config { lspconfig_handler: LspHandlerFunc; } Handler function that setups an lsp
+---@param module_name string Name of the module to load with sources
+---@return nil
 local configure = function (config, module_name)
   ---@type boolean
   local success,
@@ -62,15 +65,15 @@ end
 return {
   configure = configure,
   setup_servers = setup_servers,
-  ---@param config { lspconfig_handler: fun(server: string) }
+  ---@type LspSpecialSetupFunc
   set_special_binaries = function(config)
     configure(config, 'lsp-sources.special_binaries')
   end,
-  ---@param config { lspconfig_handler: fun(server: string) }
+  ---@type LspSpecialSetupFunc
   set_manual_setup = function (config)
     configure(config, 'lsp-sources.manual_setup')
   end,
-  ---@param config { lspconfig_handler: fun(server: string) }
+  ---@type LspSpecialSetupFunc
   set_device_specific = function (config)
     configure(config, 'lsp-sources.device_specific')
   end,

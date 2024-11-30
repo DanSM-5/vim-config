@@ -1,6 +1,8 @@
+require('lsp-servers.types')
+
 ---This includes devices such as termux or runing inside containers
 ---which require special built binaries.
----@type { server: string; lsp: string }[]
+---@type LspServersSettings[]
 local special_binaries = {
   {
     server = 'lua-language-server',
