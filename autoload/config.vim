@@ -1924,10 +1924,14 @@ function OpenNetrw() abort
     if cur_file != 'NetrwTreeListing' && !netrw_open
       exec 'cd ' . file_dir
       let gitpath = GitPath()
-      Lex!
-      exec 'Ntree ' . file_dir
+      " WARN: Need to call Lex with the path or netrw will open on the
+      " previous window.
+      " Issue: https://groups.google.com/g/vim_dev/c/np1yarYC4Uo
+      silent exec 'Lex! ' . file_dir
+      " exec 'Ntree ' . file_dir
       exec 'cd ' . gitpath
-      silent call search(' ' . cur_file . '$')
+      " NOTE: Need to check for an optional trailing '*'
+      silent call search(' ' . cur_file . '\*\?$')
       echo 'Opening ' . cur_file
     else
       Lex!
@@ -1960,11 +1964,7 @@ func! s:Set_netrw () abort
   "   orphan buffers
   " More: https://github.com/tpope/vim-vinegar/issues/13
 
-  if has('win32')
-    nnoremap <leader>ve <cmd>call OpenNetrw()<cr>
-  else
-    nnoremap <leader>ve <cmd>Lex!<cr>
-  endif
+  nnoremap <leader>ve <cmd>call OpenNetrw()<cr>
 
   nnoremap <leader>se <cmd>Hex<cr>
 
