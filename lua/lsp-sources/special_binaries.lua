@@ -28,6 +28,10 @@ local special_binaries = {
     server = 'biome',
     lsp = 'biome',
   },
+  {
+    server = 'vscode-html-language-server',
+    lsp = 'html',
+  },
 }
 
 return special_binaries

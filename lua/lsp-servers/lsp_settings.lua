@@ -112,6 +112,7 @@ return {
     local special_binaries = vim.g.is_termux == 1 or vim.g.is_container == 1
     local language_servers = special_binaries and {}
       or {
+        -- # Use lspconfig names
         'lua_ls',
         'vimls',
         -- 'biome',
@@ -123,6 +124,7 @@ return {
         -- 'powershell_es',
         -- 'stylua',
         'ts_ls',
+        'html',
         'emmet_language_server'
       }
 
