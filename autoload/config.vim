@@ -408,7 +408,7 @@ func! s:Set_user_keybindings () abort
     " Alt+o or Alt+u because in vim that alt mappings are
     " recognized as <esc>KEY
     execute "set <A-p>=\ep"
-    execute "set <A-l>=\epl"
+    execute "set <A-l>=\el"
     execute "set <A-h>=\eh"
     execute "set <A-k>=\ek"
     execute "set <A-j>=\ej"
