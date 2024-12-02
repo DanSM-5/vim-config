@@ -34,12 +34,6 @@ return {
     'DanSM-5/vim-system-copy',
   },
   {
-    'junegunn/fzf',
-  },
-  {
-    'junegunn/fzf.vim',
-  },
-  {
     'mg979/vim-visual-multi',
     config = function ()
       -- Create highlight groups for VM
