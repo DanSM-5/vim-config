@@ -137,22 +137,28 @@ local select_buffer_lsp = function (sink)
   end
 
   local hist_file = 'fzf-select-lsp-client'
-  local hist_path = get_history_param(hist_file)
+  -- local hist_path = get_history_param(hist_file)
   local options = array_concat(fzf_bind_options, {
     '--prompt',
     'Buffer Clients> ',
-    hist_path,
+    -- hist_path,
     '--no-multi',
   })
 
   -- return client_names
-  fzf({ source = client_names, sink = sink, fzf_opts = options })
+  fzf({
+    source = client_names,
+    sink = sink,
+    fzf_opts = options,
+    name = hist_file,
+  })
 end
 
 return {
   fzf = fzf,
   select_buffer_lsp = select_buffer_lsp,
   rg_args = rg_args,
+  get_history_param = get_history_param,
   fzf_base_options = fzf_base_options,
   fzf_bind_options = fzf_bind_options,
   fzf_preview_options = fzf_preview_options,
