@@ -114,9 +114,9 @@ func! s:SetConfigurationsAfter () abort
     " with long names which causes issues with the cache loader of neovim
     " Workaround is to diable the loader temporarily
     " Ref: https://github.com/neovim/neovim/issues/25008
-    lua vim.loader.disable()
+    lua if vim.loader.disable ~= nil then vim.loader.disable() else vim.loader.enable(false) end
     packadd cfilter
-    lua vim.loader.enable()
+    lua vim.loader.enable(true)
   else
     packadd cfilter
   endif
