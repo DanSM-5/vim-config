@@ -1400,7 +1400,7 @@ func! s:SetFZF () abort
   " Open from notes (txt)
   nnoremap <C-o>t :<C-u>FTxt<CR>
   " Search word under the cursor (RG)
-  nnoremap <C-o>f :execute 'RG '.expand('<cword>')<cr>
+  nnoremap <leader>fr :execute 'RG '.expand('<cword>')<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
   " Set usual ctrl-o behavior to double the sequence
