@@ -118,7 +118,7 @@ func! s:SetConfigurationsAfter () abort
     packadd cfilter
     lua vim.loader.enable(true)
   else
-    packadd cfilter
+    packadd! cfilter
   endif
 
   " For suda.vim to edit with sudo permission in vim and nvim
