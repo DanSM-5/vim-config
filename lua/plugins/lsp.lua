@@ -57,12 +57,13 @@ return {
       -- 'netmute/ctags-lsp.nvim',
     },
     config = function()
-      vim.api.nvim_create_autocmd('VimEnter', {
-        once = true,
-        callback = function ()
-          require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
-        end
-      })
+      -- vim.api.nvim_create_autocmd('VimEnter', {
+      --   once = true,
+      --   callback = function ()
+      --     require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
+      --   end
+      -- })
+      require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
     end,
   },
   -- TODO: Review how to use powershell editor services
