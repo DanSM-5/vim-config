@@ -128,6 +128,13 @@ return {
         'emmet_language_server'
       }
 
+    -- Configure hover window
+    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
+      border = 'rounded',
+      -- max_widht = 50,
+      max_height = 50,
+    })
+
     -- Setup lsp servers
     require('config.nvim_lspconfig').setup()
 
