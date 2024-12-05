@@ -17,7 +17,9 @@ return {
       'nvim-treesitter/nvim-treesitter',
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
-    config = require('config.nvim_demicolon').setup
+    config = function ()
+      require('config.nvim_demicolon').setup()
+    end
   },
   {
     'CKolkey/ts-node-action',
