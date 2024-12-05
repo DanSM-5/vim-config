@@ -32,6 +32,10 @@ local special_binaries = {
     server = 'vscode-html-language-server',
     lsp = 'html',
   },
+  {
+    server = 'json-lsp',
+    lsp = 'vscode-json-languageserver',
+  },
 }
 
 return special_binaries

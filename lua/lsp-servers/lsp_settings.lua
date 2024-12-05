@@ -125,7 +125,8 @@ return {
         -- 'stylua',
         'ts_ls',
         'html',
-        'emmet_language_server'
+        'emmet_language_server',
+        'jsonls',
       }
 
     -- Configure hover window

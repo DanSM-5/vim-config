@@ -41,6 +41,7 @@ return {
         'gitattributes',
         'gitcommit',
         'gitignore',
+        'json5',
       },
       auto_install = true,
       highlight = { enable = true },
