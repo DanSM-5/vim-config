@@ -74,10 +74,11 @@ func! s:SetConfigurationsBefore () abort
   " Enable fold method using indent
   " Ref: https://www.reddit.com/r/neovim/comments/10q2mjq/comment/j6nmuw8
   " also consider plugin: https://github.com/kevinhwang91/nvim-ufo
-  exec 'set fillchars=fold:\ '
+  exec 'set fillchars=fold:\ ,foldopen:,foldsep:\ ,foldclose:'
   set foldmethod=indent
   set nofoldenable
   set foldlevel=99
+  set foldlevelstart=99
   " enable markdown folding
   let g:markdown_folding = 1
   " lua version:
