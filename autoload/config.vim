@@ -1300,6 +1300,19 @@ function FzfBuffers(query, fullscreen) abort
   call fzf#vim#buffers(a:query, buff_sorted, spec, a:fullscreen)
 endfunction
 
+function! GetSelectionText()
+  let [begin, end] = [getpos("'<"), getpos("'>")]
+  let lastchar = matchstr(getline(end[1])[end[2]-1 :], '.')
+  if begin[1] ==# end[1]
+    let lines = [getline(begin[1])[begin[2]-1 : end[2]-2]]
+  else
+    let lines = [getline(begin[1])[begin[2]-1 :]]
+          \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
+          \         + [getline(end[1])[: end[2]-2]]
+  endif
+  return join(lines, "\n") . lastchar . (visualmode() ==# 'V' ? "\n" : '')
+endfunction
+
 func! s:SetFZF () abort
   " fzf commands
   " fzf
@@ -1398,6 +1411,7 @@ func! s:SetFZF () abort
   nnoremap <C-o>t :<C-u>FTxt<CR>
   " Search word under the cursor (RG)
   nnoremap <leader>fr :execute 'RG '.expand('<cword>')<cr>
+  xnoremap <leader>fr :<C-u>execute 'RG '.GetSelectionText()<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
   " Set usual ctrl-o behavior to double the sequence
