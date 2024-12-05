@@ -99,3 +99,4 @@ function! clipboard#set(yank, past) abort
   let s:yank_cmd = a:yank
   let s:paste_cmd = a:past
 endfunction
+
