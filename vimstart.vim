@@ -333,6 +333,7 @@ call plug#begin()
     Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
     Plug 'roginfarrer/cmp-css-variables'
     Plug 'lukas-reineke/cmp-rg'
+    Plug 'petertriho/cmp-git'
     " Plug 'hrsh7th/cmp-nvim-lua' " { name = 'nvim_lua'  }
     " Plug 'hrsh7th/cmp-buffer' " { name = 'path' }
     " Plug 'https://codeberg.org/FelipeLema/cmp-async-path' " { name = 'async_path' }

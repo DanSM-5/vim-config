@@ -56,6 +56,7 @@ local cmp_formatting_menu = {
   ['css-variables'] = '[CssVar]',
   nvim_lsp_signature_help = '[LspSignature]',
   rg = '[RipGrep]',
+  git = '[Git]',
 }
 
 local get_cmp_format = function ()
@@ -153,6 +154,7 @@ return {
       { name = 'css-variables' },
       { name = 'nvim_lsp_signature_help' },
       { name = 'luasnip' },
+      { name = 'git' },
     }
     -- if opts.completions.enable.crates then
     --   table.insert(sources, { name = 'crates' })
@@ -283,6 +285,7 @@ return {
       }
     })
 
+    require('cmp_git').setup()
     require('luasnip.loaders.from_vscode').lazy_load()
 
     ---@type LspHandlerFunc

@@ -26,17 +26,20 @@ return {
       {
         'iguanacucumber/magazine.nvim',
         name = 'nvim-cmp',
+        dependencies = {
+          'petertriho/cmp-git',
+          'hrsh7th/cmp-nvim-lsp',
+          'hrsh7th/cmp-nvim-lsp-signature-help',
+          'roginfarrer/cmp-css-variables',
+          'lukas-reineke/cmp-rg',
+          -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
+          -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
+          -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
+          -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
+          -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
+          -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
+        }
       },
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-nvim-lsp-signature-help',
-      'roginfarrer/cmp-css-variables',
-      'lukas-reineke/cmp-rg',
-      -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
-      -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
-      -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
-      -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
-      -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
-      -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
       {
         'L3MON4D3/LuaSnip',
         -- follow latest release.
