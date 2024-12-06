@@ -31,19 +31,29 @@ require("lazy").setup({
   -- change_detection = { enabled = false }
   ui = {
     icons = {
-      cmd = '⌘',
+      cmd = " ",
       config = '🛠',
       event = '📅',
+      favorite = '🌟',
       ft = '📂',
       init = '⚙',
+      import = ' ',
       keys = '🗝',
       plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
+      loaded = '🔋',
+      not_loaded = '🪫',
+      runtime = ' ',
+      require = '󰢱 ',
       source = '📄',
       start = '🚀',
       task = '📌',
       lazy = '💤 ',
+      list = {
+        '●',
+        '➜',
+        '★',
+        '‒',
+      },
     },
   },
 })
