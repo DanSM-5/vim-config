@@ -1,6 +1,7 @@
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+local uv = vim.uv or vim.loop
+if not uv.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath })
   if vim.v.shell_error ~= 0 then
@@ -16,6 +17,9 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
+-- Disable updates check if file exists
+local check_for_updates = not (uv.fs_stat(vim.fn.stdpath('config') .. '/.no_updates_check'))
+
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
@@ -27,7 +31,7 @@ require("lazy").setup({
   -- install = { colorscheme = { "habamax" } },
   install = { colorscheme = { "onehalfdark" } },
   -- automatically check for plugin updates
-  checker = { enabled = true, notify = false },
+  checker = { enabled = check_for_updates, notify = false },
   -- change_detection = { enabled = false }
   ui = {
     icons = {

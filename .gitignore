@@ -17,3 +17,6 @@ lazy-lock.json
 # Swap files
 *.swp
 
+# Disable check for updates in lazy.nvim
+.no_updates_check
+
