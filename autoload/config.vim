@@ -373,8 +373,8 @@ func! s:Set_user_keybindings () abort
   if has('nvim')
     nnoremap <A-y> :<C-U>t.<CR>
     nnoremap <A-e> :<C-U>t-1<CR>
-    inoremap <A-y> <esc>:<C-U>t.<CR>
-    inoremap <A-e> <esc>:<C-U>t-1<CR>
+    inoremap <A-y> <esc>:<C-U>t.<CR>a
+    inoremap <A-e> <esc>:<C-U>t-1<CR>a
   else
     nnoremap <A-y> v0yO<esc>pjly$kp`[jh
     nnoremap <A-e> v0yO<esc>pjly$kp`[h
