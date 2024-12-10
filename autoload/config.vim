@@ -362,10 +362,10 @@ func! s:Set_user_keybindings () abort
     " Duplicate and comment current line
     if has('nvim')
       Repeatable nmap yd :<C-U>t.<cr>kgccj
-      " Repeatable nmap yD :<C-U>t.<cr>kgcc
+      Repeatable nmap yD :<C-U>t.<cr>gcck
     else
       Repeatable nmap yd yygccp
-      " Repeatable nmap yD yygccpk
+      Repeatable nmap yD yypgcck
     endif
   endif
 
