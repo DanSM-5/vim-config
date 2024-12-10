@@ -358,6 +358,17 @@ func! s:Set_user_keybindings () abort
   " Using : instead of <cmd> so it doesn't need to end with <cr>
   nnoremap <leader>sw :%s/\<<C-r><C-w>\>//g<Left><Left>
 
+  if exists(':Repeatable')
+    " Duplicate and comment current line
+    if has('nvim')
+      Repeatable nmap yd :<C-U>t.<cr>kgccj
+      " Repeatable nmap yD :<C-U>t.<cr>kgcc
+    else
+      Repeatable nmap yd yygccp
+      " Repeatable nmap yD yygccpk
+    endif
+  endif
+
   " Duplicate line above and below without moving cursor
   if has('nvim')
     nnoremap <A-y> :<C-U>t.<CR>
