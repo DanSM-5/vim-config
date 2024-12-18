@@ -2,12 +2,16 @@
 return {
   {
     'williamboman/mason.nvim',
-    config = require('lsp-servers.nvim_mason').setup
+    config = function ()
+      require('lsp-servers.nvim_mason').setup()
+    end,
   },
   {
     'mawkler/refjump.nvim',
     keys = { ']r', '[r' }, -- Uncomment to lazy load
-    config = require('config.nvim_refjump').setup
+    config = function ()
+      require('config.nvim_refjump').setup()
+    end,
   },
   {
     'neovim/nvim-lspconfig',

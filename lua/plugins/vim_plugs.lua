@@ -19,7 +19,9 @@ return {
     -- Usage
     -- :Git! difftool --name-status master..my-feature
     -- :Gcc
-    config = require('config.nvim_figitive-difftool').setup
+    config = function ()
+      require('config.nvim_figitive-difftool').setup()
+    end,
   },
   {
     'tpope/vim-repeat',
@@ -95,7 +97,9 @@ return {
   },
   {
     'stevearc/oil.nvim',
-    config = require('config.oil_nvim').setup,
+    config = function ()
+      require('config.oil_nvim').setup()
+    end,
   },
   {
     'OXY2DEV/helpview.nvim',
@@ -128,7 +132,9 @@ return {
       'PreLiveCloseAll',
       'PreLiveLog',
     },
-    config = require('config.nvim_prelive').setup
+    config = function ()
+      require('config.nvim_prelive').setup()
+    end,
   },
   {
     'windwp/nvim-ts-autotag',
@@ -141,7 +147,7 @@ return {
           enable_close_on_slash = false, -- Auto close on trailing </
         },
       })
-    end
+    end,
   },
   {
     'OXY2DEV/markview.nvim',
@@ -151,11 +157,13 @@ return {
       'nvim-treesitter/nvim-treesitter',
       'nvim-tree/nvim-web-devicons',
     },
-    config = require('config.nvim_markview').setup,
+    config = function ()
+      require('config.nvim_markview').setup()
+    end,
   },
   {
     'wurli/split.nvim',
     opts = {},
-  }
+  },
 }
 
