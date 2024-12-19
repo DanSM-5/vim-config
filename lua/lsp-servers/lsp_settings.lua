@@ -96,8 +96,9 @@ return {
     --   table.insert(blink_sources_default, 'crates')
     -- end
     require('blink-compat').setup({})
+    require('cmp_git').setup()
+    require('luasnip.loaders.from_vscode').lazy_load()
     local blink = require('blink.cmp')
-    local luasnip = require('luasnip')
     local capabilities =
       vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), blink.get_lsp_capabilities())
 
@@ -148,9 +149,6 @@ return {
       blink_sources_providers.lazydev = { name = 'LazyDev', module = 'lazydev.integrations.blink', fallbacks = { 'lsp' } }
       table.insert(blink_sources_default, 'lazydev')
     end
-
-    require('cmp_git').setup()
-    require('luasnip.loaders.from_vscode').lazy_load()
 
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
@@ -241,14 +239,14 @@ return {
       -- experimental signature help support
       signature = { enabled = true },
       snippets = {
-        expand = function(snippet) luasnip.lsp_expand(snippet) end,
+        expand = function(snippet) require('luasnip').lsp_expand(snippet) end,
         active = function(filter)
           if filter and filter.direction then
-            return luasnip.jumpable(filter.direction)
+            return require('luasnip').jumpable(filter.direction)
           end
-          return luasnip.in_snippet()
+          return require('luasnip').in_snippet()
         end,
-        jump = function(direction) luasnip.jump(direction) end,
+        jump = function(direction) require('luasnip').jump(direction) end,
 
         -- Default
         -- Function to use when expanding LSP provided snippets
@@ -306,10 +304,11 @@ return {
       end
 
       local base_config = require('lsp-servers.config').get_config(server_name) or {}
-      base_config.capabilities = base_config.capabilities and blink.get_lsp_capabilities(base_config.capabilities) or capabilities
 
       ---@type lspconfig.Config
-      local config = vim.tbl_deep_extend('force', {}, base_config, { capabilities = capabilities })
+      local config = vim.tbl_deep_extend('force', {}, base_config, {
+        capabilities = base_config.capabilities and blink.get_lsp_capabilities(base_config.capabilities) or capabilities
+      })
 
       -- Add keymaps on buffer with lsp
       -- NOTE: Only include automatically on configs that do not include a `on_attach`
