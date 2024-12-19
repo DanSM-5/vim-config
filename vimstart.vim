@@ -323,23 +323,14 @@ call plug#begin()
     else
       Plug 'L3MON4D3/LuaSnip'
     endif
-    Plug 'saadparwaiz1/cmp_luasnip'
     Plug 'rafamadriz/friendly-snippets'
     " Completions and sources
-    " NOTE: Using magazine.nvim as as nvim-cmp replacement
-    " Plug 'hrsh7th/nvim-cmp'
-    Plug 'iguanacucumber/magazine.nvim', { 'dir': stdpath('data') . '/plugged/nvim-cmp' }
-    Plug 'hrsh7th/cmp-nvim-lsp'
-    Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
-    Plug 'roginfarrer/cmp-css-variables'
-    Plug 'lukas-reineke/cmp-rg'
+    Plug 'saghen/blink.cmp', { 'do': 'cargo build --release' }
+    Plug 'saghen/blink.compat'
+    Plug 'mikavilpas/blink-ripgrep.nvim'
     Plug 'petertriho/cmp-git'
-    " Plug 'hrsh7th/cmp-nvim-lua' " { name = 'nvim_lua'  }
-    " Plug 'hrsh7th/cmp-buffer' " { name = 'path' }
-    " Plug 'https://codeberg.org/FelipeLema/cmp-async-path' " { name = 'async_path' }
-    " Plug 'hrsh7th/cmp-path' " { name = 'buffer' }
-    " Plug 'hrsh7th/cmp-cmdline' " { name = 'cmd' }
-    " Plug 'Jezda1337/nvim-html-css' " { name = 'html-css' }
+    Plug 'roginfarrer/cmp-css-variables'
+
     " Find symbols
     Plug 'stevearc/aerial.nvim'
     " Live server
@@ -350,7 +341,7 @@ call plug#begin()
     Plug 'stevearc/oil.nvim'
 
     " Split lines
-    Plug 'split.interactivity'
+    Plug 'wurli/split.nvim'
 
     " TODO: Should we add NeoTree? It needs nvim-web-devicons
     " Plug 'nvim-neo-tree/neo-tree.nvim'
@@ -363,7 +354,7 @@ call plug#begin()
     " Fugitive extension for difftool
     Plug 'jecaro/fugitive-difftool.nvim'
 
-    Plug 'ColinKennedy/cursor-text-objects.nvim', { tag = 'v1.*' }
+    Plug 'ColinKennedy/cursor-text-objects.nvim', { 'tag': 'v1.*' }
 
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'

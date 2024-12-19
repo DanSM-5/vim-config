@@ -67,7 +67,7 @@ return {
   ---@param name string
   ---@return LspConfigExtended | nil
   get_config = function(name)
-    return configs[name]
+    return require('utils.stdlib').shallow_clone(configs[name] or {})
   end,
 }
 

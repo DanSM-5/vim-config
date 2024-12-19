@@ -22,27 +22,37 @@ return {
       'nvimtools/none-ls.nvim',
       -- Snippets
       'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
       'rafamadriz/friendly-snippets',
       -- Completions and sources
-      -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
-      -- NOTE: Using magazine.nvim as as nvim-cmp replacement
       {
-        'iguanacucumber/magazine.nvim',
-        name = 'nvim-cmp',
+        'saghen/blink.cmp',
+        -- optional: provides snippets for the snippet source
+        -- dependencies = 'rafamadriz/friendly-snippets',
         dependencies = {
+          {
+            'saghen/blink.compat',
+            -- use the latest release, via version = '*', if you also use the latest release for blink.cmp
+            version = '*',
+            -- lazy.nvim will automatically load the plugin when it's required by blink.cmp
+            lazy = true,
+            -- make sure to set opts so that lazy.nvim calls blink.compat's setup
+            -- opts = {},
+          },
           'petertriho/cmp-git',
-          'hrsh7th/cmp-nvim-lsp',
-          'hrsh7th/cmp-nvim-lsp-signature-help',
           'roginfarrer/cmp-css-variables',
-          'lukas-reineke/cmp-rg',
-          -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
-          -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
-          -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
-          -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
-          -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
-          -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
-        }
+          'mikavilpas/blink-ripgrep.nvim',
+        },
+
+        -- use a release tag to download pre-built binaries
+        -- version = 'v0.*',
+        -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+        build = 'cargo build --release',
+        -- If you use nix, you can build from source using latest nightly rust with:
+        -- build = 'nix run .#build-plugin',
+
+        -- allows extending the providers array elsewhere in your config
+        -- without having to redefine it
+        opts_extend = { 'sources.default' },
       },
       {
         'L3MON4D3/LuaSnip',
