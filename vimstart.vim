@@ -325,11 +325,30 @@ call plug#begin()
     endif
     Plug 'rafamadriz/friendly-snippets'
     " Completions and sources
-    Plug 'saghen/blink.cmp', { 'do': 'cargo build --release' }
-    Plug 'saghen/blink.compat'
-    Plug 'mikavilpas/blink-ripgrep.nvim'
-    Plug 'petertriho/cmp-git'
-    Plug 'roginfarrer/cmp-css-variables'
+    if has('win32')
+      " cmp
+      " NOTE: Using magazine.nvim as as nvim-cmp replacement
+      " Plug 'hrsh7th/nvim-cmp'
+      Plug 'iguanacucumber/magazine.nvim', { 'dir': stdpath('data') . '/plugged/nvim-cmp' }
+      Plug 'hrsh7th/cmp-nvim-lsp'
+      Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+      Plug 'roginfarrer/cmp-css-variables'
+      Plug 'lukas-reineke/cmp-rg'
+      Plug 'petertriho/cmp-git'
+      " Plug 'hrsh7th/cmp-nvim-lua' " { name = 'nvim_lua'  }
+      " Plug 'hrsh7th/cmp-buffer' " { name = 'path' }
+      " Plug 'https://codeberg.org/FelipeLema/cmp-async-path' " { name = 'async_path' }
+      " Plug 'hrsh7th/cmp-path' " { name = 'buffer' }
+      " Plug 'hrsh7th/cmp-cmdline' " { name = 'cmd' }
+      " Plug 'Jezda1337/nvim-html-css' " { name = 'html-css' }
+    else
+      " blink
+      Plug 'saghen/blink.cmp', { 'do': 'cargo build --release' }
+      Plug 'saghen/blink.compat'
+      Plug 'mikavilpas/blink-ripgrep.nvim'
+      Plug 'petertriho/cmp-git'
+      Plug 'roginfarrer/cmp-css-variables'
+    endif
 
     " Find symbols
     Plug 'stevearc/aerial.nvim'

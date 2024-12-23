@@ -1,3 +1,6 @@
+-- indicate wheter to use cmp or blink
+local use_cmp = vim.fn.has('win32') == 1
+
 -- Entry point of lsp related plugins
 return {
   {
@@ -26,6 +29,7 @@ return {
       -- Completions and sources
       {
         'saghen/blink.cmp',
+        enable = not use_cmp,
         -- optional: provides snippets for the snippet source
         -- dependencies = 'rafamadriz/friendly-snippets',
         dependencies = {
@@ -55,6 +59,26 @@ return {
         opts_extend = { 'sources.default' },
       },
       {
+        'iguanacucumber/magazine.nvim',
+        -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
+        -- NOTE: Using magazine.nvim as as nvim-cmp replacement
+        enable = use_cmp,
+        name = 'nvim-cmp',
+        dependencies = {
+          'petertriho/cmp-git',
+          'hrsh7th/cmp-nvim-lsp',
+          'hrsh7th/cmp-nvim-lsp-signature-help',
+          'roginfarrer/cmp-css-variables',
+          'lukas-reineke/cmp-rg',
+          -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
+          -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
+          -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
+          -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
+          -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
+          -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
+        }
+      },
+      {
         'L3MON4D3/LuaSnip',
         -- follow latest release.
         -- version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
@@ -80,7 +104,12 @@ return {
       --     require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
       --   end
       -- })
-      require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
+      require('lsp-servers.lsp_settings').setup({
+        completions = {
+          enable = { lazydev = true },
+          engine = use_cmp and 'cmp' or 'blink'
+        }
+      })
     end,
   },
   -- TODO: Review how to use powershell editor services
