@@ -30,8 +30,19 @@
 --- Options for enabling completions
 ---@class LspSettings.options
 ---@field enable { lazydev: boolean; crates: boolean }
+---@field engine? 'cmp' | 'blink'
 
 --- Options for lsp-settings setup function
 ---@class LspSetttings
 ---@field completions LspSettings.options
+
+--- Update capabilities function
+---@alias config.UpdateCapabilities fun(base: LspConfigExtended): LspConfigExtended
+
+--- Options for completion modules
+---@class config.CompletionOpts
+---@field lazydev boolean
+
+--- Configure completion function
+---@alias config.ConfigureCompletion fun(config: config.CompletionOpts): update_capabilities: config.UpdateCapabilities
 
