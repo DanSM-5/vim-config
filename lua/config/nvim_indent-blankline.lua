@@ -23,7 +23,20 @@ return {
     end)
 
     vim.g.rainbow_delimiters = { highlight = highlight }
+    -- require('ibl').setup({
+    --   indent = {
+    --       char = '▎',
+    --       tab_char = nil,
+    --       highlight = highlight,
+    --       smart_indent_cap = true,
+    --       priority = 1,
+    --       repeat_linebreak = true,
+    --   },
+    --   scope = { enabled = false },
+    -- })
 
+    -- NOTE: Switch to `current_indent` when it is ready
+    -- https://github.com/lukas-reineke/indent-blankline.nvim/pull/743
     require('ibl').setup({
       -- indent = {
       --   highlight = {
@@ -39,13 +52,13 @@ return {
       --   },
       --   remove_blankline_trail = false,
       -- },
-      -- indent = { highlight = highlight }
+      -- indent = { highlight = highlight },
       scope = {
         -- enabled = false
         highlight = highlight
       },
     })
 
-    hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
+    -- hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
   end
 }
