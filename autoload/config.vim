@@ -68,6 +68,9 @@ func! s:SetConfigurationsBefore () abort
   omap [n <Plug>(jumpconflict-context-previous)
   omap ]n <Plug>(jumpconflict-context-next)
 
+  " Auto increment letters when using ctrl-a
+  set nrformats+=alpha
+
   " Enable fold method using indent
   " Ref: https://www.reddit.com/r/neovim/comments/10q2mjq/comment/j6nmuw8
   " also consider plugin: https://github.com/kevinhwang91/nvim-ufo
