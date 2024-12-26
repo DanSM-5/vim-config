@@ -21,6 +21,12 @@ return {
     --   },
     -- }
     local blink_sources_providers = {
+      lsp = {
+        min_keyword_length = 2,
+      },
+      snippets = {
+        min_keyword_length = 2,
+      },
       ['css-variables'] = {
         name = 'css-variables',
         module = 'blink.compat.source',
@@ -186,12 +192,30 @@ return {
         -- completion = blink_sources_completion,
         providers = blink_sources_providers,
 
-        -- optionally disable cmdline completions
+        -- Disabled completion for command line mode
         cmdline = {},
+        -- cmdline = function ()
+        --   local type = vim.fn.getcmdtype()
+        --   -- Return buffer completion when searching
+        --   if type == '/' or type == '?' then
+        --     return { 'buffer' }
+        --   end
+
+        --   -- if type == ':' then
+        --   --   return { 'cmdline' }
+        --   -- end
+
+        --   -- Disable other completions
+        --   -- return { 'cmdline' }
+        --   return {}
+        -- end,
       },
 
       -- experimental signature help support
-      signature = { enabled = true },
+      signature = {
+        enabled = true,
+        window = { border = 'rounded' },
+      },
       snippets = {
         expand = function(snippet) require('luasnip').lsp_expand(snippet) end,
         active = function(filter)
@@ -222,8 +246,20 @@ return {
         -- NOTE: Currently causes issues
         documentation = {
           auto_show = true,
+          auto_show_delay_ms = 250,
+          treesitter_highlighting = true,
+          window = { border = 'rounded' },
         },
+        -- list = {
+        --   ---Selection of completion for blink
+        --   ---@param ctx { mode: string }
+        --   ---@return 'auto_insert' | 'preselect' | 'manual'
+        --   selection = function (ctx)
+        --     return ctx.mode == 'cmdline' and 'auto_insert' or 'preselect'
+        --   end,
+        -- },
         menu = {
+          border = 'rounded',
           draw = {
             padding = { 1, 1 },
             columns = {
