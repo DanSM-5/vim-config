@@ -60,7 +60,7 @@ return {
     --   table.insert(blink_sources_default, 'crates')
     -- end
     require('blink-compat').setup({})
-    require('cmp_git').setup()
+    require('cmp_git').setup({})
     require('luasnip.loaders.from_vscode').lazy_load()
 
     -- Add ripgrep source if binary is available
