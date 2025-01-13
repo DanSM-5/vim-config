@@ -330,6 +330,7 @@ call plug#begin()
       " NOTE: Using magazine.nvim as as nvim-cmp replacement
       " Plug 'hrsh7th/nvim-cmp'
       Plug 'iguanacucumber/magazine.nvim', { 'dir': stdpath('data') . '/plugged/nvim-cmp' }
+      Plug 'saadparwaiz1/cmp_luasnip'
       Plug 'hrsh7th/cmp-nvim-lsp'
       Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
       Plug 'roginfarrer/cmp-css-variables'

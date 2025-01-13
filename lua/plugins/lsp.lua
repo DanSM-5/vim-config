@@ -65,6 +65,7 @@ return {
         enable = use_cmp,
         name = 'nvim-cmp',
         dependencies = {
+          'saadparwaiz1/cmp_luasnip',
           'petertriho/cmp-git',
           'hrsh7th/cmp-nvim-lsp',
           'hrsh7th/cmp-nvim-lsp-signature-help',
