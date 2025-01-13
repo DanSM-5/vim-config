@@ -34,6 +34,7 @@ return {
       git = {
         name = 'git',
         module = 'blink.compat.source',
+        min_keyword_length = 0,
       },
     }
 
