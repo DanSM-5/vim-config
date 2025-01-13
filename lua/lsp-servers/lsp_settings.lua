@@ -16,6 +16,7 @@ local defaultLspSetupOpts = {
       lazydev = false,
       crates = false,
     },
+    engine = 'cmp',
   },
 }
 

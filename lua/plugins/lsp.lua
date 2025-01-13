@@ -1,5 +1,5 @@
 -- indicate wheter to use cmp or blink
-local use_cmp = vim.fn.has('win32') == 1
+local use_blink = os.getenv('USE_BLINK') == '1' or vim.fn.has('win32') == 0
 
 -- Entry point of lsp related plugins
 return {
@@ -29,7 +29,7 @@ return {
       -- Completions and sources
       {
         'saghen/blink.cmp',
-        enable = not use_cmp,
+        enable = use_blink,
         -- optional: provides snippets for the snippet source
         -- dependencies = 'rafamadriz/friendly-snippets',
         dependencies = {
@@ -62,7 +62,7 @@ return {
         'iguanacucumber/magazine.nvim',
         -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
         -- NOTE: Using magazine.nvim as as nvim-cmp replacement
-        enable = use_cmp,
+        enable = not use_blink,
         name = 'nvim-cmp',
         dependencies = {
           'saadparwaiz1/cmp_luasnip',
@@ -108,7 +108,7 @@ return {
       require('lsp-servers.lsp_settings').setup({
         completions = {
           enable = { lazydev = true },
-          engine = use_cmp and 'cmp' or 'blink'
+          engine = use_blink and 'blink' or 'cmp'
         }
       })
     end,
