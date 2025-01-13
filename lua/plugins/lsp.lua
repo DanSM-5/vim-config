@@ -29,7 +29,7 @@ return {
       -- Completions and sources
       {
         'saghen/blink.cmp',
-        enable = use_blink,
+        enabled = use_blink,
         -- optional: provides snippets for the snippet source
         -- dependencies = 'rafamadriz/friendly-snippets',
         dependencies = {
@@ -62,7 +62,7 @@ return {
         'iguanacucumber/magazine.nvim',
         -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
         -- NOTE: Using magazine.nvim as as nvim-cmp replacement
-        enable = not use_blink,
+        enabled = not use_blink,
         name = 'nvim-cmp',
         dependencies = {
           'saadparwaiz1/cmp_luasnip',
