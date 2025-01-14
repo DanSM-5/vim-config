@@ -23,6 +23,7 @@ return {
     local blink_sources_providers = {
       lsp = {
         min_keyword_length = 2,
+        score_offset = 5,
       },
       snippets = {
         min_keyword_length = 2,
