@@ -15,7 +15,18 @@ return {
   },
   {
     'jecaro/fugitive-difftool.nvim',
-    cmd = { 'Git' },
+    cmd = {
+      -- To the first
+      'Gcfr',
+      -- To the last
+      'Gcla',
+      -- To the next
+      'Gcn',
+      -- To the previous
+      'Gcp',
+      -- To the currently selected
+      'Gcc',
+    },
     -- Usage
     -- :Git! difftool --name-status master..my-feature
     -- :Gcc
