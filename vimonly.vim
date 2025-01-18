@@ -81,3 +81,6 @@ endif
 set wildmenu
 set wildmode=list:longest,full
 
+" clear search highlight
+nnoremap <silent> <c-l> :<c-u>nohlsearch<cr>
+
