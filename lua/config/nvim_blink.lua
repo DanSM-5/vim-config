@@ -39,6 +39,11 @@ return {
       },
     }
 
+    if os.getenv('START_DB') == '1' then
+      table.insert(blink_sources_default, 'dadbod')
+      blink_sources_providers.dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' }
+    end
+
     -- if opts.completions.enable.crates then
     --   table.insert(blink_sources_default, 'crates')
     -- end

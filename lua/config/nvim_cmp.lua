@@ -196,6 +196,15 @@ return {
       }
     })
 
+    if os.getenv('START_DB') == '1' then
+      cmp.setup.filetype({ 'sql' }, {
+        sources = {
+          { name = 'vim-dadbod-completion' },
+          -- { name = buffer },
+        }
+      })
+    end
+
     require('cmp_git').setup()
     require('luasnip.loaders.from_vscode').lazy_load()
 
