@@ -23,6 +23,9 @@ return {
       'kristijanhusak/vim-dadbod-ui',
     },
     enabled = enabled,
+    setup = function ()
+      require('dadbod-ui-yank').setup()
+    end
   },
 }
 
