@@ -387,7 +387,13 @@ call plug#begin()
     " Only load in vim
 
     " Comments plugin
-    Plug 'tpope/vim-commentary'
+    if has('patch-9.1.0375')
+      " Built-in habamax/comment.vim plugin
+      packadd! comment
+    else
+      Plug 'tpope/vim-commentary'
+    endif
+
     " File explorer
     Plug 'tpope/vim-vinegar'
     " Git signs on the left
