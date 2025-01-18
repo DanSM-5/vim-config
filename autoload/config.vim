@@ -1589,9 +1589,9 @@ func! s:DefineCommands () abort
   " Open fugitive `:Git` and open conflicted file in vsplit `dv` (Gvdiffsplit)
   " Cursor must be on conflict hunk. E.g. `]n` and `[n`
   " Select the changes on the left
-  command! -bar GitSelectLeft :diffget //2<cr>
+  command! -bar GitSelectLeft :diffget //2
   " grab the changes on the right
-  command! -bar GitSelectRight :diffget //3<cr>
+  command! -bar GitSelectRight :diffget //3
 endf
 
 func! s:RemapAltUpDownNormal () abort
