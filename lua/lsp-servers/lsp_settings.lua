@@ -9,23 +9,103 @@ require('lsp-servers.types')
 -- local lspconfig = require('lspconfig')
 -- lspconfig.lua_ls.setup({})
 
----@type LspSetttings
-local defaultLspSetupOpts = {
-  completions = {
-    enable = {
-      lazydev = false,
-      crates = false,
+---Get the default lsp setup settings
+---@return config.LspSettings
+local function get_default_settings ()
+  return {
+    completions = {
+      enable = {
+        lazydev = false,
+        crates = false,
+      },
+      engine = 'cmp',
     },
-    engine = 'cmp',
-  },
-}
+  }
+end
+
+---@type config.LspSettings
+local lsp_settings = get_default_settings()
+
+---Update lsp_settings using tbl_deep_extend
+---@param new_settings config.LspSettings
+local function update_lsp_settings (new_settings)
+  lsp_settings = vim.tbl_deep_extend('force', lsp_settings, new_settings or {})
+  return lsp_settings
+end
+---Sets new lsp settings
+---@param new_settings config.LspSettings
+local function set_lsp_settings (new_settings)
+  lsp_settings = new_settings
+end
+---Gets the lsp settings
+---@return config.LspSettings
+local function get_lsp_settings ()
+  return lsp_settings
+end
+
+local get_completion_module_from_settings = function ()
+  local current_settings = get_lsp_settings()
+  local completions_module = current_settings.completions.engine == 'blink'
+    and require('config.nvim_blink')
+    or require('config.nvim_cmp')
+  return completions_module
+end
+
+---Get the lsp handler for mason_lspconfig and other functions that register lsp clients
+---@return fun(server_name: string, options?: LspServersSettings.options):nil
+local function get_lsp_handler ()
+    -- Get the hook to enable lsp completions
+  local update_capabilities = get_completion_module_from_settings()
+    .get_update_capabilities()
+
+  ---@type LspHandlerFunc
+  local lspconfig_handler = function(server_name, options)
+    if server_name == nil or type(server_name) ~= 'string' then
+      vim.notify('No valid server name provided', vim.log.levels.WARN)
+      return
+    end
+
+    -- Ensure not null
+    options = options or {}
+
+    -- Prevent mason-lspconfig from trying to start the LSP server
+    -- for rust_analyzer. This is done through mrcjkb/rustaceanvim plugin
+    if server_name == 'rust_analyzer' then
+      return
+    end
+
+    local base_config = require('lsp-servers.config').get_config(server_name) or {}
+
+    ---@type LspConfigExtended
+    local config = update_capabilities(base_config)
+
+    -- Add keymaps on buffer with lsp
+    -- NOTE: Only include automatically on configs that do not include a `on_attach`
+    -- If the config has `on_attach`, then it should add the keymaps there
+    if options.keymaps ~= false and config.on_attach == nil then
+      config.on_attach = require('lsp-servers.keymaps').set_lsp_keys
+    end
+
+    require('lspconfig')[server_name].setup(config)
+  end
+
+  return lspconfig_handler
+end
 
 return {
+  update_lsp_settings = update_lsp_settings,
+  set_lsp_settings = set_lsp_settings,
+  get_lsp_settings = get_lsp_settings,
+  get_default_settings = get_default_settings,
+  get_completion_module_from_settings = get_completion_module_from_settings,
+  get_lsp_handler = get_lsp_handler,
+
   ---Options when setting lsp features
-  ---@param opts LspSetttings | nil
+  ---@param opts config.LspSettings | nil
   setup = function(opts)
-    ---@type LspSetttings
-    opts = vim.tbl_deep_extend('force', defaultLspSetupOpts, opts or {})
+    -- Update settings
+    opts = update_lsp_settings(opts or {})
+
     local special_binaries = vim.g.is_termux == 1 or vim.g.is_container == 1
     local language_servers = special_binaries and {}
       or {
@@ -63,46 +143,15 @@ return {
     -- See `:help vim.lsp.buf`
 
     local completion_opts = { lazydev = opts.completions.enable.lazydev }
-    local update_capabilities = opts.completions.engine == 'blink'
-      and require('config.nvim_blink').configure(completion_opts)
-      or require('config.nvim_cmp').configure(completion_opts)
+    local completions_module = opts.completions.engine == 'blink'
+      and require('config.nvim_blink')
+      or require('config.nvim_cmp')
+
+    -- Setup the completions module. E.g. sources, keymaps, etc.
+    completions_module.configure(completion_opts)
 
     ---@type LspHandlerFunc
-    local lspconfig_handler = function(server_name, options)
-      if server_name == nil or type(server_name) ~= 'string' then
-        vim.notify('No valid server name provided', vim.log.levels.WARN)
-        return
-      end
-
-      -- Ensure not null
-      options = options or {}
-
-      -- Prevent mason-lspconfig from trying to start the LSP server
-      -- for rust_analyzer. This is done through mrcjkb/rustaceanvim plugin
-      if server_name == 'rust_analyzer' then
-        return
-      end
-
-      local base_config = require('lsp-servers.config').get_config(server_name) or {}
-
-      ---@type LspConfigExtended
-      local config = update_capabilities(base_config)
-
-      -- Add keymaps on buffer with lsp
-      -- NOTE: Only include automatically on configs that do not include a `on_attach`
-      -- If the config has `on_attach`, then it should add the keymaps there
-      if options.keymaps ~= false and config.on_attach == nil then
-        config.on_attach = require('lsp-servers.keymaps').set_lsp_keys
-      end
-
-      require('lspconfig')[server_name].setup(config)
-    end
-
-    -- Add setup function available globally 😎
-    -- This is so it is available to start new lsp servers
-    -- with cmp capabilities on the fly
-    ---@type LspHandlerFunc
-    vim.g.SetupLsp = lspconfig_handler
+    local lspconfig_handler = get_lsp_handler()
 
     local mason_lspconfig_opts = {
       ensure_installed = language_servers,
