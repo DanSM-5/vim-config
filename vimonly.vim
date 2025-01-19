@@ -84,3 +84,10 @@ set wildmode=list:longest,full
 " clear search highlight
 nnoremap <silent> <c-l> :<c-u>nohlsearch<cr>
 
+" augroup CursorColorOnRecord
+"   autocmd!
+"   autocmd RecordingEnter * silent execute('hi Cursor guifg=#282c34 guibg=#16e81e') 
+"   autocmd!
+"   autocmd RecordingLeave * silent execute('hi ' . g:theme_cursor) 
+" augroup END
+
