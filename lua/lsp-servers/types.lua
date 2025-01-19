@@ -28,13 +28,13 @@
 ---@alias LspSpecialSetupFunc fun(config: { lspconfig_handler: LspHandlerFunc }): nil
 
 --- Options for enabling completions
----@class LspSettings.options
+---@class config.LspSettings.options
 ---@field enable { lazydev: boolean; crates: boolean }
 ---@field engine? 'cmp' | 'blink'
 
 --- Options for lsp-settings setup function
----@class LspSetttings
----@field completions LspSettings.options
+---@class config.LspSettings
+---@field completions config.LspSettings.options
 
 --- Update capabilities function
 ---@alias config.UpdateCapabilities fun(base: LspConfigExtended): LspConfigExtended
@@ -44,5 +44,9 @@
 ---@field lazydev boolean
 
 --- Configure completion function
----@alias config.ConfigureCompletion fun(config: config.CompletionOpts): update_capabilities: config.UpdateCapabilities
+---@alias config.ConfigureCompletion fun(config: config.CompletionOpts)
+
+---@class config.CompletionModule
+---@field configure config.ConfigureCompletion
+---@field get_update_capabilities fun(): update_capabilities: config.UpdateCapabilities
 
