@@ -57,7 +57,8 @@ local cmp_format = function (entry, vim_item)
   return vim_item
 end
 
-return {
+---@type config.CompletionModule
+local cmp_module = {
   ---@type config.ConfigureCompletion
   configure = function(opts)
     -- NOTE: For css-variable set the global variable files with
@@ -74,9 +75,6 @@ return {
     --   table.insert(sources, { name = 'crates' })
     -- end
     local cmp = require('cmp')
-    local cmp_lsp = require('cmp_nvim_lsp')
-    local capabilities =
-      vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
 
     -- Add ripgrep source if binary is available
     if vim.fn.executable('rg') then
@@ -208,6 +206,13 @@ return {
     require('cmp_git').setup()
     require('luasnip.loaders.from_vscode').lazy_load()
 
+  end,
+
+  get_update_capabilities = function ()
+    local cmp_lsp = require('cmp_nvim_lsp')
+    local capabilities =
+      vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
+
     ---@type config.UpdateCapabilities
     local update_capabilities = function (base)
       if base.capabilities then
@@ -228,4 +233,6 @@ return {
     return update_capabilities
   end
 }
+
+return cmp_module
 

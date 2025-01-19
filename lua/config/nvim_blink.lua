@@ -1,6 +1,7 @@
 require('lsp-servers.types')
 
-return {
+---@type config.CompletionModule
+local blink_module = {
   ---@type config.ConfigureCompletion
   configure = function (opts)
     local blink_sources_default = {
@@ -49,19 +50,6 @@ return {
     -- end
     require('blink-compat').setup({})
     local blink = require('blink.cmp')
-    local capabilities =
-      vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), blink.get_lsp_capabilities())
-
-    ---Update capabilities of base config
-    ---@param base LspConfigExtended
-    ---@return LspConfigExtended
-    local function update_capabilities(base)
-      local config = vim.tbl_deep_extend('force', {}, base, {
-        capabilities = base.capabilities and blink.get_lsp_capabilities(base.capabilities) or capabilities
-      })
-
-      return config
-    end
 
     -- if opts.crates then
     --   table.insert(blink_sources_default, 'crates')
@@ -284,8 +272,26 @@ return {
     }
 
     blink.setup(blink_opts)
+  end,
 
+  get_update_capabilities = function ()
+    local blink = require('blink.cmp')
+    local capabilities =
+      vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), blink.get_lsp_capabilities())
+
+    ---Update capabilities of base config
+    ---@param base LspConfigExtended
+    ---@return LspConfigExtended
+    local function update_capabilities(base)
+      local config = vim.tbl_deep_extend('force', {}, base, {
+        capabilities = base.capabilities and blink.get_lsp_capabilities(base.capabilities) or capabilities
+      })
+
+      return config
+    end
     return update_capabilities
   end
 }
+
+return blink_module
 
