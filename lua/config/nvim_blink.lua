@@ -40,6 +40,39 @@ local blink_module = {
       },
     }
 
+
+    local blink_kind_icon = {
+      width = { fill = true }
+    }
+
+    local has_color_hl, nvim_hl_color = pcall(require, 'nvim-highlight-colors')
+    if has_color_hl then
+      blink_kind_icon.text = function(ctx)
+        -- default kind icon
+        local icon = ctx.kind_icon
+        -- if LSP source, check for color derived from documentation
+        if ctx.item.source_name == 'LSP' then
+          local color_item = nvim_hl_color.format(ctx.item.documentation, { kind = ctx.kind })
+          if color_item and color_item.abbr then
+            icon = color_item.abbr
+          end
+        end
+        return icon .. ctx.icon_gap
+      end
+      blink_kind_icon.highlight = function(ctx)
+        -- default highlight group
+        local highlight = 'BlinkCmpKind' .. ctx.kind
+        -- if LSP source, check for color derived from documentation
+        if ctx.item.source_name == 'LSP' then
+          local color_item = nvim_hl_color.format(ctx.item.documentation, { kind = ctx.kind })
+          if color_item and color_item.abbr_hl_group then
+            highlight = color_item.abbr_hl_group
+          end
+        end
+        return highlight
+      end
+    end
+
     if os.getenv('START_DB') == '1' then
       table.insert(blink_sources_default, 'dadbod')
       blink_sources_providers.dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' }
@@ -264,7 +297,7 @@ local blink_module = {
               { 'source_name' },
             },
             components = {
-              kind_icon = { width = { fill = true } }
+              kind_icon = blink_kind_icon,
             },
           },
         },

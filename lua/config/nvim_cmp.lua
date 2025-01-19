@@ -50,10 +50,23 @@ local cmp_format = function (entry, vim_item)
     end
   end
 
-  -- Kind icons
-  vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
-  -- Source
+  local color_item = {}
+  local has_color_hl, nvim_hl_color = pcall(require, 'nvim-highlight-colors')
+  if has_color_hl then
+    color_item = nvim_hl_color.format(entry, { kind = vim_item.kind })
+  end
+
+  if color_item.abbr_hl_group then
+    vim_item.kind_hl_group = color_item.abbr_hl_group
+    vim_item.kind = color_item.abbr
+  else
+    -- Kind icons
+    vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
+  end
+
+  -- Set source of completion item
   vim_item.menu = cmp_formatting_menu[entry.source.name] or '[Unknown]'
+
   return vim_item
 end
 
