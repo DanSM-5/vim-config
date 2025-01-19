@@ -1,11 +1,13 @@
+local name = 'mpls'
+
 return {
   config = function ()
     local configs = require('lspconfig.configs')
     if not configs.mpls then
       configs.mpls = {
         default_config = {
-          name = 'mpls',
-          cmd = { 'mpls', '--dark-mode', '--enable-emoji' },
+          name = name,
+          cmd = { name, '--dark-mode', '--enable-emoji' },
           filetypes = { 'markdown' },
           single_file_support = true,
           root_dir = function (startpath)
@@ -29,12 +31,13 @@ live preview of markdown files in your browser while you edit them in your favor
     vim.api.nvim_create_user_command('MPLS', function (opts)
 
       -- Prevent running if client does not exist
-      if vim.fn.executable('mpls') == 0 then
+      if vim.fn.executable(name) == 0 then
         return
       end
 
       -- Set automatically for next buffers
-      vim.g.SetupLsp('mpls')
+      require('lsp-servers.lsp_settings')
+        .get_lsp_handler()(name)
 
       -- If start with bang, do not try to attach buffer
       if opts.bang then
@@ -50,20 +53,24 @@ live preview of markdown files in your browser while you edit them in your favor
         return
       end
 
-      local base_config = require('lsp-servers.config').get_config('mpls') or {}
+      local base_config = require('lsp-servers.config').get_config(name) or {}
+      local update_capabilities = require('lsp-servers.lsp_settings')
+        .get_completion_module_from_settings()
+        .get_update_capabilities()
+      local lsp_config = update_capabilities(base_config)
       -- Try to gess root dir
       local root_dir = vim.fs.dirname(vim.fs.find('.git', { path = vim.fn.expand('%:p:h'), upward = true })[1]) or vim.fn.expand('%:p:h')
       -- Start lsp on buffer
       local client_id = vim.lsp.start(
         vim.tbl_deep_extend('force', {
-          name = 'mpls',
-          cmd = { 'mpls', '--dark-mode', '--enable-emoji' },
+          name = name,
+          cmd = { name, '--dark-mode', '--enable-emoji' },
           filetypes = { 'markdown' },
           single_file_support = true,
           root_dir = root_dir,
           settings = {},
           on_attach = require('lsp-servers.keymaps').set_lsp_keys
-        }, base_config)
+        }, lsp_config)
         , {
           bufnr = bufnr,
           silent = false,
@@ -73,7 +80,7 @@ live preview of markdown files in your browser while you edit them in your favor
           ---@param config vim.lsp.ClientConfig
           ---@return boolean
           reuse_client = function (client, config)
-            return client.name == 'mpls'
+            return client.name == name
           end
         })
 
