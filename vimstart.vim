@@ -68,6 +68,8 @@ let g:theme_cursorLine = ''
 let g:theme_signColumn = ''
 " Styles for color of comments
 let g:theme_comment = 'hi Comment guifg=#7f848e cterm=NONE'
+" Styles for cursor
+let g:theme_cursor = ''
 " Replacements --
 let g:theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
 " let g:theme_hidden_visual = 'hi Visual guibg=#414858'
@@ -182,12 +184,13 @@ endfunction
 
 function! g:OnVimEnter()
   " Capture styles before calling ToggleBg
-  let g:theme_normal = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
-  let g:theme_visual = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
-  let g:theme_normalNC = substitute(trim(execute("hi NormalNC")), 'xxx', '', 'g')
-  let g:theme_lineNr = substitute(trim(execute("hi LineNr")), 'xxx', '', 'g')
-  let g:theme_cursorLineNr = substitute(trim(execute("hi CursorLineNr")), 'xxx', '', 'g')
-  let g:theme_cursorLine = substitute(trim(execute("hi CursorLine")), 'xxx', '', 'g')
+  let g:theme_normal = substitute(trim(execute('hi Normal')), 'xxx', '', 'g')
+  let g:theme_visual = substitute(trim(execute('hi Visual')), 'xxx', '', 'g')
+  let g:theme_normalNC = substitute(trim(execute('hi NormalNC')), 'xxx', '', 'g')
+  let g:theme_lineNr = substitute(trim(execute('hi LineNr')), 'xxx', '', 'g')
+  let g:theme_cursorLineNr = substitute(trim(execute('hi CursorLineNr')), 'xxx', '', 'g')
+  let g:theme_cursorLine = substitute(trim(execute('hi CursorLine')), 'xxx', '', 'g')
+  let g:theme_cursor = substitute(trim(execute('hi Cursor')), 'xxx', '', 'g')
   " let g:theme_signColumn = substitute(trim(execute("hi SingColumn")), 'xxx', '', 'g')
   " Set comments color
   hi Comment guifg=#7f848e cterm=NONE gui=NONE
