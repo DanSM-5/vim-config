@@ -40,35 +40,41 @@ local cmp_formatting_menu = {
   git = '[Git]',
 }
 
-local cmp_format = function (entry, vim_item)
-  if vim.tbl_contains({ 'path' }, entry.source.name) then
-    local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
-    if icon then
-      vim_item.kind = icon
-      vim_item.kind_hl_group = hl_group
-      return vim_item
-    end
-  end
-
-  local color_item = {}
+local get_cmp_formatter = function ()
   local has_color_hl, nvim_hl_color = pcall(require, 'nvim-highlight-colors')
-  if has_color_hl then
-    color_item = nvim_hl_color.format(entry, { kind = vim_item.kind })
+
+  local cmp_format = function (entry, vim_item)
+    if vim.tbl_contains({ 'path' }, entry.source.name) then
+      local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
+      if icon then
+        vim_item.kind = icon
+        vim_item.kind_hl_group = hl_group
+        return vim_item
+      end
+    end
+
+    local color_item = {}
+    if has_color_hl then
+      color_item = nvim_hl_color.format(entry, { kind = vim_item.kind })
+    end
+
+    if color_item.abbr_hl_group then
+      vim_item.kind_hl_group = color_item.abbr_hl_group
+      vim_item.kind = string.format('%s %s', color_item.abbr, 'Color') -- This concatenates the icons with the name of the item kind
+    else
+      -- Kind icons
+      vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
+    end
+
+    -- Set source of completion item
+    vim_item.menu = cmp_formatting_menu[entry.source.name] or '[Unknown]'
+
+    return vim_item
   end
 
-  if color_item.abbr_hl_group then
-    vim_item.kind_hl_group = color_item.abbr_hl_group
-    vim_item.kind = color_item.abbr
-  else
-    -- Kind icons
-    vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
-  end
-
-  -- Set source of completion item
-  vim_item.menu = cmp_formatting_menu[entry.source.name] or '[Unknown]'
-
-  return vim_item
+  return cmp_format
 end
+
 
 ---@type config.CompletionModule
 local cmp_module = {
@@ -191,6 +197,7 @@ local cmp_module = {
       end, { 'i', 's' }),
     })
 
+    local cmp_format = get_cmp_formatter()
     cmp.setup({
       sources = sources,
       mapping = cmp_mappings,
