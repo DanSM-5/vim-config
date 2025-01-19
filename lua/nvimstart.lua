@@ -61,6 +61,17 @@ g.theme_hidden_cursorLineNr = ''
 g.theme_hidden_cursorLine = ''
 g.theme_hidden_signColumn = ''
 g.theme_hidden_comment = ''
+-- New definition, list here themes to toggle
+-- [hi name], [hi bg on], [hi bg off]
+--[[
+Remember to use temporary values to update:
+    vim.g.my_dict.field1 = 'value'  -- Does not work
+
+    local my_dict = vim.g.my_dict   --
+    my_dict.field1 = 'value'        -- Instead do
+    vim.g.my_dict = my_dict         --
+--]]
+g.theme_toggle_hi = {}
 
 -- Enable detection
 g.host_os = fn['config#CurrentOS']()
