@@ -153,6 +153,9 @@ return {
     ---@type LspHandlerFunc
     local lspconfig_handler = get_lsp_handler()
 
+    -- Use utils to attach global functions
+    require('lsp-servers.utils').setup(lspconfig_handler)
+
     local mason_lspconfig_opts = {
       ensure_installed = language_servers,
       handlers = {
