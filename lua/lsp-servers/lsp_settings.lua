@@ -101,6 +101,7 @@ return {
     -- Add setup function available globally 😎
     -- This is so it is available to start new lsp servers
     -- with cmp capabilities on the fly
+    ---@type LspHandlerFunc
     vim.g.SetupLsp = lspconfig_handler
 
     local mason_lspconfig_opts = {
