@@ -1272,7 +1272,6 @@ function FzfBuffers(query, fullscreen) abort
   "     au BufEnter * ++once if &buftype != 'terminal' | call Fzf_vim_close_buffers(g:fzf_buffers_remove_list) | autocmd! FzfDeleteBuffers | endif
   "   augroup END
   " endif
-
   let buff_sorted = sort(buffers, 'BufSorterFunc')
   let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
   " Store formatted buff names in file
@@ -1280,9 +1279,14 @@ function FzfBuffers(query, fullscreen) abort
 
   " Prepare remove command
   let remove_command = $HOME . '/vim-config/utils/remove_buff.sh'
-  if g:is_windows || g:is_gitbash
+  if g:is_windows
     let bash_path = s:WindowsShortPath(substitute(g:bash, '\\', '/', 'g'))
+    if g:is_gitbash
+      let bash_path = substitute(bash_path, '\\', '/', 'g')
+    endif
     " let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
+    " TODO: Should it use the hardcoded /vim-config/utils? Consider setting a
+    " global variale for the git repository
     let utils_prefix = bash_path . ' /c' . substitute($HOMEPATH, '\\', '/', 'g') . '/vim-config/utils'
     let remove_command = utils_prefix . '/remove_buff.sh'
   endif
@@ -1304,11 +1308,15 @@ function FzfBuffers(query, fullscreen) abort
     \  'exit': function('Fzf_vim_close_buffers', [remove_list, opened_buffers])
     \ })
 
-  if (g:is_windows || g:is_gitbash) && !has('nvim')
-    " preview to be used for vim windows only
+  if g:is_gitbash || (g:is_windows && !has('nvim'))
+    " preview to be used for windows only
     let preview = utils_prefix . '/preview.sh {1}'
     let spec.options = spec.options + ['--preview', preview]
   endif
+
+  " Debug
+  " echo buff_sorted
+  " echo spec
 
   " Call base command
   call fzf#vim#buffers(a:query, buff_sorted, spec, a:fullscreen)
