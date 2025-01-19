@@ -4,6 +4,7 @@ return {
     if not configs.mpls then
       configs.mpls = {
         default_config = {
+          name = 'mpls',
           cmd = { 'mpls', '--dark-mode', '--enable-emoji' },
           filetypes = { 'markdown' },
           single_file_support = true,
@@ -55,6 +56,7 @@ live preview of markdown files in your browser while you edit them in your favor
       -- Start lsp on buffer
       local client_id = vim.lsp.start(
         vim.tbl_deep_extend('force', {
+          name = 'mpls',
           cmd = { 'mpls', '--dark-mode', '--enable-emoji' },
           filetypes = { 'markdown' },
           single_file_support = true,
@@ -65,10 +67,19 @@ live preview of markdown files in your browser while you edit them in your favor
         , {
           bufnr = bufnr,
           silent = false,
-          reuse_client = function () return false end
+          ---Since this should be the first created client,
+          ---no other client should be reused
+          ---@param client vim.lsp.Client
+          ---@param config vim.lsp.ClientConfig
+          ---@return boolean
+          reuse_client = function (client, config)
+            return client.name == 'mpls'
+          end
         })
 
       -- Attach to client
+      -- Even though bufnr is specified above in the options for vim.lsp.start
+      -- it still may not attach the requested buffer, so we add it manually
       if client_id ~= nil then
         vim.lsp.buf_attach_client(bufnr, client_id)
         vim.notify('[MPLS] bufnr: '..bufnr..' client: '..client_id, vim.log.levels.INFO)
