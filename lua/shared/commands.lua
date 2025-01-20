@@ -8,7 +8,7 @@ end, { nargs = '?', bang = true, force = true })
 ---Create NR (npm run) command
 ---@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('NR', function (opts)
-  if opts.bang then
+  if #opts.fargs == 0 then
     local dir = opts.fargs[1]
     if dir then
       -- Clean trailing lash or backslash
@@ -19,9 +19,16 @@ vim.api.nvim_create_user_command('NR', function (opts)
   end
 
   -- Find directory with package.json
-  local dir = vim.fn.FindProjectRoot('package.json')
+  local dir = opts.bang
+    and vim.fn.expand('%:p:h')
+    or vim.fn.FindProjectRoot('package.json')
+
   if dir == 0 then
     vim.notify('NPMRUN: package.json not found', vim.log.levels.WARN)
+    return
+  end
+  if dir == nil then
+    vim.notify('NPMRUN: Directory not found')
     return
   end
 
