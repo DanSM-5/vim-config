@@ -23,7 +23,7 @@ local blink_module = {
     -- }
     local blink_sources_providers = {
       lsp = {
-        min_keyword_length = 2,
+        min_keyword_length = 0,
         score_offset = 5,
       },
       snippets = {
@@ -32,6 +32,7 @@ local blink_module = {
       ['css-variables'] = {
         name = 'css-variables',
         module = 'blink.compat.source',
+        min_keyword_length = 2,
       },
       git = {
         name = 'git',
@@ -134,7 +135,12 @@ local blink_module = {
     end
 
     if opts.lazydev then
-      blink_sources_providers.lazydev = { name = 'LazyDev', module = 'lazydev.integrations.blink', fallbacks = { 'lsp' } }
+      blink_sources_providers.lazydev = {
+        name = 'LazyDev',
+        module = 'lazydev.integrations.blink',
+        fallbacks = { 'lsp' },
+        min_keyword_length = 0,
+      }
       table.insert(blink_sources_default, 'lazydev')
     end
 
