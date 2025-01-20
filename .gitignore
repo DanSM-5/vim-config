@@ -2,11 +2,14 @@
 # VimPlug
 autoload/plug.vim
 
-# Pluggins
+# Plugins
 plugged
 
 # Special configuration files
 lua/lsp-servers/servers.lua
+
+# Special configuration files
+lua/plugins/device.lua
 
 # Do not track lazy-lock
 lazy-lock.json
