@@ -15,24 +15,26 @@ return {
           vim.cmd('AerialPrev')
         end
 
+
+        vim.keymap.set('n', '<leader>ss', '<cmd>AerialToggle<cr>', { desc = '[Aerial] Toggle window', noremap = true, bufnr = bufnr })
+        vim.keymap.set('n', '<leader>sS', '<cmd>AerialToggle!<cr>', { desc = '[Aerial] Toggle window no move', noremap = true, bufnr = bufnr })
+        vim.keymap.set(
+          'n',
+          '<leader>fa',
+          '<cmd>call aerial#fzf()<cr>',
+          { desc = '[Aerial] Aerial fzf selector', noremap = true, bufnr = bufnr }
+        )
+
         repeat_pair({
           keys = 'a',
           desc_forward = '[Aerial] Move to next symbol',
           desc_backward = '[Aerial] Move to previous symbol',
           on_forward = aerial_next,
           on_backward = aerial_prev,
+          bufnr = bufnr,
         })
       end,
     })
-
-    vim.keymap.set('n', '<leader>ss', '<cmd>AerialToggle<cr>', { desc = '[Aerial] Toggle window', noremap = true })
-    vim.keymap.set('n', '<leader>sS', '<cmd>AerialToggle!<cr>', { desc = '[Aerial] Toggle window no move', noremap = true })
-    vim.keymap.set(
-      'n',
-      '<leader>fa',
-      '<cmd>call aerial#fzf()<cr>',
-      { desc = '[Aerial] Aerial fzf selector', noremap = true }
-    )
   end,
 }
 

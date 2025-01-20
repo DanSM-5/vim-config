@@ -10,6 +10,7 @@
 ---@field on_backward function Callback when moving backward
 ---@field desc_forward string Keymap description for forward binding
 ---@field desc_backward string Keymap description for backward binding
+---@field bufnr? integer Buffer to attach keymap
 
 ---@class MotionKeys
 ---@field move_forward string Key to be used when repeating a direction motion
@@ -98,11 +99,19 @@ repeat_motion.repeat_pair = function(options)
   local forward, backward  = require('nvim-treesitter.textobjects.repeatable_move')
     .make_repeatable_move_pair(options.on_forward, options.on_backward)
 
+  local forward_opts = { desc = options.desc_forward, noremap = true }
+  local backward_opts = { desc = options.desc_forward, noremap = true }
+
+  if options.bufnr ~= nil then
+    forward_opts.bufnr = options.bufnr
+    backward_opts.bufnr = options.bufnr
+  end
+
   -- Forward map
-  vim.keymap.set(mode, keymap_forward, forward, { desc = options.desc_forward, noremap = true })
+  vim.keymap.set(mode, keymap_forward, forward, forward_opts)
 
   -- Backward map
-  vim.keymap.set(mode, keymap_backward, backward, { desc = options.desc_backward, noremap = true })
+  vim.keymap.set(mode, keymap_backward, backward, backward_opts)
 end
 
 ---Sets the keymaps to use as motions. By default uses ',' and ';' for similar behavior of t, T, f and F.
