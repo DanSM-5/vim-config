@@ -211,7 +211,18 @@ local cmp_module = {
         expand = function (args)
           require('luasnip').lsp_expand(args.body)
         end
-      }
+      },
+      window = {
+        completion = cmp.config.window.bordered({
+          border = 'rounded',  -- or 'single', 'double', etc.
+          -- NOTE: uncomment below to use same background in completion menu as regular editor
+          -- winhighlight = 'Normal:CmpPmenu,CursorLine:PmenuSel,Search:None',
+        }),
+        documentation = cmp.config.window.bordered({
+          border = 'rounded',
+          -- winhighlight = 'Normal:CmpPmenu,CursorLine:PmenuSel,Search:None',
+        }),
+      },
     })
 
     if os.getenv('START_DB') == '1' then
