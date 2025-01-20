@@ -1,8 +1,8 @@
 ---Runs the npm command in a new terminal buffer
----@param dir string
----@param cmd string
----@param args string[] | nil
----@param fullscreen boolean | nil
+---@param dir string Directory to use to run the command
+---@param cmd 'npm' | 'npx' Command to execute
+---@param args string[] | nil Argument for the command
+---@param fullscreen boolean | nil Ensure full screen view (new tab)
 local open_term = function (dir, cmd, args, fullscreen)
   -- Store current buffer reference for navigating back
   -- local curr_buf = vim.api.nvim_get_current_buf()
@@ -23,7 +23,7 @@ local open_term = function (dir, cmd, args, fullscreen)
   vim.api.nvim_win_set_buf(0, buf)
 
   ---@type string[]
-  local termopen_args = { 'npm', cmd }
+  local termopen_args = { cmd }
 
   if args and #args > 0 then
     termopen_args = require('utils.stdlib').concat(termopen_args, args)
@@ -44,21 +44,20 @@ local open_term = function (dir, cmd, args, fullscreen)
 end
 
 ---Runs the npm command in a new terminal buffer
----@param dir string
----@param cmd string
----@param args string[] | nil
-local run_open_term = function (dir, cmd, args)
-  local new_args = args or {}
+---@param dir string Directory in which the `npm run` command is executed
+---@param args string[] | nil Argument for the `npm run` command
+local run = function (dir, args)
+  local new_args = require('utils.stdlib').shallow_clone(args or {})
 
-  table.insert(new_args, cmd)
+  table.insert(new_args, 1, 'run')
 
-  open_term(dir, 'run', new_args)
+  open_term(dir, 'npm', new_args)
 end
 
 ---Select a npm command to run in a terminal buffer
 ---@param dir? string Directory or buffer from where to search a package.json
 ---@param fullscreen? boolean Open on fullscreen
-local run = function(dir, fullscreen)
+local runfzf = function(dir, fullscreen)
   local cwd = nil
 
   if dir ~= nil then
@@ -128,7 +127,7 @@ local run = function(dir, fullscreen)
       return
     end
 
-    run_open_term(cwd, npm_command)
+    run(cwd, { npm_command })
   end
 
   require('utils.fzf').fzf({
@@ -140,9 +139,27 @@ local run = function(dir, fullscreen)
   })
 end
 
+---Runs the `npm` command in a new terminal buffer
+---@param dir string Directory to use to run the command
+---@param args string[] | nil Argument for the command
+---@param fullscreen boolean | nil Ensure full screen view (new tab)
+local npm = function (dir, args, fullscreen)
+  open_term(dir, 'npm', args, fullscreen)
+end
+
+---Runs the `npx` command in a new terminal buffer
+---@param dir string Directory to use to run the command
+---@param args string[] | nil Argument for the command
+---@param fullscreen boolean | nil Ensure full screen view (new tab)
+local npx = function (dir, args, fullscreen)
+  open_term(dir, 'npx', args, fullscreen)
+end
+
 return {
-  run = run,
-  run_open = run_open_term,
   open = open_term,
+  runfzf = runfzf,
+  run = run,
+  npm = npm,
+  npx = npx,
 }
 

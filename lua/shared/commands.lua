@@ -14,7 +14,7 @@ vim.api.nvim_create_user_command('NR', function (opts)
       -- Clean trailing lash or backslash
       dir = dir:gsub('[\\/]$','')
     end
-    require('utils.npm').run(dir)
+    require('utils.npm').runfzf(dir)
     return
   end
 
@@ -25,10 +25,10 @@ vim.api.nvim_create_user_command('NR', function (opts)
     return
   end
 
-  require('utils.npm').open(dir, 'run', opts.fargs)
-end, { bang = true, nargs = '*', complete = 'dir', force = true })
+  require('utils.npm').run(dir, opts.fargs)
+end, { bang = true, nargs = '*', complete = 'dir', force = true, desc = '[NR] Small wrapper for `npm run` command' })
 
----Create NR (npm run) command
+---Create Npm command
 ---@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('Npm', function (opts)
   -- Find directory with package.json
@@ -42,10 +42,20 @@ vim.api.nvim_create_user_command('Npm', function (opts)
     end
   end
 
-  local args = require('utils.stdlib').shallow_clone(opts.fargs)
-  local cmd = table.remove(args, 1)
-  require('utils.npm').open(dir, cmd, args, opts.bang)
-end, { force = true, bang = true, nargs = '*' })
+  require('utils.npm').npm(dir, args, opts.bang)
+end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for the npm command' })
+
+---Create Npx command
+---@param opts { bang: boolean, fargs: string[] }
+vim.api.nvim_create_user_command('Npx', function (opts)
+  -- Find directory with package.json
+  local dir = vim.fn.FindProjectRoot('package.json')
+  if dir == 0 then
+    dir = vim.fn.getcwd()
+  end
+
+  require('utils.npm').npx(dir, opts.fargs, opts.bang)
+end, { force = true, bang = true, nargs = '*', desc = '[Npx] Small wrapper for the npx command' })
 
 -- Override regular LF autocommand
 ---Create LF command to use lf binary to select files
