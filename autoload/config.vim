@@ -359,7 +359,7 @@ func! s:Set_user_keybindings () abort
 
   " Search and replace word under the cursor
   " Using : instead of <cmd> so it doesn't need to end with <cr>
-  nnoremap <leader>sw :%s/\<<C-r><C-w>\>//g<Left><Left>
+  nnoremap <leader>sr :%s/\<<C-r><C-w>\>//g<Left><Left>
 
   if exists(':Repeatable')
     " Duplicate and comment current line
@@ -1564,7 +1564,7 @@ func! s:DefineCommands () abort
 
   " Buffer management
   " BCloseCurrent defined in plugin/bclose.vim
-  command -bar BCloseOthers :%bd|e#
+  command -bar BCloseOthers :%bd|e#|bn|bd
   command! -bar BCloseAllBuffers :%bd
 
   " Close all buffers but current one
@@ -2000,7 +2000,7 @@ func! s:Set_netrw () abort
 
   nnoremap <leader>ve <cmd>call OpenNetrw()<cr>
 
-  nnoremap <leader>se <cmd>Hex<cr>
+  " nnoremap <leader>se <cmd>Hex<cr>
 
   autocmd FileType netrw setl bufhidden=delete
   " autocmd FileType netrw setl bufhidden=wipe
