@@ -1,5 +1,5 @@
 -- indicate wheter to use cmp or blink
-local use_blink = os.getenv('USE_BLINK') == '1' or vim.fn.has('win32') == 0
+local use_blink = os.getenv('USE_BLINK') == '1'
 
 -- Entry point of lsp related plugins
 return {
