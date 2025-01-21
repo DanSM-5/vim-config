@@ -42,7 +42,32 @@ endif
 
 let s:fzf_preview = join(s:fzf_preview, "\n")
 
-function! fzftxt#open(query, fullscreen) abort
+function! fzftxt#format_qfl(list) abort
+  let filename = s:is_gitbash ? utils#msys_to_windows_path(a:list[0]) : a:list[0]
+  let lnum = exists('a:list[1]') ? str2nr(a:list[1]) : 0
+  let text = exists('a:list[2]') ? a:list[2] : '-'
+  return { 'filename': filename, 'lnum': lnum, 'text': text } 
+endfunction
+
+function! fzftxt#sink(lines) abort
+  echomsg a:lines
+  let list = map(filter(a:lines, 'len(v:val)'), 'split(v:val, ":")')
+  echomsg list
+  if len(list) == 0
+    return
+  elseif len(list) == 1
+    let file = s:is_gitbash ? utils#msys_to_windows_path(list[0][0]) : list[0][0]
+    silent execute ':e ' . file
+    if exists('list[0][1]')
+      silent execute list[0][1]
+    endif
+  else
+    let entries = map(list, 'fzftxt#format_qfl(v:val)')
+    silent call utils#set_qfl(entries)
+  endif
+endfunction
+
+function! fzftxt#select(query, fullscreen) abort
   let curr_path = getcwd()
   let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
   let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
@@ -55,17 +80,23 @@ function! fzftxt#open(query, fullscreen) abort
     if !s:is_gitbash
       let files_command = files_command . ' --path-separator "/" '
     endif
+    let grep_command = grep_command . ' || cd .'
+  else
+    let grep_command = grep_command . ' || true'
   endif
 
   try
     exec 'cd ' . txt_dir
 
     let spec = {
-      \   'source': files_command,
-      \   'sinklist': function('s:FzfSelectedList'),
-      \   'options': s:fzf_bind_options + [
+      \     'source': files_command,
+      \     'sinklist': function('fzftxt#sink'),
+      \     'options': [
+      \     '--height', '80%', '--min-height', '20',
+      \     '--delimiter', ':',
+      \     '--preview-window', '+{2}-/2',
       \     '--prompt', 'Open Txt> ',
-      \     '--multi', '--ansi',
+      \     '--multi', '--ansi', '--border',
       \     '--info=inline', '--cycle',
       \     '--header', 'ctrl-f: File selection (reload alt-r) | ctrl-r: Search mode',
       \     '--bind', 'alt-c:clear-query',
