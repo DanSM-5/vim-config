@@ -18,7 +18,7 @@ let g:is_container = 0
 
 " General options
 let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
-let s:fzf_base_options = [ '--multi', '--ansi', '--info=inline', '--bind', 'alt-c:clear-query' ]
+let s:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border' ]
 let s:fzf_bind_options = s:fzf_base_options + [
       \      '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
       \      '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
@@ -1004,69 +1004,69 @@ function! RipgrepFuzzy(query, fullscreen)
   endtry
 endfunction
 
-function! NewTxt(filename) abort
-  let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
-  let filename = ''
+" function! NewTxt(filename) abort
+"   let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
+"   let filename = ''
 
-  if empty(a:filename)
-    let temp_name = trim(system('uuidgen 2>/dev/null || date +%d-%m-%Y_%H-%M-%S'))
-    let filename = 'tmp-' . temp_name . '.md'
-  else
-    let filename = a:filename
-  endif
+"   if empty(a:filename)
+"     let temp_name = trim(system('uuidgen 2>/dev/null || date +%d-%m-%Y_%H-%M-%S'))
+"     let filename = 'tmp-' . temp_name . '.md'
+"   else
+"     let filename = a:filename
+"   endif
 
-  let filename = txt_dir . '/' . filename
-  let dirlocation = fnamemodify(filename, ':h')
+"   let filename = txt_dir . '/' . filename
+"   let dirlocation = fnamemodify(filename, ':h')
 
-  silent call mkdir(dirlocation, 'p')
+"   silent call mkdir(dirlocation, 'p')
 
-  exec 'edit ' . filename
-endfunction
+"   exec 'edit ' . filename
+" endfunction
 
-function! FzfTxt(query, fullscreen) abort
-  let curr_path = getcwd()
-  let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
-  let preview = user_conf_path . '/utils/fzf-preview.sh {}'
-  let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
-  let source_command = 'fd --color=always -tf '
-  " let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
-  " \     '--preview-window', preview_window,
+" function! FzfTxt(query, fullscreen) abort
+"   let curr_path = getcwd()
+"   let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
+"   let preview = user_conf_path . '/utils/fzf-preview.sh {}'
+"   let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
+"   let source_command = 'fd --color=always -tf '
+"   " let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+"   " \     '--preview-window', preview_window,
 
-  silent call mkdir(txt_dir, 'p')
+"   silent call mkdir(txt_dir, 'p')
 
-  if g:is_windows
-    let gitenv = substitute(system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
-    let gitenv = utils#windows_short_path(gitenv)
-    let gitenv = shellescape(substitute(gitenv, '\\', '/', 'g'))
-    let bash = substitute(utils#windows_short_path(g:bash), '\\', '/', 'g')
-    let preview = bash . ' ' . preview
-    if !g:is_gitbash
-      let source_command = source_command . ' --path-separator "/" '
-    endif
-  endif
+"   if g:is_windows
+"     let gitenv = substitute(system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
+"     let gitenv = utils#windows_short_path(gitenv)
+"     let gitenv = shellescape(substitute(gitenv, '\\', '/', 'g'))
+"     let bash = substitute(utils#windows_short_path(g:bash), '\\', '/', 'g')
+"     let preview = bash . ' ' . preview
+"     if !g:is_gitbash
+"       let source_command = source_command . ' --path-separator "/" '
+"     endif
+"   endif
 
-  try
-    exec 'cd ' . txt_dir
+"   try
+"     exec 'cd ' . txt_dir
 
-    let spec = {
-      \   'source': source_command,
-      \   'sinklist': function('utils#fzf_selected_list'),
-      \   'options': s:fzf_bind_options + [
-      \     '--prompt', 'Open Txt> ',
-      \     '--multi', '--ansi',
-      \     '--layout=reverse',
-      \     '--preview-window', '60%',
-      \     '--query', a:query,
-      \     '--preview', preview]
-      \ }
+"     let spec = {
+"       \   'source': source_command,
+"       \   'sinklist': function('utils#fzf_selected_list'),
+"       \   'options': s:fzf_bind_options + [
+"       \     '--prompt', 'Open Txt> ',
+"       \     '--multi', '--ansi',
+"       \     '--layout=reverse',
+"       \     '--preview-window', '60%',
+"       \     '--query', a:query,
+"       \     '--preview', preview]
+"       \ }
 
-    " Hope for the best
-    call fzf#run(fzf#wrap('ftxt', spec, a:fullscreen))
-  finally
-    " Recover cwd on end
-    exec 'cd '. curr_path
-  endtry
-endfunction
+"     " Hope for the best
+"     call fzf#run(fzf#wrap('ftxt', spec, a:fullscreen))
+"   finally
+"     " Recover cwd on end
+"     exec 'cd '. curr_path
+"   endtry
+" endfunction
 
 function InsertEmoji(use_name, mode, list) abort
   if len(a:list) == 0
@@ -1124,7 +1124,6 @@ function Emoji(query, use_name, mode) abort
     \     '--layout=reverse',
     \     '--query', a:query,
     \     '--height', '80%', '--min-height', '20', '--border',
-    \     '--info=inline',
     \     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
     \     '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
     \     '--bind', 'ctrl-s:toggle-sort',
@@ -1321,7 +1320,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
   command! -nargs=* -bang -bar GitSearchString call gitsearch#string(<q-args>, <bang>0)
 
-  command! -nargs=* -bang FTxt call FzfTxt(<q-args>, <bang>0)
+  command! -nargs=* -bang FTxt call fzftxt#select(<q-args>, <bang>0)
   command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)
   command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
   command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
@@ -1521,7 +1520,7 @@ func! s:DefineCommands () abort
   command! -bar -complete=dir -nargs=? LF call LF(<q-args>)
 
   " Create new txt file
-  command! -nargs=? NText call NewTxt(<q-args>)
+  command! -nargs=? NTxt call fzftxt#open(<q-args>)
 
   " clear search
   command! -nargs=0 CleanSearch :nohlsearch
