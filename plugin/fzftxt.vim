@@ -1,3 +1,5 @@
+" Plugin to opent txt files from the g:txt_dir directory (fallbacks to
+" '~/prj/txt')
 
 if exists('g:loaded_fzftxt')
   finish
@@ -11,58 +13,34 @@ if s:is_windows && ($MSYSTEM =~? 'MINGW' || $MSYSTEM =~? 'MSYS')
 endif
 
 if g:is_windows
-  let s:fzf_preview =<< trim END
-    $LINE = (({}) -Split ':')
-    $FILE = $LINE[0]
-    $NUMBER = if ($LINE[1] -eq $null) { '0' } else { $LINE[1] }
-    $STYLE = if ($BAT_STYLE) { $BAT_STYLE } else { 'numbers' }
-    if (Get-Command -All -Name 'bat' -ErrorAction SilentlyContinue) {
-      bat --style="$STYLE" --color=always --pager=never --highlight-line="$NUMBER" -- "$FILE"
-    } else {
-      Get-Content `$FILE
-    }
-  END
+  let s:fzf_preview = substitute(expand('~/vim-config/utils/rg_preview.ps1'), '\\', '/', 'g')
+  let s:fzf_preview = 'powershell -NoLogo -NonInteractive -NoProfile -File "' . s:fzf_preview . '" {}'
 else
-  let s:fzf_preview =<< trim END
-    FILE={1}
-    NUMBER={2}
-
-    if [ -z "$NUMBER" ]; then
-      NUMBER=0
-    fi
-
-    if command -v bat &> /dev/null; then
-      bat --style="${BAT_STYLE:-numbers}" --color=always --pager=never \
-        --highlight-line="$NUMBER" -- "$FILE"
-    else
-      cat -- "$FILE"
-    fi
-  END
+  let s:fzf_preview = substitute(expand('~/vim-config/utils/rg_preview.sh'), '\\', '/', 'g') . ' {}'
 endif
 
-let s:fzf_preview = join(s:fzf_preview, "\n")
-
 function! fzftxt#format_qfl(list) abort
-  let filename = s:is_gitbash ? utils#msys_to_windows_path(a:list[0]) : a:list[0]
+  let filename = s:is_gitbash ? substitute(a:list[0], '\\', '/', 'g') : a:list[0]
   let lnum = exists('a:list[1]') ? str2nr(a:list[1]) : 0
   let text = exists('a:list[2]') ? a:list[2] : '-'
   return { 'filename': filename, 'lnum': lnum, 'text': text } 
 endfunction
 
 function! fzftxt#sink(lines) abort
-  echomsg a:lines
+  " echomsg a:lines
   let list = map(filter(a:lines, 'len(v:val)'), 'split(v:val, ":")')
-  echomsg list
+  " echomsg list
   if len(list) == 0
     return
   elseif len(list) == 1
-    let file = s:is_gitbash ? utils#msys_to_windows_path(list[0][0]) : list[0][0]
+    let file = s:is_gitbash ? substitute(list[0][0], '\\', '/', 'g') : list[0][0]
     silent execute ':e ' . file
     if exists('list[0][1]')
       silent execute list[0][1]
     endif
   else
     let entries = map(list, 'fzftxt#format_qfl(v:val)')
+    " echomsg entries
     silent call utils#set_qfl(entries)
   endif
 endfunction
@@ -117,16 +95,13 @@ function! fzftxt#select(query, fullscreen) abort
       \     '--bind', 'start:unbind(change)',
       \     '--layout=reverse',
       \     '--preview-window', '60%',
-      \     '--query', a:query,
-      \     '--preview', s:fzf_preview]
+      \     '--preview', s:fzf_preview,
+      \     '--query', a:query]
       \ }
 
-
-    if s:is_windows
-      let spec.options = spec.options + ['--with-shell', 'powershell.exe -NoLogo -NonInteractive -NoProfile -Command']
-    endif
-
     " Hope for the best
+    " let spec = fzf#wrap('ftxt', spec, a:fullscreen)
+    " echom spec
     call fzf#run(fzf#wrap('ftxt', spec, a:fullscreen))
   finally
     " Recover cwd on end
@@ -191,5 +166,25 @@ function! fzftxt#select_simple(query, fullscreen) abort
     " Recover cwd on end
     exec 'cd '. curr_path
   endtry
+endfunction
+
+function! fzftxt#open(filename) abort
+  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
+  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+  let filename = ''
+
+  if empty(a:filename)
+    let temp_name = trim(system('date +%d-%m-%Y_%H-%M-%S'))
+    let filename = 'note-' . temp_name . '.md'
+  else
+    let filename = a:filename
+  endif
+
+  let filename = txt_dir . '/' . filename
+  let dirlocation = fnamemodify(filename, ':h')
+
+  silent call mkdir(dirlocation, 'p')
+
+  exec 'edit ' . filename
 endfunction
 
