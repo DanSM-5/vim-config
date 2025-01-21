@@ -157,8 +157,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
   try
     exec 'cd ' . txt_dir
 
-      " \     '--height', '80%', '--min-height', '20',
-      " \     '--input-border',
+    " \     '--height', '80%', '--min-height', '20',
     let spec = {
       \   'source': source_command,
       \   'sinklist': function('utils#fzf_selected_list'),
@@ -166,6 +165,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
       \     '--prompt', 'Open Txt> ',
       \     '--multi', '--ansi', '--border',
       \     '--info=inline', '--cycle',
+      \     '--input-border',
       \     '--bind', 'alt-c:clear-query',
       \     '--bind', 'alt-f:first',
       \     '--bind', 'alt-l:last',
