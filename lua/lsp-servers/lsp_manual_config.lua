@@ -46,7 +46,7 @@ return {
   end,
   ---@type LspSpecialSetupFunc
   set_device_specific = function (config)
-    configure(config, 'lsp-sources.device_specific')
+    configure(config, 'lsp-sources.specific')
   end,
 }
 

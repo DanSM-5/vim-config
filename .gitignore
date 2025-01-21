@@ -5,11 +5,8 @@ autoload/plug.vim
 # Plugins
 plugged
 
-# Special configuration files
-lua/lsp-servers/servers.lua
-
-# Special configuration files
-lua/plugins/device.lua
+# Special files that are device specific
+**/specific.*
 
 # Do not track lazy-lock
 lazy-lock.json
