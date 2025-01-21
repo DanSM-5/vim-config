@@ -44,7 +44,7 @@ let s:fzf_preview = join(s:fzf_preview, "\n")
 
 function! fzftxt#open(query, fullscreen) abort
   let curr_path = getcwd()
-  let txt_dir = exists(g:txt_dir) ? g:txt_dir : '~/prj/txt'
+  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
   let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
   let files_command = 'fd --color=always --type file . '
   let grep_command='rg --with-filename --line-number --color=always {q}'
