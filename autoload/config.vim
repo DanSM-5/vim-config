@@ -489,9 +489,9 @@ func! s:Windows_conf_before () abort
   " endif
 
   if g:is_gitbash
-    let g:fzf_vim.preview_bash = substitute(s:WindowsShortPath(g:bash), '\', '/', 'g')
+    let g:fzf_vim.preview_bash = substitute(utils#windows_short_path(g:bash), '\', '/', 'g')
   else
-    let g:fzf_vim.preview_bash = s:WindowsShortPath(g:bash)
+    let g:fzf_vim.preview_bash = utils#windows_short_path(g:bash)
   endif
 
   let g:python3_host_prog = '~/AppData/local/Programs/Python/Python3*/python.exe'
@@ -770,13 +770,6 @@ function! s:Fzf_vim_gitfiles(query, fullscreen) abort
   call fzf#vim#gitfiles(a:query, spec, a:fullscreen)
 endfunction
 
-function! s:WindowsShortPath(path) abort
-  " From fzf.vim
-  " Changes paths like 'C:/Program Files' that have spaces into C:/PROGRA~1
-  " which is nicer as we avoid escaping
-  return split(system('for %A in ("'. a:path .'") do @echo %~sA'), "\n")[0]
-endfunction
-
 function! FzfChangeProject(query, fullscreen) abort
   let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
   let preview = user_conf_path . '/utils/fzf-preview.sh {}'
@@ -790,9 +783,9 @@ function! FzfChangeProject(query, fullscreen) abort
   if g:is_windows
     " Get env.exe from gitbash
     let gitenv = substitute(system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
-    let gitenv = s:WindowsShortPath(gitenv)
+    let gitenv = utils#windows_short_path(gitenv)
     let gitenv = shellescape(substitute(gitenv, '\\', '/', 'g'))
-    let bash = substitute(s:WindowsShortPath(g:bash), '\\', '/', 'g')
+    let bash = substitute(utils#windows_short_path(g:bash), '\\', '/', 'g')
     let preview = bash . ' ' . preview
     " Hack to run a bash script without adding -l or -i flags (faster)
     let getprojects = ' MSYS=enable_pcon MSYSTEM=MINGW64 enable_pcon=1 SHELL=/usr/bin/bash /usr/bin/bash -c "export PATH=/mingw64/bin:/usr/local/bin:/usr/bin:/bin:$PATH; export user_conf_path=' . user_conf_path . '; ' . getprojects . '"'
@@ -1043,9 +1036,9 @@ function! FzfTxt(query, fullscreen) abort
 
   if g:is_windows
     let gitenv = substitute(system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
-    let gitenv = s:WindowsShortPath(gitenv)
+    let gitenv = utils#windows_short_path(gitenv)
     let gitenv = shellescape(substitute(gitenv, '\\', '/', 'g'))
-    let bash = substitute(s:WindowsShortPath(g:bash), '\\', '/', 'g')
+    let bash = substitute(utils#windows_short_path(g:bash), '\\', '/', 'g')
     let preview = bash . ' ' . preview
     if !g:is_gitbash
       let source_command = source_command . ' --path-separator "/" '
@@ -1223,7 +1216,7 @@ function FzfBuffers(query, fullscreen) abort
   " Prepare remove command
   let remove_command = $HOME . '/vim-config/utils/remove_buff.sh'
   if g:is_windows
-    let bash_path = s:WindowsShortPath(substitute(g:bash, '\\', '/', 'g'))
+    let bash_path = utils#windows_short_path(substitute(g:bash, '\\', '/', 'g'))
     if g:is_gitbash
       let bash_path = substitute(bash_path, '\\', '/', 'g')
     endif
