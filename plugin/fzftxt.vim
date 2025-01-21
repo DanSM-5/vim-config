@@ -134,3 +134,62 @@ function! fzftxt#select(query, fullscreen) abort
   endtry
 endfunction
 
+function! fzftxt#select_simple(query, fullscreen) abort
+  let curr_path = getcwd()
+  let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
+  let preview = user_conf_path . '/utils/fzf-preview.sh {}'
+  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
+  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+  let source_command = 'fd --color=always -tf '
+  " let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+  " \     '--preview-window', preview_window,
+
+  silent call mkdir(txt_dir, 'p')
+
+  if g:is_windows
+    let bash = substitute(utils#windows_short_path(g:bash), '\\', '/', 'g')
+    let preview = bash . ' ' . preview
+    if !g:is_gitbash
+      let source_command = source_command . ' --path-separator "/" '
+    endif
+  endif
+
+  try
+    exec 'cd ' . txt_dir
+
+      " \     '--height', '80%', '--min-height', '20',
+      " \     '--input-border',
+    let spec = {
+      \   'source': source_command,
+      \   'sinklist': function('utils#fzf_selected_list'),
+      \   'options': [
+      \     '--prompt', 'Open Txt> ',
+      \     '--multi', '--ansi', '--border',
+      \     '--info=inline', '--cycle',
+      \     '--bind', 'alt-c:clear-query',
+      \     '--bind', 'alt-f:first',
+      \     '--bind', 'alt-l:last',
+      \     '--bind', 'alt-a:select-all',
+      \     '--bind', 'alt-d:deselect-all',
+      \     '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
+      \     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
+      \     '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
+      \     '--bind', 'shift-up:preview-up,shift-down:preview-down',
+      \     '--bind', 'ctrl-^:toggle-preview',
+      \     '--bind', 'ctrl-s:toggle-sort',
+      \     '--prompt', 'Open Txt> ',
+      \     '--multi', '--ansi',
+      \     '--layout=reverse',
+      \     '--preview-window', '60%',
+      \     '--query', a:query,
+      \     '--preview', preview]
+      \ }
+
+    " Hope for the best
+    call fzf#run(fzf#wrap('ftxt', spec, a:fullscreen))
+  finally
+    " Recover cwd on end
+    exec 'cd '. curr_path
+  endtry
+endfunction
+
