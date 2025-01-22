@@ -154,7 +154,6 @@ function! fzftxt#select_simple(query, fullscreen) abort
       \     '--bind', 'ctrl-^:toggle-preview',
       \     '--bind', 'ctrl-s:toggle-sort',
       \     '--prompt', 'Open Txt> ',
-      \     '--multi', '--ansi',
       \     '--layout=reverse',
       \     '--preview-window', '60%',
       \     '--query', a:query,
