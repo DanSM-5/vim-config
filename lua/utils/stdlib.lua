@@ -56,7 +56,22 @@ local function shallow_clone(t)
   return t2
 end
 
+---Find the root directory or a given file
+---@param lookFor string Name of the file to look for
+---@return string|nil Path of the file name provided
+local function find_root(lookFor)
+  local path_to_file = vim.fs.find(lookFor, {
+    path = vim.fn.expand('%:p:h'),
+    upward = true,
+  })[1]
+
+  local root_dir = vim.fs.dirname(path_to_file)
+
+  return root_dir
+end
+
 return {
+  find_root = find_root,
   concat = array_concat,
   split = split,
   echo = echo,
