@@ -87,12 +87,22 @@ function! utils#windows_short_path(path) abort
   return split(system('for %A in ("'. a:path .'") do @echo %~sA'), "\n")[0]
 endfunction
 
+function! utils#current_buffer_path () abort
+  " NOTE: Git Bash and Git Zsh
+  " fzf#vim#grep command will fail if '\' is not escaped
+  " fzf#vim#files command will fail if '\' is escaped
+  " Both functions work if '\' is replaced by '/'
+  return substitute(trim(expand('%:p:h')), '\', '/', 'g')
+  " return trim(expand('%:p:h'))
+  " return trim(shellescape(expand('%:p:h')))
+endfunction
+
 function! utils#git_path () abort
   " Directory holding the current file
   let file_dir = trim(expand('%:p:h'))
 
   let gitcmd = 'cd '.shellescape(file_dir).' && git rev-parse --show-toplevel'
-  if has('win32') && !has('nvim')
+  if (has('win32') || has('win32unix')) && !has('nvim')
     " WARN: Weird behavior started to occur in which vim in windows
     " requires an additional shellescape to run when command has parenthesis
     " or when it has quotations
@@ -100,6 +110,13 @@ function! utils#git_path () abort
   endif
   let gitpath = trim(system(gitcmd))
 
-  return gitpath
+  if isdirectory(gitpath)
+    return gitpath
+  endif
+
+  let buffpath = utils#current_buffer_path()
+  if isdirectory(buffpath)
+    return buffpath
+  endif
 endfunction
 

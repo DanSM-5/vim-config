@@ -86,7 +86,7 @@ return {
     ---Function that calls fzf-lua.files
     ---@param opts { bang: boolean; fargs: string[] }
     vim.api.nvim_create_user_command('Files', function(opts)
-      local cwd = vim.fn.isdirectory(opts.fargs[1]) and opts.fargs[1] or vim.fn.GitPath()
+      local cwd = vim.fn.isdirectory(opts.fargs[1]) and opts.fargs[1] or vim.fn['utils#git_path']()
       require('fzf-lua').files({ resume = opts.bang, cwd = cwd })
     end, { bang = true, bar = true, complete = 'dir', nargs = '?' })
 

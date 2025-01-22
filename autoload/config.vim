@@ -695,16 +695,6 @@ func! s:SetCtrlSF () abort
     \ }
 endf
 
-func! GetCurrentBufferPath () abort
-  " NOTE: Git Bash and Git Zsh
-  " fzf#vim#grep command will fail if '\' is not escaped
-  " fzf#vim#files command will fail if '\' is escaped
-  " Both functions work if '\' is replaced by '/'
-  return substitute(trim(expand('%:p:h')), '\', '/', 'g')
-  " return trim(expand('%:p:h'))
-  " return trim(shellescape(expand('%:p:h')))
-endf
-
 " Find a directory containing 'lookFor'
 function! FindProjectRoot(lookFor) abort
   let pathMaker = '%:p'
@@ -718,24 +708,24 @@ function! FindProjectRoot(lookFor) abort
   return 0
 endfunction
 
-func! GitPath () abort
-  let gitcmd = 'cd '.shellescape(expand('%:p:h')).' && git rev-parse --show-toplevel'
-  if g:is_windows && !has('nvim')
-    " WARN: Weird behavior started to occur in which vim in windows
-    " requires an additional shellescape to run when command has parenthesis
-    " or when it has quotations
-    let gitcmd = shellescape(gitcmd)
-  endif
-  let gitpath = trim(system(gitcmd))
-  " exe 'FZF ' . path
-  " For debug
-  " echohl String | echon 'Path: ' . gitpath | echohl None
-  if isdirectory(gitpath)
-    return gitpath
-  else
-    return GetCurrentBufferPath()
-  endif
-endf
+" func! GitPath () abort
+"   let gitcmd = 'cd '.shellescape(expand('%:p:h')).' && git rev-parse --show-toplevel'
+"   if g:is_windows && !has('nvim')
+"     " WARN: Weird behavior started to occur in which vim in windows
+"     " requires an additional shellescape to run when command has parenthesis
+"     " or when it has quotations
+"     let gitcmd = shellescape(gitcmd)
+"   endif
+"   let gitpath = trim(system(gitcmd))
+"   " exe 'FZF ' . path
+"   " For debug
+"   " echohl String | echon 'Path: ' . gitpath | echohl None
+"   if isdirectory(gitpath)
+"     return gitpath
+"   else
+"     return GetCurrentBufferPath()
+"   endif
+" endf
 
 function! s:Fzf_preview_window_opts(spec, fullscreen) abort
   if a:fullscreen
@@ -939,7 +929,7 @@ function RipgrepBase(command_fmt, query, prompt, fullscreen, options) abort
   " call fzf#vim#grep2("rg --column --line-number --no-heading --color=always --smart-case -- ", a:query, fzf#vim#with_preview(), a:fullscreen)
 
   let curr_path = getcwd()
-  let gitpath = GitPath()
+  let gitpath = utils#git_path()
 
   try
     " Change path to get relative 'short' paths in the fzf search
@@ -993,7 +983,7 @@ function! RipgrepFuzzy(query, fullscreen)
 
   " Change path to get relative 'short' paths in the fzf search
   let curr_path = getcwd()
-  let gitpath = GitPath()
+  let gitpath = utils#git_path()
 
   try
     exec 'cd '. gitpath
@@ -1345,7 +1335,7 @@ func! s:SetFZF () abort
     command! -bang -nargs=? -complete=dir FzfFiles
       \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call s:Fzf_vim_files(GitPath(), s:fzf_preview_options, <bang>0)
+      \ call s:Fzf_vim_files(utils#git_path(), s:fzf_preview_options, <bang>0)
 
   " fzf options that only include common bindings
   else
@@ -1353,7 +1343,7 @@ func! s:SetFZF () abort
     command! -bang -nargs=? -complete=dir FzfFiles
       \ call s:Fzf_vim_files(<q-args>, s:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call s:Fzf_vim_files(GitPath(), s:fzf_bind_options, <bang>0)
+      \ call s:Fzf_vim_files(utils#git_path(), s:fzf_bind_options, <bang>0)
   endif
 
 
@@ -1399,7 +1389,7 @@ func! s:SetCtrlSFMaps () abort
 endf
 
 func! BufferCd () abort
-  let buffer_path = GitPath()
+  let buffer_path = utils#git_path()
   if !empty(buffer_path)
     exec 'cd '. buffer_path
     echon 'Changed to: ' . buffer_path
@@ -1811,7 +1801,7 @@ function! LF(path = '')
   elseif !empty(a:path)
     let path = fnamemodify(a:path, ':p:h')
   else
-    let path = GitPath()
+    let path = utils#git_path()
   endif
 
   let path = !empty(path) ? path : expand('%:p:h')
@@ -1892,7 +1882,7 @@ function OpenNetrw() abort
 
     if cur_file != 'NetrwTreeListing' && !netrw_open
       exec 'cd ' . file_dir
-      let gitpath = GitPath()
+      let gitpath = utils#git_path()
       " WARN: Need to call Lex with the path or netrw will open on the
       " previous window.
       " Issue: https://groups.google.com/g/vim_dev/c/np1yarYC4Uo
