@@ -25,8 +25,8 @@ local lf = function(dir, fullscreen)
   cwd = cwd or vim.fn['utils#git_path']() or vim.fn.expand('%:p:h')
   if not vim.fn.isdirectory(cwd) then
     -- Try find root of git directory by .git file/dir
-    cwd = vim.fn.FindProjectRoot('.git')
-    if cwd == 0 then
+    cwd = require('utils.stdlib').find_root('.git') --[[@as string]]
+    if cwd == nil then
       -- Fallback to home
       cwd = vim.fn.expand('~')
     end

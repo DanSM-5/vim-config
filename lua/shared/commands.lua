@@ -21,14 +21,10 @@ vim.api.nvim_create_user_command('NR', function (opts)
   -- Find directory with package.json
   local dir = opts.bang
     and vim.fn.expand('%:p:h')
-    or vim.fn.FindProjectRoot('package.json')
+    or require('utils.stdlib').find_root('package.json')
 
-  if dir == 0 then
-    vim.notify('NPMRUN: package.json not found', vim.log.levels.WARN)
-    return
-  end
   if dir == nil then
-    vim.notify('NPMRUN: Directory not found')
+    vim.notify('NPMRUN: Directory not found', vim.log.levels.WARN)
     return
   end
 
@@ -39,8 +35,8 @@ end, { bang = true, nargs = '*', complete = 'dir', force = true, desc = '[NR] Sm
 ---@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('Npm', function (opts)
   -- Find directory with package.json
-  local dir = vim.fn.FindProjectRoot('package.json')
-  if dir == 0 then
+  local dir = require('utils.stdlib').find_root('package.json')
+  if dir == nil then
     if opts.fargs[1] == 'run' then
       vim.notify('NPMRUN: package.json not found', vim.log.levels.WARN)
       return
@@ -56,8 +52,8 @@ end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for t
 ---@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('Npx', function (opts)
   -- Find directory with package.json
-  local dir = vim.fn.FindProjectRoot('package.json')
-  if dir == 0 then
+  local dir = require('utils.stdlib').find_root('package.json')
+  if dir == nil then
     dir = vim.fn.getcwd()
   end
 

@@ -695,19 +695,6 @@ func! s:SetCtrlSF () abort
     \ }
 endf
 
-" Find a directory containing 'lookFor'
-function! FindProjectRoot(lookFor) abort
-  let pathMaker = '%:p'
-  while(len(expand(pathMaker)) > len(expand(pathMaker.':h')))
-    let pathMaker = pathMaker.':h'
-    let fileToCheck = expand(pathMaker).'/'.a:lookFor
-    if filereadable(fileToCheck) || isdirectory(fileToCheck)
-      return expand(pathMaker)
-    endif
-  endwhile
-  return 0
-endfunction
-
 " func! GitPath () abort
 "   let gitcmd = 'cd '.shellescape(expand('%:p:h')).' && git rev-parse --show-toplevel'
 "   if g:is_windows && !has('nvim')
@@ -1757,7 +1744,7 @@ endfunction
 
 function BlameLine(...) abort
   let commit_count = empty(a:1) ? '5' : a:1
-  let root = FindProjectRoot('.git')
+  let root = utils#find_root('.git')
   let line = line('.')
   let file = expand('%:p')
   let name = expand('%:t')
@@ -1806,7 +1793,7 @@ function! LF(path = '')
 
   let path = !empty(path) ? path : expand('%:p:h')
   if !isdirectory(path)
-    let path = FindProjectRoot('.git')
+    let path = utils#find_root('.git')
     if empty(path)
       let path = expand('~')
     endif

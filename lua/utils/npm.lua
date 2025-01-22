@@ -70,7 +70,7 @@ local runfzf = function(dir, fullscreen)
     end
   else
     -- if no provided, try to find a package.json from current buffer location
-    local result = vim.fn.FindProjectRoot('package.json')
+    local result = require('utils.stdlib').find_root('package.json')
     cwd = result ~= 0 and result or nil
   end
 
