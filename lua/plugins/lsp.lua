@@ -132,6 +132,7 @@ return {
   -- Install with mason rust-analyzer and codelldb
   {
     'mrcjkb/rustaceanvim',
+    enabled = false, -- enable back when used
     version = '^5', -- Recommended (avoid breaking changes)
     lazy = false, -- Already lazy
     ['rust-analyzer'] = {
