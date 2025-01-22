@@ -120,3 +120,16 @@ function! utils#git_path () abort
   endif
 endfunction
 
+" Find a directory containing 'lookFor'
+function! utils#find_root(lookFor) abort
+  let pathMaker = '%:p'
+  while(len(expand(pathMaker)) > len(expand(pathMaker.':h')))
+    let pathMaker = pathMaker.':h'
+    let fileToCheck = expand(pathMaker).'/'.a:lookFor
+    if filereadable(fileToCheck) || isdirectory(fileToCheck)
+      return expand(pathMaker)
+    endif
+  endwhile
+  return 0
+endfunction
+
