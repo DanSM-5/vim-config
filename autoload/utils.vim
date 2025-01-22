@@ -87,3 +87,19 @@ function! utils#windows_short_path(path) abort
   return split(system('for %A in ("'. a:path .'") do @echo %~sA'), "\n")[0]
 endfunction
 
+function! utils#git_path () abort
+  " Directory holding the current file
+  let file_dir = trim(expand('%:p:h'))
+
+  let gitcmd = 'cd '.shellescape(file_dir).' && git rev-parse --show-toplevel'
+  if has('win32') && !has('nvim')
+    " WARN: Weird behavior started to occur in which vim in windows
+    " requires an additional shellescape to run when command has parenthesis
+    " or when it has quotations
+    let gitcmd = shellescape(gitcmd)
+  endif
+  let gitpath = trim(system(gitcmd))
+
+  return gitpath
+endfunction
+
