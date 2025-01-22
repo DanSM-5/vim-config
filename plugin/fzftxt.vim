@@ -176,7 +176,7 @@ function! fzftxt#open(filename) abort
 
   if empty(a:filename)
     let temp_name = trim(system('date +%d-%m-%Y_%H-%M-%S'))
-    let filename = 'note-' . temp_name . '.md'
+    let filename = 'note_' . temp_name . '.md'
   else
     let filename = a:filename
   endif
