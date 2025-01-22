@@ -24,22 +24,6 @@ endif
 
 let g:loaded_git_search_commits = 1
 
-function! s:GitPath () abort
-  " Directory holding the current file
-  let file_dir = trim(expand('%:p:h'))
-
-  let gitcmd = 'cd '.shellescape(file_dir).' && git rev-parse --show-toplevel'
-  if g:is_windows && !has('nvim')
-    " WARN: Weird behavior started to occur in which vim in windows
-    " requires an additional shellescape to run when command has parenthesis
-    " or when it has quotations
-    let gitcmd = shellescape(gitcmd)
-  endif
-  let gitpath = trim(system(gitcmd))
-
-  return gitpath
-endfunction
-
 function! s:OpenTempGitCommit(commits) abort
   if len(a:commits) == 0
     return
@@ -79,7 +63,7 @@ endfunction
 
 function! gitsearch#search(query, fullscreen, cmd) abort
   let curr_path = getcwd()
-  let gitpath = s:GitPath()
+  let gitpath = utils#git_path()
 
   if empty(gitpath)
     echohl hlgroup
@@ -113,7 +97,7 @@ function! gitsearch#search(query, fullscreen, cmd) abort
     \     '--multi', '--ansi',
     \     '--layout=reverse',
     \     '--disabled',
-    \     '--info=inline',
+    \     '--input-border',
     \     '--cycle',
     \     '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
     \     '--bind', 'shift-up:preview-up,shift-down:preview-down',
