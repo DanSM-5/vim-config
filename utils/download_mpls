@@ -34,7 +34,9 @@ extract_dir='/tmp/mpls_extracted'
 # It will always override unless you use `--no-clobber` flag
 curl -sL "$string_url" -o "$download_path"
 
+rm -rf "$extract_dir"
 mkdir -p "$extract_dir"
+
 if [ "$OS" = 'Windows_NT' ]; then
   unzip "$download_path" -d "$extract_dir"
 else
