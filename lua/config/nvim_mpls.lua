@@ -92,6 +92,19 @@ live preview of markdown files in your browser while you edit them in your favor
         vim.notify('[MPLS] bufnr: '..bufnr..' client: '..client_id, vim.log.levels.INFO)
       end
     end, { desc = '[Lsp] Start mpls lsp server', bar = true, bang = true, nargs = 0 })
-  end
+  end,
+  download = function ()
+    local download_helper = vim.fn.substitute(vim.fn.expand('~/vim-config/utils/download_mpls'), '\\', '/', 'g')
+    ---@type string[]
+    local cmd = {}
+    if vim.fn.has('win32') == 1 then
+      -- Use powershell script on windows
+      cmd = { 'powershell.exe', '-NoLogo', '-NonInteractive', '-NoProfile', '-File', download_helper .. '.ps1' }
+    else
+      cmd = { download_helper }
+    end
+
+    pcall(vim.system, cmd, {}, function () end)
+  end,
 }
 
