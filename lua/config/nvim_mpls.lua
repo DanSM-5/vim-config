@@ -104,7 +104,11 @@ live preview of markdown files in your browser while you edit them in your favor
       cmd = { download_helper }
     end
 
-    pcall(vim.system, cmd, {}, function () end)
+    pcall(vim.system, cmd, {}, function ()
+      vim.schedule(function ()
+        vim.notify('[MPLS] Download completed', vim.log.levels.INFO)
+      end)
+    end)
   end,
 }
 
