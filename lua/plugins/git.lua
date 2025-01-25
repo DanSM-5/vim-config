@@ -4,13 +4,13 @@ return {
     'tpope/vim-fugitive',
     dependencies = {
       'tpope/vim-rhubarb',
-    }
+    },
   },
   {
     'lewis6991/gitsigns.nvim',
     config = function ()
       require('config.nvim_gitsigns').setup()
-    end
+    end,
   },
   {
     'jecaro/fugitive-difftool.nvim',
@@ -43,48 +43,17 @@ return {
   },
   {
     'oflisback/cursor-git-ref-command.nvim',
+    cmd = {
+      'CursorCheckOut',
+      'CursorCherryPick',
+      'CursorDrop',
+      'CursorResetHard',
+      'CursorResetMixed',
+      'CursorResetSoft',
+    },
     config = function ()
-      require('cursor-git-ref-command').setup({
-        pick_sha_or_ref = function (commit_hash, refs, callback)
-          if #refs == 0 then
-            callback(commit_hash)
-            return
-          end
-
-          local source = { commit_hash }
-          for _, ref in ipairs(refs) do
-            table.insert(source, ref)
-          end
-
-          local sink = function (selected)
-            if #selected < 2 then
-              return
-            end
-            callback(selected[2])
-          end
-
-          local preview_cmd = string.format(
-            'git show --color=always {} %s | %s',
-            vim.fn.executable('delta') and '| delta ' or '',
-            vim.fn.executable('bat') and ' bat -p --color=always ' or ' cat'
-          )
-
-          local fzf = require('utils.fzf')
-          fzf.fzf({
-            source = source,
-            fzf_opts = require('utils.stdlib').concat(fzf.fzf_bind_options, {
-              '--prompt', 'Select Ref> ',
-              '--no-multi',
-              '--preview-window', '70%',
-              '--preview', preview_cmd,
-            }),
-            name = 'git-commit',
-            fullscreen = false,
-            sink = sink,
-          })
-        end
-      })
-    end
+      require('config.nvim_cursor_ref').setup()
+    end,
   },
 }
 
