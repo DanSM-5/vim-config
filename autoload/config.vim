@@ -1513,7 +1513,8 @@ func! s:DefineCommands () abort
   " grab the changes on the right
   command! -bar GitSelectRight :diffget //3
 
-  command! -bar -nargs=* Mkdr call utils#mkdir(<q-args>)
+  " Use as :Mkdr! for creating the path of a buffer which path doesn't exit
+  command! -bar -bang -nargs=* Mkdr call utils#mkdir(<q-args>, <bang>0)
 endf
 
 func! s:RemapAltUpDownNormal () abort
