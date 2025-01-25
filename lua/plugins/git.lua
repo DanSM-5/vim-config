@@ -30,7 +30,7 @@ return {
     -- :Git! difftool --name-status master..my-feature
     -- :Gcc
     config = function ()
-      require('config.nvim_figitive-difftool').setup()
+      require('config.nvim_fugitive-difftool').setup()
     end,
   },
   {
