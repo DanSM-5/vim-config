@@ -188,3 +188,11 @@ function! fzftxt#open(filename) abort
   exec 'edit ' . filename
 endfunction
 
+function fzftxt#completion(A, L, P) abort
+  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
+  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+  " Show absolute path
+  " return readdir(expand(txt_dir))->map('"'.txt_dir.'/"..v:val')->filter('v:val =~ a:A')
+  return readdir(expand(txt_dir))->map('v:val')->filter('v:val =~ a:A')
+endfunction
+

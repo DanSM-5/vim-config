@@ -1297,7 +1297,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
   command! -nargs=* -bang -bar GitSearchString call gitsearch#string(<q-args>, <bang>0)
 
-  command! -nargs=* -bang FTxt call fzftxt#select(<q-args>, <bang>0)
+  command! -nargs=* -bang -complete=customlist,fzftxt#completion FTxt call fzftxt#select(<q-args>, <bang>0)
   command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)
   command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
   command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
@@ -1497,7 +1497,7 @@ func! s:DefineCommands () abort
   command! -bar -complete=dir -nargs=? LF call LF(<q-args>)
 
   " Create new txt file
-  command! -nargs=? NTxt call fzftxt#open(<q-args>)
+  command! -nargs=? -complete=customlist,fzftxt#completion NTxt call fzftxt#open(<q-args>)
 
   " clear search
   command! -nargs=0 CleanSearch :nohlsearch
