@@ -12,6 +12,6 @@ return {
     vim.api.nvim_create_user_command('Gcp', difftool.git_cp, { desc = '[Difftool] Go to previous item in quickfix' })
     -- To the currently selected
     vim.api.nvim_create_user_command('Gcc', difftool.git_cc, { desc = '[Difftool] Go to current item in quickfix' })
-  end
+  end,
 }
 
