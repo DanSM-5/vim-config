@@ -12,11 +12,13 @@ if s:is_windows && ($MSYSTEM =~? 'MINGW' || $MSYSTEM =~? 'MSYS')
   let s:is_gitbash = 1
 endif
 
+let s:fzftxt_scripts = exists('g:fzftxt_scripts') ? g:fzftxt_scripts : expand('<sfile>:p:h:h') . '/utils'
+
 if g:is_windows
-  let s:fzf_preview = substitute(expand('~/vim-config/utils/rg_preview.ps1'), '\\', '/', 'g')
+  let s:fzf_preview = substitute(s:fzftxt_scripts . '/rg_preview.ps1', '\\', '/', 'g')
   let s:fzf_preview = 'powershell -NoLogo -NonInteractive -NoProfile -File "' . s:fzf_preview . '" {}'
 else
-  let s:fzf_preview = substitute(expand('~/vim-config/utils/rg_preview.sh'), '\\', '/', 'g') . ' {}'
+  let s:fzf_preview = substitute(s:fzftxt_scripts . '/rg_preview.sh', '\\', '/', 'g') . ' {}'
 endif
 
 function! fzftxt#format_qfl(list) abort
@@ -112,8 +114,6 @@ endfunction
 
 function! fzftxt#select_simple(query, fullscreen) abort
   let curr_path = getcwd()
-  let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
-  let preview = user_conf_path . '/utils/fzf-preview.sh {}'
   let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
   let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
   let source_command = 'fd --color=always -tf '
@@ -123,8 +123,6 @@ function! fzftxt#select_simple(query, fullscreen) abort
   silent call mkdir(txt_dir, 'p')
 
   if g:is_windows
-    let bash = substitute(utils#windows_short_path(g:bash), '\\', '/', 'g')
-    let preview = bash . ' ' . preview
     if !g:is_gitbash
       let source_command = source_command . ' --path-separator "/" '
     endif
@@ -153,11 +151,10 @@ function! fzftxt#select_simple(query, fullscreen) abort
       \     '--bind', 'shift-up:preview-up,shift-down:preview-down',
       \     '--bind', 'ctrl-^:toggle-preview',
       \     '--bind', 'ctrl-s:toggle-sort',
-      \     '--prompt', 'Open Txt> ',
       \     '--layout=reverse',
       \     '--preview-window', '60%',
       \     '--query', a:query,
-      \     '--preview', preview]
+      \     '--preview', s:fzf_preview]
       \ }
 
     " Hope for the best
