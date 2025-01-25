@@ -81,17 +81,6 @@ return {
     end,
   },
   {
-    'OXY2DEV/helpview.nvim',
-    lazy = false, -- Recommended
-
-    -- In case you still want to lazy load
-    -- ft = "help",
-
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
-    },
-  },
-  {
     'mbbill/undotree',
     lazy = true,
     keys = {
@@ -126,18 +115,6 @@ return {
           enable_close_on_slash = false, -- Auto close on trailing </
         },
       })
-    end,
-  },
-  {
-    'OXY2DEV/markview.nvim',
-    lazy = false,      -- Recommended
-    -- ft = "markdown" -- If you decide to lazy-load anyway
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
-      'nvim-tree/nvim-web-devicons',
-    },
-    config = function ()
-      require('config.nvim_markview').setup()
     end,
   },
   {
