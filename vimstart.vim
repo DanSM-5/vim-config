@@ -378,7 +378,11 @@ call plug#begin()
     " Fugitive extension for difftool
     Plug 'jecaro/fugitive-difftool.nvim'
 
+    " Cursor based text objects
     Plug 'ColinKennedy/cursor-text-objects.nvim', { 'tag': 'v1.*' }
+
+    " Commands on refs. :Cursor* commands on :Git log --oneline buffer
+    Plug 'oflisback/cursor-git-ref-command.nvim'
 
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'

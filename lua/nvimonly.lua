@@ -24,6 +24,7 @@ require('config.nvim_prelive').setup()
 require('config.nvim_markview').setup()
 require('config.nvim_figitive-difftool').setup()
 require('config.nvim_cursor-text-objects').setup()
+require('config.nvim_cursor_ref').setup()
 require('config.nvim_hl_colors').setup()
 
 -- NOTE: At some point I thought, why not put everything in an array
