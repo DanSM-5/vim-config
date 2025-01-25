@@ -136,7 +136,7 @@ endfunction
 " Make directory utility that handles expanding special
 " characted like '~' or '%'
 function utils#mkdir(path, current) abort
-  if current
+  if a:current
     let path = '%:p:h'
   else
     let path = a:path
