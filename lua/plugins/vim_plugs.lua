@@ -8,36 +8,6 @@ return {
   --   'tpope/vim-surround'
   -- },
   {
-    'tpope/vim-fugitive',
-    dependencies = {
-      'tpope/vim-rhubarb',
-    }
-  },
-  {
-    'jecaro/fugitive-difftool.nvim',
-    cmd = {
-      -- To the first
-      'Gcfr',
-      -- To the last
-      'Gcla',
-      -- To the next
-      'Gcn',
-      -- To the previous
-      'Gcp',
-      -- To the currently selected
-      'Gcc',
-    },
-    -- Usage
-    -- :Git! difftool --name-status master..my-feature
-    -- :Gcc
-    config = function ()
-      require('config.nvim_figitive-difftool').setup()
-    end,
-  },
-  {
-    'tpope/vim-repeat',
-  },
-  {
     'inkarkat/vim-ReplaceWithRegister',
   },
   -- {
@@ -72,7 +42,13 @@ return {
     'dyng/ctrlsf.vim',
   },
   {
+    'tpope/vim-repeat',
+  },
+  {
     'kreskij/Repeatable.vim',
+    dependencies = {
+      'tpope/vim-repeat',
+    },
     cmd = { 'Repeatable' },
   },
   {
@@ -97,14 +73,6 @@ return {
       -- NOTE: consider to keep or remove the background color and just keep the underline
       vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
     end,
-  },
-  {
-    'rbong/vim-flog',
-    lazy = true,
-    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
-    dependencies = {
-      'tpope/vim-fugitive',
-    },
   },
   {
     'stevearc/oil.nvim',
