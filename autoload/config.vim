@@ -1353,12 +1353,12 @@ func! s:SetFZF () abort
 endf
 
 func! s:SetVimSystemCopyMaps () abort
-  " TODO: Update path correctly for (n)vim
-  " when project is configured
-  " source ~/projects/vim-config/utils/system-copy-maps.vim
-  " Rsource utils/system-copy-maps.vim
-  " call g:RelativeSource('utils/system-copy-maps.vim')
-  runtime utils/system-copy-maps.vim
+  nmap zy <Plug>SystemCopy
+  xmap zy <Plug>SystemCopy
+  nmap zY <Plug>SystemCopyLine
+  nmap zp <Plug>SystemPaste
+  xmap zp <Plug>SystemPaste
+  nmap zP <Plug>SystemPasteLine
 endf
 
 func! s:SetCtrlSFMaps () abort
