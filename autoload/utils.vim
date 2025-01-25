@@ -133,3 +133,9 @@ function! utils#find_root(lookFor) abort
   return 0
 endfunction
 
+" Make directory utility that handles expanding special
+" characted like '~' or '%'
+function utils#mkdir(path) abort
+  call mkdir(expand(a:path), 'p')
+endfunction
+

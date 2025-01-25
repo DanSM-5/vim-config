@@ -1512,6 +1512,8 @@ func! s:DefineCommands () abort
   command! -bar GitSelectLeft :diffget //2
   " grab the changes on the right
   command! -bar GitSelectRight :diffget //3
+
+  command! -bar -nargs=* Mkdr call utils#mkdir(<q-args>)
 endf
 
 func! s:RemapAltUpDownNormal () abort
