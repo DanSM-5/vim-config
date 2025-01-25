@@ -1,6 +1,6 @@
 return {
   setup = function ()
-    -- Context highlight groups
+    -- TSContext highlight groups
     vim.cmd([[
       hi link TreesitterContext Normal
       hi TreesitterContextBottom gui=underline guisp=Grey
