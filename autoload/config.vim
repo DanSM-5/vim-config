@@ -183,6 +183,11 @@ func! s:SetConfigurationsAfter () abort
 endf
 
 func! s:SetBufferOptions () abort
+  " Start with unix fileformat by default
+  " But allow auto match other formats like
+  " dos (windows), and mac
+  set fileformats=unix,dos,mac
+
   augroup userconfiles
     au!
     au BufNewFile,BufRead *.uconfrc,*.uconfgrc,*.ualiasrc,*.ualiasgrc setfiletype sh
@@ -191,7 +196,7 @@ func! s:SetBufferOptions () abort
   augroup flog
     " autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#run_command("GBrowse %(h)")<CR>
     " autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#Exec("GBrowse <cword>")<CR>
-    autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#Exec('GBrowse ' .. substitute(matchstr(getline(line('.')), '\[\(\w\+\)\]'), '[\[\]]', '', 'g'))<CR>
+    autocmd FileType floggraph,git nno <buffer> <leader>gb :<C-U>call flog#Exec('GBrowse ' .. substitute(matchstr(getline(line('.')), '\[\(\w\+\)\]'), '[\[\]]', '', 'g'))<CR>
   augroup END
 endf
 
