@@ -194,6 +194,41 @@ endfunction
 function fzftxt#completion(A, L, P) abort
   let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
   let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+
+  " TODO: Check later if we can add completion
+  " for nested directories
+
+  " let curr = a:A
+  " let sep = ''
+  " if match(a:A, '/') != -1
+  "   let sep = '/'
+  " elseif match(a:A, '\') != -1
+  "   let sep = '\'
+  " endif
+
+  " if !empty(sep)
+  "   let tmp = split(a:A, sep)
+  "   if len(tmp) == 1
+  "     let txt_dir = txt_dir . sep . tmp[0]
+  "     let curr = '"."'
+  "     let rest = tmp[0]
+  "   else
+  "     let rest = join(tmp[0:-2], sep)
+  "     let txt_dir = txt_dir . sep . rest
+  "     let curr = tmp[-1]
+  "   endif
+  "   
+  "   if isdirectory(txt_dir)
+  "     function! BuildPath (rest, sep, option, ...) abort
+  "       return a:rest . a:sep . a:option
+  "     endfunction
+  "     function! FilterPath(curr, val, ...) abort
+  "       return a:val =~ a:curr
+  "     endfunction
+  "     return readdir(expand(txt_dir))->map(function('BuildPath', [rest, sep]))->filter(function('FilterPath', [curr]))
+  "   endif
+  " endif
+
   " Show absolute path
   " return readdir(expand(txt_dir))->map('"'.txt_dir.'/"..v:val')->filter('v:val =~ a:A')
   return readdir(expand(txt_dir))->map('v:val')->filter('v:val =~ a:A')
