@@ -61,10 +61,22 @@ require("lazy").setup({
     },
     custom_keys = {
       -- An external dependency is the default for <leader>l... WTF!!!
-      -- Using an actual default command
       ['<localleader>l'] = {
         function (plugin)
-          require('lazy.util').float_term({ 'git', 'log', '--oneline', '--decorate', '--graph' }, {
+          -- require('lazy.util').float_term({ 'git', 'log', '--oneline', '--decorate', '--graph' }, { cwd = plugin.dir })
+          -- TODO: Consider make the fshow script a standalone script in path "user-scripts"
+          -- rather than a utility script.
+          local script_preview = vim.fn.stdpath('config') .. '/utils/lazy-git-preview'
+          ---@type string[]
+          local script_cmd = {}
+
+          if vim.fn.has('win32') == 1 then
+            script_cmd = { 'powershell.exe', '-NoLogo', '-NonInteractive', '-NoProfile', '-File', script_preview .. '.ps1' }
+          else
+            script_cmd = { script_preview .. '.sh' }
+          end
+
+          require('lazy.util').float_term(script_cmd, {
             cwd = plugin.dir,
           })
         end,
