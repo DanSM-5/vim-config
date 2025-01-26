@@ -185,6 +185,9 @@ function! fzftxt#open(filename) abort
   exec 'edit ' . filename
 endfunction
 
+" A = ArgLead		the leading portion of the argument currently being completed on
+" C = CmdLine		the entire command line
+" P = CursorPos	the cursor position in it (byte index)
 function fzftxt#completion(A, L, P) abort
   let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
   let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
