@@ -31,7 +31,7 @@ let s:fzf_bind_options = s:fzf_base_options + [
       \      '--bind', 'alt-l:last',
       \      '--bind', 'alt-a:select-all',
       \      '--bind', 'alt-d:deselect-all']
-let s:fzf_preview_options = s:fzf_bind_options + [
+let g:fzf_preview_options = s:fzf_bind_options + [
       \ '--layout=reverse',
       \ '--preview-window', '60%',
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
@@ -42,7 +42,7 @@ let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
 let s:fzf_options_with_binds = { 'options': s:fzf_bind_options }
 
 " Options with bindings + preview
-let s:fzf_options_with_preview = {'options': s:fzf_preview_options }
+let s:fzf_options_with_preview = {'options': g:fzf_preview_options }
 
 " Test options for formationg window
 " let g:fzf_preview_window = ['right:60%', 'ctrl-/']
@@ -729,7 +729,7 @@ function! s:Fzf_preview_window_opts(spec, fullscreen) abort
   return a:spec
 endf
 
-function! s:Fzf_vim_files(query, options, fullscreen) abort
+function! Fzf_vim_files(query, options, fullscreen) abort
   let spec = fzf#vim#with_preview({ 'options': [] }, a:fullscreen)
   let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
   " Append options after to get better keybindings for 'ctrl-/'
@@ -743,7 +743,7 @@ endfunction
 
 function! s:Fzf_vim_gitfiles(query, fullscreen) abort
   let placeholder = a:query == '?' ? '{2..}' : '{}'
-  let options = s:fzf_preview_options + [
+  let options = g:fzf_preview_options + [
         \ '--layout=reverse',
         \ '--preview', 'bat -pp --color=always --style=numbers ' . placeholder
         \ ]
@@ -821,7 +821,7 @@ function! s:FzfRgWindows_preview(spec, fullscreen) abort
   if has_key(a:spec, 'options')
     let options = a:spec.options + ['--preview',  command_preview] + s:fzf_bind_options
   else
-    let options = s:fzf_preview_options
+    let options = g:fzf_preview_options
   endif
 
   let spec = s:Fzf_preview_window_opts({ 'options': options }, a:fullscreen)
@@ -1310,7 +1310,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang RgHistory call RipgrepHistory(<q-args>, <bang>0)
 
   command! -bang -nargs=? -complete=dir Files
-    \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
+    \ call Fzf_vim_files(<q-args>, g:fzf_preview_options, <bang>0)
   command! -bar -bang -nargs=? -complete=buffer Buffers call FzfBuffers(<q-args>, <bang>0)
 
   " NOTE: Under gitbash previews doesn't work due to how fzf.vim
@@ -1325,17 +1325,17 @@ func! s:SetFZF () abort
   " fzf options with custom preview
   if g:is_windows || g:is_termux
     command! -bang -nargs=? -complete=dir FzfFiles
-      \ call s:Fzf_vim_files(<q-args>, s:fzf_preview_options, <bang>0)
+      \ call Fzf_vim_files(<q-args>, g:fzf_preview_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call s:Fzf_vim_files(utils#git_path(), s:fzf_preview_options, <bang>0)
+      \ call Fzf_vim_files(utils#git_path(), g:fzf_preview_options, <bang>0)
 
   " fzf options that only include common bindings
   else
 
     command! -bang -nargs=? -complete=dir FzfFiles
-      \ call s:Fzf_vim_files(<q-args>, s:fzf_bind_options, <bang>0)
+      \ call Fzf_vim_files(<q-args>, s:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call s:Fzf_vim_files(utils#git_path(), s:fzf_bind_options, <bang>0)
+      \ call Fzf_vim_files(utils#git_path(), s:fzf_bind_options, <bang>0)
   endif
 
 
