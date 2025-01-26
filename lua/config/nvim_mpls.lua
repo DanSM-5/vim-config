@@ -27,7 +27,11 @@ live preview of markdown files in your browser while you edit them in your favor
     end
 
     ---Auto command for starting MPLS
-    ---@param opts { bang: boolean }
+    ---Usage :MPLS [/path/to/file]
+    ---If current buffer is markdown, it will be used to attach
+    ---If filename is provided, it will be use instead of current buffer
+    ---If bang is used, it won't try to attach any buffer
+    ---@param opts { bang: boolean, fargs: string }
     vim.api.nvim_create_user_command('MPLS', function (opts)
 
       -- Prevent running if client does not exist
@@ -39,13 +43,30 @@ live preview of markdown files in your browser while you edit them in your favor
       require('lsp-servers.lsp_settings')
         .get_lsp_handler()(name)
 
+      -- Buffer to attach initially
+      local bufnr = -1
+
       -- If start with bang, do not try to attach buffer
       if opts.bang then
         return
       end
 
-      -- Start client if current buffer is markdown
-      local bufnr = vim.api.nvim_get_current_buf()
+      if #opts.fargs == 1 then
+        local buff_name = opts.fargs[1]
+        -- Open if not already
+        if vim.fn.bufexists(buff_name) ~= 1 then
+          vim.cmd.edit(buff_name)
+        end
+        -- Get bufnr
+        bufnr = vim.fn.bufnr(opts.fargs[1])
+      end
+
+      if bufnr == -1 then
+        -- Use current buffer
+        bufnr = vim.api.nvim_get_current_buf()
+      end
+
+        -- Start client if buffer is markdown
       local curr_buff_ft = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
 
       -- Continue only if in a markdown buffer
@@ -91,7 +112,7 @@ live preview of markdown files in your browser while you edit them in your favor
         vim.lsp.buf_attach_client(bufnr, client_id)
         vim.notify('[MPLS] bufnr: '..bufnr..' client: '..client_id, vim.log.levels.INFO)
       end
-    end, { desc = '[Lsp] Start mpls lsp server', bar = true, bang = true, nargs = 0 })
+    end, { desc = '[Lsp] Start mpls lsp server', bar = true, bang = true, nargs = 1, complete = 'file' })
   end,
   download = function ()
     local download_helper = vim.fn.substitute(vim.fn.expand('~/vim-config/utils/download_mpls'), '\\', '/', 'g')
