@@ -71,7 +71,12 @@ require("lazy").setup({
           local script_cmd = {}
 
           if vim.fn.has('win32') == 1 then
-            script_cmd = { 'powershell.exe', '-NoLogo', '-NonInteractive', '-NoProfile', '-File', script_preview .. '.ps1' }
+            script_cmd = { '-NoLogo', '-NonInteractive', '-NoProfile', '-File', script_preview .. '.ps1' }
+            if vim.fn.executable('pwsh') then
+              table.insert(script_cmd, 1, 'pwsh.exe')
+            else
+              table.insert(script_cmd, 1, 'powershell.exe')
+            end
           else
             script_cmd = { script_preview .. '.sh' }
           end

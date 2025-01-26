@@ -9,9 +9,16 @@ pager=""
 if command -v delta &>/dev/null; then
   # if set pager is delta
   pager="delta --paging=always"
+  preview_pager='| delta'
 else
   pager="$def_pager"
+  preview_pager=''
 fi
+
+preview="
+  git show --color=always {2} $preview_pager |
+    bat -p --color=always
+"
 
 # Local variables
 out shas sha q k
@@ -22,7 +29,8 @@ mkdir -p "$fzf_history"
 
 # Default fzf flags
 fzf-down () {
-  fzf --height 50% \
+  fzf \
+    --height '100%' \
     --min-height 20 \
     --input-border \
     --cycle \
@@ -38,7 +46,9 @@ fzf-down () {
     --bind 'alt-up:preview-page-up' \
     --bind 'alt-down:preview-page-down' \
     --bind 'ctrl-s:toggle-sort' \
+    --header 'ctrl-d: Diff' \
     --prompt 'Commits> ' \
+    --preview "$preview" \
     --ansi --no-sort --reverse \
     --print-query --expect=ctrl-d \
     "--history=$fzf_history/fzf-git_show" \

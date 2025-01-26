@@ -2,25 +2,63 @@
 
 if (-not (git rev-parse HEAD 2> $null)) { exit }
 
-$pager = if (Get-Command delta -ErrorAction SilentlyContinue) {
-  'delta --paging=always'
+if (Get-Command delta -ErrorAction SilentlyContinue) {
+  $pager = 'delta --paging=always'
+  $preview_pager = ' | delta'
 } else {
-  'less -R'
+  $pager = 'less -R'
+  $preview_pager = ''
 }
 
-$content_file = New-Temporaryfile
+if (Get-Command -Name pwsh -All) {
+function git_diff () {
+    pwsh -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always $args | $pager"
+  }
+  function git_show () {
+    pwsh -NoLogo -NonInteractive -NoProfile -Command "git show --color=always $args | $pager"
+  }
+  $shell_cmd = 'pwsh.exe'
+} else {
+  function git_diff () {
+    pwsh -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always -- $args | $pager"
+  }
+  function git_show () {
+    pwsh -NoLogo -NonInteractive -NoProfile -Command "git show --color=always -- $args | $pager"
+  }
+  $shell_cmd = 'powershell.exe'
+}
+
+$preview = "
+  git show --color=always {2} $preview_pager |
+    bat -p --color=always
+"
+
+# When calling this from pwsh (powershell 7),
+# the script will inherit the PSModulePath environment variable
+# which causes New-TemporaryFile to fail.
+# This script is intended to run with Windows Powershell so
+# the alternative is to call the windows API directly.
+try {
+  # Ensure that New-Temporaryfile is available
+  Import-Module Microsoft.PowerShell.Utility
+  $content_file = New-Temporaryfile
+}
+catch {
+  $content_file = Get-Item ([System.IO.Path]::GetTempFilename())
+}
+
 $out = ''
-$shas = ''
+$shas = @()
 $q = ''
 $k = ''
 
-$dirsep = if ($IsWindows -or ($env:OS -eq 'Windows_NT')) { '\' } else { '/' }
+# $dirsep = if ($IsWindows -or ($env:OS -eq 'Windows_NT')) { '\' } else { '/' }
 $fzf_history = if ($env:FZF_HIST_DIR) { $env:FZF_HIST_DIR } else { "$HOME/.cache/fzf_history".Replace('\', '/') }
 
 function get_fzf_down_options() {
   $options = @(
     '--query=',
-    '--height', '50%',
+    '--height', '100%',
     '--min-height', '20',
     '--input-border',
     '--cycle',
@@ -38,7 +76,10 @@ function get_fzf_down_options() {
     '--bind', 'alt-down:preview-page-down',
     '--bind', 'ctrl-s:toggle-sort',
     "--history=$fzf_history/fzf-git_show",
+    '--header', 'ctrl-d: Diff',
     '--prompt', 'Commits> ',
+    '--preview', $preview,
+    '--with-shell', "$shell_cmd -NoLogo -NonInteractive -NoProfile -Command",
     '--ansi',
     '--no-sort',
     '--reverse',
@@ -66,21 +107,23 @@ try {
 
     if (-not $shas) { continue; }
     if ($q) { $down_options[0] = "--query=$q" }
+    # NOTE: Using windows powershell causes some issues. We will detect here if pwsh is present
+    # and use it over windows powershell.
     if ($k -eq 'ctrl-d') {
-      $pager = if (Get-Command delta -ErrorAction SilentlyContinue) {
-        git show --color=always @shas | delta --paging=always
-      } else {
-        git show --color=always @shas | less -R
-      }
+      # if (Get-Command -Name pwsh -All) {
+      #   pwsh -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always $shas | $pager"
+      # } else {
+      #   powershell -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always -- $shas | $pager"
+      # }
+      git_diff @shas
     } else {
-      $pager = if (Get-Command delta -ErrorAction SilentlyContinue) {
-        foreach ($sha in $shas) {
-          git show --color=always @sha | delta --paging=always
-        }
-      } else {
-        foreach ($sha in $shas) {
-          git show --color=always @sha | less -R
-        }
+      foreach ($sha in $shas) {
+        # if (Get-Command -Name pwsh -All) {
+        #   pwsh -NoLogo -NonInteractive -NoProfile -Command "git show --color=always $sha | $pager"
+        # } else {
+        #   powershell -NoLogo -NonInteractive -NoProfile -Command "git show --color=always -- $sha | $pager"
+        # }
+        git_show $sha
       }
     }
   }
