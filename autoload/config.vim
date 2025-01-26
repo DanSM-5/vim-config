@@ -1520,6 +1520,10 @@ func! s:DefineCommands () abort
 
   " Use as :Mkdr! for creating the path of a buffer which path doesn't exit
   command! -bar -bang -nargs=* Mkdr call utils#mkdir(<q-args>, <bang>0)
+
+  " Change position of window
+  command! -bar -nargs=0 WToHorizontal :execute "normal! \<C-w>t\<C-w>K"
+  command! -bar -nargs=0 WToVertical :execute "normal! \<C-w>t\<C-w>H"
 endf
 
 func! s:RemapAltUpDownNormal () abort
