@@ -175,6 +175,9 @@ function! fzftxt#open(filename) abort
     let filename = 'note_' . temp_name . '.md'
   else
     let filename = trim(trim(a:filename, '/'), '\')
+    " Remove special characters
+    let filename = substitute(filename, '[()\[\]"?%<>:!^|*~]', '', 'g')
+    let filename = substitute(filename, "[']", '', 'g')
   endif
 
   let filename = txt_dir . '/' . filename
