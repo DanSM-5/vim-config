@@ -16,8 +16,9 @@ else
 fi
 
 preview="
-  git show --color=always {2} $preview_pager |
-    bat -p --color=always
+  grep -o \"[a-f0-9]\{7,\}\" <<< {} |
+    xargs git show --color=always $preview_pager |
+      bat -p --color=always
 "
 
 # Local variables

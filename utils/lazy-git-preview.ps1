@@ -5,17 +5,27 @@ if (-not (git rev-parse HEAD 2> $null)) { exit }
 if (Get-Command delta -ErrorAction SilentlyContinue) {
   $pager = 'delta --paging=always'
   $preview_pager = ' | delta'
+  $has_delta = $true
 } else {
   $pager = 'less -R'
   $preview_pager = ''
+  $has_delta = $false
 }
 
 if (Get-Command -Name pwsh -All) {
-function git_diff () {
-    pwsh -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always $args | $pager"
+  function git_diff () {
+    if ($has_delta) {
+      git diff --color=always @args | delta --paging=always
+    } else {
+      git diff --color=always @args | less -R
+    }
   }
   function git_show () {
-    pwsh -NoLogo -NonInteractive -NoProfile -Command "git show --color=always $args | $pager"
+    if ($has_delta) {
+      git show --color=always @args | delta --paging=always
+    } else {
+      git show --color=always @args | less -R
+    }
   }
   $shell_cmd = 'pwsh.exe'
 } else {
@@ -29,7 +39,10 @@ function git_diff () {
 }
 
 $preview = "
-  git show --color=always {2} $preview_pager |
+  `$hash = if ({} -match `"[a-f0-9]{7,}`") {
+    `$matches[0]
+  } else { @() }
+  git show --color=always `$hash $preview_pager |
     bat -p --color=always
 "
 
