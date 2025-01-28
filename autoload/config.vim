@@ -196,7 +196,8 @@ func! s:SetBufferOptions () abort
   augroup flog
     " autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#run_command("GBrowse %(h)")<CR>
     " autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#Exec("GBrowse <cword>")<CR>
-    autocmd FileType floggraph,git nno <buffer> <leader>gb :<C-U>call flog#Exec('GBrowse ' .. substitute(matchstr(getline(line('.')), '\[\(\w\+\)\]'), '[\[\]]', '', 'g'))<CR>
+    autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#Exec('GBrowse ' .. substitute(matchstr(getline(line('.')), '\[\(\w\+\)\]'), '[\[\]]', '', 'g'))<CR>
+    autocmd FileType git nno <buffer> <leader>gb :<C-U>execute 'GBrowse ' .. expand('<cword>')<CR>
   augroup END
 endf
 
@@ -1239,17 +1240,12 @@ function FzfBuffers(query, fullscreen) abort
   call fzf#vim#buffers(a:query, buff_sorted, spec, a:fullscreen)
 endfunction
 
-function! GetSelectionText()
-  let [begin, end] = [getpos("'<"), getpos("'>")]
-  let lastchar = matchstr(getline(end[1])[end[2]-1 :], '.')
-  if begin[1] ==# end[1]
-    let lines = [getline(begin[1])[begin[2]-1 : end[2]-2]]
-  else
-    let lines = [getline(begin[1])[begin[2]-1 :]]
-          \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
-          \         + [getline(end[1])[: end[2]-2]]
-  endif
-  return join(lines, "\n") . lastchar . (visualmode() ==# 'V' ? "\n" : '')
+function ExecuteRGVisual() abort
+  let text = utils#get_selected_text()
+  let text = split(text, '\n')[0]
+  " Remove trailing space
+  let text = trim(text)
+  exe "RG " . text
 endfunction
 
 func! s:SetFZF () abort
@@ -1350,7 +1346,9 @@ func! s:SetFZF () abort
   nnoremap <C-o>t :<C-u>FTxt<CR>
   " Search word under the cursor (RG)
   nnoremap <leader>fr :execute 'RG '.expand('<cword>')<cr>
-  xnoremap <leader>fr :<C-u>execute 'RG '.GetSelectionText()<cr>
+  " NOTE: We need a wrapper to trim new lines for RG
+  " xnoremap <leader>fr :<C-u>execute 'RG '.GetSelectionText()<cr>
+  xnoremap <leader>fr :<C-u>call ExecuteRGVisual()<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
   " Set usual ctrl-o behavior to double the sequence
