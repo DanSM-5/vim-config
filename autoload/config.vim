@@ -1264,6 +1264,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang -bar GitSearchLog call gitsearch#log(<q-args>, <bang>0)
   command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
   command! -nargs=* -bang -bar GitSearchString call gitsearch#string(<q-args>, <bang>0)
+  command! -nargs=? -bang -bar -complete=file GitSearchFile call gitsearch#file(<q-args>, <bang>0)
 
   command! -nargs=* -bang -complete=customlist,fzftxt#completion FTxt call fzftxt#select(<q-args>, <bang>0)
   command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)

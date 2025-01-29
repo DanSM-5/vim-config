@@ -24,7 +24,7 @@ endif
 
 let g:loaded_git_search_commits = 1
 
-function! s:OpenTempGitCommit(commits) abort
+function! gitsearch#open_commits(commits) abort
   if len(a:commits) == 0
     return
   else
@@ -72,19 +72,9 @@ function! gitsearch#search(query, fullscreen, options) abort
     return
   endif
 
-  let source_command = get(a:options, 'source', 'git log --oneline || true')
-  let reload_command = get(a:options, 'reload', 'git log --oneline || true')
-  let preview = get(a:options, 'preview', 'git show --color=always {1}')
-  let preview_window = get(a:options, 'preview_window', a:fullscreen ? 'up,80%' : 'right,80%')
+  let source = get(a:options, 'source', 'git log --oneline || true')
   let name = get(a:options, 'name', 'git-search-commits')
-
-  " " NOTE: fzf#shellescape seems to break on windows.
-  " " Usual shellescape works fine.
-  " let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-  " let reload_command = printf(a:cmd, '{q}')
-  " let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
-  " let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
-  let copy_cmd = s:GetCopyCmd()
+  let fzf_options = get(a:options, 'options', [])
 
   " NOTE: ctrl-d doesn't work on Windows nvim
 
@@ -95,14 +85,12 @@ function! gitsearch#search(query, fullscreen, options) abort
   " cross platform commands.
 
   let spec = {
-    \   'source': source_command,
-    \   'sinklist': function('s:OpenTempGitCommit'),
+    \   'source': source,
+    \   'sinklist': function('gitsearch#open_commits'),
     \   'options': [
     \     '--prompt', 'GitSearch> ',
-    \     '--header', 'ctrl-r: Interactive search | ctrl-f: Filtering results | ctrl-y: Copy hashes',
     \     '--multi', '--ansi',
     \     '--layout=reverse',
-    \     '--disabled',
     \     '--input-border',
     \     '--cycle',
     \     '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
@@ -117,13 +105,7 @@ function! gitsearch#search(query, fullscreen, options) abort
     \     '--bind', 'alt-d:deselect-all',
     \     '--bind', 'alt-c:clear-query',
     \     '--query', a:query,
-    \     '--bind', 'ctrl-y:execute-silent:'.copy_cmd,
-    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(GitSearch> )+disable-search+reload(' . reload_command . ')+rebind(change,ctrl-f)',
-    \     '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)",
-    \     '--bind', 'change:reload:'.reload_command,
-    \     '--preview-window', preview_window,
-    \     '--preview', preview
-    \   ]
+    \   ] + fzf_options
     \ }
 
     try
@@ -136,34 +118,72 @@ endfunction
 
 function gitsearch#search_common(query, fullscreen, cmd) abort
   let query = a:query
+  let cmd = a:cmd
   if query == '?'
     let query = ''
-    let file = shellescape(expand('%:p'))
-    let cmd = printf(cmd, '--follow %s -- ' . file)
+    let file = shellescape(expand('%'))
+    let cmd = printf(a:cmd, '%s --follow -- ' . file)
   endif
 
   " NOTE: fzf#shellescape seems to break on windows.
   " Usual shellescape works fine.
-  let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-  let reload = printf(a:cmd, '{q}')
-  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
+  let source = printf(cmd, g:is_windows ? shellescape(query) : fzf#shellescape(query))
+  let reload = printf(cmd, '{q}')
+  let copy_cmd = s:GetCopyCmd()
+  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . ' || true'
   let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
-  let options = { 'source': source, 'reload': reload, 'preview': preview, 'preview_window': preview_window }
-  call gitsearch#search(query, a:fullscreen, options)
+  let options = [
+    \     '--prompt', 'GitSearch> ',
+    \     '--disabled',
+    \     '--header', 'ctrl-r: Interactive search | ctrl-f: Filtering results | ctrl-y: Copy hashes',
+    \     '--preview', preview,
+    \     '--preview-window', preview_window,
+    \     '--bind', 'ctrl-y:execute-silent:' . copy_cmd,
+    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(GitSearch> )+disable-search+reload(' . reload . ')+rebind(change,ctrl-f)',
+    \     '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)',
+    \     '--bind', 'change:reload:'.reload,
+    \ ]
+  let search_options = { 'source': source, 'options': options }
+  call gitsearch#search(query, a:fullscreen, search_options)
 endfunction
 
 function! gitsearch#log(query, fullscreen) abort
   let cmd = 'git log --color=always --oneline --branches --all --grep %s || true'
-  silent call gitsearch#search_common(a:query, a:fullscreen, cmd)
+  call gitsearch#search_common(a:query, a:fullscreen, cmd)
 endfunction
 
 function! gitsearch#regex(query, fullscreen) abort
   let cmd = 'git log --color=always --oneline --branches --all -G %s || true'
-  silent call gitsearch#search_common(a:query, a:fullscreen, cmd)
+  call gitsearch#search_common(a:query, a:fullscreen, cmd)
 endfunction
 
 function! gitsearch#string(query, fullscreen) abort
   let cmd = 'git log --color=always --oneline --branches --all -S %s || true'
   silent call gitsearch#search_common(a:query, a:fullscreen, cmd)
+endfunction
+
+function! gitsearch#file(file, fullscreen) abort
+  let file = a:file
+  if file == '?' || file == '' || empty(file)
+    let file = expand('%')
+  endif
+
+  let escaped_file = shellescape(file)
+  let source = printf('git log --color=always --oneline --follow -- %s || true', escaped_file)
+  let preview = 'git show --color=always {1} %s'
+  let preview_cmd = printf(preview, executable('delta') ? '-- ' . escaped_file . ' | delta' : '-- ' . escaped_file)
+  let preview_all = printf(preview, executable('delta') ? ' | delta' : '')
+  let copy_cmd = s:GetCopyCmd()
+  let preview_window = a:fullscreen ? 'up,70%' : 'right,70%'
+  let options = { 'source': source, 'options': [
+        \    '--prompt', 'Commits> ',
+        \    '--bind', 'ctrl-y:execute-silent:' . copy_cmd,
+        \    '--header','File: ' .. file,
+        \    '--preview', preview_cmd,
+        \    '--preview-window', preview_window,
+        \    '--bind', 'ctrl-a:transform:echo '.shellescape('preview:'.preview_all),
+        \    '--bind', 'ctrl-d:transform:echo '.shellescape('preview:'.preview_cmd),
+        \  ] }
+  silent call gitsearch#search('', a:fullscreen, options)
 endfunction
 
