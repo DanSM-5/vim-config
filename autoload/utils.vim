@@ -1,5 +1,6 @@
 " Utility functions.
 " They should avoid having dependencies
+" No function should be called on startup
 
 if exists('g:loaded_utils')
   finish
@@ -56,13 +57,6 @@ function! utils#set_loclist(list)
   wincmd p
   lfirst
   normal! zvzz
-endfunction
-
-function! utils#windows_short_path(path) abort
-  " From fzf.vim
-  " Changes paths like 'C:/Program Files' that have spaces into C:/PROGRA~1
-  " which is nicer as we avoid escaping
-  return split(system('for %A in ("'. a:path .'") do @echo %~sA'), "\n")[0]
 endfunction
 
 function! utils#current_buffer_path () abort
