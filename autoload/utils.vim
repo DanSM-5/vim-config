@@ -42,7 +42,7 @@ function! utils#windows_to_msys_path(path) abort
   return '/'.driveLetter.'/'.pathFromDrive
 endfunction
 
-function! utils#fzf_selected_list(list) abort
+function! utils#fzf_selected_list(fzf_options, fullscreen, list) abort
   if len(a:list) == 0
     return
   endif
@@ -55,7 +55,7 @@ function! utils#fzf_selected_list(list) abort
 
   if isdirectory(selectedList[0])
     " Use first selected directory only!
-    call Fzf_vim_files(selectedList[0], g:fzf_preview_options, 0)
+    call Fzf_vim_files(selectedList[0], a:fzf_options, a:fullscreen)
   elseif !empty(glob(selectedList[0])) " Is file
     " Open multiple files
     for sfile in selectedList

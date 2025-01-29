@@ -791,7 +791,7 @@ function! FzfChangeProject(query, fullscreen) abort
 
   " Notice ctrl-d doesn't work on Windows nvim
   let spec = {
-    \   'sinklist': function('utils#fzf_selected_list'),
+    \   'sinklist': function('utils#fzf_selected_list', [g:fzf_preview_options, a:fullscreen]),
     \   'source': getprojects,
     \   'options': [
     \     '--prompt', 'Projs> ',
