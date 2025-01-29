@@ -61,7 +61,7 @@ function s:GetCopyCmd() abort
   endif
 endfunction
 
-function! gitsearch#search(query, fullscreen, cmd) abort
+function! gitsearch#search(query, fullscreen, options) abort
   let curr_path = getcwd()
   let gitpath = utils#git_path()
 
@@ -72,12 +72,18 @@ function! gitsearch#search(query, fullscreen, cmd) abort
     return
   endif
 
-  " NOTE: fzf#shellescape seems to break on windows.
-  " Usual shellescape works fine.
-  let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-  let reload_command = printf(a:cmd, '{q}')
-  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
-  let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+  let source_command = get(a:options, 'source', 'git log --oneline || true')
+  let reload_command = get(a:options, 'reload', 'git log --oneline || true')
+  let preview = get(a:options, 'preview', 'git show --color=always {1}')
+  let preview_window = get(a:options, 'preview_window', a:fullscreen ? 'up,80%' : 'right,80%')
+  let name = get(a:options, 'name', 'git-search-commits')
+
+  " " NOTE: fzf#shellescape seems to break on windows.
+  " " Usual shellescape works fine.
+  " let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
+  " let reload_command = printf(a:cmd, '{q}')
+  " let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
+  " let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
   let copy_cmd = s:GetCopyCmd()
 
   " NOTE: ctrl-d doesn't work on Windows nvim
@@ -122,42 +128,42 @@ function! gitsearch#search(query, fullscreen, cmd) abort
 
     try
       exec 'cd ' . gitpath
-      call fzf#run(fzf#wrap('git-search-commits', spec, a:fullscreen))
+      call fzf#run(fzf#wrap(name, spec, a:fullscreen))
     finally
       exec 'cd ' . curr_path
     endtry
 endfunction
 
-function! gitsearch#log(query, fullscreen) abort
+function gitsearch#search_common(query, fullscreen, cmd) abort
   let query = a:query
-  let cmd = 'git log --color=always --oneline --branches --all --grep %s || true'
   if query == '?'
     let query = ''
     let file = shellescape(expand('%:p'))
-    let cmd = printf(cmd, '%s -- ' . file)
+    let cmd = printf(cmd, '--follow %s -- ' . file)
   endif
-  silent call gitsearch#search(query, a:fullscreen, cmd)
+
+  " NOTE: fzf#shellescape seems to break on windows.
+  " Usual shellescape works fine.
+  let source_command = printf(a:cmd, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
+  let reload = printf(a:cmd, '{q}')
+  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . '|| true'
+  let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+  let options = { 'source': source, 'reload': reload, 'preview': preview, 'preview_window': preview_window }
+  call gitsearch#search(query, a:fullscreen, options)
+endfunction
+
+function! gitsearch#log(query, fullscreen) abort
+  let cmd = 'git log --color=always --oneline --branches --all --grep %s || true'
+  silent call gitsearch#search_common(a:query, a:fullscreen, cmd)
 endfunction
 
 function! gitsearch#regex(query, fullscreen) abort
-  let query = a:query
   let cmd = 'git log --color=always --oneline --branches --all -G %s || true'
-  if query == '?'
-    let query = ''
-    let file = shellescape(expand('%:p'))
-    let cmd = printf(cmd, '%s -- ' . file)
-  endif
-  silent call gitsearch#search(query, a:fullscreen, cmd)
+  silent call gitsearch#search_common(a:query, a:fullscreen, cmd)
 endfunction
 
 function! gitsearch#string(query, fullscreen) abort
-  let query = a:query
   let cmd = 'git log --color=always --oneline --branches --all -S %s || true'
-  if query == '?'
-    let query = ''
-    let file = shellescape(expand('%:p'))
-    let cmd = printf(cmd, '%s -- ' . file)
-  endif
-  silent call gitsearch#search(query, a:fullscreen, cmd)
+  silent call gitsearch#search_common(a:query, a:fullscreen, cmd)
 endfunction
 
