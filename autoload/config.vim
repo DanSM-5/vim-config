@@ -720,39 +720,6 @@ endf
 "   endif
 " endf
 
-function! s:Fzf_preview_window_opts(spec, fullscreen) abort
-  if a:fullscreen
-    let a:spec.options = a:spec.options + [ '--preview-window', 'up,60%' ]
-  else
-    let a:spec.options = a:spec.options + [ '--preview-window', 'right,60%' ]
-  endif
-
-  return a:spec
-endf
-
-function! Fzf_vim_files(query, options, fullscreen) abort
-  let spec = fzf#vim#with_preview({ 'options': [] }, a:fullscreen)
-  let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
-  " Append options after to get better keybindings for 'ctrl-/'
-  let spec.options = spec.options + a:options
-
-  try
-    call fzf#vim#files(a:query, spec, a:fullscreen)
-  finally
-  endtry
-endfunction
-
-function! s:Fzf_vim_gitfiles(query, fullscreen) abort
-  let placeholder = a:query == '?' ? '{2..}' : '{}'
-  let options = g:fzf_preview_options + [
-        \ '--layout=reverse',
-        \ '--preview', 'bat -pp --color=always --style=numbers ' . placeholder
-        \ ]
-  let spec = a:query == '?' ? { 'placeholder': '', 'options': options } : { 'options': options }
-  let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
-  call fzf#vim#gitfiles(a:query, spec, a:fullscreen)
-endfunction
-
 function! FzfChangeProject(query, fullscreen) abort
   let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
   let preview = user_conf_path . '/utils/fzf-preview.sh {}'
@@ -825,7 +792,7 @@ function! s:FzfRgWindows_preview(spec, fullscreen) abort
     let options = g:fzf_preview_options
   endif
 
-  let spec = s:Fzf_preview_window_opts({ 'options': options }, a:fullscreen)
+  let spec = utils#fzf_set_preview_window({ 'options': options }, a:fullscreen)
   let a:spec.options = a:spec.options + spec.options
 
   return a:spec
@@ -866,7 +833,7 @@ function! LiveGrep(query, fullscreen)
       let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
     else
       let spec = fzf#vim#with_preview(spec)
-      let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
+      let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
       let spec.options = spec.options + s:fzf_bind_options
     endif
 
@@ -913,7 +880,7 @@ function RipgrepBase(command_fmt, query, prompt, fullscreen, options) abort
     let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
   else
     let spec = fzf#vim#with_preview(spec)
-    let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
+    let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
     let spec.options = spec.options + s:fzf_bind_options
   endif
 
@@ -970,7 +937,7 @@ function! RipgrepFuzzy(query, fullscreen)
     let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
   else
     let spec = fzf#vim#with_preview(spec)
-    let spec = s:Fzf_preview_window_opts(spec, a:fullscreen)
+    let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
     let spec.options = spec.options + s:fzf_bind_options
   endif
 
@@ -1306,7 +1273,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang RgHistory call RipgrepHistory(<q-args>, <bang>0)
 
   command! -bang -nargs=? -complete=dir Files
-    \ call Fzf_vim_files(<q-args>, g:fzf_preview_options, <bang>0)
+    \ call utils#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
   command! -bar -bang -nargs=? -complete=buffer Buffers call FzfBuffers(<q-args>, <bang>0)
 
   " NOTE: Under gitbash previews doesn't work due to how fzf.vim
@@ -1315,23 +1282,23 @@ func! s:SetFZF () abort
   " and it may get stuck as in git bash if called before fzf#vim#with_preview
   if g:is_gitbash || (!has('nvim') && g:is_windows)
     command! -bang -nargs=? GFiles
-      \ call s:Fzf_vim_gitfiles(<q-args>, <bang>0)
+      \ call utils#fzf_gitbash_files(<q-args>, g:fzf_preview_options, <bang>0)
   endif
 
   " fzf options with custom preview
   if g:is_windows || g:is_termux
     command! -bang -nargs=? -complete=dir FzfFiles
-      \ call Fzf_vim_files(<q-args>, g:fzf_preview_options, <bang>0)
+      \ call utils#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call Fzf_vim_files(utils#git_path(), g:fzf_preview_options, <bang>0)
+      \ call utils#fzf_files(utils#git_path(), g:fzf_preview_options, <bang>0)
 
   " fzf options that only include common bindings
   else
 
     command! -bang -nargs=? -complete=dir FzfFiles
-      \ call Fzf_vim_files(<q-args>, s:fzf_bind_options, <bang>0)
+      \ call utils#fzf_files(<q-args>, s:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call Fzf_vim_files(utils#git_path(), s:fzf_bind_options, <bang>0)
+      \ call utils#fzf_files(utils#git_path(), s:fzf_bind_options, <bang>0)
   endif
 
 
