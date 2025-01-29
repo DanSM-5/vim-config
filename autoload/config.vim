@@ -1658,35 +1658,33 @@ func s:SetUndodir () abort
 endf
 
 function! config#CurrentOS ()
-  if has('win32')
-    set shell=cmd
-    set shellcmdflag=/c
-  endif
-
-  let os = substitute(system('uname'), '\n', '', '')
   let known_os = 'unknown'
 
   " Remove annoying error log for MSYS bash and zsh on start (uname not
   " available)
   " echo ''
-  if has("gui_mac") || os ==? 'Darwin'
+  if has("gui_mac") || has('mac') || has('macunix')
     let g:is_mac = 1
     let known_os = s:mac
   " TODO: Fix windows falling in this detection
   " Gitbash and Msys zsh does not report ming on first run
-  elseif os =~? 'cygwin' || os =~? 'MINGW' || os =~? 'MSYS' || $IS_GITBASH == 'true'
+  elseif $MSYSTEM =~? 'cygwin' || $MSYSTEM =~? 'MINGW' || $MSYSTEM =~? 'MSYS' || $IS_GITBASH == 'true'
     if $IS_POWERSHELL == 'true' || $IS_CMD == 'true'
       let g:is_gitbash = 0
     else
       let g:is_gitbash = 1
     endif
 
+    set shell=cmd
+    set shellcmdflag=/c
     let g:is_windows = 1
     let known_os = s:windows
-  elseif has('win32') || has("gui_win32")
+  elseif has('win32') || has("gui_win32") || $OS == 'Windows_NT'
+    set shell=cmd
+    set shellcmdflag=/c
     let g:is_windows = 1
     let known_os = s:windows
-  elseif os ==? 'Linux'
+  elseif has('linux')
     let known_os = s:linux
     let g:is_linux = 1
     if $IS_FROM_CONTAINER == 'true'
@@ -1701,7 +1699,7 @@ function! config#CurrentOS ()
     endif
   else
     exec "normal \<Esc>"
-    throw "unknown OS: " . os
+    throw "unknown OS: " . substitute(system('uname'), '\n', '', 'g')
   endif
 
   return known_os
