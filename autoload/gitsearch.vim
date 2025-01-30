@@ -176,7 +176,7 @@ function! gitsearch#file(file, fullscreen) abort
   let copy_cmd = s:GetCopyCmd()
   let preview_window = a:fullscreen ? 'up,70%' : 'right,70%'
   let options = { 'source': source, 'options': [
-        \    '--prompt', 'Commits> ',
+        \    '--prompt', 'File History> ',
         \    '--bind', 'ctrl-y:execute-silent:' . copy_cmd,
         \    '--header','File: ' .. file,
         \    '--preview', preview_cmd,
