@@ -1,5 +1,17 @@
 return {
   setup = function()
+    local aerial_group = vim.api.nvim_create_augroup('aerial', { clear = true })
+    vim.api.nvim_create_autocmd({ 'FileType' }, {
+      group = aerial_group,
+      pattern = 'aerial',
+      ---Callback for aerial autocmd
+      ---@param opts { buf: integer } Options from autocmd
+      callback = function (opts)
+        vim.keymap.set('n', '<leader>ss', '<cmd>AerialToggle<cr>', { desc = '[Aerial] Toggle window', noremap = true, buffer = opts.buf })
+      end,
+      desc = '[Aerial] Add keymaps to aerial buffer',
+    })
+
     require('aerial').setup({
       on_attach = function(bufnr)
         -- Old mapping setup
