@@ -151,7 +151,7 @@ function! utils#fzf_selected_list(fzf_options, fullscreen, list) abort
 
   if isdirectory(selectedList[0])
     " Use first selected directory only!
-    call Fzf_vim_files(selectedList[0], a:fzf_options, a:fullscreen)
+    call utils#fzf_files(selectedList[0], a:fzf_options, a:fullscreen)
   elseif !empty(glob(selectedList[0])) " Is file
     " Open multiple files
     for sfile in selectedList
