@@ -6,7 +6,7 @@ autoload/plug.vim
 plugged
 
 # Special files that are device specific
-**/specific.*
+**/local.*
 
 # Do not track lazy-lock
 lazy-lock.json
