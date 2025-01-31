@@ -39,33 +39,6 @@ local function error(msg, opts)
   )
 end
 
-
----@return string?
-local function head(file)
-  local f = io.open(file)
-  if f then
-    local ret = f:read()
-    f:close()
-    return ret
-  end
-end
-
----@return {branch: string, hash:string}?
-local function git_info(dir)
-  local line = head(dir .. "/.git/HEAD")
-  if line then
-    ---@type string, string
-    local ref, branch = line:match("ref: (refs/heads/(.*))")
-
-    if ref then
-      return {
-        branch = branch,
-        hash = head(dir .. "/.git/" .. ref),
-      }
-    end
-  end
-end
-
 ---@param opts? config.FloatOptions
 ---@return config.Float
 local function float(opts)
