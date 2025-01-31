@@ -11,6 +11,7 @@ return {
   },
   {
     'mawkler/refjump.nvim',
+    commit = '95da9e8866fca4bae6bebfa66b202889997d7db1',
     keys = { ']r', '[r' }, -- Uncomment to lazy load
     config = function ()
       require('config.nvim_refjump').setup()
