@@ -1,6 +1,9 @@
 -- Collection of utility functions
 -- There must not be imports on the top level of this script
 
+-- luajit windows detection
+-- local is_win = jit.os:find('Windows')
+
 ---Concatenates 2 arrays
 ---@generic T
 ---@param t1 T[]
@@ -19,29 +22,13 @@ end
 ---@return string[] List of strings after split
 local function split(inputstr, sep)
   if sep == nil then
-    sep = "%s"
+    sep = '%s'
   end
   local t = {}
   for str in string.gmatch(inputstr, '([^'..sep..']+)') do
     table.insert(t, str)
   end
   return t
-end
-
----Echo a message using a specific highlight group
----Defaults to WarningMsg highlight group
---- Usage:
---- echo('WarningMsg', 'Some message')
----@param hlgroup string Highlight group to use. See `:h hi`.
----@param msg string Message to echo
-local function echo(hlgroup, msg)
-  local group = hlgroup
-  if not group then
-    group = 'WarningMsg'
-  end
-  vim.cmd('echohl ' .. group)
-  vim.cmd('echo "' .. msg .. '"')
-  vim.cmd('echohl None')
 end
 
 ---Shallow copy a table
@@ -54,6 +41,55 @@ local function shallow_clone(t)
     t2[k] = v
   end
   return t2
+end
+
+---@generic T
+---@param list T[]
+---@param add T[]
+---@return T[]
+local function extend(list, add)
+  local idx = {}
+  for _, v in ipairs(list) do
+    idx[v] = v
+  end
+  for _, a in ipairs(add) do
+    if not idx[a] then
+      table.insert(list, a)
+    end
+  end
+  return list
+end
+
+local function can_merge(v)
+  return type(v) == 'table' and (vim.tbl_isempty(v) or not M.is_list(v))
+end
+
+--- Merges the values similar to vim.tbl_deep_extend with the **force** behavior,
+--- but the values can be any type, in which case they override the values on the left.
+--- Values will me merged in-place in the first left-most table. If you want the result to be in
+--- a new table, then simply pass an empty table as the first argument `vim.merge({}, ...)`
+--- Supports clearing values by setting a key to `vim.NIL`
+---@generic T
+---@param ... T
+---@return T
+local function merge(...)
+  local ret = select(1, ...)
+  if ret == vim.NIL then
+    ret = nil
+  end
+  for i = 2, select('#', ...) do
+    local value = select(i, ...)
+    if can_merge(ret) and can_merge(value) then
+      for k, v in pairs(value) do
+        ret[k] = merge(ret[k], v)
+      end
+    elseif value == vim.NIL then
+      ret = nil
+    elseif value ~= nil then
+      ret = value
+    end
+  end
+  return ret
 end
 
 ---Find the root directory or a given file
@@ -70,11 +106,218 @@ local function find_root(lookFor)
   return root_dir
 end
 
+--- Creates a weak reference to an object.
+--- Calling the returned function will return the object if it has not been garbage collected.
+---@generic T: table
+---@param obj T
+---@return T|fun():T?
+local function weak(obj)
+  local weak_ref = { _obj = obj }
+  ---@return table<any, any>
+  local function get()
+    local ret = rawget(weak_ref, '_obj')
+    return ret == nil and error('Object has been garbage collected', 2) or ret
+  end
+  local mt = {
+    __mode = 'v',
+    __call = function(t)
+      return rawget(t, '_obj')
+    end,
+    __index = function(_, k)
+      return get()[k]
+    end,
+    __newindex = function(_, k, v)
+      get()[k] = v
+    end,
+    __pairs = function()
+      return pairs(get())
+    end,
+  }
+  return setmetatable(weak_ref, mt)
+end
+
+---Detect if file exists
+---@param file string Path to file
+---@return boolean Whether the path exist or not
+local function file_exists(file)
+  return (vim.uv or vim.loop).fs_stat(file) ~= nil
+end
+
+---Attempt to open a uri
+---@param opts? { system?: boolean }
+local function open(uri, opts)
+  opts = opts or {}
+  if not opts.system and file_exists(uri) then
+    return require('utils.nvim').float({ style = '', file = uri })
+  end
+  local Config = require('lazy.core.config')
+  local cmd
+  if not opts.system and Config.options.ui.browser then
+    cmd = { Config.options.ui.browser, uri }
+  elseif vim.fn.has('win32') == 1 then
+    cmd = { 'explorer', uri }
+  elseif vim.fn.has('macunix') == 1 then
+    cmd = { 'open', uri }
+  else
+    if vim.fn.executable('xdg-open') == 1 then
+      cmd = { 'xdg-open', uri }
+    elseif vim.fn.executable('wslview') == 1 then
+      cmd = { 'wslview', uri }
+    else
+      cmd = { 'open', uri }
+    end
+  end
+
+  local ret = vim.fn.jobstart(cmd, { detach = true })
+  if ret <= 0 then
+    local msg = {
+      'Failed to open uri',
+      ret,
+      vim.inspect(cmd),
+    }
+    vim.notify(table.concat(msg, '\n'), vim.log.levels.ERROR)
+  end
+end
+
+local function read_file(file)
+  local fd = assert(io.open(file, 'r'))
+  ---@type string
+  local data = fd:read('*a')
+  fd:close()
+  return data
+end
+
+---Add contents to file
+---@param file string Path to file to write
+---@param contents string Contents to write
+local function write_file(file, contents)
+  local fd = assert(io.open(file, 'w+'))
+  fd:write(contents)
+  fd:close()
+end
+
+---@generic F: fun()
+---@param ms number
+---@param fn F
+---@return F
+local function throttle(ms, fn)
+  ---@type Async
+  local async
+  local pending = false
+
+  return function()
+    if async and async:running() then
+      pending = true
+      return
+    end
+    ---@async
+    async = require('utils.async').new(function()
+      repeat
+        pending = false
+        fn()
+        async:sleep(ms)
+
+      until not pending
+    end)
+  end
+end
+
+-- Fast implementation to check if a table is a list
+---@param t table
+local function is_list(t)
+  local i = 0
+  ---@diagnostic disable-next-line: no-unknown
+  for _ in pairs(t) do
+    i = i + 1
+    if t[i] == nil then
+      return false
+    end
+  end
+  return true
+end
+
+---@generic T
+---@param list T[]
+---@param fn fun(v: T):boolean?
+---@return T[]
+local function filter(fn, list)
+  local ret = {}
+  for _, v in ipairs(list) do
+    if fn(v) then
+      table.insert(ret, v)
+    end
+  end
+  return ret
+end
+
+---Execute a delegate function for each element in a table
+---@generic V
+---@param t table<string, V>
+---@param fn fun(key: string, value: V)
+---@param opts? {case_sensitive?: boolean}
+local function foreach(t, fn, opts)
+  ---@type string[]
+  local keys = vim.tbl_keys(t)
+  pcall(table.sort, keys, function(a, b)
+    if opts and opts.case_sensitive then
+      return a < b
+    end
+    return a:lower() < b:lower()
+  end)
+  for _, key in ipairs(keys) do
+    fn(key, t[key])
+  end
+end
+
+---@param t table
+---@param key string|string[]
+---@return any
+local function key_get(t, key)
+  local path = type(key) == 'table' and key or split(key --[[@as string]], '.')
+  local value = t
+  for _, k in ipairs(path) do
+    if type(value) ~= 'table' then
+      return value
+    end
+    value = value[k]
+  end
+  return value
+end
+
+---@param t table
+---@param key string|string[]
+---@param value any
+local function key_set(t, key, value)
+  local path = type(key) == 'table' and key or split(key --[[@as string]], '.')
+  local last = t
+  for i = 1, #path - 1 do
+    local k = path[i]
+    if type(last[k]) ~= 'table' then
+      last[k] = {}
+    end
+    last = last[k]
+  end
+  last[path[#path]] = value
+end
+
 return {
   find_root = find_root,
   concat = array_concat,
   split = split,
-  echo = echo,
   shallow_clone = shallow_clone,
+  extend = extend,
+  merge = merge,
+  foreach = foreach,
+  filter = filter,
+  weak = weak,
+  file_exists = file_exists,
+  open = open,
+  read_file = read_file,
+  write_file = write_file,
+  is_list = is_list,
+  key_set = key_set,
+  key_get = key_get,
+  throttle = throttle,
+  float = float,
 }
 
