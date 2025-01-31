@@ -12,7 +12,7 @@
 " - fzf
 " - fzf.vim
 " - gitsearch_copy.ps1 for coping (windows only)
-" 
+"
 " Recommended Commands:
 " command! -nargs=* -bang -bar GitSearchLog call gitsearch#log(<q-args>, <bang>0)
 " command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
@@ -23,6 +23,7 @@ if exists('g:loaded_git_search_commits')
 endif
 
 let g:loaded_git_search_commits = 1
+let s:copy_helper = exists('g:gitsearch_scripts') ? g:gitsearch_scripts : expand('<sfile>:p:h:h') . '/utils'
 
 function! gitsearch#open_commits(commits) abort
   if len(a:commits) == 0
@@ -48,16 +49,16 @@ function s:GetCopyCmd() abort
   if has('gui_win32') || has('win32')
     " NOTE: Manually point to the location of the helper script
     " Or return the specific command to copy
-    let gitsearch_copy = substitute($USERPROFILE, '\\', '/', 'g') . (has('nvim') ? '/AppData/Local/nvim' : '/vimfiles') . '/utils/gitsearch_copy.ps1'
+    let gitsearch_copy = substitute(s:copy_helper, '\\', '/', 'g') . '/gitsearch_copy.ps1'
     return 'powershell -NoLogo -NonInteractive -NoProfile -File ' . shellescape(gitsearch_copy) . ' "{+f}"'
   elseif has("gui_mac") || os ==? 'Darwin'
     return "cat {+f} | awk '{ print $1 }' | pbcopy"
   elseif !empty($WAYLAND_DISPLAY) && executable('wl-copy')
-    return "cat {+f} | awk '{ print $1 }' | wl-copy --foreground --type text/plain"                             
-  elseif !empty($DISPLAY) && executable('xsel')                                     
-    return "cat {+f} | awk '{ print $1 }' | xsel -i -b"                                                         
-  elseif !empty($DISPLAY) && executable('xclip')                                    
-    return "cat {+f} | awk '{ print $1 }' | xclip -i -selection clipboard"                                      
+    return "cat {+f} | awk '{ print $1 }' | wl-copy --foreground --type text/plain"
+  elseif !empty($DISPLAY) && executable('xsel')
+    return "cat {+f} | awk '{ print $1 }' | xsel -i -b"
+  elseif !empty($DISPLAY) && executable('xclip')
+    return "cat {+f} | awk '{ print $1 }' | xclip -i -selection clipboard"
   endif
 endfunction
 
@@ -171,19 +172,25 @@ function! gitsearch#file(file, fullscreen) abort
   let escaped_file = shellescape(file)
   let source = printf('git log --color=always --oneline --follow -- %s || true', escaped_file)
   let preview = 'git show --color=always {1} %s'
-  let preview_cmd = printf(preview, executable('delta') ? '-- ' . escaped_file . ' | delta' : '-- ' . escaped_file)
+  let preview_cmd = printf(preview, executable('delta') ? '--follow -- ' . escaped_file . ' | delta' : '--follow -- ' . escaped_file)
   let preview_all = printf(preview, executable('delta') ? ' | delta' : '')
   let copy_cmd = s:GetCopyCmd()
   let preview_window = a:fullscreen ? 'up,70%' : 'right,70%'
+  let echo = has('win32') ? 'echo.exe' : 'echo'
   let options = { 'source': source, 'options': [
         \    '--prompt', 'File History> ',
         \    '--bind', 'ctrl-y:execute-silent:' . copy_cmd,
         \    '--header','File: ' .. file,
         \    '--preview', preview_cmd,
         \    '--preview-window', preview_window,
-        \    '--bind', 'ctrl-a:transform:echo '.shellescape('preview:'.preview_all),
-        \    '--bind', 'ctrl-d:transform:echo '.shellescape('preview:'.preview_cmd),
+        \    '--bind', 'ctrl-a:transform:'.echo.' '.shellescape('preview:'.preview_all),
+        \    '--bind', 'ctrl-f:transform:'.echo.' '.shellescape('preview:'.preview_cmd),
         \  ] }
+
+  " Fix for transform to work
+  if has('win32')
+    let options.options = options.options + ['--with-shell', 'powershell -NoLogo -NonInteractive -NoProfile -Command']
+  endif
   silent call gitsearch#search('', a:fullscreen, options)
 endfunction
 
