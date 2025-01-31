@@ -60,6 +60,9 @@ catch {
   $content_file = Get-Item ([System.IO.Path]::GetTempFilename())
 }
 
+# Clipboard command
+$copy = 'Get-Content {+f} | ForEach-Object { ($_ -Split "\s+")[1] } | Set-Clipboard'
+
 $out = ''
 $shas = @()
 $q = ''
@@ -85,6 +88,7 @@ function get_fzf_down_options() {
     '--bind', 'ctrl-d:deselect-all',
     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
     '--bind', 'ctrl-^:toggle-preview',
+    '--bind', "ctrl-y:execute-silent:$copy",
     '--bind', 'alt-up:preview-page-up',
     '--bind', 'alt-down:preview-page-down',
     '--bind', 'ctrl-s:toggle-sort',

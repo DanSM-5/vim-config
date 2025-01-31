@@ -21,6 +21,24 @@ preview="
       bat -p --color=always
 "
 
+# Find clipboard utility
+copy='true'
+# NOTE: Will probably will never run on windows but
+# better safe than sorry
+if [ "$OS" = 'Windows_NT' ]; then
+  # Gitbash
+  copy="cat '{+f}' | awk '{ print \$1 }' | clip.exe"
+elif [ "$OSTYPE" = 'darwin' ] || command -v 'pbcopy' &>/dev/null; then
+  copy="cat {+f} | awk '{ print \$1 }' | pbcopy"
+# Assume linux if above didn't match
+elif [ -n "$WAYLAND_DISPLAY" ] && command -v 'wl-copy' &>/dev/null; then
+  copy="cat {+f} | awk '{ print \$1 }' | wl-copy --foreground --type text/plain"
+elif [ -n "$DISPLAY" ] && command -v 'xsel' &>/dev/null; then
+  copy="cat {+f} | awk '{ print \$1 }' | xsel -i -b"
+elif [ -n "$DISPLAY" ] && command -v 'xclip' &>/dev/null; then
+  copy="cat {+f} | awk '{ print \$1 }' | xclip -i -selection clipboard"
+fi
+
 # Local variables
 out shas sha q k
 
@@ -44,6 +62,7 @@ fzf-down () {
     --bind 'ctrl-d:deselect-all' \
     --bind 'ctrl-/:change-preview-window(down|hidden|)' \
     --bind 'ctrl-^:toggle-preview' \
+    --bind "ctrl-y:execute-silent:$copy" \
     --bind 'alt-up:preview-page-up' \
     --bind 'alt-down:preview-page-down' \
     --bind 'ctrl-s:toggle-sort' \
