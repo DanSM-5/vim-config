@@ -56,9 +56,9 @@ func! s:SetConfigurationsBefore () abort
   silent call s:DefineCommands()
 
   " Paste with register bindings
-  nmap cm  <Plug>ReplaceWithRegisterOperator
-  nmap cmm <Plug>ReplaceWithRegisterLine
-  xmap cm  <Plug>ReplaceWithRegisterVisual
+  nmap cr  <Plug>ReplaceWithRegisterOperator
+  nmap crr <Plug>ReplaceWithRegisterLine
+  xmap cr  <Plug>ReplaceWithRegisterVisual
 
   " Jump conflict bindings
   nmap [n <Plug>(jumpconflict-context-previous)
@@ -370,11 +370,11 @@ func! s:Set_user_keybindings () abort
   if exists(':Repeatable')
     " Duplicate and comment current line
     if has('nvim')
-      Repeatable nmap yd :<C-U>t.<cr>kgccj
-      Repeatable nmap yD :<C-U>t.<cr>gcck
+      Repeatable nmap yc :<C-U>t.<cr>kgccj
+      Repeatable nmap yC :<C-U>t.<cr>gcck
     else
-      Repeatable nmap yd yygccp
-      Repeatable nmap yD yypgcck
+      Repeatable nmap yc yygccp
+      Repeatable nmap yC yypgcck
     endif
   endif
 
@@ -443,6 +443,10 @@ func! s:Set_user_keybindings () abort
   elseif g:is_mac && !has('nvim')
     execute "set <A-p>=π"
   endif
+
+  " Change anonymous register with unnamed plus register
+  nnoremap <silent> yd :<C-u>silent call utils#register_move('+', '"')<cr>
+  nnoremap <silent> yD :<C-u>silent call utils#register_move('"', '+')<cr>
 endf
 
 func! s:Set_os_specific_before () abort

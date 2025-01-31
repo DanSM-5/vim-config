@@ -203,3 +203,7 @@ function! utils#fzf_gitbash_files(query, preview_options, fullscreen) abort
   call fzf#vim#gitfiles(a:query, spec, a:fullscreen)
 endfunction
 
+function utils#register_move(destination, source) abort
+  call setreg(a:destination, getreg(a:source))
+endfunction
+
