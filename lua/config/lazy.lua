@@ -81,7 +81,7 @@ require("lazy").setup({
             script_cmd = { script_preview .. '.sh' }
           end
 
-          require('lazy.util').float_term(script_cmd, {
+          require('utils.nvim').float_term(script_cmd, {
             cwd = plugin.dir,
           })
         end,
