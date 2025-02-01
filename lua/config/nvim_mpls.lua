@@ -53,10 +53,25 @@ live preview of markdown files in your browser while you edit them in your favor
 
       if #opts.fargs == 1 then
         local buff_name = opts.fargs[1]
+
+        -- NOTE: Current logic checks if the path exists
+        -- and opens the buffer with edit.
+        -- Should `vim.fn.bufadd(buff_name)` be used instead?
+
         -- Open if not already
-        if vim.fn.bufexists(buff_name) ~= 1 then
+        if (vim.uv or vim.loop).fs_stat(buff_name) then
           vim.cmd.edit(buff_name)
+        else
+          -- file does not exist, stop here
+          return
         end
+
+        -- checks if the buffer is not open yet. If so
+        -- open it with edit.
+        -- if vim.fn.bufexists(buff_name) ~= 1 then
+        --   vim.cmd.edit(buff_name)
+        -- end
+
         -- Get bufnr
         bufnr = vim.fn.bufnr(opts.fargs[1])
       end
