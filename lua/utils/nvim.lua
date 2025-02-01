@@ -48,7 +48,7 @@ end
 ---@class config.CmdOptions: config.FloatOptions
 ---@field cwd? string
 ---@field env? table<string,string>
----@field float? LazyFloatOptions
+---@field float? config.FloatOptions
 
 -- Opens a floating terminal (interactive by default)
 ---@param cmd? string[]|string
@@ -83,7 +83,7 @@ end
 ---@param opts? config.CmdOptions|{filetype?:string}
 local function float_cmd(cmd, opts)
   opts = opts or {}
-  local Process = require("lazy.manage.process")
+  local Process = require('utils.process')
   local lines, code = Process.exec(cmd, { cwd = opts.cwd })
   if code ~= 0 then
     error({

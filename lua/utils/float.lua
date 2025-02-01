@@ -3,12 +3,12 @@
 -- local ViewConfig = require("lazy.view.config")
 
 -- code stolen from lazy.view.float
-local utils = require('utils.nvim')
 
 ---@class config.FloatUI
 ---@field size { width: integer; height: integer }
 ---@field border? 'none' | 'single' | 'double' | 'rounded' | 'solid' | 'shadow'
 ---@field backdrop? number
+---@field throttle number
 
 ---@class config.FloatConfig
 ---@field ns integer
@@ -29,12 +29,26 @@ local utils = require('utils.nvim')
 ---@field ft? string
 ---@field noautocmd? boolean
 ---@field backdrop? number
+---@field throttle? number
+
+---@class config.WinOpts: vim.api.keyset.win_config
+---@field width number
+---@field height number
+---@field row number
+---@field col number
+---@field relative string -- 'editor'
+---@field style? '' | 'minimal'
+---@field border? 'none' | 'single' | 'double' | 'rounded' | 'solid' | 'shadow'
+---@field zindex? number
+---@field noautocmd? boolean
+---@field title? string
+---@field title_pos? 'center' | 'left' | 'right'
 
 ---@class config.Float
 ---@field buf number
 ---@field win number
 ---@field opts config.FloatOptions
----@field win_opts LazyWinOpts
+---@field win_opts config.WinOpts
 ---@field backdrop_buf number
 ---@field backdrop_win number
 ---@field id number
@@ -43,11 +57,12 @@ local M = {}
 
 ---@type config.FloatConfig
 local config = {
-  ns = vim.api.nvim_create_namespace('lazy'),
+  ns = vim.api.nvim_create_namespace('config.float'),
   ui = {
     size = { width = 0.8, height = 0.8 },
     border = 'none',
     backdrop = 60,
+    throttle = 1000 / 30,
   },
   keys = {
     close = 'q',
@@ -74,7 +89,8 @@ end
 
 ---@param opts? config.FloatOptions
 function M:init(opts)
-  require('lazy.view.colors').setup()
+  require('utils.float_colors').setup()
+
   self.id = next_id()
   self.opts = vim.tbl_deep_extend('force', {
     size = config.ui.size,
@@ -84,11 +100,32 @@ function M:init(opts)
     zindex = 50,
   }, opts or {})
 
-  ---@class config.WinOpts
-  ---@field width number
-  ---@field height number
-  ---@field row number
-  ---@field col number
+  -- TODO: Analyze render module on lazy.nvim
+  -- and decide if we should adapt it
+  -- self.render = Render.new(self)
+  local update = self.update
+  self.update = require('utils.stdlib').throttle(self.opts.throttle or config.ui.throttle, function()
+    update(self)
+  end)
+
+  for _, pattern in ipairs({ 'FloatResized' }) do
+    self:on({ 'User' }, function()
+      if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
+        self:update()
+        return
+      end
+
+      -- Remove autocmd :h nvim_create_autocmd
+      return true
+    end, { pattern = pattern })
+  end
+
+  -- -@class config.WinOpts
+  -- -@field width number
+  -- -@field height number
+  -- -@field row number
+  -- -@field col number
+
   self.win_opts = {
     relative = 'editor',
     style = self.opts.style ~= '' and self.opts.style or nil,
@@ -97,7 +134,7 @@ function M:init(opts)
     noautocmd = self.opts.noautocmd,
     title = self.opts.title,
     title_pos = self.opts.title and self.opts.title_pos or nil,
-  }
+  } --[[@as unknown]]
   self:mount()
   self:on('VimEnter', function()
     vim.schedule(function()
@@ -107,6 +144,43 @@ function M:init(opts)
     end)
   end, { buffer = false })
   return self
+end
+
+function M:update()
+  if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
+    -- TODO: See Init function todo
+    -- self.render:update()
+    vim.cmd.redraw()
+  end
+end
+
+---@param events string|string[]
+---@param fn fun(self:config.Float, event:{buf:number}):boolean?
+---@param opts? vim.api.keyset.create_autocmd | {buffer: false, win?:boolean}
+function M:create_autocmd(events, fn, opts)
+  opts = opts or {}
+  if opts.win then
+    opts.pattern = self.win .. ''
+    opts.win = nil
+  elseif opts.buffer == nil then
+    opts.buffer = self.buf
+  elseif opts.buffer == false then
+    opts.buffer = nil
+  end
+  if opts.pattern then
+    opts.buffer = nil
+  end
+  local _self = require('utils.stdlib').weak(self)
+  opts.callback = function(e)
+    local this = _self()
+    if not this then
+      -- delete the autocmd
+      return true
+    end
+    return fn(this, e)
+  end
+  opts.group = self:augroup()
+  vim.api.nvim_create_autocmd(events, opts)
 end
 
 function M:layout()
@@ -159,6 +233,9 @@ function M:mount()
 
   local normal, has_bg
   if vim.fn.has('nvim-0.9.0') == 0 then
+    -- Disable diagnostic as this is to have a fallback
+    -- for old neovim versions
+    ---@diagnostic disable-next-line: deprecated
     normal = vim.api.nvim_get_hl_by_name('Normal', true)
     has_bg = normal and normal.background ~= nil
   else
@@ -178,11 +255,12 @@ function M:mount()
       focusable = false,
       zindex = self.opts.zindex - 1,
     })
-    vim.api.nvim_set_hl(0, 'LazyBackdrop', { bg = "#000000", default = true })
-    utils.wo(self.backdrop_win, 'winhighlight', 'Normal:LazyBackdrop')
+    vim.api.nvim_set_hl(0, 'FloatingBackdrop', { bg = "#000000", default = true })
+    local utils = require('utils.nvim')
+    utils.wo(self.backdrop_win, 'winhighlight', 'Normal:FloatingBackdrop')
     utils.wo(self.backdrop_win, 'winblend', self.opts.backdrop)
     vim.bo[self.backdrop_buf].buftype = 'nofile'
-    vim.bo[self.backdrop_buf].filetype = 'lazy_backdrop'
+    vim.bo[self.backdrop_buf].filetype = 'float_backdrop'
   end
 
   self:layout()
@@ -199,16 +277,17 @@ function M:mount()
     vim.bo[self.buf].buftype = 'nofile'
   end
   if vim.bo[self.buf].filetype == '' then
-    vim.bo[self.buf].filetype = self.opts.ft or 'lazy'
+    vim.bo[self.buf].filetype = self.opts.ft or 'floating'
   end
 
   local function opts()
     vim.bo[self.buf].bufhidden = self.opts.persistent and 'hide' or 'wipe'
+    local utils = require('utils.nvim')
     utils.wo(self.win, 'conceallevel', 3)
     utils.wo(self.win, 'foldenable', false)
     utils.wo(self.win, 'spell', false)
     utils.wo(self.win, 'wrap', true)
-    utils.wo(self.win, 'winhighlight', 'Normal:LazyNormal')
+    utils.wo(self.win, 'winhighlight', 'Normal:NormalFloat')
     utils.wo(self.win, 'colorcolumn', '')
   end
   opts()
@@ -235,14 +314,14 @@ function M:mount()
       end
 
       opts()
-      vim.api.nvim_exec_autocmds('User', { pattern = 'LazyFloatResized', modeline = false })
+      vim.api.nvim_exec_autocmds('User', { pattern = 'FloatResized', modeline = false })
     end,
   })
 end
 
 ---@param clear? boolean
 function M:augroup(clear)
-  return vim.api.nvim_create_augroup('trouble.window.' .. self.id, { clear = clear == true })
+  return vim.api.nvim_create_augroup('floating.window.' .. self.id, { clear = clear == true })
 end
 
 ---@param events string|string[]
