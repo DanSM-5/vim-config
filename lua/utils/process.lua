@@ -1,6 +1,7 @@
 local Async = require('utils.async')
 
-local default_timeout = 120
+-- Default 2 seconds timeout
+local default_timeout = 120 * 1000
 
 ---@diagnostic disable-next-line: no-unknown
 local uv = vim.uv
