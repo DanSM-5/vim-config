@@ -1,3 +1,5 @@
+require('utils.types')
+
 -- Utility functions for neovim
 
 ---Sets window options
@@ -34,7 +36,7 @@ local function error(msg, opts)
   opts = opts or {}
   vim.notify(
     type(msg) == 'string' and msg or table.concat(msg --[[@as table]], '\n'),
-    vim.log.lovels.ERROR,
+    vim.log.levels.ERROR,
     opts
   )
 end
@@ -45,31 +47,40 @@ local function float(opts)
   return require('utils.float')(opts)
 end
 
----@class config.CmdOptions: config.FloatOptions
----@field cwd? string
----@field env? table<string,string>
----@field float? config.FloatOptions
-
 -- Opens a floating terminal (interactive by default)
 ---@param cmd? string[]|string
----@param opts? config.CmdOptions|{interactive?:boolean}
+---@param opts? config.TermOptions|{interactive?:boolean}
 local function float_term(cmd, opts)
   cmd = cmd or {}
-  if type(cmd) == "string" then
+  if type(cmd) == 'string' then
     cmd = { cmd }
   end
   if #cmd == 0 then
     cmd = { vim.o.shell }
   end
   opts = opts or {}
+  ---@type config.TermOpenOpts
+  local termopen_opts = {}
+  if vim.tbl_isempty(opts.term_opts or {}) then
+    termopen_opts = vim.empty_dict()
+  else
+    termopen_opts = opts.term_opts or {}
+    termopen_opts.cwd = termopen_opts.cwd or opts.cwd
+    termopen_opts.env = termopen_opts.env or opts.env
+  end
+
   local float_window = float(opts)
-  vim.fn.termopen(cmd, vim.tbl_isempty(opts) and vim.empty_dict() or opts)
+  vim.fn.termopen(cmd, termopen_opts)
   if opts.interactive ~= false then
     vim.cmd.startinsert()
-    vim.api.nvim_create_autocmd("TermClose", {
+    vim.api.nvim_create_autocmd('TermClose', {
       once = true,
       buffer = float_window.buf,
       callback = function()
+        if opts.on_exit then
+          local lines = vim.api.nvim_buf_get_lines(float_window.buf, 0, -1, false)
+          opts.on_exit(lines)
+        end
         float_window:close({ wipe = true })
         vim.cmd.checktime()
       end,
@@ -87,12 +98,16 @@ local function float_cmd(cmd, opts)
   local lines, code = Process.exec(cmd, { cwd = opts.cwd })
   if code ~= 0 then
     error({
-      "`" .. table.concat(cmd, " ") .. "`",
-      "",
-      "## Error",
-      table.concat(lines, "\n"),
-    }, { title = "Command Failed (" .. code .. ")" })
+      '`' .. table.concat(cmd, ' ') .. '`',
+      '',
+      '## Error',
+      table.concat(lines, '\n'),
+    }, { title = 'Command Failed (' .. code .. ')' })
     return
+  end
+
+  if opts.on_complete then
+    opts.on_complete(lines)
   end
   local float_window = float(opts)
   if opts.filetype then
