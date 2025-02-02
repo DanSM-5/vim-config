@@ -11,7 +11,9 @@ if (!$out_file) {
   "$args" | Invoke-Expression
 } else {
   $output = "$args" | Invoke-Expression
-  [System.IO.File]::WriteAllLines($out_file, $output, [System.Text.Encoding]::UTF8)
+  if ($output) {
+    [System.IO.File]::WriteAllLines($out_file, $output, [System.Text.Encoding]::UTF8)
+  }
 
   # Use if above produces errors
   # Out-File -FilePath $out_file -InputObject $output -Encoding utf8NoBOM
