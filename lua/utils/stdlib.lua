@@ -43,6 +43,23 @@ local function shallow_clone(t)
   return t2
 end
 
+---Create a printable string from an argument
+---@generic T
+---@param o T
+---@return string
+local function dump(o)
+  if type(o) == 'table' then
+    local s = '{ '
+    for k,v in pairs(o) do
+      if type(k) ~= 'number' then k = '"'..k..'"' end
+      s = s .. '['..k..'] = ' .. dump(v) .. ','
+    end
+    return s .. '} '
+  else
+    return tostring(o)
+  end
+end
+
 ---@generic T
 ---@param list T[]
 ---@param add T[]
@@ -318,6 +335,6 @@ return {
   key_set = key_set,
   key_get = key_get,
   throttle = throttle,
-  float = float,
+  dump = dump,
 }
 
