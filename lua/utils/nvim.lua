@@ -118,6 +118,68 @@ local function float_cmd(cmd, opts)
   return float_window
 end
 
+-- Opens a floating terminal (interactive by default)
+-- Command stdout can be get back uning on_end callback
+---@param cmd? string[]
+---@param opts? config.TermOptions|{interactive?:boolean}
+---@param on_end? fun(output: string[])
+local function run_command(cmd, opts, on_end)
+  if not on_end then
+    return float_term(cmd, opts)
+  end
+
+  local is_win = jit.os:find('Windows')
+  ---@type string[]
+  local run
+  -- package.config:sub(1,1) ~= '/'
+  local scripts = vim.fn.stdpath('config') .. '/utils'
+  local tempfile = vim.fn.tempname()
+
+  if is_win then
+    run = {
+      -- Incantation to make sure powershell runs a script
+      -- without loading a whole profile nor blocking it.
+      vim.fn.executable('pwsh') and 'pwsh' or 'powershell',
+      '-NoLogo', '-NonInteractive', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+      '-File', vim.fn.substitute(scripts, '\\', '/', 'g') .. '/run.ps1',
+    }
+  else
+    run = { scripts .. '/run.sh' }
+  end
+
+  opts = opts or {}
+  opts.env = vim.tbl_deep_extend('force', opts.env or {}, {
+    CMD_OUTPUT = tempfile
+  })
+  opts.term_opts = opts.term_opts or {}
+
+  local local_onexit = function ()
+    ---@type boolean, string[]
+    local ok, lines = pcall(vim.fn.readfile, tempfile)
+    if not ok then
+      lines = {}
+    end
+    if require('utils.stdlib').file_exists(tempfile) then
+      os.remove(tempfile)
+    end
+    on_end(lines)
+  end
+
+  if opts.term_opts.on_exit then
+    local call_onexit = opts.term_opts.on_exit
+    opts.term_opts.on_exit = function (...)
+      ---@diagnostic disable-next-line
+      call_onexit(...)
+      local_onexit()
+    end
+  else
+    opts.term_opts.on_exit = function() local_onexit() end
+  end
+
+  local wrapped_cmd = require('utils.stdlib').concat(run, cmd or {})
+  return float_term(wrapped_cmd, opts)
+end
+
 return {
   wo = wo,
   echo = echo,
@@ -125,5 +187,6 @@ return {
   error = error,
   float_cmd = float_cmd,
   float_term = float_term,
+  run_command = run_command,
 }
 
