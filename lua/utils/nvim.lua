@@ -95,7 +95,7 @@ end
 local function float_cmd(cmd, opts)
   opts = opts or {}
   local Process = require('utils.process')
-  local lines, code = Process.exec(cmd, { cwd = opts.cwd })
+  local lines, code = Process.exec(cmd, opts.process_opts or {})
   if code ~= 0 then
     error({
       '`' .. table.concat(cmd, ' ') .. '`',

@@ -23,8 +23,7 @@
 
 
 ---@class config.CmdOptions: config.FloatOptions
----@field cwd? string Current working directory for the process.
----@field env? table<string,string> Environment variables to spawn the new process.
+---@field process_opts? config.ProcessOpts
 ---@field on_complete? fun(data: string[]) Output of the command. Same content that will be appended on the floating window.
 
 -- -@field float? config.FloatOptions
