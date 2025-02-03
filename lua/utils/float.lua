@@ -287,7 +287,7 @@ function M:mount()
     utils.wo(self.win, 'foldenable', false)
     utils.wo(self.win, 'spell', false)
     utils.wo(self.win, 'wrap', true)
-    utils.wo(self.win, 'winhighlight', 'Normal:NormalFloat')
+    utils.wo(self.win, 'winhighlight', 'Normal:FloatingNormal')
     utils.wo(self.win, 'colorcolumn', '')
   end
   opts()
