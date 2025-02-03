@@ -134,7 +134,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
     " \     '--height', '80%', '--min-height', '20',
     let spec = {
       \   'source': source_command,
-      \   'sinklist': function('utils#fzf_selected_list'),
+      \   'sinklist': function('utils#fzf_selected_list', [{}, a:fullscreen]),
       \   'options': [
       \     '--prompt', 'Files> ',
       \     '--multi', '--ansi', '--border',
