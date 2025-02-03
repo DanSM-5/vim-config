@@ -96,6 +96,8 @@ g.smoothie_no_default_mappings = 1
 -- One dark color config
 -- let g:onedark_termcolors = 256
 
+-- fzf-lsp keys
+g.fzf_lsp_preview_window = { 'right', 'ctrl-/', 'ctrl-^' }
 --: }}} :------------------------------------------------------------------
 
 -- Setting up config setup

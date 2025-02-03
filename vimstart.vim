@@ -112,6 +112,9 @@ let g:gitgutter_max_signs = -1
 " Use custom grep
 " let g:gitgutter_grep = 'rg'
 
+" fzf-lsp keys
+let g:fzf_lsp_preview_window = ['right', 'ctrl-/', 'ctrl-^']
+
 ": }}} :------------------------------------------------------------------
 
 " Setting up config setup
