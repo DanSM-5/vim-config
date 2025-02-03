@@ -2,7 +2,7 @@
 local array_concat = require('utils.stdlib').concat
 local rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
 ---@type string[]
-local fzf_base_options = { '--multi', '--ansi', '--info=inline', '--bind', 'alt-c:clear-query' }
+local fzf_base_options = { '--multi', '--ansi', '--input-border', '--bind', 'alt-c:clear-query' }
 ---@type string[]
 local fzf_bind_options = array_concat(fzf_base_options, {
             '--bind', 'ctrl-^:toggle-preview',
@@ -154,6 +154,40 @@ local select_buffer_lsp = function (sink)
   })
 end
 
+-- WARN: Test function. Do not call from any other module
+local fzf_projects = function ()
+  require('utils.nvim')
+    .run_command({ 'gprj' }, {
+      term_opts = {
+        env = {
+          GPRJ_FZF_ARGS = '--height 100%'
+        },
+      },
+    }, function (lines)
+      if #lines == 0 then
+        return
+      end
+
+      if vim.fn.isdirectory(lines[1]) == 1 then
+        vim.fn['utils#fzf_files'](lines[1], fzf_preview_options, 0)
+
+        -- fzf won't start in interactive mode
+        -- from this callback so schedule startinsert
+        local timer = vim.uv.new_timer()
+        timer:start(300, 0, function ()
+          vim.schedule(function ()
+            vim.cmd.startinsert()
+          end)
+        end)
+        return
+      end
+
+      for _, value in ipairs(lines) do
+        vim.cmd.edit(value)
+      end
+    end)
+end
+
 return {
   fzf = fzf,
   select_buffer_lsp = select_buffer_lsp,
@@ -165,5 +199,6 @@ return {
   fzf_original_default_opts = fzf_original_default_opts,
   fzf_options_with_binds = fzf_options_with_binds,
   fzf_options_with_preview = fzf_options_with_preview,
+  fzf_projects = fzf_projects,
 }
 
