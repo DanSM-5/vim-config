@@ -65,8 +65,6 @@ local function float_term(cmd, opts)
     termopen_opts = vim.empty_dict()
   else
     termopen_opts = opts.term_opts or {}
-    termopen_opts.cwd = termopen_opts.cwd or opts.cwd
-    termopen_opts.env = termopen_opts.env or opts.env
   end
 
   local float_window = float(opts)
@@ -148,10 +146,10 @@ local function run_command(cmd, opts, on_end)
   end
 
   opts = opts or {}
-  opts.env = vim.tbl_deep_extend('force', opts.env or {}, {
+  opts.term_opts = opts.term_opts or {}
+  opts.term_opts.env = vim.tbl_deep_extend('force', opts.term_opts.env or {}, {
     CMD_OUTPUT = tempfile
   })
-  opts.term_opts = opts.term_opts or {}
 
   local local_onexit = function ()
     ---@type boolean, string[]
@@ -165,6 +163,17 @@ local function run_command(cmd, opts, on_end)
     on_end(lines)
   end
 
+  -- if opts.on_exit then
+  --   local call_onexit = opts.on_exit
+  --   opts.on_exit = function (...)
+  --     ---@diagnostic disable-next-line
+  --     call_onexit(...)
+  --     local_onexit()
+  --   end
+  -- else
+  --   opts.on_exit = function() local_onexit() end
+  -- end
+
   if opts.term_opts.on_exit then
     local call_onexit = opts.term_opts.on_exit
     opts.term_opts.on_exit = function (...)
@@ -176,7 +185,8 @@ local function run_command(cmd, opts, on_end)
     opts.term_opts.on_exit = function() local_onexit() end
   end
 
-  local wrapped_cmd = require('utils.stdlib').concat(run, cmd or {})
+  local wrapped_cmd = require('utils.stdlib')
+    .concat(run, cmd or {})
   return float_term(wrapped_cmd, opts)
 end
 
