@@ -209,6 +209,7 @@ local cmp_module = {
 
     local cmp_format = get_cmp_formatter()
     cmp.setup({
+      completion = { completeopt = 'menu,menuone,noselect' },
       sources = sources,
       mapping = cmp_mappings,
       view = {
