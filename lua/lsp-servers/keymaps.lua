@@ -1,3 +1,5 @@
+require('shared.types')
+
 local exclude_filetypes = {
   'help',
 }
@@ -47,6 +49,11 @@ return {
     vim.bo[buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     -- Wrapper for setting maps with description
+    ---Set keymap
+    ---@param mode VimMode|VimMode[]
+    ---@param key string
+    ---@param func string|fun()
+    ---@param desc string
     local set_map = function(mode, key, func, desc)
       local opts = { buffer = buf, silent = true, noremap = true }
 
@@ -57,6 +64,12 @@ return {
       vim.keymap.set(mode, key, func, opts)
     end
 
+    set_map('n', '<space>td',  function()
+      vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+    end, 'LSP: Toggle diagnostics')
+    set_map('n', '<space>ti',  function()
+      vim.lsp.inlay_hint.enabde(not vim.lsp.inlay_hint.is_enabled({ nil }))
+    end, 'LSP: Toggle inlay hints')
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     set_map('n', 'gD', vim.lsp.buf.declaration, 'LSP: Go to declaration')
