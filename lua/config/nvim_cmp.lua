@@ -131,6 +131,7 @@ local cmp_module = {
       ['<S-up>'] = cmp.mapping.scroll_docs(-4),
       ['<S-down>'] = cmp.mapping.scroll_docs(4),
       ['<C-e>'] = cmp.mapping.abort(),
+      ['<C-b>'] = cmp.mapping.complete(),
       -- <c-l> will move you to the right of each of the expansion locations.
       -- <c-h> is similar, except moving you backwards.
       ['<C-l>'] = cmp.mapping(function()

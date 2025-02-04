@@ -160,6 +160,7 @@ local blink_module = {
         ['<Up>'] = { 'select_prev', 'fallback' },
         ['<Down>'] = { 'select_next', 'fallback' },
         ['<C-e>'] = { 'hide' },
+        ['<C-b>'] = { 'show' },
         ['<C-y>'] = { 'select_and_accept' },
         ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
         ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
