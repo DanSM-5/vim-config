@@ -1295,7 +1295,7 @@ func! s:SetFZF () abort
     command! -bang -nargs=? -complete=dir FzfFiles
       \ call utils#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call utils#fzf_files(utils#git_path(), g:fzf_preview_options, <bang>0)
+      \ call utils#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, g:fzf_preview_options, <bang>0)
 
   " fzf options that only include common bindings
   else
@@ -1303,7 +1303,7 @@ func! s:SetFZF () abort
     command! -bang -nargs=? -complete=dir FzfFiles
       \ call utils#fzf_files(<q-args>, s:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call utils#fzf_files(utils#git_path(), s:fzf_bind_options, <bang>0)
+      \ call utils#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, s:fzf_bind_options, <bang>0)
   endif
 
 
