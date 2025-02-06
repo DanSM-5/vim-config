@@ -70,7 +70,7 @@ fzf-down () {
     --bind 'alt-up:preview-page-up' \
     --bind 'alt-down:preview-page-down' \
     --bind 'ctrl-s:toggle-sort' \
-    --header 'ctrl-d: Diff' \
+    --header 'ctrl-d: Diff | ctrl-a: All | ctrl-f: HEAD | ctrl-y: Copy' \
     --prompt 'Commits> ' \
     --preview "$preview" \
     --ansi --no-sort --reverse \

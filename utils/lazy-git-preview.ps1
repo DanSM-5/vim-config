@@ -3,43 +3,26 @@
 if (-not (git rev-parse HEAD 2> $null)) { exit }
 
 if (Get-Command delta -ErrorAction SilentlyContinue) {
-  $pager = 'delta --paging=always'
+  $pager = '| delta --paging=always'
   $preview_pager = ' | delta'
-  $has_delta = $true
 } else {
-  $pager = 'less -R'
+  $pager = '| less -R'
   $preview_pager = ''
-  $has_delta = $false
 }
 
 if (Get-Command -Name pwsh -All) {
-  function git_diff () {
-    if ($has_delta) {
-      git diff --color=always @args | delta --paging=always
-    } else {
-      git diff --color=always @args | less -R
-    }
-  }
-  function git_show () {
-    if ($has_delta) {
-      git show --color=always @args | delta --paging=always
-    } else {
-      git show --color=always @args | less -R
-    }
-  }
   $shell_cmd = 'pwsh.exe'
+  $is_pwsh = $true
 } else {
-  function git_diff () {
-    pwsh -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always -- $args | $pager"
-  }
-  function git_show () {
-    pwsh -NoLogo -NonInteractive -NoProfile -Command "git show --color=always -- $args | $pager"
-  }
   $shell_cmd = 'powershell.exe'
+  $is_pwsh = $false
 }
 
+
+
 $preview = "
-  `$hash = if ({} -match `"[a-f0-9]{7,}`") {
+  `$var = `"{}`"
+  `$hash = if (`$var -match `"[a-f0-9]{7,}`") {
     `$matches[0]
   } else { @() }
   git show --color=always `$hash $preview_pager |
@@ -93,7 +76,7 @@ function get_fzf_down_options() {
     '--bind', 'alt-down:preview-page-down',
     '--bind', 'ctrl-s:toggle-sort',
     "--history=$fzf_history/fzf-git_show",
-    '--header', 'ctrl-d: Diff',
+    '--header', 'ctrl-d: Diff | ctrl-a: All | ctrl-f: HEAD | ctrl-y: Copy',
     '--prompt', 'Commits> ',
     '--preview', $preview,
     '--with-shell', "$shell_cmd -NoLogo -NonInteractive -NoProfile -Command",
@@ -132,20 +115,18 @@ try {
     # NOTE: Using windows powershell causes some issues. We will detect here if pwsh is present
     # and use it over windows powershell.
     if ($k -eq 'ctrl-d') {
-      # if (Get-Command -Name pwsh -All) {
-      #   pwsh -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always $shas | $pager"
-      # } else {
-      #   powershell -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always -- $shas | $pager"
-      # }
-      git_diff @shas
+      if ($is_pwsh) {
+        pwsh -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always $shas $pager"
+      } else {
+        powershell -NoLogo -NonInteractive -NoProfile -Command "git diff --color=always -- $shas $pager"
+      }
     } else {
       foreach ($sha in $shas) {
-        # if (Get-Command -Name pwsh -All) {
-        #   pwsh -NoLogo -NonInteractive -NoProfile -Command "git show --color=always $sha | $pager"
-        # } else {
-        #   powershell -NoLogo -NonInteractive -NoProfile -Command "git show --color=always -- $sha | $pager"
-        # }
-        git_show $sha
+        if ($is_pwsh) {
+          pwsh -NoLogo -NonInteractive -NoProfile -Command "git show --color=always $sha $pager"
+        } else {
+          powershell -NoLogo -NonInteractive -NoProfile -Command "git show --color=always -- $sha $pager"
+        }
       }
     }
   }
