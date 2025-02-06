@@ -84,11 +84,11 @@ function get_fzf_down_options() {
     '--bind', 'alt-f:first',
     '--bind', 'alt-l:last',
     '--bind', 'alt-c:clear-query',
-    '--bind', 'ctrl-a:select-all',
-    '--bind', 'ctrl-d:deselect-all',
+    '--bind', 'alt-a:select-all',
+    '--bind', 'alt-d:deselect-all',
     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
     '--bind', 'ctrl-^:toggle-preview',
-    '--bind', "ctrl-y:execute-silent:$copy",
+    '--bind', "ctrl-y:execute-silent:$copy+bell",
     '--bind', 'alt-up:preview-page-up',
     '--bind', 'alt-down:preview-page-down',
     '--bind', 'ctrl-s:toggle-sort',
@@ -108,12 +108,17 @@ function get_fzf_down_options() {
 }
 
 $down_options = get_fzf_down_options
+$git_base_cmd = "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr'"
+$git_current_cmd = "$git_base_cmd $args"
+$git_all_cmd = "$git_base_cmd --all $args"
 
 try {
   while ($true) {
     $out = git log --graph --color=always `
-        --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" @args |
-    fzf @down_options
+        --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" |
+    fzf @down_options `
+      --bind "ctrl-f:reload:$git_current_cmd" `
+      --bind "ctrl-a:reload:$git_all_cmd"
 
     if (-not $out) { break; }
 

@@ -62,11 +62,11 @@ fzf-down () {
     --bind 'alt-f:first' \
     --bind 'alt-l:last' \
     --bind 'alt-c:clear-query' \
-    --bind 'ctrl-a:select-all' \
-    --bind 'ctrl-d:deselect-all' \
+    --bind 'alt-a:select-all' \
+    --bind 'alt-d:deselect-all' \
     --bind 'ctrl-/:change-preview-window(down|hidden|)' \
     --bind 'ctrl-^:toggle-preview' \
-    --bind "ctrl-y:execute-silent:$copy" \
+    --bind "ctrl-y:execute-silent:$copy+bell" \
     --bind 'alt-up:preview-page-up' \
     --bind 'alt-down:preview-page-down' \
     --bind 'ctrl-s:toggle-sort' \
@@ -79,11 +79,17 @@ fzf-down () {
     --border "$@"
 }
 
+git_base_cmd="git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr'"
+git_current_cmd="$git_base_cmd $*"
+git_all_cmd="$git_base_cmd --all $*"
+
 # main loop
-while out=$(
-  git log --graph --color=always \
-    --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-    fzf-down --query="$q"); do
+while out=$(fzf-down \
+    --query="$q" \
+    --bind "start:reload:$git_current_cmd" \
+    --bind "ctrl-f:reload:$git_current_cmd" \
+    --bind "ctrl-a:reload:$git_all_cmd" \
+    ); do
         q=$(head -1 <<< "$out")
         k=$(head -2 <<< "$out" | tail -1)
         # shas=($(sed '1,2d;s/^[^a-z0-9]*//;/^$/d' <<< "$out" | awk '{print $1}'))
