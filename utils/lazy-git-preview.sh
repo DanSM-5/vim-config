@@ -39,8 +39,12 @@ elif [ -n "$DISPLAY" ] && command -v 'xclip' &>/dev/null; then
   copy="cat {+f} | awk '{ print \$1 }' | xclip -i -selection clipboard"
 fi
 
-# Local variables
-out shas sha q k
+# Variables
+out=
+shas=
+sha=
+q=
+k=
 
 # Setup history
 fzf_history="${FZF_HIST_DIR:-$HOME/.cache/fzf_history}"
