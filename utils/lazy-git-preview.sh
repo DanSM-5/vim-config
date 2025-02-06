@@ -76,7 +76,7 @@ fzf-down () {
     --ansi --no-sort --reverse \
     --print-query --expect=ctrl-d \
     "--history=$fzf_history/fzf-git_show" \
-    --border
+    --border "$@"
 }
 
 git_base_cmd="git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr'"
