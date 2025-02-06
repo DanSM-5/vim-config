@@ -27,16 +27,16 @@ copy='true'
 # better safe than sorry
 if [ "$OS" = 'Windows_NT' ]; then
   # Gitbash
-  copy="cat '{+f}' | awk '{ print \$1 }' | clip.exe"
+  copy="awk '{ print \$2 }' '{+f}' | pbcopy.exe"
 elif [ "$OSTYPE" = 'darwin' ] || command -v 'pbcopy' &>/dev/null; then
-  copy="cat {+f} | awk '{ print \$1 }' | pbcopy"
+  copy="awk '{ print \$2 }' {+f} | pbcopy"
 # Assume linux if above didn't match
 elif [ -n "$WAYLAND_DISPLAY" ] && command -v 'wl-copy' &>/dev/null; then
-  copy="cat {+f} | awk '{ print \$1 }' | wl-copy --foreground --type text/plain"
+  copy="awk '{ print \$2 }' {+f} | wl-copy --foreground --type text/plain"
 elif [ -n "$DISPLAY" ] && command -v 'xsel' &>/dev/null; then
-  copy="cat {+f} | awk '{ print \$1 }' | xsel -i -b"
+  copy="awk '{ print \$2 }' {+f} | xsel -i -b"
 elif [ -n "$DISPLAY" ] && command -v 'xclip' &>/dev/null; then
-  copy="cat {+f} | awk '{ print \$1 }' | xclip -i -selection clipboard"
+  copy="awk '{ print \$2 }' {+f} | xclip -i -selection clipboard"
 fi
 
 # Variables
@@ -66,7 +66,7 @@ fzf-down () {
     --bind 'alt-d:deselect-all' \
     --bind 'ctrl-/:change-preview-window(down|hidden|)' \
     --bind 'ctrl-^:toggle-preview' \
-    --bind "ctrl-y:execute-silent:$copy+bell" \
+    --bind "ctrl-y:execute-silent($copy)+bell" \
     --bind 'alt-up:preview-page-up' \
     --bind 'alt-down:preview-page-down' \
     --bind 'ctrl-s:toggle-sort' \
@@ -76,7 +76,7 @@ fzf-down () {
     --ansi --no-sort --reverse \
     --print-query --expect=ctrl-d \
     "--history=$fzf_history/fzf-git_show" \
-    --border "$@"
+    --border
 }
 
 git_base_cmd="git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr'"

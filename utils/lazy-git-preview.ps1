@@ -71,7 +71,7 @@ function get_fzf_down_options() {
     '--bind', 'alt-d:deselect-all',
     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
     '--bind', 'ctrl-^:toggle-preview',
-    '--bind', "ctrl-y:execute-silent:$copy+bell",
+    '--bind', "ctrl-y:execute-silent($copy)+bell",
     '--bind', 'alt-up:preview-page-up',
     '--bind', 'alt-down:preview-page-down',
     '--bind', 'ctrl-s:toggle-sort',
