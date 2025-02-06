@@ -82,7 +82,9 @@ require("lazy").setup({
           end
 
           require('utils.nvim').float_term(script_cmd, {
-            cwd = plugin.dir,
+            term_opts = {
+              cwd = plugin.dir,
+            }
           })
         end,
         desc = '[Lazy.nvim] Open plugin log',
