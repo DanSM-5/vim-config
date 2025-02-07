@@ -27,6 +27,9 @@ local function fshow(dir)
   require('utils.nvim').float_term(script_cmd, {
     term_opts = {
       cwd = cwd,
+      env = {
+        IS_TERMUX = vim.g.is_termux == 1 and 'true' or 'false',
+      },
     },
   })
 end
