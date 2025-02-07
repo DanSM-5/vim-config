@@ -65,7 +65,7 @@ require("lazy").setup({
         function (plugin)
           -- NOTE: Termux refuses to execute scripts even if
           -- they are on the path. Using simple logger.
-          if vim.g.is_termux == 1 and 'true' or 'false' then
+          if vim.g.is_termux == 1 then
             require('utils.fshow').git_log(plugin.dir)
           else
             require('utils.fshow').fshow(plugin.dir)
