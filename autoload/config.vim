@@ -100,6 +100,19 @@ func! s:SetConfigurationsBefore () abort
 
   " Set relative numbers
   set number relativenumber
+
+  " diffopt
+  " Default
+  " set diffopt=internal,filler,closeoff
+  " set diffopt=internal,filler,closeoff,linematch:60
+  " set diffopt=internal,filler,closeoff,algorithm:histogram,context:5,linematch:60
+  if has('nvim')
+    " neovim implements 'linematch:{n}'
+    " Ref: https://github.com/neovim/neovim/pull/14537
+    set diffopt=internal,filler,closeoff,indent-heuristic,linematch:60,algorithm:histogram
+  else
+    set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
+  endif
 endf
 
 func! s:SetConfigurationsAfter () abort
