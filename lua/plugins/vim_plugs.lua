@@ -75,12 +75,6 @@ return {
     end,
   },
   {
-    'stevearc/oil.nvim',
-    config = function ()
-      require('config.oil_nvim').setup()
-    end,
-  },
-  {
     'mbbill/undotree',
     lazy = true,
     keys = {
