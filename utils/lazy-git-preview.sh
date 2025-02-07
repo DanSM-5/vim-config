@@ -6,12 +6,6 @@
 def_pager="less -R"
 pager=""
 
-if [ "$IS_TERMUX" = true ]; then
-  HEIGHT='80%'
-else
-  HEIGHT='100%'
-fi
-
 if command -v delta &>/dev/null; then
   # if set pager is delta
   pager="delta --paging=always"
@@ -59,7 +53,7 @@ mkdir -p "$fzf_history"
 # Default fzf flags
 fzf-down () {
   fzf \
-    --height "$HEIGHT" \
+    --height '100%' \
     --min-height 20 \
     --input-border \
     --cycle \

@@ -27,9 +27,6 @@ local function fshow(dir)
   require('utils.nvim').float_term(script_cmd, {
     term_opts = {
       cwd = cwd,
-      env = {
-        IS_TERMUX = vim.g.is_termux == 1 and 'true' or 'false',
-      },
     },
   })
 end
@@ -40,7 +37,7 @@ local function git_log(dir)
   local cwd = dir or vim.fn['utils#git_path']()
   require('utils.nvim')
     .float_term({
-      'git', 'log', '--oneline', '--decorate', '--graph'
+      'git', 'log', '--oneline', '--decorate', '--graph',
     }, {
       term_opts = {
         cwd = cwd,

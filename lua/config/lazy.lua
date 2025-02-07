@@ -63,9 +63,14 @@ require("lazy").setup({
       -- An external dependency is the default for <leader>l... WTF!!!
       ['<localleader>l'] = {
         function (plugin)
-          require('utils.fshow').fshow(plugin.dir)
-          -- require('utils.fshow').git_log(plugin.dir)
-          end,
+          -- NOTE: Termux refuses to execute scripts even if
+          -- they are on the path. Using simple logger.
+          if vim.g.is_termux == 1 and 'true' or 'false' then
+            require('utils.fshow').git_log(plugin.dir)
+          else
+            require('utils.fshow').fshow(plugin.dir)
+          end
+        end,
         desc = '[Lazy.nvim] Open plugin log',
       },
     },
