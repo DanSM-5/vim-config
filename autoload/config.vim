@@ -174,7 +174,7 @@ func! s:SetConfigurationsAfter () abort
     " Windows version of neovim won't set back the cursor shape
     augroup RestoreCursorShapeOnExit
       autocmd!
-      autocmd VimLeave * set guicursor=a:ver100
+      autocmd VimLeave * set guicursor=a:ver100-blinkon100
     augroup END
   else
     " Fix cursor shape in command mode vim
