@@ -317,6 +317,15 @@ local function key_set(t, key, value)
   last[path[#path]] = value
 end
 
+---Decode URIs
+---@param str string Decoded string
+local function decodeURI(str)
+  local char, gsub, tonumber = string.char, string.gsub, tonumber
+  local function _(hex) return char(tonumber(hex, 16)) end
+  local s = gsub(str, '%%(%x%x)', _)
+  return s
+end
+
 return {
   find_root = find_root,
   concat = array_concat,
@@ -336,5 +345,6 @@ return {
   key_get = key_get,
   throttle = throttle,
   dump = dump,
+  decodeURI = decodeURI,
 }
 
