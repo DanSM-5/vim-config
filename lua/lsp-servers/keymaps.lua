@@ -68,7 +68,7 @@ return {
       vim.diagnostic.enable(not vim.diagnostic.is_enabled())
     end, 'LSP: Toggle diagnostics')
     set_map('n', '<space>ti',  function()
-      vim.lsp.inlay_hint.enabde(not vim.lsp.inlay_hint.is_enabled({ nil }))
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ nil }))
     end, 'LSP: Toggle inlay hints')
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
