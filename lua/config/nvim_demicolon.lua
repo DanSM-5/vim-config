@@ -6,6 +6,10 @@ return {
       keymaps = {
         diagnostic_motions = false,
       },
+      integrations = {
+        neotest = { enabled = false },
+        vimtex = { enabled = false },
+      }
     })
   end,
 }
