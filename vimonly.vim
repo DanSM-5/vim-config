@@ -91,3 +91,57 @@ nnoremap <silent> <c-l> :<c-u>nohlsearch<cr>
 "   autocmd RecordingLeave * silent execute('hi ' . g:theme_cursor) 
 " augroup END
 
+" Change , and ; behavior
+" Ref: https://www.reddit.com/r/vim/comments/43j5jr/comment/cziloc7
+" function! s:InitConsistentRepeat(command)
+"     if a:command =~# '[FT]'
+"         noremap ; ,
+"         noremap , ;
+"     else
+"         silent! unmap ;
+"         silent! unmap ,
+"     endif
+"     return a:command
+" endfunction
+
+" noremap <expr> f <SID>InitConsistentRepeat('f')
+" noremap <expr> t <SID>InitConsistentRepeat('t')
+" noremap <expr> F <SID>InitConsistentRepeat('F')
+" noremap <expr> T <SID>InitConsistentRepeat('T')
+
+
+" Ref: https://www.reddit.com/r/vim/comments/3gpqjs/comment/cu0abeh
+if exists('*getcharsearch')
+  NXOnoremap <expr>; getcharsearch().forward ? ';' : ','
+  NXOnoremap <expr>, getcharsearch().forward ? ',' : ';'
+else
+  " ~~Will probably implement, but it's not simple considering multi-bytes, etc.~~
+  " It turns out doable. TODO: support Input Method
+  "
+  " command! -nargs=1 NOnoremap nnoremap <args><Bar> onoremap <args>
+  " I use the mark `z`(as well the register `z`) exclusively in scripts.
+  " NOnoremap <silent>F :<C-u>execute 'silent! normal! mzf'.nr2char(getchar()).'g`z'.v:count1.','<CR>
+  " xnoremap <silent>F :<C-u>execute 'silent! normal! mzf'.nr2char(getchar()).'g`zgv'.v:count1.','<CR>
+  " NOnoremap <silent>T :<C-u>execute 'silent! normal! mzt'.nr2char(getchar()).'g`z'.v:count1.','<CR>
+  " xnoremap <silent>T :<C-u>execute 'silent! normal! mzt'.nr2char(getchar()).'g`zgv'.v:count1.','<CR>
+
+  " Change , and ; behavior
+  " Ref: https://www.reddit.com/r/vim/comments/43j5jr/comment/cziloc7
+  function! s:InitConsistentRepeat(command)
+      if a:command =~# '[FT]'
+          noremap ; ,
+          noremap , ;
+      else
+          silent! unmap ;
+          silent! unmap ,
+      endif
+      return a:command
+  endfunction
+
+  noremap <expr> f <SID>InitConsistentRepeat('f')
+  noremap <expr> t <SID>InitConsistentRepeat('t')
+  noremap <expr> F <SID>InitConsistentRepeat('F')
+  noremap <expr> T <SID>InitConsistentRepeat('T')
+endif
+
+

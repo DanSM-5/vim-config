@@ -471,6 +471,10 @@ func! s:Set_user_keybindings () abort
   nnoremap <silent> [} :<C-u>silent call search('}', 'b')<cr>
   nnoremap <silent> ]{ :<C-u>silent call search('{')<cr>
   nnoremap <silent> [{ :<C-u>silent call search('{', 'b')<cr>
+
+  " Make search consistent in direction
+  NXOnoremap <expr>n (v:searchforward ? 'n' : 'N').'zv'
+  NXOnoremap <expr>N (v:searchforward ? 'N' : 'n').'zv'
 endf
 
 func! s:Set_os_specific_before () abort
@@ -1411,6 +1415,10 @@ endfunction
 
 " User commands
 func! s:DefineCommands () abort
+  " Shorthand for creating nxo mappings
+  " Ref: https://www.reddit.com/r/vim/comments/3gpqjs/comment/cu0abeh/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+  command! -nargs=1 NXOnoremap nnoremap <args><Bar>xnoremap <args><Bar>onoremap <args>
+
   " Call command and remove carriage return
   command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
   command! CleanCR call s:CleanCR()
