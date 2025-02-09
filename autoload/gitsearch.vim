@@ -52,13 +52,13 @@ function s:GetCopyCmd() abort
     let gitsearch_copy = substitute(s:copy_helper, '\\', '/', 'g') . '/gitsearch_copy.ps1'
     return 'powershell -NoLogo -NonInteractive -NoProfile -File ' . shellescape(gitsearch_copy) . ' "{+f}"'
   elseif has("gui_mac") || os ==? 'Darwin'
-    return "cat {+f} | awk '{ print $1 }' | pbcopy"
+    return "awk '{ print $1 }' {+f} | pbcopy"
   elseif !empty($WAYLAND_DISPLAY) && executable('wl-copy')
-    return "cat {+f} | awk '{ print $1 }' | wl-copy --foreground --type text/plain"
+    return "awk '{ print $1 }' {+f} | wl-copy --foreground --type text/plain"
   elseif !empty($DISPLAY) && executable('xsel')
-    return "cat {+f} | awk '{ print $1 }' | xsel -i -b"
+    return "awk '{ print $1 }' {+f} | xsel -i -b"
   elseif !empty($DISPLAY) && executable('xclip')
-    return "cat {+f} | awk '{ print $1 }' | xclip -i -selection clipboard"
+    return "awk '{ print $1 }' {+f} | xclip -i -selection clipboard"
   endif
 endfunction
 
@@ -169,28 +169,39 @@ function! gitsearch#file(file, fullscreen) abort
     let file = expand('%')
   endif
 
+  " TODO:Should I use the forward path version in all places?
+  " It is needed for git to preview the file even on windows
   let escaped_file = shellescape(file)
+  let forward_path = substitute(escaped_file, '\\', '/', 'g')
   let source = printf('git log --color=always --oneline --follow -- %s || true', escaped_file)
-  let preview = 'git show --color=always {1} %s'
-  let preview_cmd = printf(preview, executable('delta') ? '--follow -- ' . escaped_file . ' | delta' : '--follow -- ' . escaped_file)
-  let preview_all = printf(preview, executable('delta') ? ' | delta' : '')
+  let preview = 'git show --color=always %s'
+  let preview_cmd = printf(preview, executable('delta') ? '{1} --follow -- ' . escaped_file . ' | delta' : '{1} --follow -- ' . escaped_file)
+  let preview_all = printf(preview, executable('delta') ? '{1} | delta' : '{1}')
   let copy_cmd = s:GetCopyCmd()
+  let preview_graph = 'git log --color=always --oneline --decorate --graph {1}'
+  let preview_file = printf(preview, '{1}:'.forward_path)
+  if executable('bat')
+    let bat_style = empty($BAT_STYLE) ? 'numbers,header' : $BAT_STYLE
+    let preview_file = preview_file . ' | bat --color=always --style=' . bat_style . ' --file-name ' . forward_path
+  endif
   let preview_window = a:fullscreen ? 'up,70%' : 'right,70%'
-  let echo = has('win32') ? 'echo.exe' : 'echo'
   let options = { 'source': source, 'options': [
         \    '--prompt', 'File History> ',
-        \    '--bind', 'ctrl-y:execute-silent:' . copy_cmd,
+        \    '--bind', 'ctrl-y:execute-silent(' . copy_cmd . ')+bell',
         \    '--header','File: ' .. file,
         \    '--preview', preview_cmd,
         \    '--preview-window', preview_window,
-        \    '--bind', 'ctrl-a:transform:'.echo.' '.shellescape('preview:'.preview_all),
-        \    '--bind', 'ctrl-f:transform:'.echo.' '.shellescape('preview:'.preview_cmd),
+        \    '--bind', 'ctrl-a:preview:'.preview_all,
+        \    '--bind', 'ctrl-d:preview:'.preview_cmd,
+        \    '--bind', 'ctrl-f:preview:'.preview_file,
+        \    '--bind', 'ctrl-g:preview:'.preview_graph,
         \  ] }
 
+  " NOTE: No longer needed as we can change preview without transform
   " Fix for transform to work
-  if has('win32')
-    let options.options = options.options + ['--with-shell', 'powershell -NoLogo -NonInteractive -NoProfile -Command']
-  endif
+  " if has('win32')
+  "   let options.options = options.options + ['--with-shell', 'powershell -NoLogo -NonInteractive -NoProfile -Command']
+  " endif
   silent call gitsearch#search('', a:fullscreen, options)
 endfunction
 
