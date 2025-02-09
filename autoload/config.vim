@@ -465,6 +465,12 @@ func! s:Set_user_keybindings () abort
   " Change anonymous register with unnamed plus register
   nnoremap <silent> yd :<C-u>silent call utils#register_move('+', '"')<cr>
   nnoremap <silent> yD :<C-u>silent call utils#register_move('"', '+')<cr>
+
+  " Search brackets forward/backward
+  nnoremap <silent> ]} :<C-u>silent call search('}')<cr>
+  nnoremap <silent> [} :<C-u>silent call search('}', 'b')<cr>
+  nnoremap <silent> ]{ :<C-u>silent call search('{')<cr>
+  nnoremap <silent> [{ :<C-u>silent call search('{', 'b')<cr>
 endf
 
 func! s:Set_os_specific_before () abort
