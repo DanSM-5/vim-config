@@ -66,6 +66,7 @@ require('config.nvim_hl_colors').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
+require('neo-img').setup()
 require('split').setup({})
 require('ts-node-action').setup({})
 -- Start nvim autotag
