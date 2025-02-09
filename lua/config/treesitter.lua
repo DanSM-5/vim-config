@@ -57,7 +57,7 @@ return {
       textobjects = {
         lsp_interop = {
           enable = true,
-          border = 'none',
+          border = 'rounded', -- 'none',
           floating_preview_opts = {},
           peek_definition_code = {
             ['<space>df'] = '@function.outer',
@@ -93,7 +93,7 @@ return {
           selection_modes = {
             ['@parameter.outer'] = 'v', -- charwise
             ['@function.outer'] = 'v', -- 'V' -- linewise
-            ['@class.outer'] = '<c-v>', -- blockwise
+            ['@class.outer'] = 'v' -- '<c-v>', -- blockwise
           },
           -- If you set this to `true` (default is `false`) then any textobject is
           -- extended to include preceding or succeeding whitespace. Succeeding
@@ -106,6 +106,50 @@ return {
           -- and should return true or false
           include_surrounding_whitespace = true,
         },
+        move = {
+          enable = true,
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            [']m'] = { query = '@function.outer', desc = '[TS] Next function start' },
+            [']]'] = { query = '@class.outer', desc = '[TS] Next class start' },
+            [']b'] = { query = '@block.*', desc = '[TS] Next block start' },
+            [']C'] = { query = '@comment.outer', desc = '[TS] Next comment start' }
+            --
+            -- You can use regex matching (i.e. lua pattern) and/or pass a list in a 'query' key to group multiple queries.
+            -- [']o'] = '@loop.*',
+            -- [']o'] = { query = { '@loop.inner', '@loop.outer' } }
+            --
+            -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
+            -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
+            -- [']s'] = { query = '@local.scope', query_group = 'locals', desc = 'Next scope' },
+            -- [']z'] = { query = '@fold', query_group = 'folds', desc = 'Next fold' },
+          },
+          goto_next_end = {
+            [']M'] = { query = '@function.outer', desc = '[TS] Next function end' },
+            [']['] = { query = '@class.outer', desc = '[TS] Next class end' },
+            [']B'] = { query = '@block.*', desc = '[TS] Next block end' },
+          },
+          goto_previous_start = {
+            ['[m'] = { query = '@function.outer', desc = '[TS] Previous function start' },
+            ['[['] = { query = '@class.outer', desc = '[TS] Previous class start' },
+            ['[b'] = { query = '@block.*', desc = '[TS] Previous block start' },
+            ['[C'] = { query = '@comment.outer', desc = '[TS] Previous comment start' }
+          },
+          goto_previous_end = {
+            ['[M'] = { query = '@function.outer', desc = '[TS] Previous function end' },
+            ['[]'] = { query = '@class.outer', desc = '[TS] Previous class end' },
+            ['[B'] = { query = '@block.*', desc = '[TS] Previous block end' },
+          },
+          -- Below will go to either the start or the end, whichever is closer.
+          -- Use if you want more granular movements
+          -- Make it even more gradual by adding multiple queries and regex.
+          -- goto_next = {
+          --   [']d'] = '@conditional.outer',
+          -- },
+          -- goto_previous = {
+          --   ['[d'] = '@conditional.outer',
+          -- }
+        },
       },
     })
 
@@ -116,6 +160,7 @@ return {
       callback = function()
         local repeat_motion = require('utils.repeat_motion')
         local repeat_pair = repeat_motion.repeat_pair
+        local create_repeatable_pair = repeat_motion.create_repeatable_pair
         -- NOTE: Letting demicolon set the motion keys but otherwise motions can be repeated by calling
         -- the following function
         -- require('utils.repeat_motion').set_motion_keys()
@@ -181,21 +226,20 @@ return {
         end
 
         repeat_pair({
-          keys = 'j',
+          keys = 't',
           desc_forward = '[TodoComments] Move to next todo comment',
           desc_backward = '[TodoComments] Move to previous todo comment',
           on_forward = todo_next,
           on_backward = todo_prev,
         })
 
-        local create_repeatable_pair = repeat_motion.create_repeatable_pair
 
         local ctrl_w = vim.api.nvim_replace_termcodes('<C-w>', true, true, true)
         local vsplit_bigger, vsplit_smaller  = create_repeatable_pair(function ()
           vim.fn.feedkeys(ctrl_w .. '5>', 'n')
         end, function ()
-          vim.fn.feedkeys(ctrl_w .. '5<', 'n')
-        end)
+            vim.fn.feedkeys(ctrl_w .. '5<', 'n')
+          end)
 
         vim.keymap.set('n', '<A-.>', vsplit_bigger, {
           desc = '[VSplit] Make vsplit bigger',
@@ -209,8 +253,8 @@ return {
         local split_bigger, split_smaller = create_repeatable_pair(function ()
           vim.fn.feedkeys(ctrl_w .. '+', 'n')
         end, function ()
-          vim.fn.feedkeys(ctrl_w .. '-', 'n')
-        end)
+            vim.fn.feedkeys(ctrl_w .. '-', 'n')
+          end)
 
         vim.keymap.set('n', '<A-t>', split_bigger, {
           desc = '[Split] Make split bigger',
@@ -235,7 +279,7 @@ return {
         end
 
         local diagnostic_next,
-              diagnostic_prev
+        diagnostic_prev
         = create_repeatable_pair(
           ---Move to next diagnostic
           ---@param options vim.diagnostic.GotoOpts | nil
@@ -298,6 +342,26 @@ return {
         vim.keymap.set('n', '[h', function()
           diagnostic_prev({ severity = vim.diagnostic.severity.HINT })
         end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
+
+        -- Override next-prev matching bracket
+        local next_close_bracket, prev_close_bracket = create_repeatable_pair(
+          function ()
+            vim.fn.search('}')
+          end, function ()
+            vim.fn.search('}', 'b')
+          end
+        )
+        local next_open_bracket, prev_open_bracket = create_repeatable_pair(
+          function ()
+            vim.fn.search('{')
+          end, function ()
+            vim.fn.search('{', 'b')
+          end
+        )
+        vim.keymap.set('n', ']}', next_close_bracket, { desc = '[Bracket]: Go to next close bracket', silent = true, noremap = true })
+        vim.keymap.set('n', '[}', prev_close_bracket, { desc = '[Bracket]: Go to previous close bracket', silent = true, noremap = true })
+        vim.keymap.set('n', ']{', next_open_bracket, { desc = '[Bracket]: Go to next open bracket', silent = true, noremap = true })
+        vim.keymap.set('n', '[{', prev_open_bracket, { desc = '[Bracket]: Go to previous open bracket', silent = true, noremap = true })
       end,
     })
 
@@ -318,13 +382,13 @@ return {
     -- local treesitter_parser_config = require('nvim-treesitter.parsers').get_parser_configs()
     -- treesitter_parser_config.powershell = {
     --   install_info = {
-    --     url = "~/.config/nvim/tsparsers/tree-sitter-powershell", -- need to update path
-    --     files = { "src/parser.c", "src/scanner.c" },
-    --     branch = "main",
+    --     url = '~/.config/nvim/tsparsers/tree-sitter-powershell', -- need to update path
+    --     files = { 'src/parser.c', 'src/scanner.c' },
+    --     branch = 'main',
     --     generate_requires_npm = false,
     --     requires_generate_from_grammar = false,
     --   },
-    --   filetype = "ps1",
+    --   filetype = 'ps1',
     -- }
   end
 }
