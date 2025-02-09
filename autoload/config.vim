@@ -475,6 +475,11 @@ func! s:Set_user_keybindings () abort
   " Make search consistent in direction
   NXOnoremap <expr>n (v:searchforward ? 'n' : 'N').'zv'
   NXOnoremap <expr>N (v:searchforward ? 'N' : 'n').'zv'
+
+  " Indent text object
+  " :h indent-object
+  xmap ii <Plug>(indent-object_linewise-none)
+  omap ii <Plug>(indent-object_blockwise-none)
 endf
 
 func! s:Set_os_specific_before () abort

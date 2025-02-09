@@ -285,6 +285,8 @@ call plug#begin()
   Plug 'psliwka/vim-smoothie'
   Plug 'rbong/vim-flog'
   Plug 'mbbill/undotree'
+  " Indent text objects
+  Plug 'urxvtcd/vim-indent-object'
 
   " Color scheme
   " NOTE: Preserve order!

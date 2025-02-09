@@ -29,5 +29,6 @@ return {
     version = false,
     opts = {},
   },
+  'urxvtcd/vim-indent-object',
 }
 
