@@ -385,6 +385,8 @@ call plug#begin()
 
     " Cursor based text objects
     Plug 'ColinKennedy/cursor-text-objects.nvim', { 'tag': 'v1.*' }
+    " Improve 'a' and 'i' text objects
+    Plug 'echasnovski/mini.ai'
 
     " Commands on refs. :Cursor* commands on :Git log --oneline buffer
     Plug 'oflisback/cursor-git-ref-command.nvim'
@@ -428,6 +430,9 @@ call plug#begin()
 
     " Context
     Plug 'wellle/context.vim'
+
+    " Improve 'a' and 'i' text objects
+    Plug 'wellle/targets.vim'
 
     " command-line completion
     " Plug 'girishji/vimsuggest', { 'branch': 'main' }

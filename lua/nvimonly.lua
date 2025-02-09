@@ -69,6 +69,7 @@ require('config.nvim_hl_colors').setup()
 require('neo-img').setup()
 require('split').setup({})
 require('ts-node-action').setup({})
+require('mini.ai').setup({})
 -- Start nvim autotag
 require('nvim-ts-autotag').setup({
   opts = {
