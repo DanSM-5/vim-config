@@ -71,8 +71,8 @@ return {
           lookahead = true,
 
           keymaps = {
-            ['ab'] = { query = '@block.inner', desc = 'Select a block' },
-            ['ib'] = { query = '@block.outer', desc = 'Select inner block' },
+            ['agb'] = { query = '@block.outer', desc = 'Select a block' },
+            ['igb'] = { query = '@block.inner', desc = 'Select inner block' },
             -- You can use the capture groups defined in textobjects.scm
             ['af'] = { query = '@function.outer', desc = 'Select a function' },
             ['if'] = { query = '@function.inner', desc = 'Select inner function' },
