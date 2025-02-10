@@ -282,7 +282,7 @@ func! s:Set_user_keybindings () abort
   " Command mode open in buffer leader+t+e from normal mode
   nnoremap <leader>cl q:
 
-  " Call vim commentary
+  " Call vim fugitive
   nnoremap <leader>gg <cmd>Git<cr>
 
   " ]<End> or ]<Home> move current line to the end or the begin of current buffer
