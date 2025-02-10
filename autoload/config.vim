@@ -467,10 +467,14 @@ func! s:Set_user_keybindings () abort
   nnoremap <silent> yD :<C-u>silent call utils#register_move('"', '+')<cr>
 
   " Search brackets forward/backward
-  nnoremap <silent> ]} :<C-u>silent call search('}')<cr>
-  nnoremap <silent> [} :<C-u>silent call search('}', 'b')<cr>
-  nnoremap <silent> ]{ :<C-u>silent call search('{')<cr>
-  nnoremap <silent> [{ :<C-u>silent call search('{', 'b')<cr>
+  " nnoremap <silent> ]} :<C-u>silent call search('}')<cr>
+  " nnoremap <silent> [} :<C-u>silent call search('}', 'b')<cr>
+  " nnoremap <silent> ]{ :<C-u>silent call search('{')<cr>
+  " nnoremap <silent> [{ :<C-u>silent call search('{', 'b')<cr>
+  nnoremap <silent> ]} :<C-u>silent call search('[{}]')<cr>
+  nnoremap <silent> [} :<C-u>silent call search('[{}]', 'b')<cr>
+  nnoremap <silent> ]{ :<C-u>silent call searchpair('{', '', '}')<cr>
+  nnoremap <silent> [{ :<C-u>silent call searchpair('{', '', '}', 'b')<cr>
 
   " Make search consistent in direction
   NXOnoremap <expr>n (v:searchforward ? 'n' : 'N').'zv'
