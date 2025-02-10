@@ -25,9 +25,13 @@ return {
     end,
   },
   {
+    -- enabled = false,
     'echasnovski/mini.ai',
     version = false,
     opts = {},
+    config = function ()
+      require('config.nvim_mai').setup()
+    end
   },
   'urxvtcd/vim-indent-object',
 }

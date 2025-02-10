@@ -26,6 +26,7 @@ require('config.nvim_fugitive-difftool').setup()
 require('config.nvim_cursor-text-objects').setup()
 require('config.nvim_cursor_ref').setup()
 require('config.nvim_hl_colors').setup()
+require('config.nvim_mai').setup()
 
 -- NOTE: At some point I thought, why not put everything in an array
 -- and load like below. Then I figured it messed up the lsp as it
@@ -69,7 +70,6 @@ require('config.nvim_hl_colors').setup()
 require('neo-img').setup()
 require('split').setup({})
 require('ts-node-action').setup({})
-require('mini.ai').setup({})
 -- Start nvim autotag
 require('nvim-ts-autotag').setup({
   opts = {
