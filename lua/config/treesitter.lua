@@ -379,10 +379,10 @@ return {
             vim.fn.search('[{}]', 'b')
           end
         )
-        vim.keymap.set('n', ']}', next_bracket_pair, { desc = '[Bracket]: Go to next close bracket', silent = true, noremap = true })
-        vim.keymap.set('n', '[}', prev_bracket_pair, { desc = '[Bracket]: Go to previous close bracket', silent = true, noremap = true })
-        vim.keymap.set('n', ']{', next_matching_bracket, { desc = '[Bracket]: Go to next open bracket', silent = true, noremap = true })
-        vim.keymap.set('n', '[{', prev_matching_bracket, { desc = '[Bracket]: Go to previous open bracket', silent = true, noremap = true })
+        vim.keymap.set('n', ']}', next_bracket_pair, { desc = '[Bracket]: Go to next bracket pair', silent = true, noremap = true })
+        vim.keymap.set('n', '[}', prev_bracket_pair, { desc = '[Bracket]: Go to previous bracket pair', silent = true, noremap = true })
+        vim.keymap.set('n', ']{', next_matching_bracket, { desc = '[Bracket]: Go to next matching bracket', silent = true, noremap = true })
+        vim.keymap.set('n', '[{', prev_matching_bracket, { desc = '[Bracket]: Go to previous matching bracket', silent = true, noremap = true })
       end,
     })
 
