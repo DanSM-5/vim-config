@@ -5,7 +5,10 @@ return {
   {
     'junegunn/fzf.vim',
   },
-  'vijaymarupudi/nvim-fzf',
+  {
+    'vijaymarupudi/nvim-fzf',
+    lazy = true,
+  },
   -- {
   --   'ibhagwan/fzf-lua',
   --   -- optional for icon support
