@@ -67,3 +67,18 @@ vim.api.nvim_create_user_command('LF', function (opts)
   require('utils.lf').lf(opts.fargs[1], opts.bang)
 end, { force = true, bar = true, nargs = '?', complete = 'dir', bang = true })
 
+
+---@param opts { bang: boolean, fargs: string[] }
+vim.api.nvim_create_user_command('MPLS', function (opts)
+  require('config.nvim_mpls').start({
+    skip_load = opts.bang,
+    file = opts.fargs[1],
+  })
+end, {
+  desc = '[Lsp] Start mpls lsp server',
+  bar = true,
+  bang = true,
+  nargs = 1,
+  complete = 'file'
+})
+
