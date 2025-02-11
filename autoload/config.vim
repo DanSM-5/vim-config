@@ -1492,8 +1492,10 @@ func! s:DefineCommands () abort
 
   " Buffer management
   " BCloseCurrent defined in plugin/bclose.vim
-  command -bar BCloseOthers :%bd|e#|bn|bd
-  command! -bar BCloseAllBuffers :%bd
+  " command! -bar BCloseOthers :%bd|e#|bn|bd
+  " command! -bar BCloseAllBuffers :%bd
+  command! -bang -bar BCloseOthers call bda#bdo(<bang>0)
+  command! -bang -bar BCloseAllBuffers call bda#bda(<bang>0)
 
   " Close all buffers but current one
   " noremap <leader><S-Tab> <cmd>BCloseOthers<CR>
