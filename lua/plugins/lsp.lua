@@ -137,6 +137,7 @@ return {
       -- Ctags lsp
       -- 'netmute/ctags-lsp.nvim',
     },
+    event = 'VimEnter',
     config = function()
       -- vim.api.nvim_create_autocmd('VimEnter', {
       --   once = true,
@@ -150,6 +151,8 @@ return {
           engine = use_blink and 'blink' or 'cmp'
         }
       })
+      -- Call lsp start manually to attempt to attach current buffer
+      vim.cmd('LspStart')
     end,
   },
   -- TODO: Review how to use powershell editor services
