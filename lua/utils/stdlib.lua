@@ -267,6 +267,46 @@ local function filter(fn, list)
   return ret
 end
 
+---@generic T
+---@param list T[]
+---@param fn fun(v: T):boolean?
+---@return T|nil
+local function find(fn, list)
+  for _, v in ipairs(list) do
+    if fn(v) then
+      return v
+    end
+  end
+  return nil
+end
+
+---@generic T
+---@param list T[]
+---@param fn fun(v: T):boolean?
+---@return boolean
+local function any(fn, list)
+  for _, v in ipairs(list) do
+    if fn(v) then
+      return true
+    end
+  end
+  return false
+end
+
+---@generic T
+---@param list T[]
+---@param fn fun(v: T):boolean?
+---@return boolean
+local function every(fn, list)
+  for _, v in ipairs(list) do
+    if not fn(v) then
+      return false
+    end
+  end
+
+  return true
+end
+
 ---Execute a delegate function for each element in a table
 ---@generic V
 ---@param t table<string, V>
@@ -335,6 +375,9 @@ return {
   merge = merge,
   foreach = foreach,
   filter = filter,
+  find = find,
+  every = every,
+  any = any,
   weak = weak,
   file_exists = file_exists,
   open = open,
