@@ -1,5 +1,6 @@
 return {
   {
+    event = 'VeryLazy',
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
@@ -12,7 +13,21 @@ return {
   },
   {
     'mawkler/demicolon.nvim',
-    -- keys = { ';', ',', 't', 'f', 'T', 'F', ']', '[', ']d', '[d' }, -- Uncomment this to lazy load
+    keys = {
+      ';', ',',
+      't', 'f',
+      'T', 'F',
+      ']', '[',
+      ']d', '[d',
+      ']c', '[c',
+      ']s', '[s',
+      ']z', '[z',
+      ']q', '[q',
+      ']l', '[l',
+      ']<C-Q>', '[<C-Q>',
+      ']<C-L>', '[<C-L>',
+    }, -- Uncomment this to lazy load
+    -- event = 'VeryLazy',
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
       'nvim-treesitter/nvim-treesitter-textobjects',
@@ -22,6 +37,8 @@ return {
     end
   },
   {
+    -- event = 'VeryLazy',
+    event = { 'BufReadPre' , 'LspAttach' },
     'CKolkey/ts-node-action',
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
