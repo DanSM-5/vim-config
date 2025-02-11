@@ -5,6 +5,7 @@ local use_blink = os.getenv('USE_BLINK') == '1'
 return {
   {
     'williamboman/mason.nvim',
+    event = 'VeryLazy',
     config = function ()
       require('lsp-servers.nvim_mason').setup()
     end,
@@ -17,6 +18,30 @@ return {
     -- keys = { ']r', '[r' }, -- Uncomment to lazy load
     config = function ()
       require('config.nvim_refjump').setup()
+    end,
+  },
+  {
+    -- Find symbols
+    'stevearc/aerial.nvim',
+    -- keys = { { '<leader>fa' }, { '<leader>ss' }, { '<leader>sS' } },
+    -- cmd = {
+    --   'AerialToggle',
+    --   'AerialOpen',
+    --   'AerialOpenAll',
+    --   'AerialClose',
+    --   'AerialCloseAll',
+    --   'AerialNext',
+    --   'AerialPrev',
+    --   'AerialGo',
+    --   'AerialInfo',
+    --   'AerialNavToggle',
+    --   'AerialNavOpen',
+    --   'AerialNavClose',
+    -- },
+    event = 'VeryLazy',
+    config = function ()
+      -- Configure aerial.nvim
+      require('config.nvim_aerial').setup()
     end,
   },
   {
@@ -94,8 +119,6 @@ return {
           return 'make install_jsregexp'
         end)(),
       },
-      -- Find symbols
-      'stevearc/aerial.nvim',
       -- Dependency
       'nvim-tree/nvim-web-devicons',
       -- Ctags lsp
@@ -171,6 +194,7 @@ return {
   --   end
   -- },
   {
+    event = 'LspAttach',
     'DanSM-5/fzf-lsp.nvim',
     dependencies = {
       'nvim-lua/plenary.nvim',

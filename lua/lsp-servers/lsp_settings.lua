@@ -137,7 +137,7 @@ return {
     require('config.nvim_lspconfig').setup()
 
     -- Configure aerial.nvim
-    require('config.nvim_aerial').setup()
+    -- require('config.nvim_aerial').setup()
 
     -- Buffer information
     -- See `:help vim.lsp.buf`
