@@ -11,7 +11,7 @@ local function repeatable_jump_map(opts)
 end
 
 ---@param evt { buf: number, data?: { client_id?: number } }
-local function set_ref_key(evt)
+local function set_keymaps(evt)
   ---@type vim.lsp.Client[]
   local clients
 
@@ -68,9 +68,9 @@ return {
 
     -- Create extra mapping after change
     vim.api.nvim_create_autocmd('LspAttach', {
-      callback = set_ref_key,
+      callback = set_keymaps,
       desc = 'Add keymaps for refjump',
     })
   end,
-  set_ref_key = set_ref_key,
+  set_keymaps = set_keymaps,
 }

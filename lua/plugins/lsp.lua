@@ -17,35 +17,44 @@ return {
     -- commit = '95da9e8866fca4bae6bebfa66b202889997d7db1',
     keys = { ']r', '[r' }, -- Uncomment to lazy load
     config = function ()
-      require('config.nvim_refjump').setup()
+      local refjump_config = require('config.nvim_refjump')
+      refjump_config.setup()
       -- Set keys
       -- vim.api.nvim_win_get_buf(0)
       local bufnr = vim.api.nvim_get_current_buf()
-      require('config.nvim_refjump').set_ref_key({ buf = bufnr })
+      refjump_config.set_keymaps({ buf = bufnr })
     end,
   },
   {
     -- Find symbols
     'stevearc/aerial.nvim',
-    -- keys = { { '<leader>fa' }, { '<leader>ss' }, { '<leader>sS' } },
-    -- cmd = {
-    --   'AerialToggle',
-    --   'AerialOpen',
-    --   'AerialOpenAll',
-    --   'AerialClose',
-    --   'AerialCloseAll',
-    --   'AerialNext',
-    --   'AerialPrev',
-    --   'AerialGo',
-    --   'AerialInfo',
-    --   'AerialNavToggle',
-    --   'AerialNavOpen',
-    --   'AerialNavClose',
-    -- },
-    event = 'VeryLazy',
+    keys = {
+      '<leader>fa',
+      '<leader>ss',
+      '<leader>sS',
+      '[a', ']a'
+    },
+    cmd = {
+      'AerialToggle',
+      'AerialOpen',
+      'AerialOpenAll',
+      'AerialClose',
+      'AerialCloseAll',
+      'AerialNext',
+      'AerialPrev',
+      'AerialGo',
+      'AerialInfo',
+      'AerialNavToggle',
+      'AerialNavOpen',
+      'AerialNavClose',
+    },
+    -- event = 'VeryLazy',
     config = function ()
       -- Configure aerial.nvim
-      require('config.nvim_aerial').setup()
+      local aerial_config = require('config.nvim_aerial')
+      aerial_config.setup()
+      local bufnr = vim.api.nvim_get_current_buf()
+      aerial_config.set_keymaps(bufnr)
     end,
   },
   {
