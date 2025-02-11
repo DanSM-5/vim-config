@@ -10,6 +10,7 @@ local autopairs_deps = os.getenv('USE_BLINK') == '1' and {} or {
 return {
   {
     'ColinKennedy/cursor-text-objects.nvim',
+    event = 'VeryLazy',
     config = function ()
       require('config.nvim_cursor-text-objects').setup()
     end,
@@ -27,6 +28,7 @@ return {
   {
     -- enabled = false,
     'echasnovski/mini.ai',
+    event = 'VeryLazy',
     version = false,
     opts = {},
     config = function ()
