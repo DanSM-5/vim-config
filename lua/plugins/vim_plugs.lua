@@ -9,15 +9,18 @@ return {
   -- },
   {
     'inkarkat/vim-ReplaceWithRegister',
+    event = 'VeryLazy',
   },
   -- {
   --   'christoomey/vim-sort-motion',
   -- },
   {
     'DanSM-5/vim-system-copy',
+    event = 'VeryLazy',
   },
   {
     'mg979/vim-visual-multi',
+    event = 'VeryLazy',
     config = function ()
       -- Create highlight groups for VM
       vim.api.nvim_set_hl(0, 'VM_Custom_Cursor', { ctermfg = 0, ctermbg = 239, bg = '#39496e' })
@@ -40,6 +43,7 @@ return {
   },
   {
     'dyng/ctrlsf.vim',
+    event = 'VeryLazy',
   },
   {
     'tpope/vim-repeat',
@@ -53,9 +57,11 @@ return {
   },
   {
     'bkad/CamelCaseMotion',
+    event = 'VeryLazy',
   },
   {
     'haya14busa/vim-asterisk',
+    event = 'VeryLazy',
   },
   {
     'lambdalisue/vim-suda',
@@ -63,12 +69,14 @@ return {
   },
   {
     'psliwka/vim-smoothie',
+    event = 'VeryLazy',
   },
   -- {
   --   'airblade/vim-gitgutter'
   -- },
   {
     'xiyaowong/nvim-cursorword',
+    event = 'VeryLazy',
     config = function()
       -- NOTE: consider to keep or remove the background color and just keep the underline
       vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
@@ -100,6 +108,23 @@ return {
   },
   {
     'windwp/nvim-ts-autotag',
+    ft = {
+      'astro',
+      'glimmer',
+      'handlebars',
+      'html',
+      'javascript',
+      'jsx',
+      'markdown',
+      'php',
+      'rescript',
+      'svelte',
+      'tsx',
+      'twig',
+      'typescript',
+      'vue',
+      'xml',
+    },
     config = function ()
       require('nvim-ts-autotag').setup({
         opts = {
@@ -113,6 +138,7 @@ return {
   },
   {
     'wurli/split.nvim',
+    keys = { 'gs', 'gss', 'gS', 'gSS' },
     opts = {},
   },
 }

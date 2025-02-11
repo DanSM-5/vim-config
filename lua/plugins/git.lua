@@ -2,12 +2,14 @@
 return {
   {
     'tpope/vim-fugitive',
+    event = 'VeryLazy',
     dependencies = {
       'tpope/vim-rhubarb',
     },
   },
   {
     'lewis6991/gitsigns.nvim',
+    event = 'VeryLazy',
     config = function ()
       require('config.nvim_gitsigns').setup()
     end,
