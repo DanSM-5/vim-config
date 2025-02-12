@@ -1,4 +1,4 @@
-require('shared.types')
+---@module 'shared.types'
 
 local exclude_filetypes = {
   'help',

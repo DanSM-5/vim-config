@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 ---@param config { lspconfig_handler: LspHandlerFunc; servers: LspServersSettings[] }
 ---@return nil

@@ -1,4 +1,4 @@
-require('utils.types')
+---@module 'utils.types'
 
 -- Utility functions for neovim
 

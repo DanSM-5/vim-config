@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 ---This includes devices such as termux or runing inside containers
 ---which require special built binaries.

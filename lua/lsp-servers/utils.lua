@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 ---Start a lsp client by name
 ---@param name string

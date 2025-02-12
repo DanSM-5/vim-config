@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 ---Lsp servers to be setup when not using mason registry
 ---@type LspServersSettings[]

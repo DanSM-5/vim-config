@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 -- Manual lsp-config
 -- This runs when loading lsp from VimPlug
