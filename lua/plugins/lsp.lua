@@ -137,22 +137,18 @@ return {
       -- Ctags lsp
       -- 'netmute/ctags-lsp.nvim',
     },
-    event = 'VimEnter',
+    -- event = 'VeryLazy',
     config = function()
-      -- vim.api.nvim_create_autocmd('VimEnter', {
-      --   once = true,
-      --   callback = function ()
-      --     require('lsp-servers.lsp_settings').setup({ completions = { enable = { lazydev = true } } })
-      --   end
-      -- })
       require('lsp-servers.lsp_settings').setup({
         completions = {
           enable = { lazydev = true },
           engine = use_blink and 'blink' or 'cmp'
         }
       })
+      -- NOTE: Do not delay startup or cmp won't work
+      -- unless there is an lsp attached.
       -- Call lsp start manually to attempt to attach current buffer
-      vim.cmd('LspStart')
+      -- vim.cmd('LspStart')
     end,
   },
   -- TODO: Review how to use powershell editor services

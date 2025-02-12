@@ -246,7 +246,7 @@ local cmp_module = {
       })
     end
 
-    require('cmp_git').setup()
+    require('cmp_git').setup({})
     require('luasnip.loaders.from_vscode').lazy_load()
 
   end,
