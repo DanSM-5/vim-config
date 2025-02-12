@@ -6,8 +6,13 @@
 -- :h lua-guide
 -- :h lspconfig-all
 
+-- indicate wheter to use cmp or blink
+-- local use_blink = os.getenv('USE_BLINK') == '1'
+
 require('shared.big_files').setup()
 require('lsp-servers.nvim_mason').setup()
+-- NOTE: Only load cmp for now. Blink is not defined in vimstart.
+require('config.nvim_cmp').configure({ lazydev = false })
 require('lsp-servers.lsp_settings').setup()
 require('lsp-servers.nvim_fzf_lsp').setup()
 require('config.nvim_aerial').setup()

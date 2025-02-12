@@ -142,14 +142,6 @@ return {
     -- Buffer information
     -- See `:help vim.lsp.buf`
 
-    local completion_opts = { lazydev = opts.completions.enable.lazydev }
-    local completions_module = opts.completions.engine == 'blink'
-      and require('config.nvim_blink')
-      or require('config.nvim_cmp')
-
-    -- Setup the completions module. E.g. sources, keymaps, etc.
-    completions_module.configure(completion_opts)
-
     ---@type LspHandlerFunc
     local lspconfig_handler = get_lsp_handler()
 

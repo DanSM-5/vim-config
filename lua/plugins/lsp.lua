@@ -1,6 +1,19 @@
 -- indicate wheter to use cmp or blink
 local use_blink = os.getenv('USE_BLINK') == '1'
 
+local luasnip_spec = {
+  'L3MON4D3/LuaSnip',
+  -- follow latest release.
+  -- version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+  -- install jsregexp (optional!).
+  build = (function ()
+    if vim.fn.executable('make') == 0 then
+      return
+    end
+    return 'make install_jsregexp'
+  end)(),
+}
+
 -- Entry point of lsp related plugins
 return {
   {
@@ -32,7 +45,7 @@ return {
       '<leader>fa',
       '<leader>ss',
       '<leader>sS',
-      '[a', ']a'
+      '[a', ']a',
     },
     cmd = {
       'AerialToggle',
@@ -57,6 +70,78 @@ return {
       aerial_config.set_keymaps(bufnr)
     end,
   },
+
+  {
+    -- BLINK
+    'saghen/blink.cmp',
+    enabled = use_blink,
+    event = 'InsertEnter',
+    -- optional: provides snippets for the snippet source
+    -- dependencies = 'rafamadriz/friendly-snippets',
+    dependencies = {
+      -- Snippets
+      'rafamadriz/friendly-snippets',
+      luasnip_spec,
+      {
+        'saghen/blink.compat',
+        -- use the latest release, via version = '*', if you also use the latest release for blink.cmp
+        version = '*',
+        -- lazy.nvim will automatically load the plugin when it's required by blink.cmp
+        lazy = true,
+        -- make sure to set opts so that lazy.nvim calls blink.compat's setup
+        -- opts = {},
+      },
+      'petertriho/cmp-git',
+      'roginfarrer/cmp-css-variables',
+      'mikavilpas/blink-ripgrep.nvim',
+    },
+
+    -- use a release tag to download pre-built binaries
+    version = 'v0.*',
+    -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+    -- build = 'cargo build --release',
+    -- If you use nix, you can build from source using latest nightly rust with:
+    -- build = 'nix run .#build-plugin',
+
+    -- allows extending the providers array elsewhere in your config
+    -- without having to redefine it
+    opts_extend = { 'sources.default' },
+    config = function ()
+      require('config.nvim_blink').configure({ lazydev = true })
+    end
+  },
+
+  {
+    -- CMP
+    -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
+    -- NOTE: Using magazine.nvim as as nvim-cmp replacement
+    'iguanacucumber/magazine.nvim',
+    enabled = not use_blink,
+    event = 'InsertEnter',
+    name = 'nvim-cmp',
+    dependencies = {
+      -- Snippets
+      'rafamadriz/friendly-snippets',
+      luasnip_spec,
+      'saadparwaiz1/cmp_luasnip',
+      'petertriho/cmp-git',
+      'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-nvim-lsp-signature-help',
+      'roginfarrer/cmp-css-variables',
+      'lukas-reineke/cmp-rg',
+      'nvim-tree/nvim-web-devicons',
+      -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
+      -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
+      -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
+      -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
+      -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
+      -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
+    },
+    config = function ()
+      require('config.nvim_cmp').configure({ lazydev = true })
+    end,
+  },
+
   {
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -65,79 +150,16 @@ return {
       -- Lsp for linters/formatters
       'nvimtools/none-ls.nvim',
       -- Snippets
+      -- NOTE: Do not remove LuaSnip
       'L3MON4D3/LuaSnip',
       'rafamadriz/friendly-snippets',
-      -- Completions and sources
-      {
-        'saghen/blink.cmp',
-        enabled = use_blink,
-        -- optional: provides snippets for the snippet source
-        -- dependencies = 'rafamadriz/friendly-snippets',
-        dependencies = {
-          {
-            'saghen/blink.compat',
-            -- use the latest release, via version = '*', if you also use the latest release for blink.cmp
-            version = '*',
-            -- lazy.nvim will automatically load the plugin when it's required by blink.cmp
-            lazy = true,
-            -- make sure to set opts so that lazy.nvim calls blink.compat's setup
-            -- opts = {},
-          },
-          'petertriho/cmp-git',
-          'roginfarrer/cmp-css-variables',
-          'mikavilpas/blink-ripgrep.nvim',
-        },
-
-        -- use a release tag to download pre-built binaries
-        version = 'v0.*',
-        -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-        -- build = 'cargo build --release',
-        -- If you use nix, you can build from source using latest nightly rust with:
-        -- build = 'nix run .#build-plugin',
-
-        -- allows extending the providers array elsewhere in your config
-        -- without having to redefine it
-        opts_extend = { 'sources.default' },
-      },
-      {
-        'iguanacucumber/magazine.nvim',
-        -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
-        -- NOTE: Using magazine.nvim as as nvim-cmp replacement
-        enabled = not use_blink,
-        name = 'nvim-cmp',
-        dependencies = {
-          'saadparwaiz1/cmp_luasnip',
-          'petertriho/cmp-git',
-          'hrsh7th/cmp-nvim-lsp',
-          'hrsh7th/cmp-nvim-lsp-signature-help',
-          'roginfarrer/cmp-css-variables',
-          'lukas-reineke/cmp-rg',
-          -- 'hrsh7th/cmp-nvim-lua' -- { name = 'nvim_lua'  }
-          -- 'hrsh7th/cmp-buffer' -- { name = 'path' }
-          -- 'https://codeberg.org/FelipeLema/cmp-async-path' -- { name = 'async_path' }
-          -- 'hrsh7th/cmp-path' -- { name = 'buffer' }
-          -- 'hrsh7th/cmp-cmdline' -- { name = 'cmd' }
-          -- 'Jezda1337/nvim-html-css' -- { name = 'html-css' }
-        }
-      },
-      {
-        'L3MON4D3/LuaSnip',
-        -- follow latest release.
-        -- version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-        -- install jsregexp (optional!).
-        build = (function ()
-          if vim.fn.executable('make') == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
-      },
       -- Dependency
       'nvim-tree/nvim-web-devicons',
       -- Ctags lsp
       -- 'netmute/ctags-lsp.nvim',
     },
-    -- event = 'VeryLazy',
+    -- event = 'VimEnter',
+    event = 'VeryLazy',
     config = function()
       require('lsp-servers.lsp_settings').setup({
         completions = {
@@ -145,10 +167,8 @@ return {
           engine = use_blink and 'blink' or 'cmp'
         }
       })
-      -- NOTE: Do not delay startup or cmp won't work
-      -- unless there is an lsp attached.
-      -- Call lsp start manually to attempt to attach current buffer
-      -- vim.cmd('LspStart')
+      -- NOTE: Call lsp start manually to attempt to attach current buffer
+      vim.cmd('LspStart')
     end,
   },
   -- TODO: Review how to use powershell editor services
