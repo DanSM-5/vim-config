@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 local kind_icons = {
   Array = "󰅪",
@@ -253,6 +253,7 @@ local cmp_module = {
 
   get_update_capabilities = function ()
     local cmp_lsp = require('cmp_nvim_lsp')
+    ---@type lsp.ClientCapabilities
     local capabilities =
       vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
 
@@ -260,6 +261,7 @@ local cmp_module = {
     local update_capabilities = function (base)
       if base.capabilities then
         local config = vim.tbl_deep_extend('force', base, {
+          ---@type lsp.ClientCapabilities
           capabilities = vim.tbl_deep_extend('force', {},
             vim.lsp.protocol.make_client_capabilities(),
             cmp_lsp.default_capabilities(base.capabilities))

@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 ---@type config.CompletionModule
 local blink_module = {
@@ -316,6 +316,7 @@ local blink_module = {
 
   get_update_capabilities = function ()
     local blink = require('blink.cmp')
+    ---@type lsp.ClientCapabilities
     local capabilities =
       vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), blink.get_lsp_capabilities())
 
@@ -324,6 +325,7 @@ local blink_module = {
     ---@return LspConfigExtended
     local function update_capabilities(base)
       local config = vim.tbl_deep_extend('force', {}, base, {
+        ---@type lsp.ClientCapabilities
         capabilities = base.capabilities and blink.get_lsp_capabilities(base.capabilities) or capabilities
       })
 

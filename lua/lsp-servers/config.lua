@@ -1,4 +1,4 @@
-require('lsp-servers.types')
+---@module 'lsp-servers.types'
 
 ---@type table<string, LspConfigExtended>
 local configs = {

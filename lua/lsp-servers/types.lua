@@ -2,6 +2,7 @@
 
 --- Same as lspconfig.Config but to avoid issues if module is not loaded
 --- @class LspConfigExtended: vim.lsp.ClientConfig
+--- @field cmd? string[]|fun(dispatchers: vim.lsp.rpc.Dispatchers): vim.lsp.rpc.PublicClient
 --- @field enabled? boolean
 --- @field single_file_support? boolean
 --- @field filetypes? string[]
