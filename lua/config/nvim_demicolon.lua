@@ -5,6 +5,7 @@ return {
       -- prevent diagnostic_motions
       keymaps = {
         diagnostic_motions = false,
+        horizontal_motions = false,
       },
       integrations = {
         neotest = { enabled = false },

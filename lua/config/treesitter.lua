@@ -1,10 +1,242 @@
 -- Tree sitter configs
 
+local function set_keymaps()
+  local repeat_motion = require('utils.repeat_motion')
+  local repeat_pair = repeat_motion.repeat_pair
+  local create_repeatable_pair = repeat_motion.create_repeatable_pair
+  -- NOTE: Setting repeatable keymaps ',' (left) and ';' (right)
+  repeat_motion.set_motion_keys()
+
+  -- Jump to next conflict
+  local jumpconflict_next = function()
+    -- vim.cmd([[execute "normal \<Plug>JumpconflictContextNext"]])
+    vim.cmd.normal(vim.keycode('<Plug>JumpconflictContextNext'))
+  end
+  local jumpconflict_prev = function()
+    -- vim.cmd([[execute "normal \<Plug>JumpconflictContextPrevious"]])
+    vim.cmd.normal(vim.keycode('<Plug>JumpconflictContextPrevious'))
+  end
+
+  repeat_pair({
+    keys = 'n',
+    desc_forward = '[JumpConflict] Move to next conflict marker',
+    desc_backward = '[JumpConflict] Move to previous conflict marker',
+    on_forward = jumpconflict_next,
+    on_backward = jumpconflict_prev,
+  })
+
+  -- Move items in quickfix
+  local quickfix_next = function()
+    vim.cmd('silent! cnext')
+  end
+  local quickfix_prev = function()
+    vim.cmd('silent! cprev')
+  end
+
+  repeat_pair({
+    keys = 'q',
+    desc_forward = '[Quickfix] Move to next error',
+    desc_backward = '[Quickfix] Move to previous error',
+    on_forward = quickfix_next,
+    on_backward = quickfix_prev,
+  })
+
+  -- Move items in quickfix
+  local locationlist_next = function()
+    vim.cmd('silent! lnext')
+  end
+  local locationlist_prev = function()
+    vim.cmd('silent! lprev')
+  end
+
+  repeat_pair({
+    keys = 'l',
+    -- prefix_forward = '<leader>]',
+    -- prefix_backward = '<leader>[',
+    desc_forward = '[Locationlist] Move to next item',
+    desc_backward = '[Locationlist] Move to previous item',
+    on_forward = locationlist_next,
+    on_backward = locationlist_prev,
+  })
+
+  -- Move to next todo comment
+  local todo_next = function()
+    require('todo-comments').jump_next()
+  end
+  local todo_prev = function()
+    require('todo-comments').jump_prev()
+  end
+
+  repeat_pair({
+    keys = 't',
+    desc_forward = '[TodoComments] Move to next todo comment',
+    desc_backward = '[TodoComments] Move to previous todo comment',
+    on_forward = todo_next,
+    on_backward = todo_prev,
+  })
+
+
+  local ctrl_w = vim.api.nvim_replace_termcodes('<C-w>', true, true, true)
+  local vsplit_bigger, vsplit_smaller = create_repeatable_pair(function()
+    vim.fn.feedkeys(ctrl_w .. '5>', 'n')
+  end, function()
+    vim.fn.feedkeys(ctrl_w .. '5<', 'n')
+  end)
+
+  vim.keymap.set('n', '<A-.>', vsplit_bigger, {
+    desc = '[VSplit] Make vsplit bigger',
+    noremap = true
+  })
+  vim.keymap.set('n', '<A-,>', vsplit_smaller, {
+    desc = '[VSplit] Make vsplit smaller',
+    noremap = true
+  })
+
+  local split_bigger, split_smaller = create_repeatable_pair(function()
+    vim.fn.feedkeys(ctrl_w .. '+', 'n')
+  end, function()
+    vim.fn.feedkeys(ctrl_w .. '-', 'n')
+  end)
+
+  vim.keymap.set('n', '<A-t>', split_bigger, {
+    desc = '[Split] Make split bigger',
+    noremap = true
+  })
+  vim.keymap.set('n', '<A-s>', split_smaller, {
+    desc = '[Split] Make split smaller',
+    noremap = true
+  })
+
+  -- Diagnostic mappings
+  local diagnostic_jump_next = nil
+  local diagnostic_jump_prev = nil
+
+  if vim.diagnostic.jump then
+    diagnostic_jump_next = vim.diagnostic.jump
+    diagnostic_jump_prev = vim.diagnostic.jump
+  else
+    -- Deprecated in favor of `vim.diagnostic.jump` in Neovim 0.11.0
+    diagnostic_jump_next = vim.diagnostic.goto_next
+    diagnostic_jump_prev = vim.diagnostic.goto_prev
+  end
+
+  local diagnostic_next,
+  diagnostic_prev
+  = create_repeatable_pair(
+  ---Move to next diagnostic
+  ---@param options vim.diagnostic.GotoOpts | nil
+    function(options)
+      local opts = options or {}
+      ---@diagnostic disable-next-line
+      opts.count = 1 * vim.v.count1
+      diagnostic_jump_next(opts)
+    end,
+    ---Move to provious diagnostic
+    ---@param options vim.diagnostic.GotoOpts | nil
+    function(options)
+      local opts = options or {}
+      ---@diagnostic disable-next-line
+      opts.count = -1 * vim.v.count1
+      diagnostic_jump_prev(opts)
+    end
+  )
+
+  -- diagnostic
+  vim.keymap.set('n', ']d', function()
+      diagnostic_next({ wrap = true })
+    end,
+    { desc = 'LSP: Go to next diagnostic message', silent = true, noremap = true }
+  )
+  vim.keymap.set('n', '[d', function()
+      diagnostic_prev({ wrap = true })
+    end,
+    { desc = 'LSP: Go to previous diagnostic message', silent = true, noremap = true }
+  )
+
+  -- diagnostic ERROR
+  vim.keymap.set('n', ']e', function()
+    diagnostic_next({ severity = vim.diagnostic.severity.ERROR, wrap = true })
+  end, { desc = 'LSP: Go to next error', silent = true, noremap = true })
+  vim.keymap.set('n', '[e', function()
+    diagnostic_prev({ severity = vim.diagnostic.severity.ERROR, wrap = true })
+  end, { desc = 'LSP: Go to previous error', silent = true, noremap = true })
+
+  -- diagnostic WARN
+  vim.keymap.set('n', ']w', function()
+    diagnostic_next({ severity = vim.diagnostic.severity.WARN, wrap = true })
+  end, { desc = 'LSP: Go to next warning', silent = true, noremap = true })
+  vim.keymap.set('n', '[w', function()
+    diagnostic_prev({ severity = vim.diagnostic.severity.WARN, wrap = true })
+  end, { desc = 'LSP: Go to previous warning', silent = true, noremap = true })
+
+  -- diagnostic INFO
+  vim.keymap.set('n', ']i', function()
+    diagnostic_next({ severity = vim.diagnostic.severity.INFO })
+  end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
+  vim.keymap.set('n', '[i', function()
+    diagnostic_prev({ severity = vim.diagnostic.severity.INFO })
+  end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
+
+  -- diagnostic HINT
+  vim.keymap.set('n', ']h', function()
+    diagnostic_next({ severity = vim.diagnostic.severity.HINT })
+  end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
+  vim.keymap.set('n', '[h', function()
+    diagnostic_prev({ severity = vim.diagnostic.severity.HINT })
+  end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
+
+  -- Override next-prev matching bracket
+  -- local next_close_bracket, prev_close_bracket = create_repeatable_pair(
+  --   function ()
+  --     vim.fn.search('}')
+  --   end, function ()
+  --     vim.fn.search('}', 'b')
+  --   end
+  -- )
+  -- local next_open_bracket, prev_open_bracket = create_repeatable_pair(
+  --   function ()
+  --     vim.fn.search('{')
+  --   end, function ()
+  --     vim.fn.search('{', 'b')
+  --   end
+  -- )
+  -- vim.keymap.set('n', ']}', next_close_bracket, { desc = '[Bracket]: Go to next close bracket', silent = true, noremap = true })
+  -- vim.keymap.set('n', '[}', prev_close_bracket, { desc = '[Bracket]: Go to previous close bracket', silent = true, noremap = true })
+  -- vim.keymap.set('n', ']{', next_open_bracket, { desc = '[Bracket]: Go to next open bracket', silent = true, noremap = true })
+  -- vim.keymap.set('n', '[{', prev_open_bracket, { desc = '[Bracket]: Go to previous open bracket', silent = true, noremap = true })
+
+  local next_matching_bracket, prev_matching_bracket = create_repeatable_pair(
+    function()
+      ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
+      vim.fn.searchpair('{', '', '}')
+    end, function()
+      ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
+      vim.fn.searchpair('{', '', '}', 'b')
+    end
+  )
+  local next_bracket_pair, prev_bracket_pair = create_repeatable_pair(
+    function()
+      vim.fn.search('[{}]')
+    end, function()
+      vim.fn.search('[{}]', 'b')
+    end
+  )
+  vim.keymap.set('n', ']}', next_bracket_pair,
+    { desc = '[Bracket]: Go to next bracket pair', silent = true, noremap = true })
+  vim.keymap.set('n', '[}', prev_bracket_pair,
+    { desc = '[Bracket]: Go to previous bracket pair', silent = true, noremap = true })
+  vim.keymap.set('n', ']{', next_matching_bracket,
+    { desc = '[Bracket]: Go to next matching bracket', silent = true, noremap = true })
+  vim.keymap.set('n', '[{', prev_matching_bracket,
+    { desc = '[Bracket]: Go to previous matching bracket', silent = true, noremap = true })
+end
+
 return {
+  set_keymaps = set_keymaps,
   setup = function()
     require('nvim-treesitter').define_modules({
       fold_treesiter = {
-        attach = function (buf, lang)
+        attach = function(buf, lang)
           -- Options set only for buffers with treesitter parser
           vim.opt_local.foldmethod = 'expr'
           vim.opt_local.foldexpr = 'nvim_treesitter#foldexpr()'
@@ -14,14 +246,14 @@ return {
           -- set nofoldenable
           -- set foldlevel=99
         end,
-        detach = function (buf)
+        detach = function(buf)
           -- Unset changes
           -- vim.opt_local.foldmethod = 'indent'
           -- vim.opt_local.foldexpr = ''
           vim.opt_local.foldmethod = vim.go.foldmethod
           vim.opt_local.foldexpr = vim.go.foldexpr
         end,
-        is_supported = function (lang)
+        is_supported = function(lang)
           return true
         end,
       }
@@ -92,8 +324,8 @@ return {
           -- mapping query_strings to modes.
           selection_modes = {
             ['@parameter.outer'] = 'v', -- charwise
-            ['@function.outer'] = 'v', -- 'V' -- linewise
-            ['@class.outer'] = 'v' -- '<c-v>', -- blockwise
+            ['@function.outer'] = 'v',  -- 'V' -- linewise
+            ['@class.outer'] = 'v'      -- '<c-v>', -- blockwise
           },
           -- If you set this to `true` (default is `false`) then any textobject is
           -- extended to include preceding or succeeding whitespace. Succeeding
@@ -154,236 +386,11 @@ return {
     })
 
     -- Create repeatable mappings using nvim-treesitter-textobjects
+    -- set_keymaps()
     vim.api.nvim_create_autocmd('VimEnter', {
       desc = 'Create repeatable bindings',
       pattern = { '*' },
-      callback = function()
-        local repeat_motion = require('utils.repeat_motion')
-        local repeat_pair = repeat_motion.repeat_pair
-        local create_repeatable_pair = repeat_motion.create_repeatable_pair
-        -- NOTE: Letting demicolon set the motion keys but otherwise motions can be repeated by calling
-        -- the following function
-        -- require('utils.repeat_motion').set_motion_keys()
-
-        -- Jump to next conflict
-        local jumpconflict_next = function()
-          -- vim.cmd([[execute "normal \<Plug>JumpconflictContextNext"]])
-          vim.cmd.normal(vim.keycode('<Plug>JumpconflictContextNext'))
-        end
-        local jumpconflict_prev = function()
-          -- vim.cmd([[execute "normal \<Plug>JumpconflictContextPrevious"]])
-          vim.cmd.normal(vim.keycode('<Plug>JumpconflictContextPrevious'))
-        end
-
-        repeat_pair({
-          keys = 'n',
-          desc_forward = '[JumpConflict] Move to next conflict marker',
-          desc_backward = '[JumpConflict] Move to previous conflict marker',
-          on_forward = jumpconflict_next,
-          on_backward = jumpconflict_prev,
-        })
-
-        -- Move items in quickfix
-        local quickfix_next = function()
-          vim.cmd('silent! cnext')
-        end
-        local quickfix_prev = function()
-          vim.cmd('silent! cprev')
-        end
-
-        repeat_pair({
-          keys = 'q',
-          desc_forward = '[Quickfix] Move to next error',
-          desc_backward = '[Quickfix] Move to previous error',
-          on_forward = quickfix_next,
-          on_backward = quickfix_prev,
-        })
-
-        -- Move items in quickfix
-        local locationlist_next = function()
-          vim.cmd('silent! lnext')
-        end
-        local locationlist_prev = function()
-          vim.cmd('silent! lprev')
-        end
-
-        repeat_pair({
-          keys = 'l',
-          -- prefix_forward = '<leader>]',
-          -- prefix_backward = '<leader>[',
-          desc_forward = '[Locationlist] Move to next item',
-          desc_backward = '[Locationlist] Move to previous item',
-          on_forward = locationlist_next,
-          on_backward = locationlist_prev,
-        })
-
-        -- Move to next todo comment
-        local todo_next = function ()
-          require('todo-comments').jump_next()
-        end
-        local todo_prev = function ()
-          require('todo-comments').jump_prev()
-        end
-
-        repeat_pair({
-          keys = 't',
-          desc_forward = '[TodoComments] Move to next todo comment',
-          desc_backward = '[TodoComments] Move to previous todo comment',
-          on_forward = todo_next,
-          on_backward = todo_prev,
-        })
-
-
-        local ctrl_w = vim.api.nvim_replace_termcodes('<C-w>', true, true, true)
-        local vsplit_bigger, vsplit_smaller  = create_repeatable_pair(function ()
-          vim.fn.feedkeys(ctrl_w .. '5>', 'n')
-        end, function ()
-            vim.fn.feedkeys(ctrl_w .. '5<', 'n')
-          end)
-
-        vim.keymap.set('n', '<A-.>', vsplit_bigger, {
-          desc = '[VSplit] Make vsplit bigger',
-          noremap = true
-        })
-        vim.keymap.set('n', '<A-,>', vsplit_smaller, {
-          desc = '[VSplit] Make vsplit smaller',
-          noremap = true
-        })
-
-        local split_bigger, split_smaller = create_repeatable_pair(function ()
-          vim.fn.feedkeys(ctrl_w .. '+', 'n')
-        end, function ()
-            vim.fn.feedkeys(ctrl_w .. '-', 'n')
-          end)
-
-        vim.keymap.set('n', '<A-t>', split_bigger, {
-          desc = '[Split] Make split bigger',
-          noremap = true
-        })
-        vim.keymap.set('n', '<A-s>', split_smaller, {
-          desc = '[Split] Make split smaller',
-          noremap = true
-        })
-
-        -- Diagnostic mappings
-        local diagnostic_jump_next = nil
-        local diagnostic_jump_prev = nil
-
-        if vim.diagnostic.jump then
-          diagnostic_jump_next = vim.diagnostic.jump
-          diagnostic_jump_prev = vim.diagnostic.jump
-        else
-          -- Deprecated in favor of `vim.diagnostic.jump` in Neovim 0.11.0
-          diagnostic_jump_next = vim.diagnostic.goto_next
-          diagnostic_jump_prev = vim.diagnostic.goto_prev
-        end
-
-        local diagnostic_next,
-        diagnostic_prev
-        = create_repeatable_pair(
-          ---Move to next diagnostic
-          ---@param options vim.diagnostic.GotoOpts | nil
-          function (options)
-            local opts = options or {}
-            ---@diagnostic disable-next-line
-            opts.count = 1 * vim.v.count1
-            diagnostic_jump_next(opts)
-          end,
-          ---Move to provious diagnostic
-          ---@param options vim.diagnostic.GotoOpts | nil
-          function (options)
-            local opts = options or {}
-            ---@diagnostic disable-next-line
-            opts.count = -1 * vim.v.count1
-            diagnostic_jump_prev(opts)
-          end
-        )
-
-        -- diagnostic
-        vim.keymap.set( 'n', ']d', function ()
-          diagnostic_next({ wrap = true })
-        end,
-          { desc = 'LSP: Go to next diagnostic message', silent = true, noremap = true }
-        )
-        vim.keymap.set( 'n', '[d', function ()
-          diagnostic_prev({ wrap = true })
-        end,
-          { desc = 'LSP: Go to previous diagnostic message', silent = true, noremap = true }
-        )
-
-        -- diagnostic ERROR
-        vim.keymap.set('n', ']e', function()
-          diagnostic_next({ severity = vim.diagnostic.severity.ERROR, wrap = true })
-        end, { desc = 'LSP: Go to next error', silent = true, noremap = true })
-        vim.keymap.set('n', '[e', function()
-          diagnostic_prev({ severity = vim.diagnostic.severity.ERROR, wrap = true })
-        end, { desc = 'LSP: Go to previous error', silent = true, noremap = true })
-
-        -- diagnostic WARN
-        vim.keymap.set('n', ']w', function()
-          diagnostic_next({ severity = vim.diagnostic.severity.WARN, wrap = true })
-        end, { desc = 'LSP: Go to next warning', silent = true, noremap = true })
-        vim.keymap.set('n', '[w', function()
-          diagnostic_prev({ severity = vim.diagnostic.severity.WARN, wrap = true })
-        end, { desc = 'LSP: Go to previous warning', silent = true, noremap = true })
-
-        -- diagnostic INFO
-        vim.keymap.set('n', ']i', function()
-          diagnostic_next({ severity = vim.diagnostic.severity.INFO })
-        end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
-        vim.keymap.set('n', '[i', function()
-          diagnostic_prev({ severity = vim.diagnostic.severity.INFO })
-        end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
-
-        -- diagnostic HINT
-        vim.keymap.set('n', ']h', function()
-          diagnostic_next({ severity = vim.diagnostic.severity.HINT })
-        end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
-        vim.keymap.set('n', '[h', function()
-          diagnostic_prev({ severity = vim.diagnostic.severity.HINT })
-        end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
-
-        -- Override next-prev matching bracket
-        -- local next_close_bracket, prev_close_bracket = create_repeatable_pair(
-        --   function ()
-        --     vim.fn.search('}')
-        --   end, function ()
-        --     vim.fn.search('}', 'b')
-        --   end
-        -- )
-        -- local next_open_bracket, prev_open_bracket = create_repeatable_pair(
-        --   function ()
-        --     vim.fn.search('{')
-        --   end, function ()
-        --     vim.fn.search('{', 'b')
-        --   end
-        -- )
-        -- vim.keymap.set('n', ']}', next_close_bracket, { desc = '[Bracket]: Go to next close bracket', silent = true, noremap = true })
-        -- vim.keymap.set('n', '[}', prev_close_bracket, { desc = '[Bracket]: Go to previous close bracket', silent = true, noremap = true })
-        -- vim.keymap.set('n', ']{', next_open_bracket, { desc = '[Bracket]: Go to next open bracket', silent = true, noremap = true })
-        -- vim.keymap.set('n', '[{', prev_open_bracket, { desc = '[Bracket]: Go to previous open bracket', silent = true, noremap = true })
-
-        local next_matching_bracket, prev_matching_bracket = create_repeatable_pair(
-          function ()
-            ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
-            vim.fn.searchpair('{', '', '}')
-          end, function ()
-            ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
-            vim.fn.searchpair('{', '', '}', 'b')
-          end
-        )
-        local next_bracket_pair, prev_bracket_pair = create_repeatable_pair(
-          function ()
-            vim.fn.search('[{}]')
-          end, function ()
-            vim.fn.search('[{}]', 'b')
-          end
-        )
-        vim.keymap.set('n', ']}', next_bracket_pair, { desc = '[Bracket]: Go to next bracket pair', silent = true, noremap = true })
-        vim.keymap.set('n', '[}', prev_bracket_pair, { desc = '[Bracket]: Go to previous bracket pair', silent = true, noremap = true })
-        vim.keymap.set('n', ']{', next_matching_bracket, { desc = '[Bracket]: Go to next matching bracket', silent = true, noremap = true })
-        vim.keymap.set('n', '[{', prev_matching_bracket, { desc = '[Bracket]: Go to previous matching bracket', silent = true, noremap = true })
-      end,
+      callback = set_keymaps
     })
 
     -- local treesitterKeymaps = vim.api.nvim_create_augroup('TreesitterKeymaps', { clear = true })
