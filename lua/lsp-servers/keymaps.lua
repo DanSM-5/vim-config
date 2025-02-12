@@ -46,6 +46,7 @@ return {
     end
 
     -- Enable completion triggered by <C-x><C-o>
+    -- Should now be set by default. Set anyways.
     vim.bo[buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     -- Wrapper for setting maps with description
@@ -64,10 +65,21 @@ return {
       vim.keymap.set(mode, key, func, opts)
     end
 
-    set_map('n', '<space>td',  function()
+    --  grr gra grn gri i_CTRL-S Some keymaps are created unconditionally when Nvim starts:
+    -- "grn" is mapped in Normal mode to vim.lsp.buf.rename()
+    -- "gra" is mapped in Normal and Visual mode to vim.lsp.buf.code_action()
+    -- "grr" is mapped in Normal mode to vim.lsp.buf.references()
+    -- "gri" is mapped in Normal mode to vim.lsp.buf.implementation()
+    -- "gO" is mapped in Normal mode to vim.lsp.buf.document_symbol()
+    -- CTRL-S is mapped in Insert mode to vim.lsp.buf.signature_help()
+    -- Ref: https://neovim.io/doc/user/lsp.html
+    -- TODO: Should we change gr mapping and use defaults? 🤔
+    -- Seems not to work including gO and i_<c-s> in v0.10.4
+
+    set_map('n', '<space>td', function()
       vim.diagnostic.enable(not vim.diagnostic.is_enabled())
     end, 'LSP: Toggle diagnostics')
-    set_map('n', '<space>ti',  function()
+    set_map('n', '<space>ti', function()
       vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ nil }))
     end, 'LSP: Toggle inlay hints')
     -- Buffer local mappings.
@@ -91,8 +103,8 @@ return {
     set_map('n', '<space>f', function()
       vim.lsp.buf.format({ async = true })
     end, 'LSP: Format buffer')
-    set_map('n', '<space>Ic', vim.lsp.buf.incoming_calls, 'LSP: Incoming Calls')
-    set_map('n', '<space>Oc', vim.lsp.buf.outgoing_calls, 'LSP: Outgoing Calls')
+    set_map('n', '<space>ci', vim.lsp.buf.incoming_calls, 'LSP: Incoming Calls')
+    set_map('n', '<space>co', vim.lsp.buf.outgoing_calls, 'LSP: Outgoing Calls')
   end,
 }
 
