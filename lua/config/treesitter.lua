@@ -385,14 +385,6 @@ return {
       },
     })
 
-    -- Create repeatable mappings using nvim-treesitter-textobjects
-    -- set_keymaps()
-    vim.api.nvim_create_autocmd('VimEnter', {
-      desc = 'Create repeatable bindings',
-      pattern = { '*' },
-      callback = set_keymaps
-    })
-
     -- local treesitterKeymaps = vim.api.nvim_create_augroup('TreesitterKeymaps', { clear = true })
     -- vim.api.nvim_create_autocmd('BufEnter', {
     --   group = treesitterKeymaps,

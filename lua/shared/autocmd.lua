@@ -34,3 +34,12 @@ vim.api.nvim_create_autocmd('RecordingLeave', {
   end
 })
 
+-- Create repeatable mappings using nvim-treesitter-textobjects
+vim.api.nvim_create_autocmd('VimEnter', {
+  desc = 'Create repeatable bindings',
+  pattern = { '*' },
+  callback = function ()
+    require('config.treesitter').set_keymaps()
+  end
+})
+
