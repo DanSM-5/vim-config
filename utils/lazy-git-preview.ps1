@@ -79,6 +79,7 @@ function get_fzf_down_options() {
     '--header', 'ctrl-d: Diff | ctrl-a: All | ctrl-f: HEAD | ctrl-y: Copy',
     '--prompt', 'Commits> ',
     '--preview', $preview,
+    '--preview-window', 'right,50%,wrap',
     '--with-shell', "$shell_cmd -NoLogo -NonInteractive -NoProfile -Command",
     '--ansi',
     '--no-sort',

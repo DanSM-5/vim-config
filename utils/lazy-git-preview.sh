@@ -73,6 +73,7 @@ fzf-down () {
     --header 'ctrl-d: Diff | ctrl-a: All | ctrl-f: HEAD | ctrl-y: Copy' \
     --prompt 'Commits> ' \
     --preview "$preview" \
+	  --preview-window 'right,50%,wrap' \
     --ansi --no-sort --reverse \
     --print-query --expect=ctrl-d \
     "--history=$fzf_history/fzf-git_show" \
