@@ -26,7 +26,7 @@ function! utils#msys_to_windows_path(path) abort
 endfunction
 
 function! utils#windows_to_msys_path(path) abort
-  let slashidx = stridx(path, '/')
+  let slashidx = stridx(a:path, '/')
   if slashidx == 0
     " If the very first characted of the path is a '/'
     " then it should be already in msys format
