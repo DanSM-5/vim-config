@@ -33,7 +33,7 @@ let s:fzf_bind_options = s:fzf_base_options + [
       \      '--bind', 'alt-d:deselect-all']
 let g:fzf_preview_options = s:fzf_bind_options + [
       \ '--layout=reverse',
-      \ '--preview-window', '60%',
+      \ '--preview-window', '60%,wrap',
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
       \ ]
 let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
@@ -863,7 +863,7 @@ function! LiveGrep(query, fullscreen)
           \     'options': ['--disabled', '--query', a:query,
           \                 '--ansi', '--prompt', 'LG> ',
           \                 '--header', '| CTRL-R (LG mode) | CTRL-F (FZF mode) |',
-          \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2',
+          \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap',
           \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(LG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
           \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
           \                 '--bind', 'start:reload:'.initial_command,
@@ -897,7 +897,7 @@ function RipgrepBase(command_fmt, query, prompt, fullscreen, options) abort
         \     'options': ['--disabled', '--query', a:query,
         \                 '--ansi', '--prompt', a:prompt,
         \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
-        \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2',
+        \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap',
         \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt('.a:prompt.')+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
         \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
         \                 '--bind', 'start:reload:'.initial_command,
@@ -1046,7 +1046,7 @@ endfunction
 "       \     '--prompt', 'Open Txt> ',
 "       \     '--multi', '--ansi',
 "       \     '--layout=reverse',
-"       \     '--preview-window', '60%',
+"       \     '--preview-window', '60%,wrap',
 "       \     '--query', a:query,
 "       \     '--preview', preview]
 "       \ }

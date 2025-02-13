@@ -21,7 +21,7 @@ local fzf_bind_options = array_concat(fzf_base_options, {
 
 local fzf_preview_options = array_concat(fzf_bind_options, {
        '--layout=reverse',
-       '--preview-window', '60%',
+       '--preview-window', '60%,wrap',
        '--preview', 'bat -pp --color=always --style=numbers {}' })
 
 local fzf_original_default_opts = vim.env.FZF_DEFAULT_OPTS
@@ -85,7 +85,7 @@ local fzf = function (opts)
   --       '--delimiter',
   --       ':',
   --       '--preview-window',
-  --       '+{2}-/2',
+  --       '+{2}-/2,wrap',
   --     })
   --     vim.list_extend(fzf_opts, vim.fn['fzf#vim#with_preview']().options)
   --   end

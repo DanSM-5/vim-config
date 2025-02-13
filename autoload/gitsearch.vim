@@ -132,7 +132,7 @@ function gitsearch#search_common(query, fullscreen, cmd) abort
   let reload = printf(cmd, '{q}')
   let copy_cmd = s:GetCopyCmd()
   let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . ' || true'
-  let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+  let preview_window = a:fullscreen ? 'up,80%,wrap' : 'right,80%,wrap'
   let options = [
     \     '--prompt', 'GitSearch> ',
     \     '--disabled',
@@ -184,7 +184,7 @@ function! gitsearch#file(file, fullscreen) abort
     let bat_style = empty($BAT_STYLE) ? 'numbers,header' : $BAT_STYLE
     let preview_file = preview_file . ' | bat --color=always --style=' . bat_style . ' --file-name ' . forward_path
   endif
-  let preview_window = a:fullscreen ? 'up,70%' : 'right,70%'
+  let preview_window = a:fullscreen ? 'up,70%,wrap' : 'right,70%,wrap'
   let options = { 'source': source, 'options': [
         \    '--prompt', 'File History> ',
         \    '--bind', 'ctrl-y:execute-silent(' . copy_cmd . ')+bell',

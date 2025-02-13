@@ -163,9 +163,9 @@ endfunction
 function! utils#fzf_set_preview_window(spec, fullscreen) abort
   let new_spec = utils#clone_dictionary(a:spec)
   if a:fullscreen
-    let new_spec.options = new_spec.options + [ '--preview-window', 'up,60%' ]
+    let new_spec.options = new_spec.options + [ '--preview-window', 'up,60%,wrap' ]
   else
-    let new_spec.options = new_spec.options + [ '--preview-window', 'right,60%' ]
+    let new_spec.options = new_spec.options + [ '--preview-window', 'right,60%,wrap' ]
   endif
 
   return new_spec

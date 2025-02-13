@@ -74,7 +74,7 @@ function! fzftxt#select(query, fullscreen) abort
       \     'options': [
       \     '--height', '80%', '--min-height', '20',
       \     '--delimiter', ':',
-      \     '--preview-window', '+{2}-/2',
+      \     '--preview-window', '+{2}-/2,60%,wrap',
       \     '--prompt', 'Files> ',
       \     '--multi', '--ansi', '--border',
       \     '--info=inline', '--cycle',
@@ -97,7 +97,6 @@ function! fzftxt#select(query, fullscreen) abort
       \     '--bind', 'change:reload:' . grep_command,
       \     '--bind', 'start:unbind(change)',
       \     '--layout=reverse',
-      \     '--preview-window', '60%',
       \     '--preview', s:fzf_preview,
       \     '--query', a:query]
       \ }
@@ -117,7 +116,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
   let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
   let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
   let source_command = 'fd --color=always -tf '
-  " let preview_window = a:fullscreen ? 'up,80%' : 'right,80%'
+  " let preview_window = a:fullscreen ? 'up,80%,wrap' : 'right,80%,wrap'
   " \     '--preview-window', preview_window,
 
   silent call mkdir(txt_dir, 'p')
@@ -152,7 +151,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
       \     '--bind', 'ctrl-^:toggle-preview',
       \     '--bind', 'ctrl-s:toggle-sort',
       \     '--layout=reverse',
-      \     '--preview-window', '60%',
+      \     '--preview-window', '60%,wrap',
       \     '--query', a:query,
       \     '--preview', s:fzf_preview]
       \ }

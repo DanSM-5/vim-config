@@ -36,7 +36,7 @@ local pick_sha_or_ref = function (commit_hash, refs, callback)
     fzf_opts = require('utils.stdlib').concat(fzf.fzf_bind_options, {
       '--prompt', 'Select Ref> ',
       '--no-multi',
-      '--preview-window', '70%',
+      '--preview-window', '70%,wrap',
       '--preview', preview_cmd,
     }),
     name = 'git-commit',
