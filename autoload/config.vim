@@ -114,6 +114,11 @@ func! s:SetConfigurationsBefore () abort
     set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
   endif
 
+  " Set wrap on lines
+  set wrap
+  " Set signcolumn
+  set signcolumn=auto
+
   " Briefly move cursor to matching pair: [], {}, ()
   " set showmatch
   " Add angle brackets as matching pair.
