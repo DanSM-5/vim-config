@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+[[ -v debug ]] && set -x
+
 # Helper for FzfBuffers
 # This script caches the bufnrs to delete when fzf terminal window closes
 
@@ -10,7 +12,7 @@ opened_buffers="$2"
 # Tempfile that list bufnrs to remove
 remove_list="$3"
 # Temporary cache
-buff="$(mktemp)"
+# buff="$(mktemp)"
 
 # Find bufnr inside square brackets
 # "filename linenumber [bufnr] somesymbol? buffname"
@@ -25,12 +27,12 @@ touch "$remove_list"
 line="$(sed 's/\x1b\[[0-9;]*[mGKHF]//g' "$opened_buffers" | awk -v toremove="[$bufnr]" '$3 == toremove { print NR }')"
 
 # Filter out buffer to remove
-awk -v toremove="$line" 'NR != toremove { print $0 }' "$opened_buffers" > "$buff"
+# awk -v toremove="$line" 'NR != toremove { print $0 }' "$opened_buffers" > "$buff"
 # Store selected line for future removal
 echo "$bufnr" >> "$remove_list"
 
 # Remove outdated temp_file
-rm -f "$opened_buffers"
+# rm -f "$opened_buffers"
 # Substitute with new updated buffer
-mv "$buff" "$opened_buffers"
+# mv "$buff" "$opened_buffers"
 

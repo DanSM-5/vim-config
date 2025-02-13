@@ -1215,17 +1215,15 @@ function FzfBuffers(query, fullscreen) abort
     if g:is_gitbash
       let bash_path = substitute(bash_path, '\\', '/', 'g')
     endif
-    " let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
     " TODO: Should it use the hardcoded /vim-config/utils? Consider setting a
     " global variale for the git repository
     let utils_prefix = bash_path . ' /c' . substitute($HOMEPATH, '\\', '/', 'g') . '/vim-config/utils'
     let remove_command = utils_prefix . '/remove_buff.sh'
+    " NOTE: Gitbash needs the template {+f} quoted to handle the backslashes
+    let remove_command = remove_command . ' "{+f}" ' . opened_buffers . ' ' . remove_list
+  else
+    let remove_command = remove_command . ' {+f} ' . opened_buffers . ' ' . remove_list
   endif
-
-  " /path/to/remove_buff.sh [selected/file] [buffs/file] [delete/file]
-  let remove_command = remove_command . ' {+f} ' . opened_buffers . ' ' . remove_list
-  " Reload command
-  let reload_command = 'cat ' . opened_buffers
 
   " TODO: Decide which is better between execute-silent and execute
   " The first one looks nicer with no reloads but the second is better as a
@@ -1235,7 +1233,7 @@ function FzfBuffers(query, fullscreen) abort
     \ 'options': s:fzf_bind_options + [
     \   '--ansi',
     \   '--no-multi',
-    \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+reload:' . reload_command],
+    \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+exclude'],
     \  'exit': function('Fzf_vim_close_buffers', [remove_list, opened_buffers])
     \ })
 
