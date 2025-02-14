@@ -1525,13 +1525,33 @@ func! s:DefineCommands () abort
   " BlameLine
   command! -bar -nargs=? BlameLine call BlameLine(<q-args>)
 
-  " Commands for diffget. Useful when resolving conflicts.
+  " Commands for diffget. Useful when resolving conflicts (tree-way diff).
   " Open fugitive `:Git` and open conflicted file in vsplit `dv` (Gvdiffsplit)
-  " Cursor must be on conflict hunk. E.g. `]n` and `[n`
-  " Select the changes on the left
-  command! -bar GitSelectLeft :diffget //2
-  " grab the changes on the right
-  command! -bar GitSelectRight :diffget //3
+  " Cursor must be on conflict hunk. E.g. `]n` and `[n` (`[c` and `]c` should
+  " work as well in diff view mode)
+  "
+  " ```bash
+  " git checkout `target`
+  " git merge `merge`
+  " ```
+  "
+  " Select the changes on the left (target)
+  command! -bar GitSelectLeft :diffget //2 | diffupdate
+  " grab the changes on the right (merge)
+  command! -bar GitSelectRight :diffget //3 | diffupdate
+  " Fugitive always set the buffer name with `//2` to the file to the left and
+  " `//3` to the file to the right.
+
+  " You can add the diff from one of the side buffers using `:diffput` or `dp` mapping.
+  " Notice that `dp` does not require to run `:diffupdate` after
+  "
+  " In two-way diff you can use `do` mapping for `:diffget`
+  "
+  " Use `:only` from the main file to close the diff windows
+  " or `:Gwrite` to save, stage and close the diff windows.
+  "
+  " Run `:Gwrite!` from target or merge to keep only changed from that file.
+  " Be careful as this override the index.
 
   " Use as :Mkdr! for creating the path of a buffer which path doesn't exit
   command! -bar -bang -nargs=* Mkdr call utils#mkdir(<q-args>, <bang>0)
