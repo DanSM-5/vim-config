@@ -1147,7 +1147,7 @@ endfunction
 
 " On buff close callback from 'exit' on fzf#run spec
 " Last argument is the exit code of fzf process
-function Fzf_vim_close_buffers(remove_list, opened_buffers, ...) abort
+function Fzf_vim_close_buffers(remove_list, ...) abort
   try
     if empty(a:remove_list) || !filereadable(a:remove_list)
       return
@@ -1169,9 +1169,6 @@ function Fzf_vim_close_buffers(remove_list, opened_buffers, ...) abort
     endfor
   finally
     " Remove temporary file
-    " Buffers to remove
-    call delete(a:opened_buffers)
-    " Remove temporary file
     " List of opened buffers
     call delete(a:remove_list)
   endtry
@@ -1181,7 +1178,7 @@ endfunction
 function FzfBuffers(query, fullscreen) abort
   let buffers = GetBuflisted()
   " Keep a list of the currently opened buffers
-  let opened_buffers = substitute(tempname(), '\\', '/', 'g')
+  " let opened_buffers = substitute(tempname(), '\\', '/', 'g')
   " Keep track of the marked for closing buffers
   let remove_list = substitute(tempname(), '\\', '/', 'g')
   let utils_prefix = ''
@@ -1203,10 +1200,13 @@ function FzfBuffers(query, fullscreen) abort
   "     au BufEnter * ++once if &buftype != 'terminal' | call Fzf_vim_close_buffers(g:fzf_buffers_remove_list) | autocmd! FzfDeleteBuffers | endif
   "   augroup END
   " endif
+
   let buff_sorted = sort(buffers, 'BufSorterFunc')
-  let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
+  " Line format 'filename linenumber [bufnr] somesymbol? buffname' with ansi
+  " escape colors
+  " let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
   " Store formatted buff names in file
-  call writefile(buff_formatted, opened_buffers)
+  " call writefile(buff_formatted, opened_buffers)
 
   " Prepare remove command
   let remove_command = $HOME . '/vim-config/utils/remove_buff.sh'
@@ -1219,11 +1219,10 @@ function FzfBuffers(query, fullscreen) abort
     " global variale for the git repository
     let utils_prefix = bash_path . ' /c' . substitute($HOMEPATH, '\\', '/', 'g') . '/vim-config/utils'
     let remove_command = utils_prefix . '/remove_buff.sh'
-    " NOTE: Gitbash needs the template {+f} quoted to handle the backslashes
-    let remove_command = remove_command . ' "{+f}" ' . opened_buffers . ' ' . remove_list
-  else
-    let remove_command = remove_command . ' {+f} ' . opened_buffers . ' ' . remove_list
   endif
+
+  " Use third element is "[bufnr]"
+  let remove_command = remove_command . ' {3} "' . remove_list . '"'
 
   " TODO: Decide which is better between execute-silent and execute
   " The first one looks nicer with no reloads but the second is better as a
@@ -1234,7 +1233,7 @@ function FzfBuffers(query, fullscreen) abort
     \   '--ansi',
     \   '--no-multi',
     \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+exclude'],
-    \  'exit': function('Fzf_vim_close_buffers', [remove_list, opened_buffers])
+    \  'exit': function('Fzf_vim_close_buffers', [remove_list])
     \ })
 
   if g:is_gitbash || (g:is_windows && !has('nvim'))
