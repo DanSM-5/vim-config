@@ -345,9 +345,22 @@ function fzfcmd#fzf_buffers_onclose(remove_list, ...) abort
   endtry
 endfunction
 
+" Return list of listed buffers (bufnr)
+function! fzfcmd#buffers_get_listed() abort
+  return filter(range(1, bufnr('$')), 'buflisted(v:val) && getbufvar(v:val, "&filetype") != "qf"')
+endfunction
+
+" Sorter function for buffers
+" Should return first the current buffer
+function fzfcmd#buffers_sort_bufnr(...) abort
+  let [b1, b2] = map(copy(a:000), 'get(g:fzf#vim#buffers, v:val, v:val)')
+  " Using minus between a float and a number in a sort function causes an error
+  return b1 < b2 ? 1 : -1
+endfunction
+
 " Wrapper for fzf#vim#buffers to enable closing buffer with ctrl-q
 function fzfcmd#fzf_buffers(query, fullscreen) abort
-  let buffers = GetBuflisted()
+  " let buffers = fzfcmd#buffers_get_listed()
   " Keep a list of the currently opened buffers
   " let opened_buffers = substitute(tempname(), '\\', '/', 'g')
   " Keep track of the marked for closing buffers
@@ -372,7 +385,7 @@ function fzfcmd#fzf_buffers(query, fullscreen) abort
   "   augroup END
   " endif
 
-  let buff_sorted = sort(buffers, 'BufSorterFunc')
+  " let buff_sorted = sort(buffers, 'fzfcmd#buffers_sort_bufnr')
   " Line format 'filename linenumber [bufnr] somesymbol? buffname' with ansi
   " escape colors
   " let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
@@ -414,10 +427,9 @@ function fzfcmd#fzf_buffers(query, fullscreen) abort
   endif
 
   " Debug
-  " echo buff_sorted
   " echo spec
 
   " Call base command
-  call fzf#vim#buffers(a:query, buff_sorted, spec, a:fullscreen)
+  call fzf#vim#buffers(a:query, spec, a:fullscreen)
 endfunction
 
