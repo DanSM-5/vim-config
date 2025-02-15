@@ -366,6 +366,52 @@ local function decodeURI(str)
   return s
 end
 
+---Create a finally function block
+---@generic T
+---@param block T Function to execute. Returns nil if an error happens
+---@param on_end fun(ok: boolean, ret: any[]) Function to call on end. It will have access to any error or return from the block function
+---@return T Wrapped function with finally
+---@example
+---```lua
+---local fetch_with_finally = create_finally(fetch, function(ok, ...)
+---  print(ok and 'Completed' or 'Error')
+---end)
+---local data_or_nil = copy_with_finally()
+---```
+local function create_finally(block, on_end)
+  local function _finally(ok, ...)
+    on_end(ok, ...)
+
+    if ok then
+      return ...
+    end
+  end
+
+  return function (...)
+    return _finally(pcall(block, ...))
+  end
+end
+
+---Finally function block
+---Ref: https://github.com/siffiejoe/lua-finally
+---@generic T
+---@param block fun(...):T Function to execute.
+---@param on_end fun(err: table|nil) Function to call on end. It will have an error if occurs.
+---@return T Return from the block function if completes successfully
+local function finally(block, on_end)
+  local function _finally(ok, ...)
+    if ok then
+      on_end()
+      return ...
+    else
+      on_end( (...) )
+      error( (...), 0 )
+    end
+  end
+
+  return _finally(pcall( block ))
+end
+
 return {
   find_root = find_root,
   concat = array_concat,
@@ -389,5 +435,7 @@ return {
   throttle = throttle,
   dump = dump,
   decodeURI = decodeURI,
+  create_finally = create_finally,
+  finally = finally,
 }
 
