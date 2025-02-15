@@ -207,3 +207,27 @@ function utils#register_move(destination, source) abort
   call setreg(a:destination, getreg(a:source))
 endfunction
 
+" Requires awk and tr in the path
+function! utils#get_bash() abort
+  if has('win32')
+    let bash = substitute(
+      \ system('where.exe bash | awk "/[Gg]it/ {print}" | tr -d "\r\n"'),
+      \ '\n', '', '')
+    return substitute(config#windows_short_path(bash), '\\', '/', 'g')
+  endif
+
+  return '/bin/bash'
+endfunction
+
+" Requires awk and tr in the path
+function! utils#get_env() abort
+  if has('win32')
+    let env = substitute(
+      \ system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'),
+      \ '\n', '', '')
+    return substitute(config#windows_short_path(env), '\\', '/', 'g')
+  endif
+
+  return '/usr/bin/env'
+endfunction
+
