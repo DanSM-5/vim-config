@@ -35,19 +35,6 @@ let g:fzf_preview_options = g:fzf_bind_options + [
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
       \ ]
 
-" let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
-
-" " Options with only bind commands
-" let s:fzf_options_with_binds = { 'options': g:fzf_bind_options }
-
-" " Options with bindings + preview
-" let s:fzf_options_with_preview = {'options': g:fzf_preview_options }
-
-" Test options for formating window
-" let g:fzf_preview_window = ['right:60%', 'ctrl-/']
-" let s:fzf_options_with_binds = { 'window': { 'width': 0.9, 'height': 0.6 } }
-" let s:fzf_options_with_binds = { 'window': { 'up': '60%' } }
-
 func! s:SetConfigurationsBefore () abort
   silent call s:SetCamelCaseMotion()
   silent call s:SetRG()
@@ -153,26 +140,6 @@ func! s:SetConfigurationsAfter () abort
   " :SudoWrite
   let g:suda_smart_edit = 1
 
-  " Change cursor.
-  " if ! has('nvim') && ! has('gui_mac') && ! has('gui_win32')
-  "
-  "   " Set up vertical vs block cursor for insert/normal mode
-  "   if &term =~ "screen."
-  "     let &t_ti.="\eP\e[1 q\e\\"
-  "     let &t_SI.="\eP\e[5 q\e\\"
-  "     let &t_EI.="\eP\e[1 q\e\\"
-  "     let &t_te.="\eP\e[0 q\e\\"
-  "   else
-  "     let &t_ti.="\<Esc>[1 q"
-  "     let &t_SI.="\<Esc>[5 q"
-  "     let &t_EI.="\<Esc>[1 q"
-  "     let &t_te.="\<Esc>[0 q"
-  "   endif
-  " endif
-  " let &t_SI = "\<esc>[5 q"  " blinking I-beam in insert mode
-  " let &t_SR = "\<esc>[3 q"  " blinking underline in replace mode
-  " let &t_EI = "\<esc>[ q"  " default cursor (usually blinking block) otherwise
-
   let &t_SI = "\<esc>[5 q" " I beam cursor for insert mode
   let &t_EI = "\<esc>[1 q" " block cursor for normal mode
   let &t_SR = "\<esc>[3 q" " underline cursor for replace mode
@@ -195,17 +162,9 @@ func! s:SetConfigurationsAfter () abort
     au CmdlineEnter * call echoraw(&t_SI)
     au CmdlineLeave * call echoraw(&t_EI)
 
-    " Fix cursor shape on exit
-    " autocmd VimLeave * let &t_te="\e[?1049l\e[23;0;0t"
-    " autocmd VimLeave * let &t_ti="\e[?1049h\e[22;0;0t"
-    " autocmd VimLeave * silent !echo -ne "\e[5 q"
     autocmd VimLeave * call echoraw(&t_SI)
   endif
 
-"   if has('nvim')
-"     set guicursor=n:block
-"     set guicursor=i:ver30
-"   endif
 endf
 
 func! s:SetBufferOptions () abort
@@ -795,11 +754,6 @@ func! s:SetFZF () abort
   command! -nargs=? -bang -bar -complete=file GitSearchFile call gitsearch#file(<q-args>, <bang>0)
 
   command! -nargs=* -bang -complete=customlist,fzftxt#completion FTxt call fzftxt#select(<q-args>, <bang>0)
-  " command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)
-  " command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-  " command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
-  " command! -nargs=* -bang Lg call LiveGrep(<q-args>, <bang>0)
-  " command! -nargs=* -bang RgHistory call RipgrepHistory(<q-args>, <bang>0)
   command! -nargs=* -bang CPrj call fzfcmd#change_project(<q-args>, g:fzf_bind_options, <bang>0)
   command! -nargs=* -bang RG call fzfcmd#fzfrg_rg(<q-args>, <bang>0)
   command! -nargs=* -bang Rg call fzfcmd#fzfrg_fuzzy(<q-args>, <bang>0)
@@ -922,8 +876,8 @@ func! s:DefineCommands () abort
 
   " Call command and remove carriage return
   command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
-  command! CleanCR call s:CleanCR()
-  command! CleanTrailingSpaces call s:CleanTrailingSpaces()
+  command! -nargs=0 CleanCR call s:CleanCR()
+  command! -nargs=0 CleanTrailingSpaces call s:CleanTrailingSpaces()
 
   command! -bar CBrowse call s:OpenCommitInBrowser()
 
@@ -1098,38 +1052,6 @@ func! s:RemapAltUpDownSpecial () abort
   inoremap <silent><Esc>[1;3B <Esc>:m .+1<CR>==gi
 endf
 
-" No longer in used
-" func! s:RemapAltUpDownJK () abort
-"   " move selected lines up one line
-"   vnoremap <silent><C-k> :m '<-2<CR>gv=gv
-"
-"   " move selected lines down one line
-"   vnoremap <silent><C-j> :m '>+1<CR>gv=gv
-"
-"   " move current line up one line
-"   nnoremap <silent><C-k> :<C-u>m .-2<CR>==
-"
-"   " move current line down one line
-"   nnoremap <silent><C-j> :<C-u>m .+1<CR>==
-"
-"   " move current line up in insert mode
-"   inoremap <silent><C-k> <Esc>:m .-2<CR>==gi
-"
-"   " move current line down in insert mode
-"   inoremap <silent><C-j> <Esc>:m .+1<CR>==gi
-" endf
-
-func! s:RemapVisualMultiUpDown () abort
-  " Map usual <C-Up> <C-Down> to <C-y> and <C-h> for use in vim windows
-  nmap <C-y> <Plug>(VM-Select-Cursor-Up)
-  nmap <C-h> <Plug>(VM-Select-Cursor-Down)
-
-  " Other ways to remap
-  " let g:VM_custom_remaps = { '<C-h>': 'Up', '<C-H>': 'Down' }
-  " let g:VM_maps = { 'Select Cursor Down': '<C-h>', 'Select Cursor Up': '<C-y>' }
-  " let g:VM_maps["Select Cursor Down"] = '<C-h>'
-  " let g:VM_maps["Select Cursor Up"]   = '<C-H>'
-endf
 
 func! s:MoveLinesBlockMapsWin () abort
   " silent call s:RemapAltUpDownJK()
@@ -1139,9 +1061,6 @@ func! s:MoveLinesBlockMapsWin () abort
     Repeatable nnoremap <silent>mld :<C-U>m+<CR>==
   endif
 
-  " if !has('nvim')
-  "   silent call s:RemapVisualMultiUpDown()
-  " endif
 endf
 
 func! s:MoveLinesBlockMapsLinux () abort
@@ -1153,12 +1072,6 @@ func! s:MoveLinesBlockMapsLinux () abort
 
   silent call s:RemapAltUpDownNormal()
 
-  " silent call s:RemapAltUpDownJK()
-  " if has('nvim')
-  "   silent call s:RemapAltUpDownNormal()
-  " else
-  "   silent call s:RemapAltUpDownSpecial()
-  " endif
 endf
 
 func! s:MoveLinesBlockMapsGvim () abort
@@ -1265,17 +1178,6 @@ function! config#CurrentOS ()
   return known_os
 endfunction
 
-" func! s:ToggleBg ()
-"   let highlight_value = execute('hi Normal')
-"   let ctermbg_value = matchstr(highlight_value, 'ctermbg=\zs\S*')
-"   let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
-
-"   if ctermbg_value == '' && guibg_value ==? ''
-"     silent execute('hi ' . g:theme_normal)
-"   else
-"     silent execute('hi Normal guibg=NONE ctermbg=NONE')
-"   endif
-" endfunction
 
 function BlameLine(...) abort
   let commit_count = empty(a:1) ? '5' : a:1
