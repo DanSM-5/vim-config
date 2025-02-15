@@ -316,3 +316,108 @@ function! fzfcmd#fzfrg_current(query, fullscreen)
   call fzfcmd#fzfrg_base(opts)
 endfunction
 
+" On buff close callback from 'exit' on fzf#run spec
+" Last argument is the exit code of fzf process
+function fzfcmd#fzf_buffers_onclose(remove_list, ...) abort
+  try
+    if empty(a:remove_list) || !filereadable(a:remove_list)
+      return
+    endif
+
+    let buffers = readfile(a:remove_list)
+    if empty(buffers)
+      return
+    endif
+
+    for buffer in buffers
+      try
+        let bufnr = str2nr(buffer)
+        if bufloaded(bufnr)
+          execute 'bd! ' . bufnr
+        endif
+      catch
+      endtry
+    endfor
+  finally
+    " Remove temporary file
+    " List of opened buffers
+    call delete(a:remove_list)
+  endtry
+endfunction
+
+" Wrapper for fzf#vim#buffers to enable closing buffer with ctrl-q
+function fzfcmd#fzf_buffers(query, fullscreen) abort
+  let buffers = GetBuflisted()
+  " Keep a list of the currently opened buffers
+  " let opened_buffers = substitute(tempname(), '\\', '/', 'g')
+  " Keep track of the marked for closing buffers
+  let remove_list = substitute(tempname(), '\\', '/', 'g')
+  let utils_prefix = ''
+
+  " No longer needed. Using 'exit' callback from fzf spec. Leaving comment as
+  " example of how to wrap functions with callbacks using autocmds
+  " Ref: https://github.com/junegunn/fzf/commit/8cb59e6fcac3dce8dfa44b678fdc94cf81efa11b
+  " if has('nvim')
+  "   " Use nvim autocmd to use once
+  "   lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn['fzfcmd#fzf_buffers_onclose'](vim.g.fzf_buffers_remove_list) end })
+  " else
+  "   " NOTE: In vim it cannot use BufLeave because fzf opens in a popop window
+  "   " and operations like buff delete are forbidden within a popop window.
+  "   " We use BufEnter and make sure it is not of type 'terminal'.
+  "   " For regular flows, this should be enough. It only affects the delete
+  "   " buffer action which should not be abused.
+  "   augroup FzfDeleteBuffers
+  "     au!
+  "     au BufEnter * ++once if &buftype != 'terminal' | call fzfcmd#fzf_buffers_onclose(g:fzf_buffers_remove_list) | autocmd! FzfDeleteBuffers | endif
+  "   augroup END
+  " endif
+
+  let buff_sorted = sort(buffers, 'BufSorterFunc')
+  " Line format 'filename linenumber [bufnr] somesymbol? buffname' with ansi
+  " escape colors
+  " let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
+  " Store formatted buff names in file
+  " call writefile(buff_formatted, opened_buffers)
+
+  " Prepare remove command
+  let remove_command = $HOME . '/vim-config/utils/remove_buff.sh'
+  if g:is_windows
+    let bash_path = config#windows_short_path(substitute(g:bash, '\\', '/', 'g'))
+    if g:is_gitbash
+      let bash_path = substitute(bash_path, '\\', '/', 'g')
+    endif
+    " TODO: Should it use the hardcoded /vim-config/utils? Consider setting a
+    " global variale for the git repository
+    let utils_prefix = bash_path . ' /c' . substitute($HOMEPATH, '\\', '/', 'g') . '/vim-config/utils'
+    let remove_command = utils_prefix . '/remove_buff.sh'
+  endif
+
+  " Use third element is "[bufnr]"
+  let remove_command = remove_command . ' {3} "' . remove_list . '"'
+
+  " TODO: Decide which is better between execute-silent and execute
+  " The first one looks nicer with no reloads but the second is better as a
+  " visual confirmation that the process has ended
+  let spec = fzf#vim#with_preview({
+    \ 'placeholder': '{1}',
+    \ 'options': g:fzf_bind_options + [
+    \   '--ansi',
+    \   '--no-multi',
+    \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+exclude'],
+    \  'exit': function('fzfcmd#fzf_buffers_onclose', [remove_list])
+    \ })
+
+  if g:is_gitbash || (g:is_windows && !has('nvim'))
+    " preview to be used for windows only
+    let preview = utils_prefix . '/preview.sh {1}'
+    let spec.options = spec.options + ['--preview', preview]
+  endif
+
+  " Debug
+  " echo buff_sorted
+  " echo spec
+
+  " Call base command
+  call fzf#vim#buffers(a:query, buff_sorted, spec, a:fullscreen)
+endfunction
+
