@@ -21,7 +21,10 @@ if (Get-Command -Name pwsh -All) {
 
 
 $preview = "
-  `$var = `"{}`"
+  `$var = @'
+{}
+'@
+  `$var = `$var.Trim().Trim(`"'`").Trim('`"')
   `$hash = if (`$var -match `"[a-f0-9]{7,}`") {
     `$matches[0]
   } else { @() }
