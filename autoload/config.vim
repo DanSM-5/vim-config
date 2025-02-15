@@ -17,9 +17,8 @@ let g:is_termux = 0
 let g:is_container = 0
 
 " General options
-let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
-let s:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border' ]
-let s:fzf_bind_options = s:fzf_base_options + [
+let g:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border' ]
+let g:fzf_bind_options = g:fzf_base_options + [
       \      '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
       \      '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
       \      '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
@@ -31,20 +30,21 @@ let s:fzf_bind_options = s:fzf_base_options + [
       \      '--bind', 'alt-l:last',
       \      '--bind', 'alt-a:select-all',
       \      '--bind', 'alt-d:deselect-all']
-let g:fzf_preview_options = s:fzf_bind_options + [
+let g:fzf_preview_options = g:fzf_bind_options + [
       \ '--layout=reverse',
       \ '--preview-window', '60%,wrap',
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
       \ ]
-let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
 
-" Options with only bind commands
-let s:fzf_options_with_binds = { 'options': s:fzf_bind_options }
+" let s:fzf_original_default_opts = $FZF_DEFAULT_OPTS
 
-" Options with bindings + preview
-let s:fzf_options_with_preview = {'options': g:fzf_preview_options }
+" " Options with only bind commands
+" let s:fzf_options_with_binds = { 'options': g:fzf_bind_options }
 
-" Test options for formationg window
+" " Options with bindings + preview
+" let s:fzf_options_with_preview = {'options': g:fzf_preview_options }
+
+" Test options for formating window
 " let g:fzf_preview_window = ['right:60%', 'ctrl-/']
 " let s:fzf_options_with_binds = { 'window': { 'width': 0.9, 'height': 0.6 } }
 " let s:fzf_options_with_binds = { 'window': { 'up': '60%' } }
@@ -766,239 +766,242 @@ endf
 "   endif
 " endf
 
-function! FzfChangeProject(query, fullscreen) abort
-  let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
-  let preview = user_conf_path . '/utils/fzf-preview.sh {}'
-  let getprojects = user_conf_path . '/utils/getprojects'
-  let reload_command = getprojects
-  let files_command = "fd --type file --color=always --no-ignore --hidden --exclude plugged --exclude node_modules --exclude .git "
+" function! FzfChangeProject(query, fullscreen) abort
+"   let user_conf_path = substitute($user_conf_path, '\\', '/', 'g')
+"   let preview = user_conf_path . '/utils/fzf-preview.sh {}'
+"   let getprojects = user_conf_path . '/utils/getprojects'
+"   let reload_command = getprojects
+"   let files_command = "fd --type file --color=always --no-ignore --hidden --exclude plugged --exclude node_modules --exclude .git "
 
-  " NOTE: Windows only block
-  " The below if handles the function when called from powershell (pwsh)
-  " And bash/zsh from MINGW (git bash)
-  if g:is_windows
-    " Get env.exe from gitbash
-    let gitenv = substitute(system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
-    let gitenv = config#windows_short_path(gitenv)
-    let gitenv = shellescape(substitute(gitenv, '\\', '/', 'g'))
-    let bash = substitute(config#windows_short_path(g:bash), '\\', '/', 'g')
-    let preview = bash . ' ' . preview
-    " Hack to run a bash script without adding -l or -i flags (faster)
-    let getprojects = ' MSYS=enable_pcon MSYSTEM=MINGW64 enable_pcon=1 SHELL=/usr/bin/bash /usr/bin/bash -c "export PATH=/mingw64/bin:/usr/local/bin:/usr/bin:/bin:$PATH; export user_conf_path=' . user_conf_path . '; ' . getprojects . '"'
+"   " NOTE: Windows only block
+"   " The below if handles the function when called from powershell (pwsh)
+"   " And bash/zsh from MINGW (git bash)
+"   if g:is_windows
+"     " Get env.exe from gitbash
+"     let gitenv = substitute(system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
+"     let gitenv = config#windows_short_path(gitenv)
+"     let gitenv = shellescape(substitute(gitenv, '\\', '/', 'g'))
+"     let bash = substitute(config#windows_short_path(g:bash), '\\', '/', 'g')
+"     let preview = bash . ' ' . preview
+"     " Hack to run a bash script without adding -l or -i flags (faster)
+"     let getprojects = ' MSYS=enable_pcon MSYSTEM=MINGW64 enable_pcon=1 SHELL=/usr/bin/bash /usr/bin/bash -c "export PATH=/mingw64/bin:/usr/local/bin:/usr/bin:/bin:$PATH; export user_conf_path=' . user_conf_path . '; ' . getprojects . '"'
 
-    " Subtle differences between git bash and powershell
-    if $IS_GITBASH == 'true'
-      " Update reload_command (can call script directly)
-      let reload_command = 'user_conf_path=' . user_conf_path . ' ' . reload_command
-      let getprojects = gitenv . getprojects
-    else
-      let home = substitute($USERPROFILE, '\\', '/', 'g')
-      " Set get getprojects, then update reload_command
-      let getprojects = gitenv . ' HOME=' . home . getprojects
-      let reload_command = getprojects
-      " Use fortward slash (/) as path separator if called from powershell
-      " It is not needed for gitbash (it breaks).
-      let files_command = files_command . ' --path-separator "/"'
-    endif
-  endif
+"     " Subtle differences between git bash and powershell
+"     if $IS_GITBASH == 'true'
+"       " Update reload_command (can call script directly)
+"       let reload_command = 'user_conf_path=' . user_conf_path . ' ' . reload_command
+"       let getprojects = gitenv . getprojects
+"     else
+"       let home = substitute($USERPROFILE, '\\', '/', 'g')
+"       " Set get getprojects, then update reload_command
+"       let getprojects = gitenv . ' HOME=' . home . getprojects
+"       let reload_command = getprojects
+"       " Use fortward slash (/) as path separator if called from powershell
+"       " It is not needed for gitbash (it breaks).
+"       let files_command = files_command . ' --path-separator "/"'
+"     endif
+"   endif
 
-  " Notice ctrl-d doesn't work on Windows nvim
-  let spec = {
-    \   'sinklist': function('utils#fzf_selected_list', [g:fzf_preview_options, a:fullscreen]),
-    \   'source': getprojects,
-    \   'options': [
-    \     '--prompt', 'Projs> ',
-    \     '--no-multi', '--ansi',
-    \     '--query', a:query,
-    \     '--layout=reverse',
-    \     '--header', 'ctrl-f: Files | ctrl-r: Projects',
-    \     '--bind', 'ctrl-f:change-prompt(Files> )+reload(' . files_command . ' . {})+clear-query+change-multi+unbind(ctrl-f)',
-    \     '--bind', 'ctrl-r:change-prompt(Projs> )+reload(' . reload_command . ')+rebind(ctrl-f)+clear-query+change-multi(0)',
-    \     '--preview', preview]
-    \ }
+"   " Notice ctrl-d doesn't work on Windows nvim
+"   let spec = {
+"     \   'sinklist': function('utils#fzf_selected_list', [g:fzf_preview_options, a:fullscreen]),
+"     \   'source': getprojects,
+"     \   'options': [
+"     \     '--prompt', 'Projs> ',
+"     \     '--no-multi', '--ansi',
+"     \     '--query', a:query,
+"     \     '--layout=reverse',
+"     \     '--header', 'ctrl-f: Files | ctrl-r: Projects',
+"     \     '--bind', 'ctrl-f:change-prompt(Files> )+reload(' . files_command . ' . {})+clear-query+change-multi+unbind(ctrl-f)',
+"     \     '--bind', 'ctrl-r:change-prompt(Projs> )+reload(' . reload_command . ')+rebind(ctrl-f)+clear-query+change-multi(0)',
+"     \     '--preview', preview]
+"     \ }
 
-  let spec.options = s:fzf_bind_options + spec.options
+"   let spec.options = g:fzf_bind_options + spec.options
 
-  " Hope for the best
-  call fzf#run(fzf#wrap('cproj', spec, a:fullscreen))
-endfunction
+"   " Hope for the best
+"   call fzf#run(fzf#wrap('cproj', spec, a:fullscreen))
+" endfunction
 
-function! s:FzfRgWindows_preview(spec, fullscreen) abort
+" function! s:FzfRgWindows_preview(spec, fullscreen) abort
 
-  let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
-  let preview_path = substitute('/c' . $HOMEPATH . '/vim-config/utils/preview.sh', '\\', '/', 'g')
-  let command_preview = bash_path . ' ' . preview_path . ' {}'
+"   let bash_path = shellescape(substitute(g:bash, '\\', '/', 'g'))
+"   let preview_path = substitute('/c' . $HOMEPATH . '/vim-config/utils/preview.sh', '\\', '/', 'g')
+"   let command_preview = bash_path . ' ' . preview_path . ' {}'
 
-  " Keep for debugging
-  " echo command_preview
+"   " Keep for debugging
+"   " echo command_preview
 
-  if has_key(a:spec, 'options')
-    let options = a:spec.options + ['--preview',  command_preview] + s:fzf_bind_options
-  else
-    let options = g:fzf_preview_options
-  endif
+"   if has_key(a:spec, 'options')
+"     let options = a:spec.options + ['--preview',  command_preview] + g:fzf_bind_options
+"   else
+"     let options = g:fzf_preview_options
+"   endif
 
-  let spec = utils#fzf_set_preview_window({ 'options': options }, a:fullscreen)
-  let a:spec.options = a:spec.options + spec.options
+"   let spec = utils#fzf_set_preview_window({ 'options': options }, a:fullscreen)
+"   let a:spec.options = a:spec.options + spec.options
 
-  return a:spec
-endfunction
+"   return a:spec
+" endfunction
 
-function! s:FzfRg_bindings(options) abort
-  return a:options + s:fzf_bind_options
-endfunction
+" function! s:FzfRg_bindings(options) abort
+"   return a:options + g:fzf_bind_options
+" endfunction
 
 " Variation of RipgrepFzf that searches on the current buffer only
-function! LiveGrep(query, fullscreen)
-  let fzf_rg_args = s:rg_args . ' --with-filename '
-  let curr_path = getcwd()
-  let buff_path = expand('%:p:h')
+" function! LiveGrep(query, fullscreen)
+"   let fzf_rg_args = s:rg_args . ' --with-filename '
+"   let curr_path = getcwd()
+"   let buff_path = expand('%:p:h')
 
-  try
-    " Change path to get relative 'short' paths in the fzf search
-    exec 'cd '. buff_path
+"   try
+"     " Change path to get relative 'short' paths in the fzf search
+"     exec 'cd '. buff_path
 
-    let curr_file = g:is_windows ? shellescape(expand('%')) : fzf#shellescape(expand('%'))
-    let command_fmt = 'rg' . fzf_rg_args . '-- %s ' . curr_file  . ' || true'
-    " Fixed initial load. It seems it broke on windows using fzf#shellescape
-    " Usual shellescape works fine.
-    let initial_command = printf(command_fmt, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-    let reload_command = printf(command_fmt, '{q}')
-    let spec = {
-          \     'options': ['--disabled', '--query', a:query,
-          \                 '--ansi', '--prompt', 'LG> ',
-          \                 '--header', '| CTRL-R (LG mode) | CTRL-F (FZF mode) |',
-          \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap',
-          \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(LG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
-          \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
-          \                 '--bind', 'start:reload:'.initial_command,
-          \                 '--bind', 'change:reload:'.reload_command]
-          \}
+"     let curr_file = g:is_windows ? shellescape(expand('%')) : fzf#shellescape(expand('%'))
+"     let command_fmt = 'rg' . fzf_rg_args . '-- %s ' . curr_file  . ' || true'
+"     " Fixed initial load. It seems it broke on windows using fzf#shellescape
+"     " Usual shellescape works fine.
+"     let initial_command = printf(command_fmt, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
+"     let reload_command = printf(command_fmt, '{q}')
+"     let spec = {
+"           \     'options': ['--disabled', '--query', a:query,
+"           \                 '--ansi', '--prompt', 'LG> ',
+"           \                 '--header', '| CTRL-R (LG mode) | CTRL-F (FZF mode) |',
+"           \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap',
+"           \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(LG> )+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+"           \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
+"           \                 '--bind', 'start:reload:'.initial_command,
+"           \                 '--bind', 'change:reload:'.reload_command]
+"           \}
 
-    if g:is_windows
-      let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
-    else
-      let spec = fzf#vim#with_preview(spec)
-      let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
-      let spec.options = spec.options + s:fzf_bind_options
-    endif
+"     if g:is_windows
+"       " let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
+"       let spec = fzfcmd#fzfrg_windows_preview(spec, a:fullscreen)
+"     else
+"       let spec = fzf#vim#with_preview(spec)
+"       let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
+"       let spec.options = spec.options + g:fzf_bind_options
+"     endif
 
-    call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
-  finally
-    " Recover cwd on end
-    exec 'cd '. curr_path
-  endtry
-endfunction
+"     call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
+"   finally
+"     " Recover cwd on end
+"     exec 'cd '. curr_path
+"   endtry
+" endfunction
 
-function RipgrepBase(command_fmt, query, prompt, fullscreen, options) abort
-  let options = type(a:options) == v:t_list ? a:options : []
-  " Fixed initial load. It seems it broke on windows using fzf#shellescape
-  " Usual shellescape works fine.
-  let initial_command = printf(a:command_fmt, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
-  let reload_command = printf(a:command_fmt, '{q}')
-        " \     'source': initial_command,
-        " \     'sink': 'e',
-  let spec = {
-        \     'options': ['--disabled', '--query', a:query,
-        \                 '--ansi', '--prompt', a:prompt,
-        \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
-        \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap',
-        \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt('.a:prompt.')+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
-        \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
-        \                 '--bind', 'start:reload:'.initial_command,
-        \                 '--bind', 'change:reload:'.reload_command] + options
-        \}
+" function RipgrepBase(command_fmt, query, prompt, fullscreen, options) abort
+"   let options = type(a:options) == v:t_list ? a:options : []
+"   " Fixed initial load. It seems it broke on windows using fzf#shellescape
+"   " Usual shellescape works fine.
+"   let initial_command = printf(a:command_fmt, g:is_windows ? shellescape(a:query) : fzf#shellescape(a:query))
+"   let reload_command = printf(a:command_fmt, '{q}')
+"         " \     'source': initial_command,
+"         " \     'sink': 'e',
+"   let spec = {
+"         \     'options': ['--disabled', '--query', a:query,
+"         \                 '--ansi', '--prompt', a:prompt,
+"         \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
+"         \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap',
+"         \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt('.a:prompt.')+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
+"         \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
+"         \                 '--bind', 'start:reload:'.initial_command,
+"         \                 '--bind', 'change:reload:'.reload_command] + options
+"         \}
 
 
-  " TODO: From fzf.vim
-  " The g:fzf_vim dictionary can be used to alter the behavior of the
-  " preview
-  " let g:fzf_vim.preview_bash = 'C:\Git\bin\bash.exe' " for setting gitbash
-  " let g:fzf_vim.preview_window = ['hidden,right,50%,<70(up,40%)', 'ctrl-/']
-  "
-  " Consider using this instead of changing FZF_DEFAULT_OPTS environment
-  " variable
-  " let g:fzf_vim = {}
-  " let g:fzf_vim.preview_window = ['right,80%', 'ctrl-/']
-  " let g:fzf_vim.preview_bash = g:bash
+"   " TODO: From fzf.vim
+"   " The g:fzf_vim dictionary can be used to alter the behavior of the
+"   " preview
+"   " let g:fzf_vim.preview_bash = 'C:\Git\bin\bash.exe' " for setting gitbash
+"   " let g:fzf_vim.preview_window = ['hidden,right,50%,<70(up,40%)', 'ctrl-/']
+"   "
+"   " Consider using this instead of changing FZF_DEFAULT_OPTS environment
+"   " variable
+"   " let g:fzf_vim = {}
+"   " let g:fzf_vim.preview_window = ['right,80%', 'ctrl-/']
+"   " let g:fzf_vim.preview_bash = g:bash
 
-  if g:is_windows
-    let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
-  else
-    let spec = fzf#vim#with_preview(spec)
-    let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
-    let spec.options = spec.options + s:fzf_bind_options
-  endif
+"   if g:is_windows
+"     " let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
+"     let spec = fzfcmd#fzfrg_windows_preview(spec, a:fullscreen)
+"   else
+"     let spec = fzf#vim#with_preview(spec)
+"     let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
+"     let spec.options = spec.options + g:fzf_bind_options
+"   endif
 
-  " fzf.vim examples
-  " call fzf#vim#grep2("rg --column --line-number --no-heading --color=always --smart-case -- ", <q-args>, fzf#vim#with_preview(), <bang>0)
-  " call fzf#vim#grep2("rg --column --line-number --no-heading --color=always --smart-case -- ", a:query, fzf#vim#with_preview(), a:fullscreen)
+"   " fzf.vim examples
+"   " call fzf#vim#grep2("rg --column --line-number --no-heading --color=always --smart-case -- ", <q-args>, fzf#vim#with_preview(), <bang>0)
+"   " call fzf#vim#grep2("rg --column --line-number --no-heading --color=always --smart-case -- ", a:query, fzf#vim#with_preview(), a:fullscreen)
 
-  let curr_path = getcwd()
-  let gitpath = utils#git_path()
+"   let curr_path = getcwd()
+"   let gitpath = utils#git_path()
 
-  try
-    " Change path to get relative 'short' paths in the fzf search
-    exec 'cd '. gitpath
-    " NOTE: the first argument is not needed. It is overriden by the options
-    " (third argument)
-    " First argument is used to identify a command name
-    "
-    " In theory, we can replace the fzf#vim#grep2 function with the following
-    " fzf#run function BUT there is an issue with the sink function. current
-    " fzf#vim#grep2 is calling some reference functions in fzf.vim
-    " 'sink*': function('499') and 'sinklist': function('500')
-    " Until we know how fzf#vim#grep2 handles selected files to open them,
-    " we need to rely on the fzf#vim#grep2 function to handle things.
-    " call fzf#run(fzf#wrap('rg --column --line-number --no-heading --color=always --smart-case -- ', spec, a:fullscreen))
-    call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
-  finally
-    exec 'cd '. curr_path
-  endtry
-endfunction
+"   try
+"     " Change path to get relative 'short' paths in the fzf search
+"     exec 'cd '. gitpath
+"     " NOTE: the first argument is not needed. It is overriden by the options
+"     " (third argument)
+"     " First argument is used to identify a command name
+"     "
+"     " In theory, we can replace the fzf#vim#grep2 function with the following
+"     " fzf#run function BUT there is an issue with the sink function. current
+"     " fzf#vim#grep2 is calling some reference functions in fzf.vim
+"     " 'sink*': function('499') and 'sinklist': function('500')
+"     " Until we know how fzf#vim#grep2 handles selected files to open them,
+"     " we need to rely on the fzf#vim#grep2 function to handle things.
+"     " call fzf#run(fzf#wrap('rg --column --line-number --no-heading --color=always --smart-case -- ', spec, a:fullscreen))
+"     call fzf#vim#grep2('rg', a:query, spec, a:fullscreen)
+"   finally
+"     exec 'cd '. curr_path
+"   endtry
+" endfunction
 
-function! RipgrepFzf(query, fullscreen)
-  let fzf_rg_args = s:rg_args
-  let command_fmt = 'rg' . fzf_rg_args . '-- %s || true'
-  call RipgrepBase(command_fmt, a:query, 'RG> ', a:fullscreen, [])
-endfunction
+" function! RipgrepFzf(query, fullscreen)
+"   let fzf_rg_args = s:rg_args
+"   let command_fmt = 'rg' . fzf_rg_args . '-- %s || true'
+"   call RipgrepBase(command_fmt, a:query, 'RG> ', a:fullscreen, [])
+" endfunction
 
-" Ripgrep on recently opened files
-function RipgrepHistory(query, fullscreen) abort
-  let fzf_rg_args = s:rg_args
-  " Get recent files, expand ~, and use forward slash
-  let files = join(map(fzf#vim#_recent_files(), 'substitute(expand(v:val), "\\", "/", "g")'), ' ')
-  let command_fmt = 'rg' . fzf_rg_args . ' -- %s ' . files . ' || true'
-  call RipgrepBase(command_fmt, a:query, 'RgHistory> ', a:fullscreen, [])
-endfunction
+" " Ripgrep on recently opened files
+" function RipgrepHistory(query, fullscreen) abort
+"   let fzf_rg_args = s:rg_args
+"   " Get recent files, expand ~, and use forward slash
+"   let files = join(map(fzf#vim#_recent_files(), 'substitute(expand(v:val), "\\", "/", "g")'), ' ')
+"   let command_fmt = 'rg' . fzf_rg_args . ' -- %s ' . files . ' || true'
+"   call RipgrepBase(command_fmt, a:query, 'RgHistory> ', a:fullscreen, [])
+" endfunction
 
-function! RipgrepFuzzy(query, fullscreen)
-  let command_fmt = 'rg' . s:rg_args . '-- %s || true'
-  let initial_command = printf(command_fmt, shellescape(a:query))
-  " Hide query for now
-  " let spec = {'options': ['--query', a:query]}
-  let spec = {'options': []}
+" function! RipgrepFuzzy(query, fullscreen)
+"   let command_fmt = 'rg' . s:rg_args . '-- %s || true'
+"   let initial_command = printf(command_fmt, shellescape(a:query))
+"   " Hide query for now
+"   " let spec = {'options': ['--query', a:query]}
+"   let spec = {'options': []}
 
-  if g:is_windows
-    let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
-  else
-    let spec = fzf#vim#with_preview(spec)
-    let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
-    let spec.options = spec.options + s:fzf_bind_options
-  endif
+"   if g:is_windows
+"     " let spec = s:FzfRgWindows_preview(spec, a:fullscreen)
+"     let spec = fzfcmd#fzfrg_windows_preview(spec, a:fullscreen)
+"   else
+"     let spec = fzf#vim#with_preview(spec)
+"     let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
+"     let spec.options = spec.options + g:fzf_bind_options
+"   endif
 
-  " Change path to get relative 'short' paths in the fzf search
-  let curr_path = getcwd()
-  let gitpath = utils#git_path()
+"   " Change path to get relative 'short' paths in the fzf search
+"   let curr_path = getcwd()
+"   let gitpath = utils#git_path()
 
-  try
-    exec 'cd '. gitpath
+"   try
+"     exec 'cd '. gitpath
 
-    call fzf#vim#grep(initial_command, spec, a:fullscreen)
-  finally
-    exec 'cd '. curr_path
-  endtry
-endfunction
+"     call fzf#vim#grep(initial_command, spec, a:fullscreen)
+"   finally
+"     exec 'cd '. curr_path
+"   endtry
+" endfunction
 
 " function! NewTxt(filename) abort
 "   let txt_dir = substitute(expand('~/prj/txt'), '\\', '/', 'g')
@@ -1047,7 +1050,7 @@ endfunction
 "     let spec = {
 "       \   'source': source_command,
 "       \   'sinklist': function('utils#fzf_selected_list'),
-"       \   'options': s:fzf_bind_options + [
+"       \   'options': g:fzf_bind_options + [
 "       \     '--prompt', 'Open Txt> ',
 "       \     '--multi', '--ansi',
 "       \     '--layout=reverse',
@@ -1114,7 +1117,7 @@ function Emoji(query, use_name, mode) abort
   let spec = {
     \   'source': source,
     \   'sinklist': function('InsertEmoji', [a:use_name, a:mode]),
-    \   'options': s:fzf_bind_options + [
+    \   'options': g:fzf_bind_options + [
     \     '--prompt', 'Emoji> ',
     \     '--multi', '--ansi',
     \     '--layout=reverse',
@@ -1229,7 +1232,7 @@ function FzfBuffers(query, fullscreen) abort
   " visual confirmation that the process has ended
   let spec = fzf#vim#with_preview({
     \ 'placeholder': '{1}',
-    \ 'options': s:fzf_bind_options + [
+    \ 'options': g:fzf_bind_options + [
     \   '--ansi',
     \   '--no-multi',
     \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+exclude'],
@@ -1310,11 +1313,16 @@ func! s:SetFZF () abort
   command! -nargs=? -bang -bar -complete=file GitSearchFile call gitsearch#file(<q-args>, <bang>0)
 
   command! -nargs=* -bang -complete=customlist,fzftxt#completion FTxt call fzftxt#select(<q-args>, <bang>0)
-  command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)
-  command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-  command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
-  command! -nargs=* -bang Lg call LiveGrep(<q-args>, <bang>0)
-  command! -nargs=* -bang RgHistory call RipgrepHistory(<q-args>, <bang>0)
+  " command! -nargs=* -bang CPrj call FzfChangeProject(<q-args>, <bang>0)
+  " command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+  " command! -nargs=* -bang Rg call RipgrepFuzzy(<q-args>, <bang>0)
+  " command! -nargs=* -bang Lg call LiveGrep(<q-args>, <bang>0)
+  " command! -nargs=* -bang RgHistory call RipgrepHistory(<q-args>, <bang>0)
+  command! -nargs=* -bang CPrj call fzfcmd#change_project(<q-args>, g:fzf_bind_options, <bang>0)
+  command! -nargs=* -bang RG call fzfcmd#fzfrg_rg(<q-args>, <bang>0)
+  command! -nargs=* -bang Rg call fzfcmd#fzfrg_fuzzy(<q-args>, <bang>0)
+  command! -nargs=* -bang Lg call fzfcmd#fzfrg_current(<q-args>, <bang>0)
+  command! -nargs=* -bang RgHistory call fzfcmd#fzfrg_history(<q-args>, <bang>0)
 
   command! -bang -nargs=? -complete=dir Files
     \ call utils#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
@@ -1340,9 +1348,9 @@ func! s:SetFZF () abort
   else
 
     command! -bang -nargs=? -complete=dir FzfFiles
-      \ call utils#fzf_files(<q-args>, s:fzf_bind_options, <bang>0)
+      \ call utils#fzf_files(<q-args>, g:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call utils#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, s:fzf_bind_options, <bang>0)
+      \ call utils#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, g:fzf_bind_options, <bang>0)
   endif
 
 
