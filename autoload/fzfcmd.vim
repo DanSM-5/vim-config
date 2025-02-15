@@ -302,7 +302,7 @@ function! fzfcmd#fzfrg_current(query, fullscreen)
   let fzf_rg_args = s:rg_args . ' --with-filename '
   let curr_path = getcwd()
   let buff_path = expand('%:p:h')
-  let curr_file = s:is_windows ? shellescape(expand('%:t')) : fzf#shellescape(expand('%'))
+  let curr_file = s:is_windows ? shellescape(expand('%:t')) : fzf#shellescape(expand('%:t'))
   let command_fmt = 'rg' . fzf_rg_args . '-- %s ' . curr_file  . ' || true'
 
   let opts = {
@@ -312,6 +312,8 @@ function! fzfcmd#fzfrg_current(query, fullscreen)
     \ 'fullscreen': a:fullscreen,
     \ 'directory': buff_path,
     \ }
+
+  echo opts
 
   call fzfcmd#fzfrg_base(opts)
 endfunction
