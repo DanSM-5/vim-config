@@ -207,13 +207,20 @@ function utils#register_move(destination, source) abort
   call setreg(a:destination, getreg(a:source))
 endfunction
 
+function! utils#windows_short_path(path) abort
+  " From fzf.vim
+  " Changes paths like 'C:/Program Files' that have spaces into C:/PROGRA~1
+  " which is nicer as we avoid escaping
+  return split(system('for %A in ("'. a:path .'") do @echo %~sA'), "\n")[0]
+endfunction
+
 " Requires awk and tr in the path
 function! utils#get_bash() abort
   if has('win32')
     let bash = substitute(
       \ system('where.exe bash | awk "/[Gg]it/ {print}" | tr -d "\r\n"'),
       \ '\n', '', '')
-    return substitute(config#windows_short_path(bash), '\\', '/', 'g')
+    return substitute(utils#windows_short_path(bash), '\\', '/', 'g')
   endif
 
   return '/bin/bash'
@@ -225,7 +232,7 @@ function! utils#get_env() abort
     let env = substitute(
       \ system('where.exe env | awk "/[Gg]it/ {print}" | tr -d "\r\n"'),
       \ '\n', '', '')
-    return substitute(config#windows_short_path(env), '\\', '/', 'g')
+    return substitute(utils#windows_short_path(env), '\\', '/', 'g')
   endif
 
   return '/usr/bin/env'
