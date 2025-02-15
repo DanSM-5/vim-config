@@ -1430,13 +1430,6 @@ func! s:Set_netrw () abort
   " augroup END
 endfunction
 
-function! config#windows_short_path(path) abort
-  " From fzf.vim
-  " Changes paths like 'C:/Program Files' that have spaces into C:/PROGRA~1
-  " which is nicer as we avoid escaping
-  return split(system('for %A in ("'. a:path .'") do @echo %~sA'), "\n")[0]
-endfunction
-
 func! config#before () abort
   " Can be used to set different undodir between vim and nvim
   silent call s:SetUndodir()
