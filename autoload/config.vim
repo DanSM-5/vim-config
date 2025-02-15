@@ -966,8 +966,8 @@ func! s:DefineCommands () abort
   command! -nargs=? -complete=buffer SudoSave
         \ call SudoSave(<q-args>)
 
-  command! -nargs=? -bang -bar Emoji call Emoji(<q-args>, <bang>0, 'n')
-  inoremap <c-x><c-r> <cmd>call Emoji('', 0, 'i')<cr>
+  command! -nargs=? -bang -bar Emoji call emoji#open(<q-args>, <bang>0, 'n')
+  inoremap <c-x><c-r> <cmd>call emoji#open('', 0, 'i')<cr>
 
   " Open terminal
   if has('nvim')
