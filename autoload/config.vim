@@ -804,7 +804,7 @@ endf
 
 "   " Notice ctrl-d doesn't work on Windows nvim
 "   let spec = {
-"     \   'sinklist': function('utils#fzf_selected_list', [g:fzf_preview_options, a:fullscreen]),
+"     \   'sinklist': function('fzfcmd#fzf_selected_list', [g:fzf_preview_options, a:fullscreen]),
 "     \   'source': getprojects,
 "     \   'options': [
 "     \     '--prompt', 'Projs> ',
@@ -838,7 +838,7 @@ endf
 "     let options = g:fzf_preview_options
 "   endif
 
-"   let spec = utils#fzf_set_preview_window({ 'options': options }, a:fullscreen)
+"   let spec = fzfcmd#fzf_set_preview_window({ 'options': options }, a:fullscreen)
 "   let a:spec.options = a:spec.options + spec.options
 
 "   return a:spec
@@ -880,7 +880,7 @@ endf
 "       let spec = fzfcmd#fzfrg_windows_preview(spec, a:fullscreen)
 "     else
 "       let spec = fzf#vim#with_preview(spec)
-"       let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
+"       let spec = fzfcmd#fzf_set_preview_window(spec, a:fullscreen)
 "       let spec.options = spec.options + g:fzf_bind_options
 "     endif
 
@@ -928,7 +928,7 @@ endf
 "     let spec = fzfcmd#fzfrg_windows_preview(spec, a:fullscreen)
 "   else
 "     let spec = fzf#vim#with_preview(spec)
-"     let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
+"     let spec = fzfcmd#fzf_set_preview_window(spec, a:fullscreen)
 "     let spec.options = spec.options + g:fzf_bind_options
 "   endif
 
@@ -986,7 +986,7 @@ endf
 "     let spec = fzfcmd#fzfrg_windows_preview(spec, a:fullscreen)
 "   else
 "     let spec = fzf#vim#with_preview(spec)
-"     let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
+"     let spec = fzfcmd#fzf_set_preview_window(spec, a:fullscreen)
 "     let spec.options = spec.options + g:fzf_bind_options
 "   endif
 
@@ -1049,7 +1049,7 @@ endf
 
 "     let spec = {
 "       \   'source': source_command,
-"       \   'sinklist': function('utils#fzf_selected_list'),
+"       \   'sinklist': function('fzfcmd#fzf_selected_list'),
 "       \   'options': g:fzf_bind_options + [
 "       \     '--prompt', 'Open Txt> ',
 "       \     '--multi', '--ansi',
@@ -1325,7 +1325,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang RgHistory call fzfcmd#fzfrg_history(<q-args>, <bang>0)
 
   command! -bang -nargs=? -complete=dir Files
-    \ call utils#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
+    \ call fzfcmd#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
   command! -bar -bang -nargs=? -complete=buffer Buffers call FzfBuffers(<q-args>, <bang>0)
 
   " NOTE: Under gitbash previews doesn't work due to how fzf.vim
@@ -1334,23 +1334,23 @@ func! s:SetFZF () abort
   " and it may get stuck as in git bash if called before fzf#vim#with_preview
   if g:is_gitbash || (!has('nvim') && g:is_windows)
     command! -bang -nargs=? GFiles
-      \ call utils#fzf_gitbash_files(<q-args>, g:fzf_preview_options, <bang>0)
+      \ call fzfcmd#fzf_gitbash_files(<q-args>, g:fzf_preview_options, <bang>0)
   endif
 
   " fzf options with custom preview
   if g:is_windows || g:is_termux
     command! -bang -nargs=? -complete=dir FzfFiles
-      \ call utils#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
+      \ call fzfcmd#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call utils#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, g:fzf_preview_options, <bang>0)
+      \ call fzfcmd#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, g:fzf_preview_options, <bang>0)
 
   " fzf options that only include common bindings
   else
 
     command! -bang -nargs=? -complete=dir FzfFiles
-      \ call utils#fzf_files(<q-args>, g:fzf_bind_options, <bang>0)
+      \ call fzfcmd#fzf_files(<q-args>, g:fzf_bind_options, <bang>0)
     command! -bang -nargs=? -complete=dir GitFZF
-      \ call utils#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, g:fzf_bind_options, <bang>0)
+      \ call fzfcmd#fzf_files(empty(<q-args>) ? utils#git_path() : <q-args>, g:fzf_bind_options, <bang>0)
   endif
 
 

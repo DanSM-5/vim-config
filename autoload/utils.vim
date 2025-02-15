@@ -136,76 +136,6 @@ function! utils#clone_dictionary(source)
     endfor
     return dNew
 endfunction
-" Fzf functions
-
-function! utils#fzf_selected_list(fzf_options, fullscreen, list) abort
-  if len(a:list) == 0
-    return
-  endif
-
-  if g:is_gitbash
-    let selectedList = map(a:list, 'utils#msys_to_windows_path(v:val)')
-  else
-    let selectedList = a:list
-  endif
-
-  if isdirectory(selectedList[0])
-    " Use first selected directory only!
-    call utils#fzf_files(selectedList[0], a:fzf_options, a:fullscreen)
-  elseif !empty(glob(selectedList[0])) " Is file
-    " Open multiple files
-    for sfile in selectedList
-      exec ':e ' . sfile
-    endfor
-  endif
-endfunction
-
-function! utils#fzf_set_preview_window(spec, fullscreen) abort
-  let new_spec = utils#clone_dictionary(a:spec)
-  if a:fullscreen
-    let new_spec.options = new_spec.options + [ '--preview-window', 'up,60%,wrap' ]
-  else
-    let new_spec.options = new_spec.options + [ '--preview-window', 'right,60%,wrap' ]
-  endif
-
-  return new_spec
-endf
-
-" Wrapper for fzf#vim#files that implement our preview window options
-function! utils#fzf_files(query, options, fullscreen) abort
-  " Get the fzf preview.sh script
-  let spec = fzf#vim#with_preview({ 'options': [] }, a:fullscreen)
-  " Inject preview window options
-  let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
-  " Append options after to get better keybindings for 'ctrl-/'
-  let spec.options = spec.options + a:options
-
-  try
-    call fzf#vim#files(a:query, spec, a:fullscreen)
-  finally
-  endtry
-endfunction
-
-" NOTE: Under gitbash previews doesn't work due to how fzf.vim
-" builds the paths for the bash.exe executable
-" On powershell, however, vim has issues not showing preview window
-" and it may get stuck as in git bash if called before fzf#vim#with_preview
-" This wrapper over fzf#vim#gitfiles is used to override GFiles command from
-" fzf.vim.
-function! utils#fzf_gitbash_files(query, preview_options, fullscreen) abort
-  let placeholder = a:query == '?' ? '{2..}' : '{}'
-  let options = a:preview_options + [
-        \ '--layout=reverse',
-        \ '--preview', 'bat -pp --color=always --style=numbers ' . placeholder
-        \ ]
-  let spec = a:query == '?' ? { 'placeholder': '', 'options': options } : { 'options': options }
-  let spec = utils#fzf_set_preview_window(spec, a:fullscreen)
-  call fzf#vim#gitfiles(a:query, spec, a:fullscreen)
-endfunction
-
-function utils#register_move(destination, source) abort
-  call setreg(a:destination, getreg(a:source))
-endfunction
 
 function! utils#windows_short_path(path) abort
   " From fzf.vim
@@ -236,5 +166,9 @@ function! utils#get_env() abort
   endif
 
   return '/usr/bin/env'
+endfunction
+
+function utils#register_move(destination, source) abort
+  call setreg(a:destination, getreg(a:source))
 endfunction
 

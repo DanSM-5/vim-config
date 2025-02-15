@@ -169,7 +169,7 @@ local fzf_projects = function ()
       end
 
       if vim.fn.isdirectory(lines[1]) == 1 then
-        vim.fn['utils#fzf_files'](lines[1], fzf_preview_options, 0)
+        vim.fn['fzfcmd#fzf_files'](lines[1], fzf_preview_options, 0)
 
         -- fzf won't start in interactive mode
         -- from this callback so schedule startinsert
