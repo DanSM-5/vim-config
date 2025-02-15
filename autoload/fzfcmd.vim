@@ -204,7 +204,7 @@ function fzfcmd#fzfrg_base(opts) abort
   " variable
   " let g:fzf_vim = {}
   " let g:fzf_vim.preview_window = ['right,80%', 'ctrl-/']
-  " let g:fzf_vim.preview_bash = g:bash
+  " let g:fzf_vim.preview_bash = utils#get_bash()
 
   if s:is_windows
     let spec = fzfcmd#fzfrg_windows_preview(spec, fullscreen)
@@ -395,10 +395,7 @@ function fzfcmd#fzf_buffers(query, fullscreen) abort
   " Prepare remove command
   let remove_command = $HOME . '/vim-config/utils/remove_buff.sh'
   if g:is_windows
-    let bash_path = config#windows_short_path(substitute(g:bash, '\\', '/', 'g'))
-    if g:is_gitbash
-      let bash_path = substitute(bash_path, '\\', '/', 'g')
-    endif
+    let bash_path = utils#get_bash()
     " TODO: Should it use the hardcoded /vim-config/utils? Consider setting a
     " global variale for the git repository
     let utils_prefix = bash_path . ' /c' . substitute($HOMEPATH, '\\', '/', 'g') . '/vim-config/utils'

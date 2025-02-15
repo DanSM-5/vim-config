@@ -7,7 +7,6 @@ let s:wsl = 'wsl'
 " if shell is powershell.exe, system calls will be utf16 files with BOM
 let s:cleanrgx = '[\xFF\xFE\x01\r\n]'
 
-let g:bash = '/usr/bin/bash'
 let g:is_linux = 0
 let g:is_wsl = 0
 let g:is_gitbash = 0
@@ -115,7 +114,7 @@ func! s:SetConfigurationsBefore () abort
     set signcolumn=auto:2
   else
     set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
- 
+
     " Set signcolumn
     set signcolumn=auto
   endif
@@ -534,21 +533,6 @@ func! s:Windows_conf_before () abort
   " set shellcmdflag=-c
   set shell=cmd
   set shellcmdflag=/c
-
-  let g:bash = substitute(system('where.exe bash | awk "/[Gg]it/ {print}" | tr -d "\r\n"'), '\n', '', '')
-  " if has("gui_running") || ! has('nvim')
-  "   " Vim and Gvim requires additional escaping on \r\n
-  "   let g:bash = substitute(system('where.exe bash | awk '"/[Gg]it/ {print}" | tr -d '"\r\n"'), '\n', '', '')
-  "   let g:bash = substitute(system("where.exe bash | awk \"/[Gg]it/ {print}\" | tr -d \"\\r\\n\" "), '\n', '', '')
-  " else
-  "   let g:bash = substitute(system("where.exe bash | awk \"/[Gg]it/ {print}\" | tr -d \"\r\n\" "), '\n', '', '')
-  " endif
-
-  if g:is_gitbash
-    let g:fzf_vim.preview_bash = substitute(config#windows_short_path(g:bash), '\', '/', 'g')
-  else
-    let g:fzf_vim.preview_bash = config#windows_short_path(g:bash)
-  endif
 
   let g:python3_host_prog = '~/AppData/local/Programs/Python/Python3*/python.exe'
   " let g:python3_host_prog = '$HOME\AppData\Local\Programs\Python\Python*\python.exe'
