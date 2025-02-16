@@ -220,16 +220,16 @@ local blink_module = {
         },
       },
 
-      -- default list of enabled providers defined so that you can extend it
-      -- elsewhere in your config, without redefining it, via `opts_extend`
-      sources = {
-        default = blink_sources_default,
-        -- completion = blink_sources_completion,
-        providers = blink_sources_providers,
+      cmdline = {
+        enabled = false,
+        keymap = nil,
+        sources = {},
 
+        --NOTE: Cannot enable completion for search only
+        --and fallback to builtin completion for everything else
+        --
         -- Disabled completion for command line mode
-        cmdline = {},
-        -- cmdline = function ()
+        -- sources = function ()
         --   local type = vim.fn.getcmdtype()
         --   -- Return buffer completion when searching
         --   if type == '/' or type == '?' then
@@ -246,13 +246,22 @@ local blink_module = {
         -- end,
       },
 
+
+      -- default list of enabled providers defined so that you can extend it
+      -- elsewhere in your config, without redefining it, via `opts_extend`
+      sources = {
+        default = blink_sources_default,
+        -- completion = blink_sources_completion,
+        providers = blink_sources_providers,
+      },
+
       -- experimental signature help support
       signature = {
         enabled = true,
         window = { border = 'rounded' },
       },
       snippets = {
-        preset = 'luasnip',
+        preset = 'luasnip', -- 'default'
         expand = function(snippet) require('luasnip').lsp_expand(snippet) end,
         active = function(filter)
           if filter and filter.direction then
