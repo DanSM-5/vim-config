@@ -87,6 +87,12 @@ func! s:SetConfigurationsBefore () abort
   " Set relative numbers
   set number relativenumber
 
+  " Completion menu
+  " Show menu even when there is a single match
+  " Auto select best match but do not insert
+  " set completeopt=menu,menuone,preview,noselect,noinsert,popup
+  set completeopt=menuone,noinsert,popup
+
   if has('nvim')
     " diffopt
     " Default
