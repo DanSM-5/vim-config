@@ -412,6 +412,35 @@ local function finally(block, on_end)
   return _finally(pcall( block ))
 end
 
+
+---@generic T
+---@param t T[] Table to check
+---@param value T|fun(v: T): boolean Value to compare or predicate function reference
+---@return boolean `true` if `t` contains `value`
+local function contains(t, value)
+
+             --- @generic T
+  local pred --- @type fun(v: T): boolean
+  if type(value) == 'function' then
+    pred = value
+  else
+    ---@generic T
+    ---@param v T
+    ---@return boolean
+    pred = function(v)
+      return v == value
+    end
+  end
+
+  for _, v in pairs(t) do
+    if pred(v) then
+      return true
+    end
+  end
+
+  return false
+end
+
 return {
   find_root = find_root,
   concat = array_concat,
@@ -421,6 +450,7 @@ return {
   merge = merge,
   foreach = foreach,
   filter = filter,
+  contains = contains,
   find = find,
   every = every,
   any = any,
