@@ -199,6 +199,12 @@ function! g:OnVimEnter()
   hi Comment guifg=#7f848e cterm=NONE gui=NONE
   " Completion menu (otherwise displayed with whitish background)
   hi Pmenu ctermfg=188 ctermbg=0 guifg=#dcdfe4 guibg=#21252b
+  " Change value for PmenuSel
+  hi! link PmenuSel Visual
+  " Original
+  " PmenuSel ctermfg=188 ctermbg=75 guifg=#dcdfe4 guibg=#61afef blend=0
+  " Float window background highlight
+  hi NormalFloat guibg=#21252b
 
   let g:theme_toggle_hi = g:theme_toggle_hi + [
     \   ['GitGutterAdd', 'hi ' . substitute(trim(execute('hi GitGutterAdd')), 'xxx', '', 'g'), 'hi GitGutterAdd guibg=NONE'],
