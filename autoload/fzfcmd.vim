@@ -432,3 +432,18 @@ function fzfcmd#fzf_buffers(query, fullscreen) abort
   call fzf#vim#buffers(a:query, spec, a:fullscreen)
 endfunction
 
+function! fzfcmd#highlights(query, fullscreen) abort
+  let highlight_colors = split(execute('hi'), '\n')
+  let spec = {
+    \   'source': highlight_colors,
+    \   'sink*': { list -> setreg('"', join(list, "\n")) },
+    \   'options': g:fzf_bind_options + [
+    \     '--ansi', '--border', '--multi', 
+    \     '--input-border',
+    \     '--query', a:query,
+    \   ]
+    \ }
+  
+  call fzf#run(fzf#wrap('highlights', spec, a:fullscreen))
+endfunction
+
