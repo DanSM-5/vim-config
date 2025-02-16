@@ -9,7 +9,6 @@
 -- indicate wheter to use cmp or blink
 -- local use_blink = os.getenv('USE_BLINK') == '1'
 
-require('shared.big_files').setup()
 require('lsp-servers.nvim_mason').setup()
 -- NOTE: Only load cmp for now. Blink is not defined in vimstart.
 require('config.nvim_cmp').configure({ lazydev = false })
