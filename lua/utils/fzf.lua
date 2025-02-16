@@ -175,6 +175,7 @@ local fzf_projects = function ()
         -- from this callback so schedule startinsert
         local timer = vim.uv.new_timer()
         timer:start(300, 0, function ()
+          timer:stop()
           vim.schedule(function ()
             vim.cmd.startinsert()
           end)
