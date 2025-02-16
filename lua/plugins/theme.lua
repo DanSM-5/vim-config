@@ -40,6 +40,8 @@ return {
       -- vim.cmd('hi PmenuSel guibg=#2f333d')
       vim.api.nvim_set_hl(0, 'PmenuSel', { link = 'Visual', force = true })
 
+      require('shared.highlights').set_diagnostics()
+
       -- Set variables for ToggleBg
       local g = vim.g
       g.theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'

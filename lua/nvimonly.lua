@@ -89,4 +89,5 @@ require('nvim-ts-autotag').setup({
 vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
 
 require('shared.nvim_load')
+require('shared.highlights').set_diagnostics()
 
