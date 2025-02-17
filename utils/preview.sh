@@ -52,14 +52,14 @@ fi
 # CENTER="${CENTER/#\~\//$MSWINHOME/}"
 
 TESTNAME="/${FILE,,}${CENTER}"
-TESTNAME="$( sed -r 's/\\+/\//g' <<< $TESTNAME )"
+TESTNAME="$( sed -r 's/\\+/\//g' <<< "$TESTNAME" )"
 
 # FILE is absolute path
 if [[ "$FILE" =~ ^[A-Za-z]$ ]] && [ -r "$TESTNAME" ]; then
   FILE="$TESTNAME"
   CENTER="$NUMBER"
 elif [ -r "$FILE" ]; then
-  FILE="$( sed -r 's/\\+/\//g' <<< $FILE )"
+  FILE="$( sed -r 's/\\+/\//g' <<< "$FILE" )"
 else
   echo "$TESTNAME"
   echo "File not found ${FILE}"
@@ -79,7 +79,7 @@ fi
 
 if [ -z "$FZF_PREVIEW_COMMAND" ] && [ "${BATNAME:+x}" ]; then
   ${BATNAME} --style="${BAT_STYLE:-numbers}" --color=always --pager=never \
-      --highlight-line=$CENTER -- "$FILE"
+      --highlight-line="$CENTER" -- "$FILE"
   exit $?
 fi
 
