@@ -191,10 +191,10 @@ function! gitsearch#file(file, fullscreen) abort
         \    '--header','File: ' .. file,
         \    '--preview', preview_cmd,
         \    '--preview-window', preview_window,
-        \    '--bind', 'ctrl-a:preview:'.preview_all,
-        \    '--bind', 'ctrl-d:preview:'.preview_cmd,
-        \    '--bind', 'ctrl-f:preview:'.preview_file,
-        \    '--bind', 'ctrl-g:preview:'.preview_graph,
+        \    '--bind', 'ctrl-a:change-preview:'.preview_all,
+        \    '--bind', 'ctrl-d:change-preview:'.preview_cmd,
+        \    '--bind', 'ctrl-f:change-preview:'.preview_file,
+        \    '--bind', 'ctrl-g:change-preview:'.preview_graph,
         \  ] }
 
   " NOTE: No longer needed as we can change preview without transform
