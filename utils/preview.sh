@@ -10,58 +10,31 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+# TODO: Handle tag preview?
 if [ "$1" = --tag ]; then
-  shift
-  "$(dirname "${BASH_SOURCE[0]}")/tagpreview.sh" "$@"
-  exit $?
+  # shift
+  # "$(dirname "${BASH_SOURCE[0]}")/tagpreview.sh" "$@"
+  # exit $?
+  exit 0
 fi
 
 IFS=':' read -r -a INPUT <<< "$1"
-FILE=${INPUT[0]}    # 'C' | filename
-CENTER=${INPUT[1]}  # filename | 'number'
-NUMBER=${INPUT[2]}  # 'number' | ...
-
-# echo "$NUMBER"
-
-# if [[ "$FILE" =~ ^[A-Za-z]:\\ ]]; then
-  # FILE=${FILE}${INPUT[1]}
-  # CENTER=${INPUT[2]}
-# fi
-
-# if [[ -n "$CENTER" && ! "$CENTER" =~ ^[0-9] ]]; then
-  # exit 1
-# fi
-# CENTER=${CENTER/[^0-9]*/}
-
-# MS Win support
-# if [[ "$FILE" =~ '\' ]]; then
-if [ -z "$MSWINHOME" ]; then
-  MSWINHOME="$HOMEDRIVE$HOMEPATH"
-fi
-# if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
-#   MSWINHOME="${MSWINHOME//\\//}"
-#   FILE="${FILE/#\~\\/$MSWINHOME\\}"
-#   FILE=$(wslpath -u "$FILE")
-# elif [ -n "$MSWINHOME" ]; then
-#   FILE="${FILE/#\~\\/$MSWINHOME\\}"
-# fi
-# fi
-
-# CENTER="$( sed -r 's/\\+/\//g' <<< $CENTER )"
-# echo "$CENTER"
-# CENTER="${CENTER/#\~\//$MSWINHOME/}"
-
-TESTNAME="/${FILE,,}${CENTER}"
-TESTNAME="$( sed -r 's/\\+/\//g' <<< "$TESTNAME" )"
 
 # FILE is absolute path
-if [[ "$FILE" =~ ^[A-Za-z]$ ]] && [ -r "$TESTNAME" ]; then
-  FILE="$TESTNAME"
-  CENTER="$NUMBER"
-elif [ -r "$FILE" ]; then
-  FILE="$( sed -r 's/\\+/\//g' <<< "$FILE" )"
+if [[ "${INPUT[0]}" =~ ^[A-Za-z]$ ]]; then
+  FILE="${INPUT[0]}"           # drive letter e.g. 'C'
+  FILE="/${FILE,,}${INPUT[1]}" # '/c' + filename
+  CENTER="${INPUT[2]}"         # 'number'
 else
-  echo "$TESTNAME"
+  FILE="${INPUT[0]}"
+  CENTER="${INPUT[1]}"
+fi
+
+# Ensure forward slash
+FILE="$( sed -r 's/\\+/\//g' <<< "$FILE" )"
+
+if ! [ -r "$FILE" ]; then
+  # echo "$TESTNAME"
   echo "File not found ${FILE}"
   exit 1
 fi
