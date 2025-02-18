@@ -505,8 +505,16 @@ endf
 " **************  WINDOWS specific ********************
 func! s:Windows_conf_before () abort
   " Set pwsh or powershell
-  " exe 'set shell='.fnameescape("pwsh -ExecutionPolicy Bypass")
-  " set shellcmdflag=-c
+  " set shell=pwsh
+  " let &shellcmdflag = '-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -Command Remove-Alias -Force -ErrorAction SilentlyContinue tee;'
+  " set shellxquote=
+  " set shellpipe=>%s\ 2>&1
+  " set shellredir=>%s\ 2>&1
+
+  " neovim recommended `:h shell-powershell`
+  " let &shellcmdflag = '-NoLogo -NonInteractive -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues[''Out-File:Encoding'']=''utf8'';$PSStyle.OutputRendering=''plaintext'';Remove-Alias -Force -ErrorAction SilentlyContinue tee;'
+
+  " Ensure cmd shell
   set shell=cmd
   set shellcmdflag=/c
 
@@ -1178,13 +1186,13 @@ function! config#CurrentOS ()
       let g:is_gitbash = 1
     endif
 
-    set shell=cmd
-    set shellcmdflag=/c
+    " set shell=cmd
+    " set shellcmdflag=/c
     let g:is_windows = 1
     let known_os = s:windows
   elseif has('win32') || has("gui_win32") || $OS == 'Windows_NT'
-    set shell=cmd
-    set shellcmdflag=/c
+    " set shell=cmd
+    " set shellcmdflag=/c
     let g:is_windows = 1
     let known_os = s:windows
   elseif has('linux')
