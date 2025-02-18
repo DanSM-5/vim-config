@@ -54,6 +54,10 @@ func! s:SetConfigurationsBefore () abort
   omap [n <Plug>(jumpconflict-context-previous)
   omap ]n <Plug>(jumpconflict-context-next)
 
+  " Move to next/previous tab
+  nnoremap <silent> ]T <cmd>tabnext<cr>
+  nnoremap <silent> [T <cmd>tabprevious<cr>
+
   " Auto increment letters when using ctrl-a
   set nrformats+=alpha
 
@@ -923,7 +927,13 @@ func! s:DefineCommands () abort
 
   " Open terminal
   if has('nvim')
-    command! Term :term
+    function! s:open_term(bang) abort
+      if a:bang
+        tabnew
+      endif
+      term
+    endfunction
+    command! -bang -bar Term call s:open_term(<bang>0)
     command! -bar Vterm :vs|te
     command! -bar Sterm :sp|te
     augroup custom_term
@@ -935,8 +945,14 @@ func! s:DefineCommands () abort
       autocmd TermOpen * call s:NeovimTerminalStartup()
     augroup END
   else
+    function! s:open_term(bang) abort
+      if a:bang
+        tabnew
+      endif
+      terminal ++curwin
+    endfunction
     " in Vim you can list open terminal windows with 'call term_open()'
-    command! Term :terminal ++curwin
+    command! -bang -bar Term call s:open_term(<bang>0)
     command! Vterm :vert term
     command! Sterm :term
     augroup custom_term

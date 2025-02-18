@@ -7,6 +7,18 @@ local function set_keymaps()
   -- NOTE: Setting repeatable keymaps ',' (left) and ';' (right)
   repeat_motion.set_motion_keys()
 
+  repeat_pair({
+    keys = 'T',
+    desc_forward = '[Tab] Move to next tab',
+    desc_backward = '[Tab] Move to previous tab',
+    on_forward = function ()
+      vim.cmd('tabnext')
+    end,
+    on_backward = function ()
+      vim.cmd('tabprevious')
+    end,
+  })
+
   -- Jump to next conflict
   local jumpconflict_next = function()
     -- vim.cmd([[execute "normal \<Plug>JumpconflictContextNext"]])
