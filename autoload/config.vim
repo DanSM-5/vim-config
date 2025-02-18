@@ -219,7 +219,10 @@ func! s:Set_user_keybindings () abort
   xnoremap <expr> <Leader>P clipboard#paste('P')
 
   " Quick buffer overview an completion to change
-  nnoremap <leader>gb :ls<CR>:b<Space>
+  nnoremap <leader>gb :<C-u>ls<CR>:b<Space>
+
+  " Quick buffer overview an completion to change
+  nnoremap g` :<C-u>marks<CR>:normal! `
 
   " Change to normal mode from terminal mode
   tnoremap <leader><Esc> <C-\><C-n>
