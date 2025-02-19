@@ -6,11 +6,12 @@ local setup_servers = function (config)
   for _, settings in ipairs(config.servers) do
     local server, lsp, options = settings.server, settings.lsp, settings.options
     if type(server) ~= 'string' or type(lsp) ~= 'string' then
-      -- continue;
-      -- but lua doesn't have continue :v
+      goto continue
     elseif vim.fn.executable(server) == 1 then
       config.lspconfig_handler(lsp, options)
     end
+
+    ::continue::
   end
 end
 
