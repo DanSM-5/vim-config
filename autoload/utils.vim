@@ -172,3 +172,29 @@ function utils#register_move(destination, source) abort
   call setreg(a:destination, getreg(a:source))
 endfunction
 
+function utils#delete_marks_curr_line() abort
+  let bufnr = bufnr('%')
+  let cur_line = line('.')
+  "                      [bufnum, lnum, col, off]
+  " { mark: string; pos: [number, number, number, number] }[]
+  let all_marks_local = getmarklist(bufnr)
+  for mark in all_marks_local
+    if mark.pos[1] == cur_line && mark.mark =~? "'[a-z]"
+      echomsg 'Deleting mark: ' . mark.mark[1:1]
+      exec 'delmarks ' . mark.mark[1:1]
+    endif
+  endfor
+
+  let bufname = expand('%:p')
+  "                                    [bufnum, lnum, col, off]
+  " { file: string; mark: string; pos: [number, number, number, number] }[]
+  let all_marks_global = getmarklist()
+  for mark in all_marks_global
+    let expanded_file_name = fnamemodify(mark.file, ':p')
+    if bufname == expanded_file_name && mark.pos[1] == cur_line && mark.mark =~? "'[A-Z]"
+      echomsg 'Deleting mark:' . mark.mark[1:1]
+      exec 'delmarks ' . mark.mark[1:1]
+    end
+  endfor
+endfunction
+

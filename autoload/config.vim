@@ -468,6 +468,9 @@ func! s:Set_user_keybindings () abort
   " :h indent-object
   xmap ii <Plug>(indent-object_linewise-none)
   omap ii <Plug>(indent-object_blockwise-none)
+
+  " Delete marks in line under cursor
+  nnoremap <leader>`d <cmd>call utils#delete_marks_curr_line()<cr>
 endf
 
 func! s:Set_os_specific_before () abort
