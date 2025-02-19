@@ -821,9 +821,9 @@ func! s:SetFZF () abort
 
   " Set keymappings
   " Open File fullscreen
-  nnoremap <A-p> :<C-u>GitFZF!<CR>
+  nnoremap <A-p> <cmd>exec 'GitFZF ' . getcwd()<cr>
   " Open File
-  nnoremap <C-P> :<C-u>GitFZF<CR>
+  nnoremap <C-P> <cmd>GitFZF<CR>
   " Open from project
   nnoremap <C-o>p :<C-u>CPrj<CR>
   " Open from notes (txt)
