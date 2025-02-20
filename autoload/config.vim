@@ -108,7 +108,7 @@ func! s:SetConfigurationsBefore () abort
     set diffopt=internal,filler,closeoff,indent-heuristic,linematch:60,algorithm:histogram
 
     " Set signcolumn
-    set signcolumn=auto:2
+    set signcolumn=auto:3
   else
     set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
 
@@ -127,6 +127,16 @@ func! s:SetConfigurationsBefore () abort
   " set showmatch
   " Add angle brackets as matching pair.
   set matchpairs+=<:>
+
+  " Reduce default update time to 1 second
+  set updatetime=1000
+
+  " Explicit default of incsearch.
+  " Visually show and highlight search matches.
+  set incsearch
+
+  " Recognize `@` symbol in filenames for things like `gf`
+  set isfname+=@-@
 endf
 
 func! s:SetConfigurationsAfter () abort
@@ -186,6 +196,16 @@ func! s:SetBufferOptions () abort
   " But allow auto match other formats like
   " dos (windows), and mac
   set fileformats=unix,dos,mac
+
+  " Appropriate width for a line
+  set textwidth=120
+
+  " Wrap lines at characters present in `breakat` rather than
+  " on last fitting character on screen.
+  set linebreak
+
+  " Auto read changes on files made outside vim
+  set autoread
 
   augroup userconfiles
     au!

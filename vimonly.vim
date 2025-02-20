@@ -24,8 +24,6 @@ function s:Gqf(bang) abort
 endfunction
 
 command! -bang -bar Gqf call s:Gqf(<bang>0)
-" Change update time to reflect gitgutter changes
-set updatetime=1000
 
 " NOTE: Uncomment to enable gitgutter logs
 " let g:gitgutter_log = 1
