@@ -19,12 +19,12 @@ local configure = function()
         cmd = { name, '--dark-mode', '--enable-emoji' },
         filetypes = { 'markdown' },
         single_file_support = true,
-        root_dir = function(startpath)
-          -- require("lspconfig").util.find_git_ancestor,
-          return vim.fs.dirname(vim.fs.find('.git', {
-            path = startpath,
-            upward = true
-          })[1])
+        ---Get root dir function
+        ---@param startpath string starting path
+        ---@return string Root directory
+        root_dir = function (startpath)
+          return require('utils.stdlib')
+            .get_root_dir('.git', startpath)
         end,
         settings = {},
       },
@@ -116,10 +116,8 @@ local function start(opts)
     .get_update_capabilities()
   local lsp_config = update_capabilities(base_config)
   -- Try to gess root dir
-  local root_dir = vim.fs.dirname(vim.fs.find('.git', {
-    path = vim.fn.expand('%:p:h'),
-    upward = true,
-  })[1]) or vim.fn.expand('%:p:h')
+  local root_dir = require('utils.stdlib')
+    .get_root_dir('.git')
 
   -- Start lsp on buffer
   local client_id = vim.lsp.start(

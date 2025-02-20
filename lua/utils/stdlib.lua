@@ -123,6 +123,21 @@ local function find_root(lookFor)
   return root_dir
 end
 
+-- Try to gess root dir
+---Tries to guess the root directory of a project
+---or defaults to current buffer directory
+---@param marker string|nil Name used to identify the rook of a project. If nil `.git` is used.
+---@param initial string|nil Initial path to use as the base of the search. If nil, use current buffer path.
+---@return string It should always return a string
+local get_root_dir = function (marker, initial)
+  local project_base_identifier = marker or '.git'
+  local path = initial or vim.fn.expand('%:p:h')
+  return vim.fs.dirname(vim.fs.find(project_base_identifier, {
+    path = path,
+    upward = true,
+  })[1]) or path
+end
+
 --- Creates a weak reference to an object.
 --- Calling the returned function will return the object if it has not been garbage collected.
 ---@generic T: table
@@ -443,6 +458,7 @@ end
 
 return {
   find_root = find_root,
+  get_root_dir = get_root_dir,
   concat = array_concat,
   split = split,
   shallow_clone = shallow_clone,
