@@ -181,13 +181,14 @@ local function set_keymaps()
     diagnostic_prev({ severity = vim.diagnostic.severity.WARN, wrap = true })
   end, { desc = 'LSP: Go to previous warning', silent = true, noremap = true })
 
-  -- diagnostic INFO
-  vim.keymap.set('n', ']i', function()
-    diagnostic_next({ severity = vim.diagnostic.severity.INFO })
-  end, { desc = 'LSP: Go to next hint', silent = true, noremap = true })
-  vim.keymap.set('n', '[i', function()
-    diagnostic_prev({ severity = vim.diagnostic.severity.INFO })
-  end, { desc = 'LSP: Go to previous hint', silent = true, noremap = true })
+  -- diagnostic INFO, currently disabled until a good mapping that does not override
+  -- a useful default is thought
+  -- vim.keymap.set('n', ']i', function()
+  --   diagnostic_next({ severity = vim.diagnostic.severity.INFO })
+  -- end, { desc = 'LSP: Go to next info', silent = true, noremap = true })
+  -- vim.keymap.set('n', '[i', function()
+  --   diagnostic_prev({ severity = vim.diagnostic.severity.INFO })
+  -- end, { desc = 'LSP: Go to previous info', silent = true, noremap = true })
 
   -- diagnostic HINT
   vim.keymap.set('n', ']h', function()
