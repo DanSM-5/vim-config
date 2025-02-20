@@ -1,18 +1,12 @@
 --- language-independent query for syntax errors and missing elements
 local error_query = vim.treesitter.query.parse('query', '[(ERROR)(MISSING)] @a')
 local namespace = vim.api.nvim_create_namespace('treesitter.diagnostics')
-local excluded_fts = {
-  'comment',
-  'markdown',
-  -- 'text',
-}
 
---- @param args { buf: integer } -- vim.api.keyset.create_autocmd.callback_args
+--- @param args vim.api.keyset.create_autocmd.callback_args
 local function diagnose(args)
-  if not vim.diagnostic.is_enabled({ bufnr = args.buf }) then
+  if not vim.diagnostic.is_enabled({bufnr = args.buf}) then
     return
   end
-
   -- don't diagnose strange stuff
   if vim.bo[args.buf].buftype ~= '' then
     return
@@ -20,17 +14,14 @@ local function diagnose(args)
 
   local diagnostics = {}
   local parser = vim.treesitter.get_parser(args.buf, nil, { error = false })
-
   if parser then
     parser:parse(false, function(_, trees)
       if not trees then
         return
       end
-
       parser:for_each_tree(function(tree, ltree)
-        -- skip languages which never error and are very common injections
-        -- if ltree:lang() ~= 'comment' and ltree:lang() ~= 'markdown' then
-        if not vim.tbl_contains(excluded_fts, ltree:lang()) then
+        -- only process trees containing errors
+        if tree:root():has_error() then
           for _, node in error_query:iter_captures(tree:root(), args.buf) do
             local lnum, col, end_lnum, end_col = node:range()
 
@@ -57,7 +48,7 @@ local function diagnose(args)
               code = string.format('%s-syntax', ltree:lang()),
               bufnr = args.buf,
               namespace = namespace,
-              severity = vim.diagnostic.severity.ERROR,
+              severity = vim.diagnostic.severity.ERROR
             }
             if node:missing() then
               diagnostic.message = string.format('missing `%s`', node:type())
@@ -82,10 +73,10 @@ local function diagnose(args)
         end
       end)
     end)
-
     vim.diagnostic.set(namespace, args.buf, diagnostics)
   end
 end
+
 
 local autocmd_group = vim.api.nvim_create_augroup('editor.treesitter', { clear = true })
 
