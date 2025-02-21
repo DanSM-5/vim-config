@@ -8,7 +8,7 @@ local function set_keymaps()
   repeat_motion.set_motion_keys()
 
   repeat_pair({
-    keys = 'T',
+    keys = '<tab>',
     desc_forward = '[Tab] Move to next tab',
     desc_backward = '[Tab] Move to previous tab',
     on_forward = function ()
