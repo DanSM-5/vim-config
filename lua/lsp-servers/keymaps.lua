@@ -86,7 +86,8 @@ return {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     set_map('n', 'gD', vim.lsp.buf.declaration, '[Lsp]: Go to declaration')
     set_map('n', 'gd', vim.lsp.buf.definition, '[Lsp]: Go to definition')
-    set_map('n', 'gv', '<cmd>vsplit | lua vim.lsp.buf.definition()<CR>', '[Lsp]: Go to definition in vsplit')
+    set_map('n', '<space>vs', '<cmd>split | lua vim.lsp.buf.definition()<CR>', '[Lsp]: Go to definition in vsplit')
+    set_map('n', '<space>vv', '<cmd>vsplit | lua vim.lsp.buf.definition()<CR>', '[Lsp]: Go to definition in vsplit')
     set_map('n', 'K', vim.lsp.buf.hover, '[Lsp]: Hover action')
     set_map('n', 'gi', vim.lsp.buf.implementation, '[Lsp]: Go to implementation')
     set_map('n', '<C-k>', vim.lsp.buf.signature_help, '[Lsp]: Show signature help')
