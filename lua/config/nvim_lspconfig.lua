@@ -11,6 +11,12 @@ return {
     vim.keymap.set('n', '<space>l', vim.diagnostic.setloclist, { desc = 'LSP: Open diagnostic list', silent = true })
     vim.keymap.set('n', '<space>q', vim.diagnostic.setqflist , { desc = 'LSP: Open diagnostic list', silent = true })
 
+    local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
+		for type, icon in pairs(signs) do
+			local hl = "DiagnosticSign" .. type
+			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+		end
+
     -- vim.keymap.set("n", "<leader>L", function()
     --   if vim.fn.search("https*://") > 0 then
     --     vim.ui.open(vim.fn.expand("<cfile>"))
