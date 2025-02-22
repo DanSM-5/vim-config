@@ -110,7 +110,7 @@ func! s:SetConfigurationsBefore () abort
     set diffopt=internal,filler,closeoff,indent-heuristic,linematch:60,algorithm:histogram
 
     " Set signcolumn
-    set signcolumn=auto:3
+    set signcolumn=auto:2
   else
     set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
 
