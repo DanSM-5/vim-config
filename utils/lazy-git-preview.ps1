@@ -110,9 +110,13 @@ try {
     if (-not $out) { break; }
 
     $out > $content_file.FullName
-    $q = head -1 $content_file.FullName
-    $k = head -2 $content_file.FullName | tail -1
-    $shas = sed '1,2d;s/^[^a-z0-9]*//;/^$/d' $content_file.FullName | awk '{print $1}'
+    $q = Get-Content $content_file.FullName | Select-Object -Index 0
+    $k = Get-Content $content_file.FullName | Select-Object -Index 1
+    $shas = Get-Content $content_file.FullName | Select-Object -Skip 2 | ForEach-Object {
+      if ($_ -match "[a-f0-9]{7,}") {
+        return $matches[0]
+      }
+    }
 
     if (-not $shas) { continue; }
     if ($q) { $down_options[0] = "--query=$q" }
