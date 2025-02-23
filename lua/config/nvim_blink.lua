@@ -1,4 +1,5 @@
 ---@module 'lsp-servers.types'
+---@module 'blink-ripgrep'
 
 ---@type config.CompletionModule
 local blink_module = {
@@ -100,7 +101,6 @@ local blink_module = {
         module = 'blink-ripgrep',
         name = 'Ripgrep',
         -- the options below are optional, some default values are shown
-        ---@module 'blink-ripgrep'
         ---@type blink-ripgrep.Options
         opts = {
           -- For many options, see `rg --help` for an exact description of
@@ -159,8 +159,8 @@ local blink_module = {
         ['<C-n>'] = { 'select_next', 'fallback' },
         ['<Up>'] = { 'select_prev', 'fallback' },
         ['<Down>'] = { 'select_next', 'fallback' },
-        ['<C-e>'] = { 'hide' },
-        ['<C-b>'] = { 'show' },
+        ['<C-e>'] = { 'hide', 'fallback' },
+        ['<C-b>'] = { 'show', 'fallback' },
         ['<C-y>'] = { 'select_and_accept' },
         ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
         ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
