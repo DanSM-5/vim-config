@@ -78,7 +78,7 @@ end, {
   desc = '[Lsp] Start mpls lsp server',
   bar = true,
   bang = true,
-  nargs = 1,
+  nargs = '?',
   complete = 'file'
 })
 
