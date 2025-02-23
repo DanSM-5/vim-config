@@ -46,7 +46,7 @@ local fzf_options_with_preview = { options = fzf_preview_options }
 ---@class FzfOptions
 ---@field source (fun(): table) | table
 ---@field sink fun(options: string[]): nil
----@field fzf_opts string[]
+---@field fzf_opts? string[]
 ---@field name? string
 ---@field fullscreen? boolean
 
@@ -63,7 +63,7 @@ local fzf = function (opts)
   local name = opts.name or 'fzf-history-default'
   local fullscreen = opts.fullscreen and 1 or 0
   local source = opts.source
-  local options = opts.fzf_opts
+  local options = opts.fzf_opts or {}
   local sink = opts.sink or function (tbl)
     for _, value in ipairs(tbl) do
       vim.notify(value)
