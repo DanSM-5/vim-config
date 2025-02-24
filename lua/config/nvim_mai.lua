@@ -7,6 +7,7 @@ return {
         ["'"] = false,
         ['"'] = false,
         ['`'] = false,
+        ['f'] = false,
       },
     })
   end
