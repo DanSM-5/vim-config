@@ -686,7 +686,7 @@ endf
 func! s:SetRG () abort
   if executable('rg')
     " In-built grep functionality
-    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ --no-ignore\ --hidden\ -g\ '!plugged'\ -g\ '!.git'\ -g\ '!node_modules'
+    let &grepprg = 'rg --vimgrep --no-heading --smart-case --no-ignore --hidden -g "!plugged" -g "!.git" -g "!node_modules"'
     set grepformat=%f:%l:%c:%m
   endif
 endf
