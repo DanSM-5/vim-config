@@ -752,6 +752,32 @@ function ExecuteRGVisual() abort
   exe "RG " . text
 endfunction
 
+function QueryGrep(query, all) abort
+  let escaped = escape(a:query, '\/')
+  if a:all
+    execute 'silent grep'. escaped
+  else
+    execute 'silent grep '.escaped.' %'
+  endif
+endfunction
+
+function GrepVisual() abort
+  let text = utils#get_selected_text()
+  let text = split(text, '\n')[0]
+  " Remove trailing space
+  let text = trim(text)
+  exe 'QueryGrep ' . text
+endfunction
+
+function SearchGrep(all) abort
+  if a:all
+    " Also consider using :grep
+    exec "normal! :\<C-u>vimgrep /\<C-r>//j **/* \<cr>|:cw\<cr>"
+  else
+    exec "normal! :\<C-u>vimgrep /\<C-r>//j %\<cr>|:cw\<cr>"
+  endif
+endfunction
+
 func! s:SetFZF () abort
   " fzf commands
   " fzf
@@ -855,6 +881,8 @@ func! s:SetFZF () abort
   " NOTE: We need a wrapper to trim new lines for RG
   " xnoremap <leader>fr :<C-u>execute 'RG '.GetSelectionText()<cr>
   xnoremap <leader>fr :<C-u>call ExecuteRGVisual()<cr>
+  nnoremap <leader>fq :<C-u>call QueryGrep(expand('<cword>'), 0)<cr>
+  xnoremap <leader>fq :<C-u>call GrepVisual()<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
   " Set usual ctrl-o behavior to double the sequence
@@ -1066,6 +1094,9 @@ func! s:DefineCommands () abort
   " Change position of window
   command! -bar -nargs=0 WToHorizontal :execute "normal! \<C-w>t\<C-w>K"
   command! -bar -nargs=0 WToVertical :execute "normal! \<C-w>t\<C-w>H"
+
+  command! -bar -bang -nargs=* QueryGrep call QueryGrep(<q-args>, <bang>0)
+  command! -bar -bang -nargs=0 SearchGrep call SearchGrep(<bang>0)
 endf
 
 func! s:RemapAltUpDownNormal () abort
