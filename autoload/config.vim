@@ -746,7 +746,12 @@ endf
 
 function ExecuteRGVisual() abort
   let text = utils#get_selected_text()
-  let text = split(text, '\n')[0]
+  if len(text) == 0
+    return
+  endif
+
+  " Use first line
+  let text = text[0]
   " Remove trailing space
   let text = trim(text)
   exe "RG " . text
@@ -763,7 +768,12 @@ endfunction
 
 function GrepVisual() abort
   let text = utils#get_selected_text()
-  let text = split(text, '\n')[0]
+  if len(text) == 0
+    return
+  endif
+
+  " Use first line
+  let text = text[0]
   " Remove trailing space
   let text = trim(text)
   exe 'QueryGrep ' . text
@@ -882,7 +892,7 @@ func! s:SetFZF () abort
   " xnoremap <leader>fr :<C-u>execute 'RG '.GetSelectionText()<cr>
   xnoremap <leader>fr :<C-u>call ExecuteRGVisual()<cr>
   nnoremap <leader>fq :<C-u>call QueryGrep(expand('<cword>'), 0)<cr>
-  xnoremap <leader>fq :<C-u>call GrepVisual()<cr>
+  xnoremap <leader>fq <cmd>call GrepVisual()<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
   " Set usual ctrl-o behavior to double the sequence
