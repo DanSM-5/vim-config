@@ -116,17 +116,98 @@ function utils#mkdir(path, current) abort
   call mkdir(expand(path), 'p')
 endfunction
 
+" Tests
+" Arrow marks always point correctly start and end
+" 'v' and '.' may be reversed depending on which direction
+" was used in the visual selection and require adjustment
+"
+" let v = getpos('v')
+" let dot = getpos('.')
+" let left = getpos("'<")
+" let right = getpos("'>")
+" echomsg 'Dot: '.join(dot,',')
+" echomsg 'V: '.join(v,',')
+" echomsg 'Left: '.join(left,',')
+" echomsg 'Right: '.join(right,',')
+
+" function! utils#get_selected_text_old()
+"   let [begin, end] = [getpos("'<"), getpos("'>")]
+
+"   " Check if there is any content selected
+"   let content = getline(begin[1], end[1])
+"   if len(content) == 0
+"     return []
+"   endif
+
+"   let lastchar = matchstr(getline(end[1])[end[2]-1 :], '.')
+"   if begin[1] ==# end[1]
+"     let lines = [getline(begin[1])[begin[2]-1 : end[2]-2]]
+"   else
+"     let lines = [getline(begin[1])[begin[2]-1 :]]
+"           \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
+"           \         + [getline(end[1])[: end[2]-2]]
+"   endif
+"   return split(join(lines, '\n') . lastchar, '\n')
+"   " return join(lines, '\n') . lastchar . (visualmode() ==# 'V' ? '\n' : '')
+" endfunction
+
+" For more refined: https://stackoverflow.com/a/28398359/10393984
 function! utils#get_selected_text()
-  let [begin, end] = [getpos("'<"), getpos("'>")]
-  let lastchar = matchstr(getline(end[1])[end[2]-1 :], '.')
-  if begin[1] ==# end[1]
-    let lines = [getline(begin[1])[begin[2]-1 : end[2]-2]]
+  " Currently in visual mode
+  let current = 0
+  if mode() ==# 'v' || mode() ==# 'V' || mode() ==# ''
+    let current = 1
+    let [line_start, column_start] = getpos("v")[1:2]
+    let [line_end, column_end] = getpos(".")[1:2]
   else
-    let lines = [getline(begin[1])[begin[2]-1 :]]
-          \         + (end[1] - begin[1] <# 2 ? [] : getline(begin[1]+1, end[1]-1))
-          \         + [getline(end[1])[: end[2]-2]]
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+  end
+
+  if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
+    let [line_start, column_start, line_end, column_end] =
+      \   [line_end, column_end, line_start, column_start]
+  end
+
+  " echomsg 'Startl: '.line_start.','.column_start.' Endl: '.line_end.','column_end
+  " echomsg 'Mode: '.mode()
+  " echomsg 'VMode: '.visualmode()
+  " echomsg 'current: '.current
+
+  let lines = getline(line_start, line_end)
+  if len(lines) == 0
+    return []
   endif
-  return join(lines, '\n') . lastchar . (visualmode() ==# 'V' ? '\n' : '')
+
+  " If visual line
+  if (mode() ==# 'V' && current == 1) || (visualmode() ==# 'V' && current == 0)
+    " echomsg 'Visualline'
+    return lines " No further process
+  endif
+
+  if (visualmode() ==# "\<C-V>" && current == 0) || (current == 1 && mode() ==# "\<C-V>")
+    " Selection can be reversed depending on starting position
+    let [column_start, column_end] = column_end > column_start ? [column_start, column_end] : [column_end, column_start]
+
+    if &selection ==# "exclusive"
+      let column_end -= 1 "Needed to remove the last character to make it match the visual selction
+    endif
+    for idx in range(len(lines))
+      let lines[idx] = lines[idx][: column_end - 1]
+      let lines[idx] = lines[idx][column_start - 1:]
+    endfor
+    " echomsg 'Visual Block'
+  else
+    if &selection ==# "exclusive"
+      let column_end -= 1 "Needed to remove the last character to make it match the visual selction
+    endif
+
+    let lines[-1] = lines[-1][: column_end - 1]
+    let lines[ 0] = lines[ 0][column_start - 1:]
+    " echomsg 'Visual'
+  endif
+  return lines  " use this return if you want an array of text lines
+  "return join(lines, "\n") "use this return instead if you need a text block
 endfunction
 
 function! utils#clone_dictionary(source)
