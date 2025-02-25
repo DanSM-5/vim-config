@@ -1,4 +1,4 @@
-local create_autocmd = function ()
+local create_autocmds = function ()
   vim.api.nvim_create_autocmd('FileType', {
     group =  vim.api.nvim_create_augroup('grug-far-keymaps', { clear = true }),
     pattern = { 'grug-far' },
@@ -9,6 +9,40 @@ local create_autocmd = function ()
       --   local state = unpack(require('grug-far').toggle_flags({ '--fixed-strings' }))
       -- end, { buffer = evt.buf })
     end,
+  })
+end
+
+local set_commands = function ()
+  ---Function for command GrugFar
+  ---@param opts { args: string; bang: boolean }
+  vim.api.nvim_create_user_command('GrugFarFile', function (opts)
+    local prefills = {}
+    local paths = vim.fn.expand(opts.args .. ':p')
+
+    if paths ~= nil or paths ~= '' then
+      prefills.paths = paths
+    end
+
+    require('grug-far').open({ prefills = prefills })
+  end, {
+    desc = '[GrugFar] Open grug-far with the option of specify a file',
+    bang = true,
+    bar = true,
+    nargs = '?',
+    complete = 'file',
+  })
+
+  ---Function for command GrugFar
+  ---@param opts { args: string }
+  vim.api.nvim_create_user_command('GrugFarSearch', function (opts)
+    require('grug-far').open({
+      prefills = { search = opts.args or '' }
+    })
+  end, {
+    desc = '[GrugFar] Open grug-far with the option of specify a file',
+    bang = true,
+    bar = true,
+    nargs = '?',
   })
 end
 
@@ -85,6 +119,15 @@ local set_keymaps = function ()
   end, {
     noremap = true,
     desc = '[GrugFar] Open grug-far with the last searched string'
+  })
+
+  vim.keymap.set('n', '<C-t>f', function ()
+    require('grug-far').open({
+      prefills = { paths = vim.fn.expand('%:p') }
+    })
+  end, {
+    noremap = true,
+    desc = '[GrugFar] Open grug-far on the current file'
   })
 end
 
@@ -169,11 +212,13 @@ return {
         applyPrev = { n = '<localleader>k' },
       },
     })
-    create_autocmd()
+    create_autocmds()
     set_keymaps()
+    set_commands()
   end,
-  create_autocmd = create_autocmd,
+  create_autocmd = create_autocmds,
   set_keymaps = set_keymaps,
+  set_commands = set_commands,
   open_from_explorer = open_from_explorer,
 }
 
