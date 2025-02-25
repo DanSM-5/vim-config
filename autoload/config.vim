@@ -686,7 +686,7 @@ endf
 func! s:SetRG () abort
   if executable('rg')
     " In-built grep functionality
-    let &grepprg = 'rg --vimgrep --no-heading --smart-case --no-ignore --hidden -g "!plugged" -g "!.git" -g "!node_modules"'
+    let &grepprg = 'rg --vimgrep --no-heading --smart-case --no-ignore --engine=pcre2 --hidden -g "!plugged" -g "!.git" -g "!node_modules"'
     set grepformat=%f:%l:%c:%m
   endif
 endf
@@ -763,11 +763,11 @@ endfunction
 " Grep a string on current file or
 " in all files.
 function QueryGrep(query, all) abort
-  let escaped = escape(a:query, '\/')
+  let escaped = escape(a:query, '<>\/()[]{}.*+^$?|"'."'")
   if a:all
-    execute 'silent grep '. escaped
+    execute 'silent grep "'.escaped.'"'
   else
-    execute 'silent grep '.escaped.' %'
+    execute 'silent grep "'.escaped.'" %'
   endif
 endfunction
 
@@ -899,7 +899,7 @@ func! s:SetFZF () abort
   " Search visual selection using RG
   xnoremap <leader>fr <cmd>call ExecuteRGVisual()<cr>
   "
-  nnoremap <leader>fq <cmd>call QueryGrep(expand('<cword>'), 0)<cr>
+  nnoremap <leader>fq <cmd>call QueryGrep(expand('<cword>'), 1)<cr>
   xnoremap <leader>fq <cmd>call GrepVisual()<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
