@@ -495,6 +495,9 @@ func! s:Set_user_keybindings () abort
   " Reselect previous yank
   " This obscures default gV that prevents reselection of :vmenu commands
   nnoremap gV `[v`]
+
+  " Search in visual selected area
+  xnoremap g/ <esc>/\%V
 endf
 
 func! s:Set_os_specific_before () abort
