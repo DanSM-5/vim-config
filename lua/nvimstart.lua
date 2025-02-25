@@ -33,6 +33,7 @@ vim.opt.breakindent = true
 
 -- vim.g.maplocalleader = ' '
 g.mapleader = '\\'
+g.maplocalleader = ' '
 
 -- Theme variables --
 -- Normal mode styles
