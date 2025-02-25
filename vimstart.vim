@@ -49,7 +49,7 @@ set breakindent
 
 " Leader keys.
 let g:mapleader = "\\"
-" let g:maplocalleader = ' '
+let g:maplocalleader = ' '
 
 " Theme variables --
 " Normal mode styles
