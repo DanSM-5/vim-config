@@ -355,9 +355,6 @@ func! s:Set_user_keybindings () abort
   " Exit insert mode
   inoremap jk <Esc>
 
-  " clear search
-  nnoremap <leader>es <cmd>CleanSearch<cr>
-
   " windows navigation
   nnoremap <A-k> <c-w><c-k>
   nnoremap <A-j> <c-w><c-j>
