@@ -1,4 +1,4 @@
-local create_autocmd = function()
+local set_commands = function()
   ---Options for DevDocsOpen command
   ---@param opts { bang: boolean; fargs?: string[]; }
   vim.api.nvim_create_user_command('DevDocsOpen', function(opts)
@@ -115,7 +115,7 @@ return {
       -- },
     })
 
-    create_autocmd()
+    set_commands()
   end,
-  create_autocmd = create_autocmd,
+  set_commands = set_commands,
 }
