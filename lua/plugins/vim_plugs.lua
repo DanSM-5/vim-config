@@ -42,10 +42,6 @@ return {
     end
   },
   {
-    'dyng/ctrlsf.vim',
-    event = 'VeryLazy',
-  },
-  {
     'tpope/vim-repeat',
   },
   {

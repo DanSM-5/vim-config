@@ -283,7 +283,6 @@ call plug#begin()
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
   Plug 'mg979/vim-visual-multi'
-  Plug 'dyng/ctrlsf.vim'
   Plug 'kreskij/Repeatable.vim', { 'on': 'Repeatable' }
   Plug 'bkad/CamelCaseMotion'
   Plug 'haya14busa/vim-asterisk'
@@ -399,6 +398,9 @@ call plug#begin()
     " Commands on refs. :Cursor* commands on :Git log --oneline buffer
     Plug 'oflisback/cursor-git-ref-command.nvim'
 
+    " Search and replace
+    Plug 'MagicDuck/grug-far.nvim'
+
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
     " Plug 'nvim-neotest/nvim-nio'
@@ -441,6 +443,9 @@ call plug#begin()
 
     " Improve 'a' and 'i' text objects
     Plug 'wellle/targets.vim'
+
+    " Search and replace
+    Plug 'dyng/ctrlsf.vim'
 
     " command-line completion
     " Plug 'girishji/vimsuggest', { 'branch': 'main' }
