@@ -744,6 +744,9 @@ func! s:SetCtrlSF () abort
     \ }
 endf
 
+" Search using fzfrg function
+" on visual selected text.
+" Multiline search is trucated to first line
 function ExecuteRGVisual() abort
   let text = utils#get_selected_text()
   if len(text) == 0
@@ -754,18 +757,22 @@ function ExecuteRGVisual() abort
   let text = text[0]
   " Remove trailing space
   let text = trim(text)
-  exe "RG " . text
+  call fzfcmd#fzfrg_rg(text, 0)
 endfunction
 
+" Grep a string on current file or
+" in all files.
 function QueryGrep(query, all) abort
   let escaped = escape(a:query, '\/')
   if a:all
-    execute 'silent grep'. escaped
+    execute 'silent grep '. escaped
   else
     execute 'silent grep '.escaped.' %'
   endif
 endfunction
 
+" Wrapper to grep last visual selected text
+" Multiline search is trucated to first line
 function GrepVisual() abort
   let text = utils#get_selected_text()
   if len(text) == 0
@@ -776,9 +783,10 @@ function GrepVisual() abort
   let text = text[0]
   " Remove trailing space
   let text = trim(text)
-  exe 'QueryGrep ' . text
+  call QueryGrep(text, 1)
 endfunction
 
+" Vimgrep last search to fill the quickfix list
 function SearchGrep(all) abort
   if a:all
     " Also consider using :grep
@@ -881,17 +889,17 @@ func! s:SetFZF () abort
   " Open File fullscreen
   nnoremap <A-p> <cmd>exec 'GitFZF ' . getcwd()<cr>
   " Open File
-  nnoremap <C-P> <cmd>GitFZF<CR>
+  nnoremap <C-P> <cmd>GitFZF<cr>
   " Open from project
-  nnoremap <C-o>p :<C-u>CPrj<CR>
+  nnoremap <C-o>p <cmd>CPrj<cr>
   " Open from notes (txt)
-  nnoremap <C-o>t :<C-u>FTxt<CR>
-  " Search word under the cursor (RG)
-  nnoremap <leader>fr :execute 'RG '.expand('<cword>')<cr>
-  " NOTE: We need a wrapper to trim new lines for RG
-  " xnoremap <leader>fr :<C-u>execute 'RG '.GetSelectionText()<cr>
-  xnoremap <leader>fr :<C-u>call ExecuteRGVisual()<cr>
-  nnoremap <leader>fq :<C-u>call QueryGrep(expand('<cword>'), 0)<cr>
+  nnoremap <C-o>t <cmd>FTxt<cr>
+  " Search word under the cursor
+  nnoremap <leader>fr <cmd>call fzfcmd#fzfrg_rg(expand('<cword>'), 0)<cr>
+  " Search visual selection using RG
+  xnoremap <leader>fr <cmd>call ExecuteRGVisual()<cr>
+  "
+  nnoremap <leader>fq <cmd>call QueryGrep(expand('<cword>'), 0)<cr>
   xnoremap <leader>fq <cmd>call GrepVisual()<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
