@@ -38,7 +38,6 @@ let g:fzf_preview_options = g:fzf_bind_options + [
 func! s:SetConfigurationsBefore () abort
   silent call s:SetCamelCaseMotion()
   silent call s:SetRG()
-  silent call s:SetCtrlSF()
   silent call s:DefineCommands()
 
   " Paste with register bindings
@@ -235,7 +234,6 @@ endfunction
 " keymaps
 func! s:Set_user_keybindings () abort
   silent call s:SetVimSystemCopyMaps()
-  silent call s:SetCtrlSFMaps()
 
   " Map clipboard functions
   xnoremap <silent> <Leader>y :<C-u>call clipboard#yank()<cr>
@@ -314,9 +312,9 @@ func! s:Set_user_keybindings () abort
   " nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 
   " Fast saving
-  nnoremap <C-s> :<C-u>w<CR>
-  vnoremap <C-s> :<C-u>w<CR>
-  cnoremap <C-s> <C-u>w<CR>
+  " nnoremap <C-s> :<C-u>w<CR>
+  " vnoremap <C-s> :<C-u>w<CR>
+  cnoremap <C-s> <cmd>write<cr>
 
   " VimSmoothie remap
   vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
@@ -691,59 +689,6 @@ func! s:SetRG () abort
   endif
 endf
 
-func! s:SetCtrlSF () abort
-  " Plugin help
-  " :h CtrlSF
-
-  " In CtrlSF window:
-  "
-  " Enter, o, double-click - Open corresponding file of current line in the window which CtrlSF is launched from.
-  " <C-O> - Like Enter but open file in a horizontal split window.
-  " t - Like Enter but open file in a new tab.
-  " p - Like Enter but open file in a preview window.
-  " P - Like Enter but open file in a preview window and switch focus to it.
-  " O - Like Enter but always leave CtrlSF window opening.
-  " T - Like t but focus CtrlSF window instead of new opened tab.
-  " M - Switch result window between normal view and compact view.
-  " q - Quit CtrlSF window.
-  " <C-J> - Move cursor to next match.
-  " <C-N> - Move cursor to next file's first match.
-  " <C-K> - Move cursor to previous match.
-  " <C-P> - Move cursor to previous file's first match.
-  " <C-C> - Stop a background searching process.
-  " <C-T> - (If you have fzf installed) Use fzf for faster navigation. In the fzf window, use <Enter> to focus specific match and <C-O> to open matched file.
-
-  " let g:ctrlsf_toggle_map_key = '\t'
-  " Highligth matching line in file and preview window
-  let g:ctrlsf_selected_line_hl = 'op'
-  let g:ctrlsf_default_root = 'cwd'
-  let g:ctrlsf_backend = 'rg'
-  let g:ctrlsf_extra_backend_args = {
-      \ 'rg': '--hidden --glob "!plugged" --glob "!.git" --glob "!node_modules"'
-      \ }
-  let g:ctrlsf_ignore_dir = ['.git', 'node_modules', 'plugged']
-
-  let g:ctrlsf_mapping = {
-    \ "open"    : ["<CR>", "o"],
-    \ "openb"   : { 'key': "O", 'suffix': "<C-w>p" },
-    \ "split"   : "<C-O>",
-    \ "vsplit"  : "<C-I>",
-    \ "tab"     : "t",
-    \ "tabb"    : "T",
-    \ "popen"   : "p",
-    \ "popenf"  : "P",
-    \ "quit"    : "q",
-    \ "next"    : "<C-J>",
-    \ "prev"    : "<C-K>",
-    \ "nfile"   : "<C-D>",
-    \ "pfile"   : "<C-U>",
-    \ "pquit"   : "q",
-    \ "loclist" : "",
-    \ "chgmode" : "M",
-    \ "stop"    : "<C-C>",
-    \ }
-endf
-
 " Search using fzfrg function
 " on visual selected text.
 " Multiline search is trucated to first line
@@ -914,20 +859,6 @@ func! s:SetVimSystemCopyMaps () abort
   nmap zp <Plug>SystemPaste
   xmap zp <Plug>SystemPaste
   nmap zP <Plug>SystemPasteLine
-endf
-
-func! s:SetCtrlSFMaps () abort
-  " Note: <C-M> and <Enter> (also <CR>) are the same
-  " for vim and nvim
-
-  nmap     <C-t>f <Plug>CtrlSFPrompt
-  vmap     <C-t>f <Plug>CtrlSFVwordPath
-  vmap     <C-t>F <Plug>CtrlSFVwordExec
-  nmap     <C-t>m <Plug>CtrlSFCwordPath
-  nmap     <C-t>p <Plug>CtrlSFPwordPath
-  nnoremap <C-t>o :CtrlSFOpen<CR>
-  nnoremap <C-t>t :CtrlSFToggle<CR>
-  inoremap <C-O>t <Esc>:CtrlSFToggle<CR>
 endf
 
 func! BufferCd () abort
