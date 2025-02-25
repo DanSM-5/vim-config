@@ -491,6 +491,10 @@ func! s:Set_user_keybindings () abort
 
   " Delete marks in line under cursor
   nnoremap <leader>`d <cmd>call utils#delete_marks_curr_line()<cr>
+
+  " Reselect previous yank
+  " This obscures default gV that prevents reselection of :vmenu commands
+  nnoremap gV `[v`]
 endf
 
 func! s:Set_os_specific_before () abort
