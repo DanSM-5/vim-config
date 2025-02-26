@@ -883,6 +883,12 @@ function s:OpenCommitInBrowser() abort
   execute 'GBrowse ' . expand('<cword>')
 endfunction
 
+function! WinToTab() abort
+  let win = win_getid()
+  tab split
+  call win_execute(win, 'close')
+endfunction
+
 function! ExecuteCmd(cmd) abort
   if a:cmd =~ '^!'
     execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
@@ -1064,6 +1070,7 @@ func! s:DefineCommands () abort
   " Change position of window
   command! -bar -nargs=0 WToHorizontal :execute "normal! \<C-w>t\<C-w>K"
   command! -bar -nargs=0 WToVertical :execute "normal! \<C-w>t\<C-w>H"
+  command! -bar -nargs=0 WToTab silent call WinToTab()
 
   command! -bar -bang -nargs=* QueryGrep call QueryGrep(<q-args>, <bang>0)
   command! -bar -bang -nargs=0 SearchGrep call SearchGrep(<bang>0)
