@@ -384,7 +384,11 @@ func! s:Set_user_keybindings () abort
 
   " Search and replace word under the cursor
   " Using : instead of <cmd> so it doesn't need to end with <cr>
-  nnoremap <leader>sr :%s/\<<C-r><C-w>\>//g<Left><Left>
+  nnoremap <leader>rs :%s/\<<C-r><C-w>\>//g<left><left>
+  " Similar to above but apply change to quickfix
+  nnoremap <leader>rq :cdo %s/\<<C-r><C-w>\>//g<left><left>
+  " Alternative to set same word as initial value
+  " nnoremap <leader>rq :cdo %s/\<<C-r><C-w>\>/<C-r><C-w>/g<left><left>
 
   if exists(':Repeatable')
     " Duplicate and comment current line
