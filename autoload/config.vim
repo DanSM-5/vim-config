@@ -883,6 +883,17 @@ function s:OpenCommitInBrowser() abort
   execute 'GBrowse ' . expand('<cword>')
 endfunction
 
+function! ExecuteCmd(cmd) abort
+  if a:cmd =~ '^!'
+    execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
+  else
+    redir => output
+    execute a:cmd
+    redir END
+  endif
+  return output
+endfunction
+
 " Return output of command in a new buffer
 " Ref: https://stackoverflow.com/questions/49078827/can-listings-in-the-awful-more-be-displayed-instead-in-a-vim-window
 function! Redir(cmd)
@@ -891,17 +902,17 @@ function! Redir(cmd)
             execute win . 'windo close'
         endif
     endfor
-    if a:cmd =~ '^!'
-        execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
-    else
-        redir => output
-        execute a:cmd
-        redir END
-    endif
+    let output = ExecuteCmd(a:cmd)
     vnew
     let w:scratch = 1
     setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
     call setline(1, split(output, "\n"))
+endfunction
+
+function! Eval(cmd) abort
+  let output = ExecuteCmd(a:cmd)
+  let output = split(output, "\n")
+  put = output
 endfunction
 
 " User commands
@@ -918,6 +929,8 @@ func! s:DefineCommands () abort
   command! -bar CBrowse call s:OpenCommitInBrowser()
 
   command! -nargs=1 Redir silent call Redir(<f-args>)
+
+  command! -nargs=1 Eval silent call Eval(<f-args>)
 
   command! Bcd call BufferCd()
   nnoremap <silent> <leader>cd <cmd>Bcd<cr>
