@@ -8,7 +8,7 @@ return {
   setup = function()
     require('oil').setup({
       -- Set to empty table to hide icons
-      keymaps {
+      keymaps = {
         ge = {
           callback = search_dir,
           desc = '[Oil] Search in directory'
