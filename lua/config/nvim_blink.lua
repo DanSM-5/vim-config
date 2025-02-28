@@ -47,6 +47,38 @@ local blink_module = {
       width = { fill = true }
     }
 
+    -- 'default' for mappings similar to built-in completion
+    -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
+    -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
+    -- see the "default configuration" section below for full documentation on how to define
+    -- your own keymap.
+    local blink_keymap = {
+      preset = 'enter',
+      -- preset = 'default',
+      ['<C-p>'] = { 'select_prev', 'fallback' },
+      ['<C-n>'] = { 'select_next', 'fallback' },
+      ['<Up>'] = { 'select_prev', 'fallback' },
+      ['<Down>'] = { 'select_next', 'fallback' },
+      ['<C-e>'] = { 'hide', 'fallback' },
+      ['<C-b>'] = { 'show', 'fallback' },
+      ['<C-y>'] = { 'select_and_accept' },
+      ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
+      ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
+      ['<C-/>'] = { 'show', 'show_documentation', 'hide_documentation' },
+      ['<C-Space>'] = { 'select_and_accept' },
+      ['<S-up>'] = { 'scroll_documentation_up', 'fallback' },
+      ['<S-down>'] = { 'scroll_documentation_down', 'fallback' },
+      ['<C-l>'] = { 'snippet_forward', 'fallback' },
+      ['<C-h>'] = { 'snippet_backward', 'fallback' },
+      ['<CR>'] = { 'accept', 'fallback' },
+      -- ['<C-X><C-G>'] = {
+      --   function()
+      --     -- invoke manually, requires blink >v0.8.0
+      --     require('blink-cmp').show({ sources = { 'ripgrep' } })
+      --   end,
+      -- },
+    }
+
     local has_color_hl, nvim_hl_color = pcall(require, 'nvim-highlight-colors')
     if has_color_hl then
       blink_kind_icon.text = function(ctx)
@@ -132,6 +164,13 @@ local blink_module = {
           additional_rg_options = {},
         },
       }
+
+      vim.keymap.set('i', '<C-X><C-G>', function ()
+          -- invoke manually, requires blink >v0.8.0
+          require('blink-cmp').show({ providers = { 'ripgrep' }, opts = { prefix_min_len = 0 } })
+        end,
+        { desc = '[blink] Invoke ripgrep source' }
+      )
     end
 
     if opts.lazydev then
@@ -147,37 +186,7 @@ local blink_module = {
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     local blink_opts = {
-      -- 'default' for mappings similar to built-in completion
-      -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-      -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-      -- see the "default configuration" section below for full documentation on how to define
-      -- your own keymap.
-      keymap = {
-        preset = 'enter',
-        -- preset = 'default',
-        ['<C-p>'] = { 'select_prev', 'fallback' },
-        ['<C-n>'] = { 'select_next', 'fallback' },
-        ['<Up>'] = { 'select_prev', 'fallback' },
-        ['<Down>'] = { 'select_next', 'fallback' },
-        ['<C-e>'] = { 'hide', 'fallback' },
-        ['<C-b>'] = { 'show', 'fallback' },
-        ['<C-y>'] = { 'select_and_accept' },
-        ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
-        ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
-        ['<C-/>'] = { 'show', 'show_documentation', 'hide_documentation' },
-        ['<C-Space>'] = { 'select_and_accept' },
-        ['<S-up>'] = { 'scroll_documentation_up', 'fallback' },
-        ['<S-down>'] = { 'scroll_documentation_down', 'fallback' },
-        ['<C-l>'] = { 'snippet_forward', 'fallback' },
-        ['<C-h>'] = { 'snippet_backward', 'fallback' },
-        ['<CR>'] = { 'accept', 'fallback' },
-        -- ['<c-g>'] = {
-        --   function()
-        --     -- invoke manually, requires blink >v0.7.6
-        --     require('blink-cmp').show({ sources = { 'ripgrep' } })
-        --   end,
-        -- },
-      },
+      keymap = blink_keymap,
       appearance = {
         -- Sets the fallback highlight groups to nvim-cmp's highlight groups
         -- Useful for when your theme doesn't support blink.cmp
