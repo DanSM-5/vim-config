@@ -71,12 +71,6 @@ local blink_module = {
       ['<C-l>'] = { 'snippet_forward', 'fallback' },
       ['<C-h>'] = { 'snippet_backward', 'fallback' },
       ['<CR>'] = { 'accept', 'fallback' },
-      -- ['<C-X><C-G>'] = {
-      --   function()
-      --     -- invoke manually, requires blink >v0.8.0
-      --     require('blink-cmp').show({ sources = { 'ripgrep' } })
-      --   end,
-      -- },
     }
 
     local has_color_hl, nvim_hl_color = pcall(require, 'nvim-highlight-colors')
@@ -165,11 +159,20 @@ local blink_module = {
         },
       }
 
+      -- NOTE: Completion map using same style as vim builtins <C-X>{map}
+      -- does not work. Using a regular imap as fallback.
+      -- blink_keymap['<C-X><C-G>'] = {
+      --   function()
+      --     -- invoke manually, requires blink >v0.8.0
+      --     require('blink-cmp').show({ providers = { 'ripgrep' } })
+      --   end,
+      -- }
+
       vim.keymap.set('i', '<C-X><C-G>', function ()
           -- invoke manually, requires blink >v0.8.0
-          require('blink-cmp').show({ providers = { 'ripgrep' }, opts = { prefix_min_len = 0 } })
+          require('blink-cmp').show({ providers = { 'ripgrep' } })
         end,
-        { desc = '[blink] Invoke ripgrep source' }
+        { desc = '[blink] Invoke ripgrep source', noremap = true }
       )
     end
 
