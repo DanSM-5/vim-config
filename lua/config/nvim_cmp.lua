@@ -105,11 +105,6 @@ local cmp_module = {
     -- end
     local cmp = require('cmp')
 
-    -- Add ripgrep source if binary is available
-    if vim.fn.executable('rg') then
-      table.insert(sources, { name = 'rg', keyword_length = 3 })
-    end
-
     if opts.lazydev then
       table.insert(sources, {
         name = 'lazydev',
@@ -207,6 +202,18 @@ local cmp_module = {
         end
       end, { 'i', 's' }),
     })
+
+    -- Add ripgrep source if binary is available
+    if vim.fn.executable('rg') then
+      table.insert(sources, { name = 'rg', keyword_length = 3 })
+
+      -- Complete using rg source
+      cmp_mappings['<C-X><C-G>'] = cmp.mapping.complete({
+        config = {
+          sources = { { name = 'rg' } }
+        },
+      })
+    end
 
     local cmp_format = get_cmp_formatter()
     cmp.setup({
