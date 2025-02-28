@@ -220,29 +220,43 @@ func! s:SetBufferOptions () abort
     autocmd FileType git nno <buffer> <leader>gb :<C-U>execute 'GBrowse ' .. expand('<cword>')<CR>
   augroup END
 
+  " Cache fugitive sid to avoid duplicate parsing
+  let s:fugitive_sid = 0
+  let s:MapRef = 0
   augroup fugitiveCustom
     " NOTE: Hack to bring back the 'a' map 😎
+
     function! s:fugitive_keymap_set() abort
-      " Parsing :scriptnames
-      silent redir => all_scripts
-        scriptnames
-      redir end
-      let all_scripts = split(all_scripts, '\n')
-
-      " Find sid
       let sid = 0
-      for line in all_scripts
-        if line =~? 'autoload.fugitive.vim'
-          let sid = trim(split(line, ':')[0])
-        endif
-      endfor
 
-      if !sid
-        return
+      if type(s:fugitive_sid) != 1
+        " Parsing :scriptnames
+        silent redir => all_scripts
+          scriptnames
+        redir end
+        let all_scripts = split(all_scripts, '\n')
+
+        " Find sid
+        for line in all_scripts
+          if line =~? 'autoload.fugitive.vim'
+            let sid = trim(split(line, ':')[0])
+          endif
+        endfor
+
+        if !sid
+          return
+        endif
+
+        let s:fugitive_sid = sid
+        " Build func ref
+        let s:MapRef = function("<SNR>".sid.'_Map')
+      else
+        if type(s:MapRef) != 2
+          let sid = s:fugitive_sid
+          let s:MapRef = function("<SNR>".sid.'_Map')
+        endif
       endif
 
-      " Build func ref
-      let s:MapRef = function("<SNR>".sid.'_Map')
       " Create the keymap
       call s:MapRef('n', 'a', ":<C-U>execute <SID>Do('Toggle',0)<CR>", '<silent>')
     endfunction
