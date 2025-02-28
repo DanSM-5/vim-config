@@ -219,6 +219,36 @@ func! s:SetBufferOptions () abort
     autocmd FileType floggraph nno <buffer> <leader>gb :<C-U>call flog#Exec('GBrowse ' .. substitute(matchstr(getline(line('.')), '\[\(\w\+\)\]'), '[\[\]]', '', 'g'))<CR>
     autocmd FileType git nno <buffer> <leader>gb :<C-U>execute 'GBrowse ' .. expand('<cword>')<CR>
   augroup END
+
+  augroup fugitiveCustom
+    " NOTE: Hack to bring back the 'a' map 😎
+    function! s:fugitive_keymap_set() abort
+      " Parsing :scriptnames
+      silent redir => all_scripts
+        scriptnames
+      redir end
+      let all_scripts = split(all_scripts, '\n')
+
+      " Find sid
+      let sid = 0
+      for line in all_scripts
+        if line =~? 'autoload.fugitive.vim'
+          let sid = trim(split(line, ':')[0])
+        endif
+      endfor
+
+      if !sid
+        return
+      endif
+
+      " Build func ref
+      let s:MapRef = function("<SNR>".sid.'_Map')
+      " Create the keymap
+      call s:MapRef('n', 'a', ":<C-U>execute <SID>Do('Toggle',0)<CR>", '<silent>')
+    endfunction
+    au!
+    autocmd FileType fugitive silent call s:fugitive_keymap_set()
+  augroup END
 endf
 
 function! s:ToggleScroll() abort
