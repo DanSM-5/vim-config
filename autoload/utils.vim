@@ -289,3 +289,38 @@ function utils#delete_marks_curr_line() abort
   endfor
 endfunction
 
+let g:utils_sid_cache = {}
+
+" Attempt to get the <SID> of a script based on a
+" pattern matching on the script's path
+" using the operator '=~?'
+function! utils#get_sid(pattern) abort
+  let pattern = a:pattern
+
+  " Cache lookup
+  if !empty(get(g:utils_sid_cache, pattern, ''))
+    return g:utils_sid_cache[pattern]
+  endif
+
+  " parse :scriptnames
+  silent redir => all_scripts
+    scriptnames
+  redir end
+  let all_scripts = split(all_scripts, '\n')
+
+  " Find sid
+  for line in all_scripts
+    if line =~? pattern
+      let sid = trim(split(line, ':')[0])
+    endif
+  endfor
+
+  " Not sid could be found
+  if !sid
+    return
+  endif
+
+  let g:utils_sid_cache[pattern] = sid
+  return sid
+endfunction
+

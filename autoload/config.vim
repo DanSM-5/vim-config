@@ -230,18 +230,7 @@ func! s:SetBufferOptions () abort
       let sid = 0
 
       if type(s:fugitive_sid) != 1
-        " Parsing :scriptnames
-        silent redir => all_scripts
-          scriptnames
-        redir end
-        let all_scripts = split(all_scripts, '\n')
-
-        " Find sid
-        for line in all_scripts
-          if line =~? 'autoload.fugitive.vim'
-            let sid = trim(split(line, ':')[0])
-          endif
-        endfor
+        let sid = utils#get_sid('autoload.fugitive.vim')
 
         if !sid
           return
