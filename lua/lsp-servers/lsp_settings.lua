@@ -132,6 +132,9 @@ return {
       -- max_widht = 50,
       max_height = 50,
     })
+    vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+      border = 'rounded',
+    })
 
     -- Setup lsp servers
     require('config.nvim_lspconfig').setup()
