@@ -360,9 +360,13 @@ func! s:Set_user_keybindings () abort
   " Quickfix navigation
   nnoremap ]q <cmd>cnext<cr>zz
   nnoremap [q <cmd>cprev<cr>zz
+  nnoremap [Q <cmd>cfirst<cr>zz
+  nnoremap ]Q <cmd>clast<cr>zz
   " Location list navigation
   nnoremap [l <cmd>lnext<cr>zz
   nnoremap ]l <cmd>lprev<cr>zz
+  nnoremap [L <cmd>lfirst<cr>zz
+  nnoremap ]L <cmd>llast<cr>zz
 
   " Window resize vsplit
   nnoremap <A-,> <C-w>5<
