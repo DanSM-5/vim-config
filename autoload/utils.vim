@@ -312,6 +312,7 @@ function! utils#get_sid(pattern) abort
   for line in all_scripts
     if line =~? pattern
       let sid = trim(split(line, ':')[0])
+      break
     endif
   endfor
 
