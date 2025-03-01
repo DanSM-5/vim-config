@@ -30,11 +30,16 @@ return {
         vim.notify(('Warnging: Big file detected: "%s"'):format(path), vim.log.levels.WARN)
 
         -- Detach gitsigns
-        require('gitsigns.attach').detach(evt.buf)
+        local ok_signs, signs = pcall(require, 'gitsigns.attach')
+        if ok_signs then
+          signs.detach(evt.buf)
+        end
 
         vim.api.nvim_buf_call(evt.buf, function ()
           -- Disable treesitter
-          vim.cmd.TSBufDisable('highlight ' .. evt.buf)
+          if vim.fn.exists(':TSBufDisable') then
+            vim.cmd.TSBufDisable('highlight ' .. evt.buf)
+          end
           -- vim.cmd('syntax off')
           local ft = vim.filetype.match({ buf = evt.buf }) or ''
           vim.schedule(function ()
