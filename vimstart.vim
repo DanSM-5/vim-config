@@ -401,6 +401,10 @@ call plug#begin()
     " Search and replace
     Plug 'MagicDuck/grug-far.nvim'
 
+    " Quickfix
+    Plug 'kevinhwang91/nvim-bqf'
+    Plug 'stevearc/quicker.nvim'
+
     " Debugger protocol
     " Plug 'mfussenegger/nvim-dap'
     " Plug 'nvim-neotest/nvim-nio'
