@@ -39,6 +39,7 @@ return {
       -- Original
       -- vim.cmd('hi PmenuSel guibg=#2f333d')
       vim.api.nvim_set_hl(0, 'PmenuSel', { link = 'Visual', force = true })
+      vim.api.nvim_set_hl(0, 'QuickFixLine', { link = 'CursorLine', force = true })
 
       require('shared.highlights').set_diagnostics()
 
