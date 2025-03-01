@@ -25,14 +25,14 @@ require("lazy").setup({
   ---@type LazySpec
   spec = {
     -- import your plugins
-    import = 'plugins',
+    -- import = 'plugins',
     -- NOTE: Comment above and uncomment below to only load neo-img and oil
-    -- {
-    --   import = 'plugins.preview',
-    -- },
-    -- {
-    --   import = 'plugins.explorer'
-    -- }
+    {
+      import = 'plugins.preview',
+    },
+    {
+      import = 'plugins.explorer'
+    }
   },
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
