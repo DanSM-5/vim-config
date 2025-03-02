@@ -5,6 +5,8 @@ return {
   -- event = 'VeryLazy',
   ft = { 'oil' },
   cmd = { 'NeoImg' },
-  opts = {},
+  config = function ()
+    require('neo-img').setup({ ttyimg = 'global' })
+  end
 }
 
