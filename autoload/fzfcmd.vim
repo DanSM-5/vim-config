@@ -5,7 +5,7 @@ endif
 let g:loaded_fzfcmd = 1
 let s:is_windows = has('win32') || has('win32unix')
 let s:is_gitbash = 0
-if s:is_windows && ($MSYSTEM =~? 'MINGW' || $MSYSTEM =~? 'MSYS')
+if s:is_windows && ($MSYSTEM =~? 'MINGW' || $MSYSTEM =~? 'MSYS') && ($OSTYPE == 'msys')
   let s:is_gitbash = 1
 endif
 
