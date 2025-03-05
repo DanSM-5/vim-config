@@ -1422,6 +1422,12 @@ func! s:Set_netrw () abort
   "   autocmd!
   "   autocmd filetype netrw call s:NetrwMapping()
   " augroup END
+
+  " Set bufhidden=wipe to prevent netrw buffers hanging around
+  augroup netrw
+    autocmd!
+    autocmd FileType netrw setlocal bufhidden=wipe
+  augroup end
 endfunction
 
 func! config#before () abort
