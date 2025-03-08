@@ -371,6 +371,9 @@ call plug#begin()
     Plug 'hat0uma/prelive.nvim'
     " { 'on': [ 'PreLiveGo', 'PreLiveStatus', 'PreLiveClose', 'PreLiveCloseAll', 'PreLiveLog' ] }
 
+    " Call hierarchy
+    Plug 'lafarr/hierarchy.nvim'
+
     " File explorer
     Plug 'stevearc/oil.nvim'
     " Image preview | Oil.nvim support

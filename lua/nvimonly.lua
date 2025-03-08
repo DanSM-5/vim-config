@@ -35,6 +35,7 @@ require('config.nvim_mai').setup()
 require('config.nvim_grugfar').setup()
 require('config.nvim_bqf').setup()
 require('config.nvim_quicker').setup()
+require('config.nvim_hierarchy').setup()
 
 -- NOTE: At some point I thought, why not put everything in an array
 -- and load like below. Then I figured it messed up the lsp as it

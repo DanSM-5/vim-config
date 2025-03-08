@@ -226,8 +226,8 @@ return {
   --   end
   -- },
   {
-    event = 'LspAttach',
     'DanSM-5/fzf-lsp.nvim',
+    event = 'LspAttach',
     dependencies = {
       'nvim-lua/plenary.nvim',
     },
@@ -235,4 +235,13 @@ return {
       require('lsp-servers.nvim_fzf_lsp').setup()
     end,
   },
+  {
+    'lafarr/hierarchy.nvim',
+    cmd = { 'FunctionReferences' },
+    keys = { { '<leader>sc', mode = { 'n', 'v' } } },
+    config = function ()
+      require('config.nvim_hierarchy').setup()
+    end
+  }
 }
+
