@@ -106,7 +106,7 @@ func! s:SetConfigurationsBefore () abort
     " set diffopt=internal,filler,closeoff,algorithm:histogram,context:5,linematch:60
     " neovim implements 'linematch:{n}'
     " Ref: https://github.com/neovim/neovim/pull/14537
-    set diffopt=internal,filler,closeoff,indent-heuristic,linematch:60,algorithm:histogram
+    set diffopt=internal,filler,closeoff,indent-heuristic,linematch:120,algorithm:histogram
 
     " Set signcolumn
     set signcolumn=auto:2
