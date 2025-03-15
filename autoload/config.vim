@@ -347,7 +347,7 @@ func! s:Set_user_keybindings () abort
   " Fast saving
   " nnoremap <C-s> :<C-u>w<CR>
   " vnoremap <C-s> :<C-u>w<CR>
-  cnoremap <C-s> <cmd>write<cr>
+  " cnoremap <C-s> <cmd>write<cr>
 
   " VimSmoothie remap
   vnoremap <S-down> <cmd>call smoothie#do("\<C-D>")<CR>
