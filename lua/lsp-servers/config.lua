@@ -25,11 +25,45 @@ local configs = {
   },
   ts_ls = {
     on_attach = function(client, bufnr)
-      ---@diagnostic disable-next-line: inject-field
-      client.server_capabilities.document_formatting = false
-      client.server_capabilities.documentFormattingProvider = false
+      -- Change as needed
+
+      -- -@diagnostic disable-next-line: inject-field
+      -- client.server_capabilities.document_formatting = false
+      -- client.server_capabilities.documentFormattingProvider = false
       require('lsp-servers.keymaps').set_lsp_keys(client, bufnr)
     end,
+    settings = {
+      completions = {
+        completeFunctionCalls = true,
+      },
+      preferences = {
+        -- https://code.visualstudio.com/docs/getstarted/settings search for "// TypeScript" for preferences
+        javascript = {
+          format = { enable = true },
+          validate = { enable = true },
+          suggestionActions = { enabled = true },
+          autoClosingTags = true,
+          updateImportsOnFileMove = { enabled = 'always' },
+          suggest = {
+            enabled = true,
+            autoImports = true,
+            classMemberSnippets = { enabled = true },
+            completeJSDocs = true,
+            includeAutomaticOptionalChainCompletions = true,
+            includeCompletionsForImportStatements = true,
+            jsdoc = { generateReturns = true },
+            names = true,
+            paths = true,
+          },
+        },
+        typescript = {
+          format = { enable = true },
+          validate = { enable = true },
+          suggestionActions = { enabled = true },
+          suggest = { autoImports = true },
+        },
+      },
+    },
   },
   vimls = {},
   biome = {},
