@@ -105,7 +105,16 @@ return {
   ---@param name string
   ---@return LspConfigExtended | nil
   get_config = function(name)
-    return require('utils.stdlib').shallow_clone(configs[name] or {})
+    local shallow_clone = require('utils.stdlib').shallow_clone
+    local general_config = shallow_clone(configs[name] or {})
+
+    ---@type boolean, LspConfigExtended
+    local local_ok, local_config = pcall(require, 'lsp-configs.local.'..name)
+
+    if local_ok then
+      return vim.tbl_deep_extend('force', general_config, local_config)
+    end
+
+    return general_config
   end,
 }
-
