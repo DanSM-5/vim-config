@@ -7,6 +7,7 @@ plugged
 
 # Special files that are device specific
 **/local.*
+**/local/*
 
 # Do not track lazy-lock
 lazy-lock.json
