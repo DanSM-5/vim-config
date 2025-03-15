@@ -47,7 +47,8 @@ local set_commands = function ()
 end
 
 local set_keymaps = function ()
-  vim.keymap.set('n', '<C-t>t', function ()
+  local scope = '<C-s>'
+  vim.keymap.set('n', scope..scope, function ()
     require('grug-far').open()
   end, {
     noremap = true,
@@ -67,21 +68,21 @@ local set_keymaps = function ()
 
     require('grug-far').open({ prefills = prefills })
   end
-  vim.keymap.set('n', '<C-t>w', function ()
+  vim.keymap.set('n', scope..'w', function ()
     open_gf_word(true)
   end, {
     noremap = true,
     desc = '[GrugFar] Open grug-far with search the word under the cursor'
   })
-  vim.keymap.set('n', '<C-t>W', function ()
-    open_gf_word(true)
+  vim.keymap.set('n', scope..'W', function ()
+    open_gf_word(false)
   end, {
     noremap = true,
     desc = '[GrugFar] Open grug-far with search the word under the cursor current file'
   })
 
   ---Open grug-far with visual selection
-  ---@param all boolean If false (default), current path only. If true, all files
+  ---@param all boolean|nil If false (default), current path only. If true, all files
   local open_gf_visual = function (all)
     -- local search = table.concat(
     --   vim.fn['utils#get_selected_text'](),
@@ -101,18 +102,18 @@ local set_keymaps = function ()
     require('grug-far').with_visual_selection({ prefills = prefills })
   end
 
-  vim.keymap.set('v', '<C-t>W', open_gf_visual, {
+  vim.keymap.set('v', scope..'W', open_gf_visual, {
     noremap = true,
     desc = '[GrugFar] Open grug-far with visual selected text in all files'
   })
-  vim.keymap.set('v', '<C-t>w', function ()
+  vim.keymap.set('v', scope..'w', function ()
     open_gf_visual(true)
   end, {
     noremap = true,
     desc = '[GrugFar] Open grug-far with visual selected text'
-  })
+    })
 
-  vim.keymap.set('n', '<C-t>s', function ()
+  vim.keymap.set('n', scope..'s', function ()
     require('grug-far').open({
       prefills = { search = vim.fn.getreg('/') }
     })
@@ -121,7 +122,7 @@ local set_keymaps = function ()
     desc = '[GrugFar] Open grug-far with the last searched string'
   })
 
-  vim.keymap.set('n', '<C-t>f', function ()
+  vim.keymap.set('n', scope..'f', function ()
     require('grug-far').open({
       prefills = { paths = vim.fn.expand('%:p') }
     })
@@ -191,7 +192,9 @@ return {
         qflist = { n = '<localleader>q' },
         syncLocations = { n = '<localleader>s' },
         syncLine = { n = '<localleader>l' },
-        close = { n = '<localleader>c' },
+        -- close = { n = '<localleader>c' },
+        -- close = { n = '<localleader><esc>' },
+        close = { n = '<c-s><c-s>' },
         historyOpen = { n = '<localleader>t' },
         historyAdd = { n = '<localleader>a' },
         refresh = { n = '<localleader>f' },

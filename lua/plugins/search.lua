@@ -2,10 +2,10 @@ return {
   'MagicDuck/grug-far.nvim',
   lazy = true,
   keys = {
-    '<c-t>t',
-    { '<c-t>w', mode = { 'n', 'v' } },
-    { '<c-t>W', mode = { 'n', 'v' } },
-    { '<c-t>f', mode = { 'n' } },
+    '<c-s><c-s>',
+    { '<c-s>w', mode = { 'n', 'v' } },
+    { '<c-s>W', mode = { 'n', 'v' } },
+    { '<c-s>f', mode = { 'n' } },
   },
   cmd = {
     'GrugFarFile',

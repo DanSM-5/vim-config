@@ -214,12 +214,12 @@ func! s:SetCtrlSF () abort
     " nfile   : "<C-D>",
     " pfile   : "<C-U>",
 
-  nmap     <C-t>f <Plug>CtrlSFCwordPrompt
-  nmap     <C-t>w <Plug>CtrlSFCwordExec
-  vmap     <C-t>w <Plug>CtrlSFVwordExec
-  nmap     <C-t>s <Plug>CtrlSFPwordExec
-  nnoremap <C-t>o <cmd>CtrlSFOpen<CR>
-  nnoremap <C-t>t <cmd>CtrlSFToggle<CR>
+  nmap     <C-s>f <Plug>CtrlSFCwordPrompt
+  nmap     <C-s>w <Plug>CtrlSFCwordExec
+  vmap     <C-s>w <Plug>CtrlSFVwordExec
+  nmap     <C-s>s <Plug>CtrlSFPwordExec
+  nnoremap <C-s>o <cmd>CtrlSFOpen<CR>
+  nnoremap <C-s><C-s> <cmd>CtrlSFToggle<CR>
 endf
 
 
