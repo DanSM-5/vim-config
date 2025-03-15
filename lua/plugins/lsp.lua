@@ -152,7 +152,7 @@ return {
       -- Snippets
       -- NOTE: Do not remove LuaSnip
       'L3MON4D3/LuaSnip',
-      'rafamadriz/friendly-snippets',
+      -- 'rafamadriz/friendly-snippets',
       -- Dependency
       'nvim-tree/nvim-web-devicons',
       -- Ctags lsp
