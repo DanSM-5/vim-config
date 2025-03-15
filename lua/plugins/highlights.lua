@@ -1,6 +1,7 @@
 return {
   {
     'brenoprata10/nvim-highlight-colors',
+    event = 'VeryLazy',
     config = function ()
       require('config.nvim_hl_colors').setup()
     end
@@ -30,6 +31,7 @@ return {
   },
   {
     'folke/todo-comments.nvim',
+    event = 'VeryLazy',
     dependencies = { 'nvim-lua/plenary.nvim' },
     opts = {
       -- your configuration comes here

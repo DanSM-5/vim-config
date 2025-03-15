@@ -1,17 +1,18 @@
-local autopairs_deps = os.getenv('USE_BLINK') == '1' and {} or {
-  {
-    'iguanacucumber/magazine.nvim',
-    -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
-    -- NOTE: Using magazine.nvim as as nvim-cmp replacement
-    name = 'nvim-cmp',
-  },
-}
+local autopairs_deps = os.getenv('USE_BLINK') == '1' and {}
+  or {
+    {
+      'iguanacucumber/magazine.nvim',
+      -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
+      -- NOTE: Using magazine.nvim as as nvim-cmp replacement
+      name = 'nvim-cmp',
+    },
+  }
 
 return {
   {
     'ColinKennedy/cursor-text-objects.nvim',
     event = 'VeryLazy',
-    config = function ()
+    config = function()
       require('config.nvim_cursor-text-objects').setup()
     end,
     version = 'v1.*',
@@ -21,7 +22,7 @@ return {
     event = 'InsertEnter',
     -- Optional dependency
     dependencies = autopairs_deps,
-    config = function ()
+    config = function()
       require('config.nvim_autopairs').setup()
     end,
   },
@@ -31,10 +32,12 @@ return {
     event = 'VeryLazy',
     version = false,
     opts = {},
-    config = function ()
+    config = function()
       require('config.nvim_mai').setup()
-    end
+    end,
   },
-  'urxvtcd/vim-indent-object',
+  {
+    'urxvtcd/vim-indent-object',
+    event = 'VeryLazy',
+  },
 }
-
