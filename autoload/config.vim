@@ -138,6 +138,14 @@ func! s:SetConfigurationsBefore () abort
 
   " Recognize `@` symbol in filenames for things like `gf`
   set isfname+=@-@
+
+  " Tab size
+  set tabstop=2
+  set softtabstop=2
+  set shiftwidth=2
+  set expandtab
+  set ruler
+  set autoindent smartindent
 endf
 
 func! s:SetConfigurationsAfter () abort

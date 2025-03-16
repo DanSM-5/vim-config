@@ -117,11 +117,6 @@ let g:fzf_lsp_preview_window = ['right', 'ctrl-/', 'ctrl-^']
 
 ": }}} :------------------------------------------------------------------
 
-" Setting up config setup
-" Config before runs on startup
-" Config after run on VimEnter
-call config#before()
-
 ": Global functions {{{ :-------------------------------------------------
 func! g:ToggleBg ()
   let highlight_value = execute('hi Normal')
@@ -238,6 +233,12 @@ endfunction
 
 ": }}} :------------------------------------------------------------------
 
+
+" Config setup
+" Config before runs on startup
+call config#before()
+
+" Config after run on VimEnter
 autocmd VimEnter * call g:OnVimEnter()
 
 " let g:vscode_loaded = 1

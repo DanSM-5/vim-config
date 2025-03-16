@@ -101,11 +101,6 @@ g.smoothie_no_default_mappings = 1
 g.fzf_lsp_preview_window = { 'right', 'ctrl-/', 'ctrl-^' }
 --: }}} :------------------------------------------------------------------
 
--- Setting up config setup
--- Config before runs on startup
--- Config after run on VimEnter
-fn['config#before']()
-
 --: Global functions {{{ :-------------------------------------------------
 vim.cmd([[
   func! g:ToggleBg ()
@@ -164,6 +159,12 @@ vim.fn.OnVimEnter = function ()
   vim.fn['config#after']()
 end
 
+
+-- Setting up config setup
+-- Config before runs on startup
+fn['config#before']()
+
+-- Config after run on VimEnter
 vim.api.nvim_create_autocmd('VimEnter', {
   pattern = { '*' },
   desc = 'Run startup config after plugins are loaded',
