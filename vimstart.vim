@@ -52,34 +52,7 @@ let g:mapleader = "\\"
 let g:maplocalleader = ' '
 
 " Theme variables --
-" Normal mode styles
-let g:theme_normal = ''
-" Visual mode styles
-let g:theme_visual = ''
-" Normal mode styles of unfocused windows
-let g:theme_normalNC = ''
-" Styles for the numbers line
-let g:theme_lineNr = ''
-" Styles for the numbers line under cursor
-let g:theme_cursorLineNr = ''
-" Styles for the cursor line
-let g:theme_cursorLine = ''
-" Styles for the line left to LineNr
-let g:theme_signColumn = ''
-" Styles for color of comments
-let g:theme_comment = 'hi Comment guifg=#7f848e cterm=NONE'
-" Styles for cursor
-let g:theme_cursor = ''
-" Replacements --
-let g:theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
-" let g:theme_hidden_visual = 'hi Visual guibg=#414858'
-let g:theme_hidden_visual = 'hi Visual guibg=#39496e'
-let g:theme_hidden_normalNC = ':'
-let g:theme_hidden_lineNr = 'hi LineNr guibg=NONE'
-let g:theme_hidden_cursorLineNr = ':'
-let g:theme_hidden_cursorLine = ':'
-let g:theme_hidden_signColumn = ''
-let g:theme_hidden_comment = ':'
+
 " New definition, list here themes to toggle
 " [hi name], [hi bg on], [hi bg off]
 let g:theme_toggle_hi = []
@@ -124,25 +97,11 @@ func! g:ToggleBg ()
   let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
   if guibg_value ==? ''
-    silent execute('hi ' . g:theme_normal)
-    silent execute('hi ' . g:theme_visual)
-    silent execute('hi ' . g:theme_normalNC)
-    silent execute('hi ' . g:theme_lineNr)
-    silent execute('hi ' . g:theme_cursorLineNr)
-    silent execute('hi ' . g:theme_cursorLine)
-    " silent execute('hi ' . g:theme_signColumn)
 
     for group_toggle in g:theme_toggle_hi
       silent execute(group_toggle[1])
     endfor
   else
-    silent execute(g:theme_hidden_normal)
-    silent execute(g:theme_hidden_visual)
-    silent execute(g:theme_hidden_normalNC)
-    silent execute(g:theme_hidden_lineNr)
-    silent execute(g:theme_hidden_cursorLineNr)
-    silent execute(g:theme_hidden_cursorLine)
-    " silent execute(g:theme_hidden_signColumn)
 
     for group_toggle in g:theme_toggle_hi
       silent execute(group_toggle[2])
@@ -180,16 +139,20 @@ function! g:BuffetSetCustomColors()
   " BuffetTrunc
 endfunction
 
+" Get clean highlight group
+function! g:Get_hlg(hlg) abort
+  return substitute(trim(execute('hi '.a:hlg)), 'xxx', '', 'g')
+endfunction
+
+" Creates a standard highlight toggle entry
+function! g:Std_hlt(hlg, ...) abort
+  let hidden_hlg = a:0 == 1 ? a:1 : printf('hi %s guibg=NONE ctermbg=NONE', a:hlg)
+  return [a:hlg, 'hi ' . g:Get_hlg(a:hlg), hidden_hlg]
+endfunction
+
 function! g:OnVimEnter()
-  " Capture styles before calling ToggleBg
-  let g:theme_normal = substitute(trim(execute('hi Normal')), 'xxx', '', 'g')
-  let g:theme_visual = substitute(trim(execute('hi Visual')), 'xxx', '', 'g')
-  let g:theme_normalNC = substitute(trim(execute('hi NormalNC')), 'xxx', '', 'g')
-  let g:theme_lineNr = substitute(trim(execute('hi LineNr')), 'xxx', '', 'g')
-  let g:theme_cursorLineNr = substitute(trim(execute('hi CursorLineNr')), 'xxx', '', 'g')
-  let g:theme_cursorLine = substitute(trim(execute('hi CursorLine')), 'xxx', '', 'g')
-  let g:theme_cursor = substitute(trim(execute('hi Cursor')), 'xxx', '', 'g')
-  " let g:theme_signColumn = substitute(trim(execute("hi SingColumn")), 'xxx', '', 'g')
+
+  " Color highlight override
   " Set comments color
   hi Comment guifg=#7f848e cterm=NONE gui=NONE
   " Completion menu (otherwise displayed with whitish background)
@@ -201,12 +164,22 @@ function! g:OnVimEnter()
   " Float window background highlight
   hi NormalFloat guibg=#21252b
 
+  " 'hi Visual guibg=#414858'
   let g:theme_toggle_hi = g:theme_toggle_hi + [
-    \   ['GitGutterAdd', 'hi ' . substitute(trim(execute('hi GitGutterAdd')), 'xxx', '', 'g'), 'hi GitGutterAdd guibg=NONE'],
-    \   ['GitGutterChange', 'hi ' . substitute(trim(execute('hi GitGutterChange')), 'xxx', '', 'g'), 'hi GitGutterChange guibg=NONE'],
-    \   ['GitGutterDelete', 'hi ' . substitute(trim(execute('hi GitGutterDelete')), 'xxx', '', 'g'), 'hi GitGutterDelete guibg=NONE'],
-    \   ['GitGutterChangeDelete', 'hi ' . substitute(trim(execute('hi GitGutterChangeDelete')), 'xxx', '', 'g'), 'hi GitGutterChangeDelete guibg=NONE']
+    \   g:Std_hlt('Normal'),
+    \   g:Std_hlt('Visual', 'hi Visual guibg=#39496e'),
+    \   g:Std_hlt('NormalNC', ':'),
+    \   g:Std_hlt('LineNr'),
+    \   g:Std_hlt('CursorLine', ':'),
+    \   g:Std_hlt('CursorLineNr', ':'),
+    \   g:Std_hlt('Comment', ':'),
+    \   g:Std_hlt('Cursor', ':'),
+    \   g:Std_hlt('GitGutterAdd'),
+    \   g:Std_hlt('GitGutterChange'),
+    \   g:Std_hlt('GitGutterDelete'),
+    \   g:Std_hlt('GitGutterChangeDelete')
     \ ]
+    " \   g:Std_hlt('SingColumn', ':'),
 
   " Make background transparen
   ToggleBg

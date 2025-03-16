@@ -36,32 +36,7 @@ g.mapleader = '\\'
 g.maplocalleader = ' '
 
 -- Theme variables --
--- Normal mode styles
-g.theme_normal = ''
--- Visual mode styles
-g.theme_visual = ''
--- Normal mode styles of unfocused windows
-g.theme_normalNC = ''
--- Styles for the numbers line
-g.theme_lineNr = ''
--- Styles for the numbers line under cursor
-g.theme_cursorLineNr = ''
--- Styles for the cursor line
-g.theme_cursorLine = ''
--- Styles for the line left to LineNr
-g.theme_signColumn = ''
--- Styles for color of comments
-g.theme_comment = 'hi Comment guifg=#7f848e cterm=NONE'
--- Replacements --
-g.theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
--- g.theme_hidden_visual = 'hi Visual guibg=#414858'
-g.theme_hidden_visual = 'hi Visual guibg=#39496e'
-g.theme_hidden_normalNC = ''
-g.theme_hidden_lineNr = 'hi LineNr guibg=NONE'
-g.theme_hidden_cursorLineNr = ''
-g.theme_hidden_cursorLine = ''
-g.theme_hidden_signColumn = ''
-g.theme_hidden_comment = ''
+
 -- New definition, list here themes to toggle
 -- [hi name], [hi bg on], [hi bg off]
 --[[
@@ -72,6 +47,7 @@ Remember to use temporary values to update:
     my_dict.field1 = 'value'        -- Instead do
     vim.g.my_dict = my_dict         --
 --]]
+---@type [string, string, string][]
 g.theme_toggle_hi = {}
 
 -- Enable detection
@@ -109,30 +85,35 @@ vim.cmd([[
     let guibg_value = matchstr(highlight_value, 'guibg=\zs\S*')
 
     if guibg_value ==? ''
-      silent execute('hi ' . g:theme_normal)
-      silent execute('hi ' . g:theme_visual)
-      silent execute('hi ' . g:theme_normalNC)
-      silent execute('hi ' . g:theme_lineNr)
-      silent execute('hi ' . g:theme_cursorLineNr)
-      silent execute('hi ' . g:theme_cursorLine)
-      silent execute('hi ' . g:theme_signColumn)
+
+      for group_toggle in g:theme_toggle_hi
+        silent execute(group_toggle[1])
+      endfor
     else
-      silent execute(g:theme_hidden_normal)
-      silent execute(g:theme_hidden_visual)
-      silent execute(g:theme_hidden_normalNC)
-      silent execute(g:theme_hidden_lineNr)
-      silent execute(g:theme_hidden_cursorLineNr)
-      silent execute(g:theme_hidden_cursorLine)
-      silent execute(g:theme_hidden_signColumn)
+
+      for group_toggle in g:theme_toggle_hi
+        silent execute(group_toggle[2])
+      endfor
     endif
   endfunction
 
-  function g:SetTab (space)
+  function! g:SetTab (space) abort
     let space = empty(a:space) ? '2' : a:space
     exec 'set tabstop=' . space . ' softtabstop=' . space . ' shiftwidth=' . space
     set expandtab
     set ruler
     set autoindent smartindent
+  endfunction
+
+  " Get clean highlight group
+  function! g:Get_hlg(hlg) abort
+    return substitute(trim(execute('hi '.a:hlg)), 'xxx', '', 'g')
+  endfunction
+
+  " Creates a standard highlight toggle entry
+  function! g:Std_hlt(hlg, ...) abort
+    let hidden_hlg = a:0 == 1 ? a:1 : printf('hi %s guibg=NONE ctermbg=NONE', a:hlg)
+    return [a:hlg, 'hi ' . g:Get_hlg(a:hlg), hidden_hlg]
   endfunction
 
 	" Return to last edit position when opening files
@@ -143,16 +124,12 @@ vim.cmd([[
 ]])
 
 vim.fn.OnVimEnter = function ()
-  vim.cmd([[
-    " Capture styles before calling ToggleBg
-    let g:theme_normal = substitute(trim(execute("hi Normal")), 'xxx', '', 'g')
-    let g:theme_visual = substitute(trim(execute("hi Visual")), 'xxx', '', 'g')
-    let g:theme_normalNC = substitute(trim(execute("hi NormalNC")), 'xxx', '', 'g')
-    let g:theme_lineNr = substitute(trim(execute("hi LineNr")), 'xxx', '', 'g')
-    let g:theme_cursorLineNr = substitute(trim(execute("hi CursorLineNr")), 'xxx', '', 'g')
-    let g:theme_cursorLine = substitute(trim(execute("hi CursorLine")), 'xxx', '', 'g')
-    let g:theme_signColumn = substitute(trim(execute("hi SignColumn")), 'xxx', '', 'g')
-  ]])
+
+  -- To add highlight declarations
+  -- vim.g.theme_toggle_hi = vim.tbl_deep_extend('force',
+  --   vim.g.theme_toggle_hi, {
+  --   -- vim.fn.Std_hlt('Normal'),
+  -- })
 
   vim.cmd.ToggleBg()
   vim.cmd.SetTab()

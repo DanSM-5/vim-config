@@ -40,20 +40,25 @@ return {
       -- vim.cmd('hi PmenuSel guibg=#2f333d')
       vim.api.nvim_set_hl(0, 'PmenuSel', { link = 'Visual', force = true })
       vim.api.nvim_set_hl(0, 'QuickFixLine', { link = 'CursorLine', force = true })
+      vim.api.nvim_set_hl(0, 'Comment', { fg = '#7f848e', ctermfg = 102 , force = true })
 
       require('shared.highlights').set_diagnostics()
 
       -- Set variables for ToggleBg
-      local g = vim.g
-      g.theme_hidden_normal = 'hi Normal guibg=NONE ctermbg=NONE'
-      g.theme_hidden_visual = 'hi Visual guibg=#39496e'
-      g.theme_hidden_normalNC = 'hi NormalNC guibg=NONE ctermbg=NONE'
-      -- g.theme_hidden_lineNr = 'hi LineNr guibg=NONE guifg=#7f848e'
-      g.theme_hidden_lineNr = 'hi LineNr guibg=NONE guifg=#919baa'
-      g.theme_hidden_signColumn = 'hi SignColumn guibg=NONE'
-      g.theme_hidden_cursorLineNr = 'hi CursorLineNr guibg=#313640'
       -- g.theme_hidden_cursorLine = ''
       -- g.theme_comment = ''
+
+      ---@type [string, string, string][]
+      vim.g.theme_toggle_hi = vim.tbl_deep_extend('force',
+        vim.g.theme_toggle_hi, {
+        vim.fn.Std_hlt('Normal'),
+        vim.fn.Std_hlt('Visual', 'hi Visual guibg=#39496e'),
+        vim.fn.Std_hlt('NormalNC'),
+        vim.fn.Std_hlt('LineNr', 'hi LineNr guibg=NONE guifg=#919baa'),
+        vim.fn.Std_hlt('CursorLine', ':'),
+        vim.fn.Std_hlt('CursorLineNr', 'hi CursorLineNr guibg=#313640'),
+        vim.fn.Std_hlt('SignColumn'),
+      })
 
       -- Normal, NormalNC, LineNr
       -- CursorLineNr
