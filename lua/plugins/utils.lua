@@ -25,5 +25,10 @@ return {
     --   vim.keymap.set('n', '<leader>0o', require('nvim-0x0').upload_oil_file, { desc = 'Upload oil.nvim file' })
     -- end
   },
+  {
+    'amadeus/vim-convert-color-to',
+    cmd = { 'ConvertColorTo' },
+    -- Also consider: NTBBloodbath/color-converter.nvim
+  },
 }
 

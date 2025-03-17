@@ -267,6 +267,9 @@ call plug#begin()
   " Indent text objects
   Plug 'urxvtcd/vim-indent-object'
 
+  " Convert css colors
+  " Plug 'amadeus/vim-convert-color-to',
+
   " Color scheme
   " NOTE: Preserve order!
   Plug 'sonph/onehalf', { 'rtp': 'vim' }
