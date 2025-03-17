@@ -447,3 +447,46 @@ function! fzfcmd#highlights(query, fullscreen) abort
   call fzf#run(fzf#wrap('highlights', spec, a:fullscreen))
 endfunction
 
+let s:todo_keywords = [
+  \  'TODO',
+  \  'BUG',
+  \  'WARNING',
+  \  'TEST',
+  \  'TESTING',
+  \  'PASSED',
+  \  'FAILED',
+  \  'INFO',
+  \  'WARN',
+  \  'OPTIM',
+  \  'NOTE',
+  \  'OPTIMIZE',
+  \  'XXX',
+  \  'HACK',
+  \  'FIX',
+  \  'FIXME',
+  \  'FIXIT',
+  \  'ISSUE',
+  \  'PERFORMANCE',
+  \  'PERF'
+  \]
+
+" keywords: string | string[]
+function fzfcmd#todo_comments(keywords, fullscreen) abort
+  let keywords = type(a:keywords) == v:t_string ? map(split(a:keywords, ' '), 'trim(v:val)') : a:keywords
+  let keys = empty(keywords) ? s:todo_keywords : keywords
+  let search_query = '\b('.join(keys, '|').'):'
+  
+  call fzfcmd#fzfrg_base({
+        \ 'command_fmt': 'rg ' . s:rg_args .. ' %s || true',
+        \ 'query': search_query,
+        \ 'prompt': 'TODOs> ',
+        \ 'fullscreen': a:fullscreen
+        \ })
+endfunction
+
+" A = ArgLead		the leading portion of the argument currently being completed on
+" C = CmdLine		the entire command line
+" P = CursorPos	the cursor position in it (byte index)
+function fzfcmd#todo_comments_completion(A, L, P) abort
+  return s:todo_keywords
+endfunction

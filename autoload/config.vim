@@ -1119,6 +1119,8 @@ func! s:DefineCommands () abort
 
   command! -bar -bang -nargs=* QueryGrep call QueryGrep(<q-args>, <bang>0)
   command! -bar -bang -nargs=0 SearchGrep call SearchGrep(<bang>0)
+
+  command! -bar -bang -nargs=* -complete=customlist,fzfcmd#todo_comments_completion TodoFzfVim call fzfcmd#todo_comments(<q-args>, <bang>0)
 endf
 
 func! s:RemapAltUpDownNormal () abort
