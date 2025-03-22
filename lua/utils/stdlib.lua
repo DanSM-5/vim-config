@@ -456,6 +456,44 @@ local function contains(t, value)
   return false
 end
 
+---Creates an object (table :v) that allows to create
+---arbitrary properties
+---@example
+---```lua
+---local t = get_dynamic_object()
+---t.foo = 'something'
+---t.bar.baz.bad = 'foo'
+-----[[ Output:
+---{
+---  bar = {
+---    baz = {
+---      bad = 'foo',
+---      <metatable> = <1>{
+---        __index = <function 1>,
+---        self = <table 1>
+---      }
+---    }
+---  },
+---  foo = 'something',
+---  <metatable> = <table 1>
+---}
+---]]
+---```
+---@return table<string, any>
+local get_dynamic_object = function ()
+  local meta = {}
+  function meta.__index(t, k)
+    if rawget(t, k) == nil then
+      t[k] = setmetatable({}, meta.self)
+    end
+
+    return rawget(t, k)
+  end
+  meta.self = meta
+
+  return meta
+end
+
 return {
   find_root = find_root,
   get_root_dir = get_root_dir,
@@ -483,5 +521,5 @@ return {
   decodeURI = decodeURI,
   create_finally = create_finally,
   finally = finally,
+  get_dynamic_object = get_dynamic_object,
 }
-
