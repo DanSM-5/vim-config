@@ -1,12 +1,111 @@
 local name = 'mpls'
 local configured = false
 
+local set_autocmds = function()
+  local debounce_timer = nil
+  local debounce_delay = 300
+
+  local function sendMessageToMPLS()
+    if debounce_timer then
+      debounce_timer:stop()
+    end
+
+    debounce_timer = (vim.uv or vim.loop).new_timer()
+    debounce_timer:start(
+      debounce_delay,
+      0,
+      vim.schedule_wrap(function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        local clients = vim.lsp.get_clients({ name = name, bufnr = bufnr })
+
+        for _, client in ipairs(clients) do
+          if client.name == name then
+            client.request(
+              'mpls/editorDidChangeFocus',
+              { uri = vim.uri_from_bufnr(bufnr) },
+              function(err, result) end,
+              bufnr
+            )
+          end
+        end
+      end)
+    )
+  end
+
+  vim.api.nvim_create_autocmd('BufEnter', {
+    pattern = '*.md',
+    callback = sendMessageToMPLS,
+    group = vim.api.nvim_create_augroup('MarkdownFocus', { clear = true }),
+  })
+end
+
+local set_commands = function()
+  ---@param opts { fargs: string[]; bang: boolean; }
+  vim.api.nvim_create_user_command('MplsOpenPreview', function(opts)
+    ---@type number
+    local bufnr
+
+    if opts.fargs[1] ~= nil and (vim.uv or vim.loop).fs_stat(opts.fargs[1]) then
+      local buff_name = opts.fargs[1]
+      bufnr = vim.fn.bufnr(buff_name, 1)
+    else
+      bufnr = vim.api.nvim_get_current_buf()
+    end
+
+    -- Start client if buffer is markdown
+    ---@type string
+    local curr_buff_ft = vim.api.nvim_get_option_value('filetype', {
+      buf = bufnr,
+    })
+
+    -- Stop if requested buffer is not markdown
+    if curr_buff_ft ~= 'markdown' then
+      return
+    end
+
+    local clients = vim.lsp.get_clients({ name = name })
+    ---@type vim.lsp.Client | nil
+    local mpls_client = nil
+
+    for _, client in ipairs(clients) do
+      if client.name == 'mpls' then
+        mpls_client = client
+        break
+      end
+    end
+
+    -- Only execute the command if the MPLS client is found
+    if not mpls_client then
+      print('mpls is not attached to the current buffer.')
+      return
+    end
+
+    -- If requested buffer is not attached
+    if not mpls_client.attached_buffers[bufnr] then
+      vim.lsp.buf_attach_client(bufnr, mpls_client.id)
+      vim.notify('[MPLS] bufnr: ' .. bufnr .. ' client: ' .. mpls_client.id, vim.log.levels.INFO)
+    end
+
+    local params = {
+      command = 'open-preview',
+      arguments = {},
+    }
+    mpls_client.request('workspace/executeCommand', params, function(err, result)
+      if err then
+        print('Error executing command: ' .. err.message)
+      end
+    end)
+  end, { bang = true, nargs = '?', complete = 'path', desc = '[MPLS] Request open preview for md file' })
+end
+
 local configure = function()
   if configured then
     return
   end
 
   configured = true
+  set_commands()
+  set_commands()
   local has_configs, configs = pcall(require, 'lspconfig.configs')
   if not has_configs then
     return
@@ -22,9 +121,8 @@ local configure = function()
         ---Get root dir function
         ---@param startpath string starting path
         ---@return string Root directory
-        root_dir = function (startpath)
-          return require('utils.stdlib')
-            .get_root_dir('.git', startpath)
+        root_dir = function(startpath)
+          return require('utils.stdlib').get_root_dir('.git', startpath)
         end,
         settings = {},
       },
@@ -55,8 +153,7 @@ local function start(opts)
   end
 
   -- Set automatically for next buffers
-  require('lsp-servers.lsp_settings')
-    .get_lsp_handler()(name)
+  require('lsp-servers.lsp_settings').get_lsp_handler()(name)
 
   -- Buffer to attach initially
   local bufnr = -1
@@ -111,13 +208,11 @@ local function start(opts)
   end
 
   local base_config = require('lsp-servers.config').get_config(name) or {}
-  local update_capabilities = require('lsp-servers.lsp_settings')
-    .get_completion_module_from_settings()
-    .get_update_capabilities()
+  local update_capabilities =
+    require('lsp-servers.lsp_settings').get_completion_module_from_settings().get_update_capabilities()
   local lsp_config = update_capabilities(base_config)
   -- Try to gess root dir
-  local root_dir = require('utils.stdlib')
-    .get_root_dir('.git')
+  local root_dir = require('utils.stdlib').get_root_dir('.git')
 
   -- Start lsp on buffer
   local client_id = vim.lsp.start(
@@ -153,25 +248,29 @@ local function start(opts)
   end
 end
 
+---Download mpls lsp server from github releases
+local download = function()
+  local download_helper = vim.fn.substitute(vim.fn.expand('~/vim-config/utils/download_mpls'), '\\', '/', 'g')
+  ---@type string[]
+  local cmd = {}
+  if vim.fn.has('win32') == 1 then
+    -- Use powershell script on windows
+    cmd = { 'powershell.exe', '-NoLogo', '-NonInteractive', '-NoProfile', '-File', download_helper .. '.ps1' }
+  else
+    cmd = { download_helper }
+  end
+
+  pcall(vim.system, cmd, {}, function()
+    vim.schedule(function()
+      vim.notify('[MPLS] Download completed', vim.log.levels.INFO)
+    end)
+  end)
+end
+
 return {
   configure = configure,
   start = start,
-  download = function()
-    local download_helper = vim.fn.substitute(vim.fn.expand('~/vim-config/utils/download_mpls'), '\\', '/', 'g')
-    ---@type string[]
-    local cmd = {}
-    if vim.fn.has('win32') == 1 then
-      -- Use powershell script on windows
-      cmd = { 'powershell.exe', '-NoLogo', '-NonInteractive', '-NoProfile', '-File', download_helper .. '.ps1' }
-    else
-      cmd = { download_helper }
-    end
-
-    pcall(vim.system, cmd, {}, function()
-      vim.schedule(function()
-        vim.notify('[MPLS] Download completed', vim.log.levels.INFO)
-      end)
-    end)
-  end,
+  download = download,
+  set_commands = set_commands,
+  set_autocmds = set_autocmds,
 }
-

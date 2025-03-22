@@ -75,7 +75,7 @@ vim.api.nvim_create_user_command('MPLS', function (opts)
     file = opts.fargs[1],
   })
 end, {
-  desc = '[Lsp] Start mpls lsp server',
+  desc = '[MPLS] Start mpls lsp server',
   bar = true,
   bang = true,
   nargs = '?',
