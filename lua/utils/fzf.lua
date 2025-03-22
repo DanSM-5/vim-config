@@ -173,7 +173,7 @@ local fzf_projects = function ()
 
         -- fzf won't start in interactive mode
         -- from this callback so schedule startinsert
-        local timer = vim.uv.new_timer()
+        local timer = (vim.uv or vim.loop).new_timer()
         timer:start(300, 0, function ()
           timer:stop()
           vim.schedule(function ()
