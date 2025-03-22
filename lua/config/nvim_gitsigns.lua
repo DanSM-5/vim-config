@@ -22,19 +22,24 @@ return {
 
         -- Actions
         vim.keymap.set('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'Gitsigns: Stage hunk', buffer = bufnr })
-        vim.keymap.set('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'Gitsigns: Reset hunk', buffer = bufnr })
         vim.keymap.set('v', '<leader>hs',
           function() gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })end,
           { desc = 'Gitsigns: Stage hunk', buffer = bufnr }
         )
+        vim.keymap.set('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'Gitsigns: Stage buffer', buffer = bufnr })
+        vim.keymap.set('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'Gitsigns: Reset hunk', buffer = bufnr })
         vim.keymap.set('v', '<leader>hr',
           function() gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })end,
           { desc = 'Gitsigns: Reset hunk', buffer = bufnr }
         )
-        vim.keymap.set('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'Gitsigns: Stage buffer', buffer = bufnr })
+        vim.keymap.set('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'Gitsigns: Reset buffer', buffer = bufnr })
         -- Keep until removed
         vim.keymap.set('n', '<leader>hu', gitsigns.undo_stage_hunk, { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr })
-        vim.keymap.set('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'Gitsigns: Reset buffer', buffer = bufnr })
+        vim.keymap.set('v', '<leader>hu', function ()
+          -- Call stage_hunk on staged signs
+          gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+        end, { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr })
+        vim.keymap.set('n', '<leader>hU', gitsigns.reset_buffer_index , { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr })
         vim.keymap.set('n', '<leader>hp', gitsigns.preview_hunk,
           { desc = 'Gitsigns: Preview hunk, repeat to enter preview window', buffer = bufnr })
         vim.keymap.set('n', '<leader>hb', function() gitsigns.blame_line { full = true } end,

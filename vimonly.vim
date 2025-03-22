@@ -19,8 +19,6 @@ let g:gitgutter_sign_modified_removed   = '󱣳'
 
 " Git gutter settings
 " Navigation
-nmap <space>nh <Plug>(GitGutterNextHunk)
-nmap <space>nH <Plug>(GitGutterPrevHunk)
 nmap ]c <Plug>(GitGutterNextHunk)
 nmap [c <Plug>(GitGutterPrevHunk)
 " Text Object
@@ -30,6 +28,13 @@ xmap ih <Plug>(GitGutterTextObjectInnerVisual)
 xmap ah <Plug>(GitGutterTextObjectOuterVisual)
 " Actions
 nnoremap <leader>hr <Plug>(GitGutterUndoHunk)
+nnoremap <leader>hR <cmd>Git checkout -- %<cr>
+nnoremap <leader>hU <cmd>Git reset -- %<cr>
+nnoremap <leader>hS <cmd>Git add -- %<cr>
+" `<leader>hs` is already implemented by gitgutter
+" and `<leader>hu` (unstage) is not possible. It defaults
+" to GitGutterUndoHunk same as `<leader>hr`
+
 " Quickfix
 function s:Gqf(bang) abort
   if a:bang
