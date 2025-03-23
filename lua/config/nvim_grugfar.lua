@@ -213,6 +213,8 @@ return {
         swapReplacementInterpreter = { n = '<localleader>x' },
         applyNext = { n = '<localleader>j' },
         applyPrev = { n = '<localleader>k' },
+        nextInput = { n = ']n' },
+        prevInput = { n = '[n' },
       },
     })
     create_autocmds()
