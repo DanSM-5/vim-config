@@ -10,7 +10,10 @@
 ---@field on_backward function Callback when moving backward
 ---@field desc_forward string Keymap description for forward binding
 ---@field desc_backward string Keymap description for backward binding
----@field buffer? integer Buffer to attach keymap
+---@field buffer? integer|boolean Buffer to attach keymap
+---@field keyopts? vim.keymap.set.Opts Options for keymaps (both)
+---@field bopts? vim.keymap.set.Opts Options backward keymap
+---@field fopts? vim.keymap.set.Opts Options forward keymap
 
 ---@class MotionKeys
 ---@field move_forward string Key to be used when repeating a direction motion
@@ -120,13 +123,22 @@ repeat_motion.repeat_pair = function(options)
   local forward, backward  = get_repeat_module()
     .make_repeatable_move_pair(options.on_forward, options.on_backward)
 
-  local forward_opts = { desc = options.desc_forward, noremap = true }
-  local backward_opts = { desc = options.desc_backward, noremap = true }
-
-  if options.buffer ~= nil then
-    forward_opts.buffer = options.buffer
-    backward_opts.buffer = options.buffer
-  end
+  local keyopts = options.keyopts or {}
+  local fopts = options.fopts or {}
+  local bopts = options.bopts or {}
+  local map_buffer = options.buffer or nil
+  ---@type vim.keymap.set.Opts
+  local forward_opts = vim.tbl_deep_extend('force', {
+    desc = options.desc_forward,
+    noremap = true,
+    buffer = map_buffer,
+  }, keyopts, fopts)
+  ---@type vim.keymap.set.Opts
+  local backward_opts = vim.tbl_deep_extend('force', {
+    desc = options.desc_backward,
+    noremap = true,
+    buffer = map_buffer,
+  }, keyopts, bopts)
 
   -- Forward map
   vim.keymap.set(mode, keymap_forward, forward, forward_opts)
