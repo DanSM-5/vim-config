@@ -97,11 +97,11 @@ local function set_keymaps()
 
   vim.keymap.set('n', '<A-.>', vsplit_bigger, {
     desc = '[VSplit] Make vsplit bigger',
-    noremap = true
+    noremap = true,
   })
   vim.keymap.set('n', '<A-,>', vsplit_smaller, {
     desc = '[VSplit] Make vsplit smaller',
-    noremap = true
+    noremap = true,
   })
 
   local split_bigger, split_smaller = create_repeatable_pair(function()
@@ -112,11 +112,11 @@ local function set_keymaps()
 
   vim.keymap.set('n', '<A-t>', split_bigger, {
     desc = '[Split] Make split bigger',
-    noremap = true
+    noremap = true,
   })
   vim.keymap.set('n', '<A-s>', split_smaller, {
     desc = '[Split] Make split smaller',
-    noremap = true
+    noremap = true,
   })
 
   -- Diagnostic mappings
