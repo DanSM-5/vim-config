@@ -73,10 +73,20 @@ local function set_keymaps()
 
   -- Move to next todo comment
   local todo_next = function()
-    require('todo-comments').jump_next()
+    local ok, todocomments = pcall(require, 'todo-comments')
+    if not ok then
+      vim.notify('Todo comments not found', vim.log.levels.WARN)
+      return
+    end
+    todocomments.jump_next()
   end
   local todo_prev = function()
-    require('todo-comments').jump_prev()
+    local ok, todocomments = pcall(require, 'todo-comments')
+    if not ok then
+      vim.notify('Todo comments not found', vim.log.levels.WARN)
+      return
+    end
+    todocomments.jump_prev()
   end
 
   repeat_pair({
@@ -95,13 +105,14 @@ local function set_keymaps()
     vim.fn.feedkeys(ctrl_w .. '5<', 'n')
   end)
 
-  vim.keymap.set('n', '<A-.>', vsplit_bigger, {
-    desc = '[VSplit] Make vsplit bigger',
-    noremap = true,
-  })
-  vim.keymap.set('n', '<A-,>', vsplit_smaller, {
-    desc = '[VSplit] Make vsplit smaller',
-    noremap = true,
+  repeat_pair({
+    keys = '>',
+    prefix_forward = '<A-.',
+    prefix_backward = '<A-,',
+    on_forward = vsplit_bigger,
+    on_backward = vsplit_smaller,
+    desc_forward = '[VSplit] Make vsplit bigger',
+    desc_backward = '[VSplit] Make vsplit smaller',
   })
 
   local split_bigger, split_smaller = create_repeatable_pair(function()
@@ -110,13 +121,14 @@ local function set_keymaps()
     vim.fn.feedkeys(ctrl_w .. '-', 'n')
   end)
 
-  vim.keymap.set('n', '<A-t>', split_bigger, {
-    desc = '[Split] Make split bigger',
-    noremap = true,
-  })
-  vim.keymap.set('n', '<A-s>', split_smaller, {
-    desc = '[Split] Make split smaller',
-    noremap = true,
+  repeat_pair({
+    keys = '>',
+    prefix_forward = '<A-t',
+    prefix_backward = '<A-s',
+    on_forward = split_bigger,
+    on_backward = split_smaller,
+    desc_forward = '[Split] Make split bigger',
+    desc_backward = '[Split] Make split smaller',
   })
 
   -- Diagnostic mappings
