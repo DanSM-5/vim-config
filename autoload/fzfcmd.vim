@@ -313,8 +313,6 @@ function! fzfcmd#fzfrg_current(query, fullscreen)
     \ 'directory': buff_path,
     \ }
 
-  echo opts
-
   call fzfcmd#fzfrg_base(opts)
 endfunction
 
@@ -489,4 +487,71 @@ endfunction
 " P = CursorPos	the cursor position in it (byte index)
 function fzfcmd#todo_comments_completion(A, L, P) abort
   return s:todo_keywords
+endfunction
+
+
+" Like fzfcmd#fzfrg_rg but select a directory first
+" The search will only include results under that directory
+function! fzfcmd#fzfrg_dir(query, fullscreen) abort
+  let dirs_cmd = 'fd --type directory --follow'
+  let dirs_preview = ''
+  let preview_dir = ''
+  let shell_opts = []
+
+  if s:is_windows
+    if !s:is_gitbash
+      let dirs_cmd .= ' --path-separator "/"'
+    endif
+    let pwsh = executable('pwsh') ? 'pwsh' : 'powershell'
+    let shell_opts = ['--with-shell', pwsh . ' -NoLogo -NonInteractive -NoProfile -Command']
+    let preview_dir = s:fzfcmd_scripts . '/preview.ps1 "{}"'
+  else
+    let preview_dir = s:fzfcmd_scripts . '/preview.sh "{}"'
+  endif
+
+  let options = exists('g:fzf_bind_options') ? g:fzf_bind_options : [
+    \     '--cycle',
+    \     '--ansi', '--input-border',
+    \     '--bind', 'alt-c:clear-query',
+    \     '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
+    \     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
+    \     '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
+    \     '--bind', 'shift-up:preview-up,shift-down:preview-down',
+    \     '--bind', 'ctrl-^:toggle-preview',
+    \     '--bind', 'ctrl-s:toggle-sort',
+    \     '--bind', 'alt-f:first',
+    \     '--bind', 'alt-l:last',
+    \     '--bind', 'alt-a:select-all',
+    \     '--bind', 'alt-d:deselect-all'
+    \ ]
+
+  function! s:local_rg(query, fullscreen, selected)
+    if len(a:selected) == 0 || !isdirectory(a:selected[0])
+      return
+    endif
+
+    let fzf_rg_args = s:rg_args
+    let command_fmt = 'rg' . fzf_rg_args . '-- %s || true'
+    let directory = a:selected[0]
+    let opts = {
+      \ 'command_fmt': command_fmt,
+      \ 'query': a:query,
+      \ 'prompt': 'Dir RG> ',
+      \ 'fullscreen': a:fullscreen,
+      \ 'directory': directory,
+      \ }
+
+    call fzfcmd#fzfrg_base(opts)
+  endfunction
+
+  let spec_dir = {
+    \   'sinklist': function('s:local_rg', [a:query, a:fullscreen]),
+    \   'options': [
+    \     '--prompt', 'Dir> ',
+    \     '--bind', 'start:reload:' . dirs_cmd,
+    \     '--preview', preview_dir,
+    \   ] + options + ['--no-multi'] + shell_opts
+    \ }
+
+  call fzf#run(fzf#wrap('fzfdir', spec_dir, a:fullscreen))
 endfunction
