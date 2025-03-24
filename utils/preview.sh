@@ -33,7 +33,16 @@ fi
 # Ensure forward slash
 FILE="$( sed -r 's/\\+/\//g' <<< "$FILE" )"
 
-if ! [ -r "$FILE" ]; then
+if [ -d "$FILE" ]; then
+  printf "Path: $(realpath "$FILE" 2> /dev/null || printf '%s' "$FILE")\n\n"
+
+  erd --layout inverted --color force --level 3 --suppress-size -I -- "$FILE" 2> /dev/null ||
+    eza -A --tree --level=3 --color=always --icons=always --dereference "$FILE" 2> /dev/null ||
+    ls -AFL --color=always "$FILE" 2> /dev/null ||
+    printf '\nCannot access directory %s' "$FILE"
+
+  exit
+elif ! [ -r "$FILE" ]; then
   # echo "$TESTNAME"
   echo "File not found ${FILE}"
   exit 1

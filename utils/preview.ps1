@@ -11,7 +11,7 @@ if ($args[0] -eq '--tag') {
   exit 0
 }
 
-$segments = $args[0] -Split ':'
+$segments = $args[0].trim("'").trim('"') -Split ':'
 
 # Check if first item is a drive letter and offset accordingly
 if (Get-PSDrive -LiteralName $segments[0] -PSProvider FileSystem -ErrorAction SilentlyContinue) {
@@ -28,7 +28,17 @@ if (Get-PSDrive -LiteralName $segments[0] -PSProvider FileSystem -ErrorAction Si
   }
 }
 
-if (!(Test-Path -LiteralPath $FILE -PathType Leaf -ErrorAction SilentlyContinue)) {
+if (Test-Path -LiteralPath $FILE -PathType Container -ErrorAction SilentlyContinue) {
+  $fullpath = (Resolve-Path -LiteralPath $FILE).Path
+  Write-Output "Path: $fullpath`n"
+
+  erd --layout inverted --color force --level 3 -I --suppress-size -- $FILE 2> $null ||
+    eza -A --tree --level=3 --color=always --icons=always --dereference $FILE 2> $null ||
+    Get-ChildItem -LiteralPath $FILE ||
+    Write-Output "`nCannot access directory $FILE"
+
+  exit
+} elseif (!(Test-Path -LiteralPath $FILE -PathType Leaf -ErrorAction SilentlyContinue)) {
   Write-Output "File not found ${FILE}"
   exit 1
 }
