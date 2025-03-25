@@ -107,7 +107,10 @@ function! fzfgh#checkout_pr(selected_pr) abort
   endif
 
   echomsg 'Checking out PR #' . pr_number
-  call system('gh pr checkout '. pr_number)
+  let output = system('gh pr checkout '. pr_number)
+  if match(output, 'fatal') > 0
+    echoerr output
+  endif
 endfunction
 
 " Open PR in browser
