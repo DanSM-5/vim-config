@@ -55,7 +55,9 @@ function! fzfgh#create_scratch_buffer(content, filetype) abort
 
   " Populate content
   let cleaned_content = map(a:content, 'substitute(v:val, "\r", "", "g")')
-  put = join(cleaned_content, "\n")
+  let content = join(cleaned_content, "\n")
+  put = content
+  normal ggdd
 
   " Buffer options
   set fileformat=unix
