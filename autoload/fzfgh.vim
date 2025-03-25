@@ -258,7 +258,7 @@ function! fzfgh#select_prs(fullscreen) abort
 
   try
     let $GH_FORCE_TTY = '50%'
-    call s:select_pr(prs_options, '')
+    call s:select_pr('')
   finally
     unlet $GH_FORCE_TTY
   endtry
