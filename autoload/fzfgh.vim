@@ -125,7 +125,7 @@ endfunction
 " GitHub PRs function
 " Lists and allows interaction with GitHub PRs
 function! fzfgh#select_prs(fullscreen) abort
-  if !exists('gh')
+  if !executable('gh')
     echomsg '[Fzfgh] The gh cli is not found'
     return
   endif
