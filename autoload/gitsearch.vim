@@ -37,7 +37,7 @@ function! gitsearch#open_commits(commits) abort
       pu = ''
     endfor
     silent call execute('normal ggdd')
-    setlocal nomod readonly
+    setlocal nomodifiable readonly nomodified
     setlocal filetype=git
     setlocal foldmethod=syntax
   endif
