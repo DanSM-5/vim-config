@@ -164,8 +164,8 @@ function! fzfgh#select_prs(fullscreen) abort
   "   --preview 'GH_FORCE_TTY=$FZF_PREVIEW_COLUMNS gh pr view {1}' 
 
   " \   '--delimiter', "\t",
+  " \   '--with-nth', '1,2,3',
   let prs_options = [
-    \   '--with-nth', '1,2,3',
     \   '--expect=ctrl-f,ctrl-o,ctrl-s',
     \   '--header-lines', '4',
     \   '--prompt', 'GitHub PRs> ',
