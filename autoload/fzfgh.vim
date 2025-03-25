@@ -99,7 +99,7 @@ endfunction
 " @param selected_pr table: Selected PR from fzf
 function! fzfgh#checkout_pr(selected_pr) abort
   let parts = fzfgh#split_selection(a:selected_pr)
-  let pr_str = a:parts[0]
+  let pr_str = parts[0]
   let pr_number = fzfgh#extract_pr_number(pr_str)
 
   if empty(pr_number) || pr_number == v:null
