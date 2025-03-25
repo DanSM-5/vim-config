@@ -75,7 +75,8 @@ endfunction
 " Open PR details in a scratch buffer
 " @param selected_pr table: Selected PR from fzf
 function! fzfgh#open_pr(selected_pr) abort
-  let pr_str = a:selected_pr[0] 
+  let parts = fzfgh#split_selection(a:selected_pr)
+  let pr_str = parts[0] 
   let pr_number = fzfgh#extract_pr_number(pr_str)
 
   if empty(pr_number) || pr_number == v:null
@@ -162,8 +163,8 @@ function! fzfgh#select_prs(fullscreen) abort
   " GH_FORCE_TTY='50%' gh pr list | fzf --ansi --header-lines 4 \
   "   --preview 'GH_FORCE_TTY=$FZF_PREVIEW_COLUMNS gh pr view {1}' 
 
+  " \   '--delimiter', "\t",
   let prs_options = [
-    \   '--delimiter', "\t",
     \   '--with-nth', '1,2,3',
     \   '--expect=ctrl-f,ctrl-o,ctrl-s',
     \   '--header-lines', '4',
@@ -231,6 +232,8 @@ function! fzfgh#select_prs(fullscreen) abort
       " Unexpected key?
       return
     endif
+
+    return fzfgh#open_pr(pr)
   endfunction
 
   function! s:select_pr(cmd) closure
@@ -258,7 +261,7 @@ function! fzfgh#select_prs(fullscreen) abort
 
   try
     let $GH_FORCE_TTY = '50%'
-    call s:select_pr('')
+    return s:select_pr('')
   finally
     unlet $GH_FORCE_TTY
   endtry
