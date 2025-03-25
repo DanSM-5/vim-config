@@ -201,16 +201,24 @@ function! fzfgh#select_prs(fullscreen) abort
     \ }
 
   function! s:filter_sink(filter) closure
-    if empty(a:filter)
-      return s:select_pr('')
+    let cmd = ''
+
+    if !empty(a:filter)
+      let opt_idx = indexof(filters, 'v:val == "'.a:filter[0].'"')
+      if opt_idx == -1
+        let cmd = 'gh pr list'
+      else
+        let cmd = 'gh pr list ' . filter_cmds[opt_idx]
+      endif
     endif
 
-    let opt_idx = indexof(filters, 'v:val == "'.a:filter.'"')
-    if opt_idx == -1
-      return s:select_pr('')
-    endif
 
-    return s:select_pr('gh pr list ' . filter_cmds[opt_idx])
+    try
+      let $GH_FORCE_TTY = '50%'
+      return s:select_pr(cmd)
+    finally
+      unlet $GH_FORCE_TTY
+    endtry
   endfunction
 
   function! s:select_pr_sink(selection) closure
