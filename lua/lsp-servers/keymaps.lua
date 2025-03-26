@@ -4,6 +4,38 @@ local exclude_filetypes = {
   'help',
 }
 
+local exists = vim.fn.exists
+
+local cmd_to_lsp_handlers = {
+  { 'Definitions', 'definition' },
+  { 'Declarations', 'declaration' },
+  { 'TypeDefinitions', 'type_definition' },
+  { 'Implementations', 'implementation' },
+  { 'References', 'references' },
+  { 'DocumentSymbols', 'document_symbol' },
+  { 'WorkspaceSymbols', 'workspace_symbol' },
+  { 'IncomingCalls', 'incoming_calls' },
+  { 'OutgoingCalls', 'outgoing_calls' },
+  { 'CodeActions', 'code_action' },
+}
+
+---@type table<string, fun(...)>
+local handlers = {}
+
+local set_handlers = function ()
+  for _, handler in ipairs(cmd_to_lsp_handlers) do
+    local cmd, name = handler[1], handler[2]
+    handlers[name] = function (...)
+      if exists(':'..cmd) then
+        vim.cmd[cmd]()
+        return
+      end
+
+      return vim.lsp.buf[name](...)
+    end
+  end
+end
+
 -- NOTE: Old way of adding keymaps through 'LspAttach' autocmd
 -- vim.api.nvim_create_autocmd('LspAttach', {
 --   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
@@ -45,6 +77,10 @@ return {
       return
     end
 
+    if #vim.tbl_keys(handlers) == 0 then
+      set_handlers()
+    end
+
     -- Enable completion triggered by <C-x><C-o>
     -- Should now be set by default. Set anyways.
     vim.bo[buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
@@ -65,17 +101,6 @@ return {
       vim.keymap.set(mode, key, func, opts)
     end
 
-    --  grr gra grn gri i_CTRL-S Some keymaps are created unconditionally when Nvim starts:
-    -- "grn" is mapped in Normal mode to vim.lsp.buf.rename()
-    -- "gra" is mapped in Normal and Visual mode to vim.lsp.buf.code_action()
-    -- "grr" is mapped in Normal mode to vim.lsp.buf.references()
-    -- "gri" is mapped in Normal mode to vim.lsp.buf.implementation()
-    -- "gO" is mapped in Normal mode to vim.lsp.buf.document_symbol()
-    -- CTRL-S is mapped in Insert mode to vim.lsp.buf.signature_help()
-    -- Ref: https://neovim.io/doc/user/lsp.html
-    -- TODO: Should we change gr mapping and use defaults? 🤔
-    -- Seems not to work including gO and i_<c-s> in v0.10.4
-
     set_map('n', '<space>td', function()
       vim.diagnostic.enable(not vim.diagnostic.is_enabled())
     end, '[Lsp]: Toggle diagnostics')
@@ -84,38 +109,45 @@ return {
     end, '[Lsp]: Toggle inlay hints')
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    set_map('n', 'gD', vim.lsp.buf.declaration, '[Lsp]: Go to declaration')
-    set_map('n', 'gd', vim.lsp.buf.definition, '[Lsp]: Go to definition')
-    set_map('n', '<space>vs', '<cmd>split | lua vim.lsp.buf.definition()<CR>', '[Lsp]: Go to definition in vsplit')
-    set_map('n', '<space>vv', '<cmd>vsplit | lua vim.lsp.buf.definition()<CR>', '[Lsp]: Go to definition in vsplit')
-    set_map('n', 'K', vim.lsp.buf.hover, '[Lsp]: Hover action')
-    set_map('n', '<space>i', vim.lsp.buf.implementation, '[Lsp]: Go to implementation')
-    set_map('n', '<C-k>', vim.lsp.buf.signature_help, '[Lsp]: Show signature help')
+    set_map('n', 'gD', handlers.declaration, '[Lsp]: Go to declaration')
+    set_map('n', 'gd', handlers.definition, '[Lsp]: Go to definition')
+    set_map('n', '<space>vs', function ()
+      vim.cmd.split()
+      handlers.definition()
+    end, '[Lsp]: Go to definition in vsplit')
+    set_map('n', '<space>vv', function ()
+      vim.cmd.vsplit()
+      handlers.definition()
+    end, '[Lsp]: Go to definition in vsplit')
+    set_map('n', 'K', function () vim.lsp.buf.hover({ border = 'rounded' }) end, '[Lsp]: Hover action')
+    set_map('n', '<space>i', handlers.implementation, '[Lsp]: Go to implementation')
+    set_map('n', '<C-k>', function ()
+       vim.lsp.buf.signature_help({ border = 'rounded' })
+    end, '[Lsp]: Show signature help')
     set_map('n', '<space>wa', vim.lsp.buf.add_workspace_folder, '[Lsp]: Add workspace')
     set_map('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, '[Lsp]: Remove workspace')
     set_map('n', '<space>wl', function()
-      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+      vim.print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, '[Lsp]: List workspaces')
-    set_map('n', '<space>D', vim.lsp.buf.type_definition, '[Lsp]: Go to type definition')
+    set_map('n', '<space>D', handlers.type_definition, '[Lsp]: Go to type definition')
     set_map('n', '<space>rn', vim.lsp.buf.rename, '[Lsp]: Rename symbol')
     set_map('n', '<f2>', vim.lsp.buf.rename, '[Lsp]: Rename symbol')
-    set_map('n', '<space>ca', vim.lsp.buf.code_action, '[Lsp]: Code Actions')
-    set_map('n', 'gr', vim.lsp.buf.references, '[Lsp]: Go to references')
+    set_map('n', '<space>ca', handlers.code_action, '[Lsp]: Code Actions')
+    set_map('n', 'gr', handlers.references, '[Lsp]: Go to references')
     set_map('n', '<space>f', function()
       vim.lsp.buf.format({ async = false })
       vim.cmd.retab()
       vim.cmd.write()
     end, '[Lsp]: Format buffer')
-    set_map('n', '<space>ci', vim.lsp.buf.incoming_calls, '[Lsp]: Incoming Calls')
-    set_map('n', '<space>co', vim.lsp.buf.outgoing_calls, '[Lsp]: Outgoing Calls')
+    set_map('n', '<space>ci', handlers.incoming_calls, '[Lsp]: Incoming Calls')
+    set_map('n', '<space>co', handlers.outgoing_calls, '[Lsp]: Outgoing Calls')
 
     set_map('n', '<space>sw', function ()
-      vim.lsp.buf.workspace_symbol('')
+      handlers.workspace_symbol('')
     end, '[Lsp] Open workspace symbols')
     set_map('n', '<space>sd', function ()
-      vim.lsp.buf.document_symbol({})
+      handlers.document_symbol({})
     end, '[Lsp] Open document symbols')
     set_map('v', '<space>ca', '<cmd>RangeCodeActions<cr>', '[Lsp] Range code actions')
   end,
 }
-

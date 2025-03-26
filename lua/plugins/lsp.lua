@@ -227,7 +227,21 @@ return {
   -- },
   {
     'DanSM-5/fzf-lsp.nvim',
-    event = 'LspAttach',
+    cmd = {
+      'Definitions',
+      'Declarations',
+      'TypeDefinitions',
+      'Implementations',
+      'References',
+      'DocumentSymbols',
+      'WorkspaceSymbols',
+      'IncomingCalls',
+      'OutgoingCalls',
+      'CodeActions',
+      'RangeCodeActions',
+      'Diagnostics',
+      'DiagnosticsAll',
+    },
     dependencies = {
       'nvim-lua/plenary.nvim',
     },

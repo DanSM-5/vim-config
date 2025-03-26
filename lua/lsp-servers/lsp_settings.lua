@@ -126,15 +126,17 @@ return {
         'jsonls',
       }
 
-    -- Configure hover window
-    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-      border = 'rounded',
-      -- max_widht = 50,
-      max_height = 50,
-    })
-    vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-      border = 'rounded',
-    })
+    if not vim.fn.has('nvim-10') then
+      -- Configure hover window
+      vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
+        border = 'rounded',
+        -- max_widht = 50,
+        max_height = 50,
+      })
+      vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+        border = 'rounded',
+      })
+    end
 
     -- Setup lsp servers
     require('config.nvim_lspconfig').setup()
