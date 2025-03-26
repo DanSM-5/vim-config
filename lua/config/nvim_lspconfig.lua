@@ -17,6 +17,15 @@ return {
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
 
+    vim.diagnostic.config({
+      virtual_text = true,
+      -- Alternatively, customize specific options
+      -- virtual_lines = {
+      --   -- Only show virtual line diagnostics for the current cursor line
+      --   current_line = true,
+      -- },
+    })
+
     -- vim.keymap.set("n", "<leader>L", function()
     --   if vim.fn.search("https*://") > 0 then
     --     vim.ui.open(vim.fn.expand("<cfile>"))
