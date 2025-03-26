@@ -110,6 +110,9 @@ func! s:SetConfigurationsBefore () abort
 
     " Set signcolumn
     set signcolumn=auto:2
+
+    " Add completion option fuzzy
+    set completeopt+=fuzzy
   else
     set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
 
