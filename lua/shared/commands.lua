@@ -45,7 +45,7 @@ vim.api.nvim_create_user_command('Npm', function (opts)
     end
   end
 
-  require('utils.npm').npm(dir, args, opts.bang)
+  require('utils.npm').npm(dir, opts.fargs, opts.bang)
 end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for the npm command' })
 
 ---Create Npx command
