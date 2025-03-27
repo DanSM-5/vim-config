@@ -11,12 +11,22 @@ return {
     vim.keymap.set('n', '<space>l', vim.diagnostic.setloclist, { desc = 'LSP: Open diagnostic list', silent = true })
     vim.keymap.set('n', '<space>q', vim.diagnostic.setqflist , { desc = 'LSP: Open diagnostic list', silent = true })
 
+    -- Signs for diagnostics
     local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
 		for type, icon in pairs(signs) do
 			local hl = "DiagnosticSign" .. type
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
+    -- vim.diagnostic.config({
+    --   signs = { text = {
+    --     [vim.diagnostic.severity.ERROR] = signs.Error,
+    --     [vim.diagnostic.severity.WARN] = signs.Warn,
+    --     [vim.diagnostic.severity.HINT] = signs.Hint,
+    --     [vim.diagnostic.severity.INFO] = signs.Info,
+    --   } }
+    -- })
 
+    -- Start diagnostics (virtual text) enabled
     vim.diagnostic.config({
       virtual_text = true,
       -- Alternatively, customize specific options
@@ -25,6 +35,9 @@ return {
       --   current_line = true,
       -- },
     })
+
+    -- Start with inlay hints enabled
+    vim.lsp.inlay_hint.enable(true)
 
     -- vim.keymap.set("n", "<leader>L", function()
     --   if vim.fn.search("https*://") > 0 then
