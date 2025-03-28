@@ -14,18 +14,9 @@ return {
   {
     'mawkler/demicolon.nvim',
     keys = {
-      ';', ',',
-      't', 'f',
-      'T', 'F',
-      ']', '[',
-      ']d', '[d',
       ']c', '[c',
       ']s', '[s',
       ']z', '[z',
-      ']q', '[q',
-      ']l', '[l',
-      ']<C-Q>', '[<C-Q>',
-      ']<C-L>', '[<C-L>',
     }, -- Uncomment this to lazy load
     -- event = 'VeryLazy',
     dependencies = {

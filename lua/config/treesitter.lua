@@ -7,6 +7,337 @@ local function set_keymaps()
   -- NOTE: Setting repeatable keymaps ',' (left) and ';' (right)
   repeat_motion.set_motion_keys()
 
+  --- Execute a command and print errors without a stacktrace.
+  --- @param opts table Arguments to |nvim_cmd()|
+  local function cmd(opts)
+    local ok, err = pcall(vim.api.nvim_cmd, opts, {})
+    if not ok then
+      vim.api.nvim_echo({ { err:sub(#'Vim:' + 1) } }, true, { err = true })
+    end
+  end
+
+  -- Quickfix mappings
+
+  -- Move items in quickfix next/prev
+  local quickfix_next = function()
+    cmd({ cmd = 'cnext', count = vim.v.count1 })
+  end
+  local quickfix_prev =  function()
+    cmd({ cmd = 'cprevious', count = vim.v.count1 })
+  end
+  repeat_pair({
+    keys = 'q',
+    desc_forward = '[Quickfix] Move to next item',
+    desc_backward = '[Quickfix] Move to previous item',
+    on_forward = quickfix_next,
+    on_backward = quickfix_prev,
+  })
+
+  -- Move items in quickfix first/last
+  -- local quickfix_last = function()
+  --   cmd({ cmd = 'clast', count = vim.v.count ~= 0 and vim.v.count or nil })
+  -- end
+  -- local quickfix_first =  function()
+  --   cmd({ cmd = 'cfirst', count = vim.v.count ~= 0 and vim.v.count or nil })
+  -- end
+  -- repeat_pair({
+  --   keys = 'Q',
+  --   desc_forward = '[Quickfix] Move to last item',
+  --   desc_backward = '[Quickfix] Move to first item',
+  --   on_forward = quickfix_last,
+  --   on_backward = quickfix_first,
+  -- })
+
+  -- Do not repeat?
+  vim.keymap.set('n', ']Q', function()
+    cmd({ cmd = 'clast', count = vim.v.count ~= 0 and vim.v.count or nil })
+  end, { desc = '[Quickfix] Move to last item', noremap = true })
+  vim.keymap.set('n', '[Q', function()
+    cmd({ cmd = 'cfirst', count = vim.v.count ~= 0 and vim.v.count or nil })
+  end, { desc = '[Quickfix] Move to first item', noremap = true })
+
+  -- Move to next/prev item in file
+  local quickfix_next_file =  function()
+    cmd({ cmd = 'cnfile', count = vim.v.count1 })
+  end
+  local quickfix_prev_file = function()
+    cmd({ cmd = 'cpfile', count = vim.v.count1 })
+  end
+  repeat_pair({
+    keys = '<C-q>',
+    desc_forward = '[Quickfix] Move to next file item',
+    desc_backward = '[Quickfix] Move to previous file item',
+    on_forward = quickfix_next_file,
+    on_backward = quickfix_prev_file,
+  })
+
+
+  -- Location list mappings
+
+  -- Move items in loclist next/prev
+  local locationlist_next = function()
+    cmd({ cmd = 'lnext', count = vim.v.count1 })
+  end
+  local locationlist_prev = function()
+    cmd({ cmd = 'lprevious', count = vim.v.count1 })
+  end
+  repeat_pair({
+    keys = 'l',
+    desc_forward = '[Locationlist] Move to next item',
+    desc_backward = '[Locationlist] Move to previous item',
+    on_forward = locationlist_next,
+    on_backward = locationlist_prev,
+  })
+
+  -- Move items in locationlist first/last
+  -- local locationlist_last = function()
+  --   cmd({ cmd = 'lfirst', count = vim.v.count ~= 0 and vim.v.count or nil })
+  -- end
+  -- local locationlist_first = function()
+  --   cmd({ cmd = 'llast', count = vim.v.count ~= 0 and vim.v.count or nil })
+  -- end
+  -- repeat_pair({
+  --   keys = 'L',
+  --   desc_forward = '[Locationlist] Move to last item',
+  --   desc_backward = '[Locationlist] Move to first item',
+  --   on_forward = locationlist_last,
+  --   on_backward = locationlist_first,
+  -- })
+
+  -- Do not repeat?
+  vim.keymap.set('n', ']L', function()
+    cmd({ cmd = 'llast', count = vim.v.count ~= 0 and vim.v.count or nil })
+  end, { desc = '[Locationlist] Move to last item', noremap = true })
+  vim.keymap.set('n', '[L', function()
+    cmd({ cmd = 'lfirst', count = vim.v.count ~= 0 and vim.v.count or nil })
+  end, { desc = '[Locationlist] Move to first item', noremap = true })
+
+  -- Move to next/prev item in file
+  local locationlist_next_file = function()
+    cmd({ cmd = 'lnfile', count = vim.v.count1 })
+  end
+  local locationlist_prev_file = function()
+    cmd({ cmd = 'lpfile', count = vim.v.count1 })
+  end
+  repeat_pair({
+    keys = '<C-l>',
+    desc_forward = '[Locationlist] Move to next file item',
+    desc_backward = '[Locationlist] Move to previous file item',
+    on_forward = locationlist_next_file,
+    on_backward = locationlist_prev_file,
+  })
+
+
+  -- Argument list
+
+  -- Move to next/prev entry in argument list
+  local arglist_next = function()
+    -- count doesn't work with :next, must use range. See #30641.
+    cmd({ cmd = 'next', range = { vim.v.count1 } })
+  end
+  local arglist_prev = function()
+    cmd({ cmd = 'previous', count = vim.v.count1 })
+  end
+  repeat_pair({
+    keys = 'a',
+    desc_forward = '[Argumentlist] Move to next entry',
+    desc_backward = '[Argumentlist] Move to previous entry',
+    on_forward = arglist_next,
+    on_backward = arglist_prev,
+  })
+
+  -- Move to first/last entry in argument list
+  -- local arglist_last = function()
+  --   if vim.v.count ~= 0 then
+  --     cmd({ cmd = 'argument', count = vim.v.count })
+  --   else
+  --     cmd({ cmd = 'last' })
+  --   end
+  -- end
+  -- local arglist_first = function()
+  --   if vim.v.count ~= 0 then
+  --     cmd({ cmd = 'argument', count = vim.v.count })
+  --   else
+  --     cmd({ cmd = 'first' })
+  --   end
+  -- end
+  -- repeat_pair({
+  --   keys = 'A',
+  --   desc_forward = '[Argumentlist] Move to last entry',
+  --   desc_backward = '[Argumentlist] Move to first entry',
+  --   on_forward = arglist_last,
+  --   on_backward = arglist_first,
+  -- })
+
+  -- Do not repeat?
+  vim.keymap.set('n', ']A', function()
+    if vim.v.count ~= 0 then
+      cmd({ cmd = 'argument', count = vim.v.count })
+    else
+      cmd({ cmd = 'last' })
+    end
+  end, { desc = '[Argumentlist] Move to last entry', noremap = true })
+  vim.keymap.set('n', '[A', function()
+    if vim.v.count ~= 0 then
+      cmd({ cmd = 'argument', count = vim.v.count })
+    else
+      cmd({ cmd = 'first' })
+    end
+  end, { desc = '[Argumentlist] Move to first entry', noremap = true })
+
+
+  -- Tags
+
+  -- Move to next/prev tag
+  local tag_next = function()
+    -- count doesn't work with :tnext, must use range. See #30641.
+    cmd({ cmd = 'tnext', range = { vim.v.count1 } })
+  end
+  local tag_prev = function()
+    -- count doesn't work with :tprevious, must use range. See #30641.
+    cmd({ cmd = 'tprevious', range = { vim.v.count1 } })
+  end
+  repeat_pair({
+    keys = 't',
+    desc_forward = '[Tags] Move to next tag',
+    desc_backward = '[Tags] Move to previous tag',
+    on_forward = tag_next,
+    on_backward = tag_prev,
+  })
+
+  -- Move to next/prev tag
+  -- local tag_last = function()
+  --   -- :tlast does not accept a count, so use :tfirst if count given
+  --   if vim.v.count ~= 0 then
+  --     cmd({ cmd = 'tfirst', range = { vim.v.count } })
+  --   else
+  --     cmd({ cmd = 'tlast' })
+  --   end
+  -- end
+  -- local tag_first = function()
+  --   -- count doesn't work with :trewind, must use range. See #30641.
+  --   cmd({ cmd = 'tfirst', range = vim.v.count ~= 0 and { vim.v.count } or nil })
+  -- end
+  -- repeat_pair({
+  --   keys = 'T',
+  --   desc_forward = '[Tags] Move to last tag',
+  --   desc_backward = '[Tags] Move to first tag',
+  --   on_forward = tag_last,
+  --   on_backward = tag_first,
+  -- })
+
+  -- Do not repeat?
+  vim.keymap.set('n', ']T', function()
+    -- :tlast does not accept a count, so use :trewind if count given
+    if vim.v.count ~= 0 then
+      cmd({ cmd = 'tfirst', range = { vim.v.count } })
+    else
+      cmd({ cmd = 'tlast' })
+    end
+  end, { desc = '[Tags] Move to last tag', noremap = true })
+  vim.keymap.set('n', '[T', function()
+    -- count doesn't work with :trewind, must use range. See #30641.
+    cmd({ cmd = 'tfirst', range = vim.v.count ~= 0 and { vim.v.count } or nil })
+  end, { desc = '[Tags] Move to first tag', noremap = true })
+
+  -- Move to next/prev tag in preview window
+  local tag_next_preview = function()
+    -- count doesn't work with :ptnext, must use range. See #30641.
+    cmd({ cmd = 'ptnext', range = { vim.v.count1 } })
+  end
+  local tag_prev_preview = function()
+    -- count doesn't work with :ptprevious, must use range. See #30641.
+    cmd({ cmd = 'ptprevious', range = { vim.v.count1 } })
+  end
+  repeat_pair({
+    keys = '<C-t>',
+    desc_forward = '[Tags] Move to next tag in preview window',
+    desc_backward = '[Tags] Move to previous tag in preview window',
+    on_forward = tag_next_preview,
+    on_backward = tag_prev_preview,
+  })
+
+
+  -- Buffers
+
+  -- Move to next/prev buffer
+  local buffer_next = function()
+    cmd({ cmd = 'bnext', count = vim.v.count1 })
+  end
+  local buffer_prev = function()
+    cmd({ cmd = 'bprevious', count = vim.v.count1 })
+  end
+  repeat_pair({
+    keys = 'b',
+    desc_forward = '[Buffers] Move to next buffer',
+    desc_backward = '[Buffers] Move to previous buffer',
+    on_forward = buffer_next,
+    on_backward = buffer_prev,
+  })
+
+  -- Move to first/last buffer
+  -- local buffer_last = function()
+  --   if vim.v.count ~= 0 then
+  --     cmd({ cmd = 'buffer', count = vim.v.count })
+  --   else
+  --     cmd({ cmd = 'blast' })
+  --   end
+  -- end
+  -- local buffer_fist = function()
+  --   if vim.v.count ~= 0 then
+  --     cmd({ cmd = 'buffer', count = vim.v.count })
+  --   else
+  --     cmd({ cmd = 'bfirst' })
+  --   end
+  -- end
+  -- repeat_pair({
+  --   keys = 'B',
+  --   desc_forward = '[Buffers] Move to last buffer',
+  --   desc_backward = '[Buffers] Move to first buffer',
+  --   on_forward = buffer_last,
+  --   on_backward = buffer_fist,
+  -- })
+
+  -- Do not repeat?
+  vim.keymap.set('n', ']B', function()
+    if vim.v.count ~= 0 then
+      cmd({ cmd = 'buffer', count = vim.v.count })
+    else
+      cmd({ cmd = 'blast' })
+    end
+  end, { desc = '[Buffers] Move to last buffer', noremap = true })
+  vim.keymap.set('n', '[B', function()
+    if vim.v.count ~= 0 then
+      cmd({ cmd = 'buffer', count = vim.v.count })
+    else
+      cmd({ cmd = 'bfirst' })
+    end
+  end, { desc = '[Buffers] Move to first buffer', noremap = true })
+
+
+  -- Add empty lines after/before cursor
+  local empty_line_next = function()
+    vim.print('there')
+    -- TODO: update once it is possible to assign a Lua function to options #25672
+    vim.go.operatorfunc = "v:lua.require'vim._buf'.space_below"
+    vim.cmd[[normal g@l]]
+  end
+  local empty_line_prev = function()
+    vim.print('here')
+    -- TODO: update once it is possible to assign a Lua function to options #25672
+    vim.go.operatorfunc = "v:lua.require'vim._buf'.space_above"
+    vim.cmd[[normal g@l]]
+  end
+  repeat_pair({
+    keys = '<space>',
+    desc_forward = '[EmptyLine] Add empty line after cursor',
+    desc_backward = '[EmptyLine] Add empty line before cursor',
+    on_forward = empty_line_next,
+    on_backward = empty_line_prev,
+  })
+
+
+  -- Move to next/prev Tab
   repeat_pair({
     keys = '<tab>',
     desc_forward = '[Tab] Move to next tab',
@@ -19,6 +350,7 @@ local function set_keymaps()
     end,
   })
 
+
   -- Jump to next conflict
   local jumpconflict_next = function()
     -- vim.cmd([[execute "normal \<Plug>JumpconflictContextNext"]])
@@ -28,7 +360,6 @@ local function set_keymaps()
     -- vim.cmd([[execute "normal \<Plug>JumpconflictContextPrevious"]])
     vim.cmd.normal(vim.keycode('<Plug>JumpconflictContextPrevious'))
   end
-
   repeat_pair({
     keys = 'n',
     desc_forward = '[JumpConflict] Move to next conflict marker',
@@ -37,39 +368,6 @@ local function set_keymaps()
     on_backward = jumpconflict_prev,
   })
 
-  -- Move items in quickfix
-  local quickfix_next = function()
-    vim.cmd('silent! cnext')
-  end
-  local quickfix_prev = function()
-    vim.cmd('silent! cprev')
-  end
-
-  repeat_pair({
-    keys = 'q',
-    desc_forward = '[Quickfix] Move to next error',
-    desc_backward = '[Quickfix] Move to previous error',
-    on_forward = quickfix_next,
-    on_backward = quickfix_prev,
-  })
-
-  -- Move items in quickfix
-  local locationlist_next = function()
-    vim.cmd('silent! lnext')
-  end
-  local locationlist_prev = function()
-    vim.cmd('silent! lprev')
-  end
-
-  repeat_pair({
-    keys = 'l',
-    -- prefix_forward = '<leader>]',
-    -- prefix_backward = '<leader>[',
-    desc_forward = '[Locationlist] Move to next item',
-    desc_backward = '[Locationlist] Move to previous item',
-    on_forward = locationlist_next,
-    on_backward = locationlist_prev,
-  })
 
   -- Move to next todo comment
   local todo_next = function()
@@ -90,7 +388,7 @@ local function set_keymaps()
   end
 
   repeat_pair({
-    keys = 't',
+    keys = ':',
     desc_forward = '[TodoComments] Move to next todo comment',
     desc_backward = '[TodoComments] Move to previous todo comment',
     on_forward = todo_next,
@@ -148,7 +446,7 @@ local function set_keymaps()
   diagnostic_prev
   = create_repeatable_pair(
   ---Move to next diagnostic
-  ---@param options vim.diagnostic.GotoOpts | nil
+  ---@param options vim.diagnostic.JumpOpts | nil
     function(options)
       local opts = options or {}
       ---@diagnostic disable-next-line
@@ -156,7 +454,7 @@ local function set_keymaps()
       diagnostic_jump_next(opts)
     end,
     ---Move to provious diagnostic
-    ---@param options vim.diagnostic.GotoOpts | nil
+    ---@param options vim.diagnostic.JumpOpts | nil
     function(options)
       local opts = options or {}
       ---@diagnostic disable-next-line
@@ -193,14 +491,13 @@ local function set_keymaps()
     diagnostic_prev({ severity = vim.diagnostic.severity.WARN, wrap = true })
   end, { desc = 'LSP: Go to previous warning', silent = true, noremap = true })
 
-  -- diagnostic INFO, currently disabled until a good mapping that does not override
-  -- a useful default is thought
-  -- vim.keymap.set('n', ']i', function()
-  --   diagnostic_next({ severity = vim.diagnostic.severity.INFO })
-  -- end, { desc = 'LSP: Go to next info', silent = true, noremap = true })
-  -- vim.keymap.set('n', '[i', function()
-  --   diagnostic_prev({ severity = vim.diagnostic.severity.INFO })
-  -- end, { desc = 'LSP: Go to previous info', silent = true, noremap = true })
+  -- diagnostic INFO, using H as it is often a variation of hint
+  vim.keymap.set('n', ']H', function()
+    diagnostic_next({ severity = vim.diagnostic.severity.INFO })
+  end, { desc = 'LSP: Go to next info', silent = true, noremap = true })
+  vim.keymap.set('n', '[H', function()
+    diagnostic_prev({ severity = vim.diagnostic.severity.INFO })
+  end, { desc = 'LSP: Go to previous info', silent = true, noremap = true })
 
   -- diagnostic HINT
   vim.keymap.set('n', ']h', function()
@@ -369,7 +666,7 @@ return {
           goto_next_start = {
             [']m'] = { query = '@function.outer', desc = '[TS] Next function start' },
             [']]'] = { query = '@class.outer', desc = '[TS] Next class start' },
-            [']b'] = { query = '@block.*', desc = '[TS] Next block start' },
+            [']k'] = { query = '@block.*', desc = '[TS] Next block start' },
             [']C'] = { query = '@comment.outer', desc = '[TS] Next comment start' }
             --
             -- You can use regex matching (i.e. lua pattern) and/or pass a list in a 'query' key to group multiple queries.
@@ -384,18 +681,18 @@ return {
           goto_next_end = {
             [']M'] = { query = '@function.outer', desc = '[TS] Next function end' },
             [']['] = { query = '@class.outer', desc = '[TS] Next class end' },
-            [']B'] = { query = '@block.outer', desc = '[TS] Next block end' },
+            [']K'] = { query = '@block.outer', desc = '[TS] Next block end' },
           },
           goto_previous_start = {
             ['[m'] = { query = '@function.outer', desc = '[TS] Previous function start' },
             ['[['] = { query = '@class.outer', desc = '[TS] Previous class start' },
-            ['[b'] = { query = '@block.*', desc = '[TS] Previous block start' },
+            ['[k'] = { query = '@block.*', desc = '[TS] Previous block start' },
             ['[C'] = { query = '@comment.outer', desc = '[TS] Previous comment start' }
           },
           goto_previous_end = {
             ['[M'] = { query = '@function.outer', desc = '[TS] Previous function end' },
             ['[]'] = { query = '@class.outer', desc = '[TS] Previous class end' },
-            ['[B'] = { query = '@block.outer', desc = '[TS] Previous block end' },
+            ['['] = { query = '@block.outer', desc = '[TS] Previous block end' },
           },
           -- Below will go to either the start or the end, whichever is closer.
           -- Use if you want more granular movements

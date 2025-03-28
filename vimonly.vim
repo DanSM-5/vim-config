@@ -228,3 +228,76 @@ func! s:SetCtrlSF () abort
 endf
 
 
+" Quickfix navigation
+nnoremap <expr> ]q '<cmd>'.v:count1.'cnext<cr>zvzz'
+nnoremap <expr> [q '<cmd>'.v:count1.'cprev<cr>zvzz'
+nnoremap <expr> ]Q '<cmd>'.(v:count != 0 ? v:count : '').'clast<cr>zvzz'
+nnoremap <expr> [Q '<cmd>'.(v:count != 0 ? v:count : '').'cfirst<cr>zvzz'
+nnoremap <expr> ]<C-q> '<cmd>'.v:count1.'cnfile<cr>zvzz'
+nnoremap <expr> [<C-q> '<cmd>'.v:count1.'cpfile<cr>zvzz'
+
+" Location list navigation
+nnoremap <expr> ]l '<cmd>'.v:count1.'lnext<cr>zvzz'
+nnoremap <expr> [l '<cmd>'.v:count1.'lprev<cr>zvzz'
+nnoremap <expr> ]L '<cmd>'.(v:count != 0 ? v:count : '').'llast<cr>zvzz'
+nnoremap <expr> [L '<cmd>'.(v:count != 0 ? v:count : '').'lfirst<cr>zvzz'
+nnoremap <expr> ]<C-l> '<cmd>'.v:count1.'lnfile<cr>zvzz'
+nnoremap <expr> [<C-l> '<cmd>'.v:count1.'lpfile<cr>zvzz'
+
+" Arguments navigation
+nnoremap <expr> ]a '<cmd>'.v:count1.'next<cr>zvzz'
+nnoremap <expr> [a '<cmd>'.v:count1.'previous<cr>zvzz'
+nnoremap <expr> ]A '<cmd>'.(v:count != 0 ? v:count.'argument' : 'last').'<cr>zvzz'
+nnoremap <expr> [A '<cmd>'.(v:count != 0 ? v:count.'argument' : 'first').'<cr>zvzz'
+
+" Tags navigation
+nnoremap <expr> ]t '<cmd>'.v:count1.'tnext<cr>zvzz'
+nnoremap <expr> [t '<cmd>'.v:count1.'tpreview<cr>zvzz'
+nnoremap <expr> ]T '<cmd>'.(v:count != 0 ? v:count.'tfirst' : 'tlast').'<cr>zvzz'
+nnoremap <expr> [T '<cmd>'.(v:count != 0 ? v:count : '').'tfirst<cr>zvzz'
+nnoremap <expr> ]<C-t> '<cmd>'.v:count1.'ptnext<cr>zvzz'
+nnoremap <expr> [<C-t> '<cmd>'.v:count1.'ptprevious<cr>zvzz'
+
+" Buffers navigation
+nnoremap <expr> ]b '<cmd>'.v:count1.'bnext<cr>zvzz'
+nnoremap <expr> [b '<cmd>'.v:count1.'bprevious<cr>zvzz'
+nnoremap <expr> ]B '<cmd>'.(v:count != 0 ? v:count.'buffer' : 'blast').'<cr>zvzz'
+nnoremap <expr> [B '<cmd>'.(v:count != 0 ? v:count.'buffer' : 'bfirst').'<cr>zvzz'
+
+
+function! s:BlankUp() abort
+  let cmd = 'put!=repeat(nr2char(10), v:count1)|silent '']+'
+  if &modifiable
+    let cmd .= '|silent! call repeat#set("\<Plug>(unimpaired-blank-up)", v:count1)'
+  endif
+  return cmd
+endfunction
+
+function! s:BlankDown() abort
+  let cmd = 'put =repeat(nr2char(10), v:count1)|silent ''[-'
+  if &modifiable
+    let cmd .= '|silent! call repeat#set("\<Plug>(unimpaired-blank-down)", v:count1)'
+  endif
+  return cmd
+endfunction
+
+nnoremap <silent> <Plug>(unimpaired-blank-down) <cmd>exe <SID>BlankDown()<cr>
+nnoremap <silent> <Plug>(unimpaired-blank-up) <cmd>exe <SID>BlankUp()<cr>
+
+nnoremap <silent> <Plug>unimpairedBlankDown <cmd>exe <SID>BlankDown()<cr>
+nnoremap <silent> <Plug>unimpairedBlankUp <cmd>exe <SID>BlankUp()<cr>
+
+nnoremap <silent> ]<space> <Plug>(unimpaired-blank-down)
+nnoremap <silent> [<space> <Plug>(unimpaired-blank-up)
+
+
+" Search brackets forward/backward
+" nnoremap <silent> ]} :<C-u>silent call search('}')<cr>
+" nnoremap <silent> [} :<C-u>silent call search('}', 'b')<cr>
+" nnoremap <silent> ]{ :<C-u>silent call search('{')<cr>
+" nnoremap <silent> [{ :<C-u>silent call search('{', 'b')<cr>
+nnoremap <silent> ]} :<C-u>silent call search('[{}]')<cr>
+nnoremap <silent> [} :<C-u>silent call search('[{}]', 'b')<cr>
+nnoremap <silent> ]{ :<C-u>silent call searchpair('{', '', '}')<cr>
+nnoremap <silent> [{ :<C-u>silent call searchpair('{', '', '}', 'b')<cr>
+

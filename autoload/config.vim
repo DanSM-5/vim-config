@@ -368,17 +368,6 @@ func! s:Set_user_keybindings () abort
   vnoremap zz <Cmd>call smoothie#do("zz")<CR>
   nnoremap zz <Cmd>call smoothie#do("zz")<CR>
 
-  " Quickfix navigation
-  nnoremap ]q <cmd>cnext<cr>zz
-  nnoremap [q <cmd>cprev<cr>zz
-  nnoremap [Q <cmd>cfirst<cr>zz
-  nnoremap ]Q <cmd>clast<cr>zz
-  " Location list navigation
-  nnoremap [l <cmd>lnext<cr>zz
-  nnoremap ]l <cmd>lprev<cr>zz
-  nnoremap [L <cmd>lfirst<cr>zz
-  nnoremap ]L <cmd>llast<cr>zz
-
   " Window resize vsplit
   nnoremap <A-,> <C-w>5<
   nnoremap <A-.> <C-w>5>
@@ -518,16 +507,6 @@ func! s:Set_user_keybindings () abort
   " Change anonymous register with unnamed plus register
   nnoremap <silent> yd :<C-u>silent call utils#register_move('+', '"')<cr>
   nnoremap <silent> yD :<C-u>silent call utils#register_move('"', '+')<cr>
-
-  " Search brackets forward/backward
-  " nnoremap <silent> ]} :<C-u>silent call search('}')<cr>
-  " nnoremap <silent> [} :<C-u>silent call search('}', 'b')<cr>
-  " nnoremap <silent> ]{ :<C-u>silent call search('{')<cr>
-  " nnoremap <silent> [{ :<C-u>silent call search('{', 'b')<cr>
-  nnoremap <silent> ]} :<C-u>silent call search('[{}]')<cr>
-  nnoremap <silent> [} :<C-u>silent call search('[{}]', 'b')<cr>
-  nnoremap <silent> ]{ :<C-u>silent call searchpair('{', '', '}')<cr>
-  nnoremap <silent> [{ :<C-u>silent call searchpair('{', '', '}', 'b')<cr>
 
   " Make search consistent in direction
   NXOnoremap <expr>n (v:searchforward ? 'n' : 'N').'zv'
