@@ -138,6 +138,7 @@ func! s:SetConfigurationsBefore () abort
   " Explicit default of incsearch.
   " Visually show and highlight search matches.
   set incsearch
+  set hlsearch
 
   " Recognize `@` symbol in filenames for things like `gf`
   set isfname+=@-@
