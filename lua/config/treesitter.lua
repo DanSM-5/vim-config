@@ -337,16 +337,85 @@ local function set_keymaps()
   })
 
 
+  -- Fold jump next/prev
+  repeat_pair({
+    keys = 'z',
+    mode = { 'n', 'x', 'o' },
+    desc_forward = '[Fold] Move to next fold',
+    desc_backward = '[Fold] Move to previous fold',
+    on_forward = function ()
+      vim.api.nvim_feedkeys(vim.v.count1..'zj', 'xn', true)
+    end,
+    on_backward = function ()
+      vim.api.nvim_feedkeys(vim.v.count1..'zk', 'xn', true)
+    end,
+  })
+
+
+  -- Spelling next/prev
+  repeat_pair({
+    keys = 's',
+    mode = { 'n', 'x', 'o' },
+    desc_forward = '[Spell] Move to next spelling mistake',
+    desc_backward = '[Spell] Move to previous spelling mistake',
+    on_forward = function ()
+      -- `]s`/`[s` only work if `spell` is enabled
+      local spell = vim.wo.spell
+      vim.wo.spell = true
+      vim.api.nvim_feedkeys(vim.v.count1..'[s', 'xn', true)
+      vim.wo.spell = spell
+    end,
+    on_backward = function ()
+      -- `]s`/`[s` only work if `spell` is enabled
+      local spell = vim.wo.spell
+      vim.wo.spell = true
+      vim.api.nvim_feedkeys(vim.v.count1..'s[', 'xn', true)
+      vim.wo.spell = spell
+    end,
+  })
+
+
+  -- Move to next/previous hunk
+  local move_hunk = function (forward)
+    if vim.wo.diff then -- If we're in a diff
+      local direction_key = forward and ']' or '['
+      vim.cmd.normal({ vim.v.count1 .. direction_key .. 'c', bang = true })
+    else
+      local exists, gitsigns = pcall(require, 'gitsigns')
+      if not exists then
+        vim.notify('GitSings not found', vim.log.levels.WARN)
+        return
+      end
+
+      local direction = forward and 'next' or 'prev'
+      gitsigns.nav_hunk(direction)
+    end
+  end
+
+  repeat_pair({
+    keys = 'c',
+    mode = { 'n', 'x', 'o' },
+    desc_forward = '[GitSings] Move to next hunk',
+    desc_backward = '[GitSings] Move to previous hunk',
+    on_forward = function ()
+      move_hunk(true)
+    end,
+    on_backward = function ()
+      move_hunk(false)
+    end,
+  })
+
+
   -- Move to next/prev Tab
   repeat_pair({
     keys = '<tab>',
     desc_forward = '[Tab] Move to next tab',
     desc_backward = '[Tab] Move to previous tab',
     on_forward = function ()
-      vim.cmd('tabnext')
+      vim.cmd(vim.v.count1..'tabnext')
     end,
     on_backward = function ()
-      vim.cmd('tabprevious')
+      vim.cmd(vim.v.count1..'tabprevious')
     end,
   })
 
