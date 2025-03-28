@@ -305,8 +305,6 @@ call plug#begin()
     Plug 'OXY2DEV/helpview.nvim'
     Plug 'OXY2DEV/markview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
-    Plug 'mawkler/demicolon.nvim'
-    Plug 'mawkler/refjump.nvim'
     Plug 'lukas-reineke/indent-blankline.nvim'
     " Snippets
     if executable('make')

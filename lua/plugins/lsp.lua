@@ -24,21 +24,6 @@ return {
     end,
   },
   {
-    'mawkler/refjump.nvim',
-    -- event = 'LspAttach', -- Uncomment to lazy load
-    -- Go back to previous config
-    -- commit = '95da9e8866fca4bae6bebfa66b202889997d7db1',
-    keys = { ']r', '[r' }, -- Uncomment to lazy load
-    config = function ()
-      local refjump_config = require('config.nvim_refjump')
-      refjump_config.setup()
-      -- Set keys
-      -- vim.api.nvim_win_get_buf(0)
-      local bufnr = vim.api.nvim_get_current_buf()
-      refjump_config.set_keymaps({ buf = bufnr })
-    end,
-  },
-  {
     -- Find symbols
     'stevearc/aerial.nvim',
     keys = {

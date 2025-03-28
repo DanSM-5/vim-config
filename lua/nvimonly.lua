@@ -23,8 +23,6 @@ require('config.oil_nvim').setup()
 require('config.nvim_autopairs').setup()
 require('config.treesitter_context').setup()
 require('config.nvim_indent-blankline').setup()
-require('config.nvim_refjump').setup()
-require('config.nvim_demicolon').setup()
 require('config.nvim_prelive').setup()
 require('config.nvim_markview').setup()
 require('config.nvim_fugitive-difftool').setup()
@@ -59,8 +57,6 @@ require('config.nvim_hierarchy').setup()
 --   'config.nvim_autopairs',
 --   'config.treesitter_context',
 --   'config.nvim_indent-blankline',
---   'config.nvim_refjump',
---   'config.nvim_demicolon',
 --   'config.nvim_prelive',
 -- }
 --
