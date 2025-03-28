@@ -28,7 +28,7 @@ local blink_module = {
         score_offset = 5,
       },
       snippets = {
-        min_keyword_length = 1,
+        min_keyword_length = 0,
       },
       ['css-variables'] = {
         name = 'css-variables',
