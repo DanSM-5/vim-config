@@ -103,6 +103,7 @@ vim.cmd([[
     set expandtab
     set ruler
     set autoindent smartindent
+    retab
   endfunction
 
   " Get clean highlight group

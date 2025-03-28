@@ -115,6 +115,7 @@ function g:SetTab (space)
   set expandtab
   set ruler
   set autoindent smartindent
+  retab
 endfunction
 
 " Note: Make sure the function is defined before `vim-buffet` is loaded.
