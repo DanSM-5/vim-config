@@ -103,7 +103,6 @@ vim.cmd([[
     set expandtab
     set ruler
     set autoindent smartindent
-    retab
   endfunction
 
   " Get clean highlight group
@@ -117,11 +116,11 @@ vim.cmd([[
     return [a:hlg, 'hi ' . g:Get_hlg(a:hlg), hidden_hlg]
   endfunction
 
-	" Return to last edit position when opening files
-	" autocmd BufReadPost *
-	"      \ if line("'\"") > 0 && line("'\"") <= line("$") |
-	"      \   exe "normal! g`\"zz" |
-	"      \ endif
+  " Return to last edit position when opening files
+  " autocmd BufReadPost *
+  "      \ if line("'\"") > 0 && line("'\"") <= line("$") |
+  "      \   exe "normal! g`\"zz" |
+  "      \ endif
 ]])
 
 vim.fn.OnVimEnter = function ()
