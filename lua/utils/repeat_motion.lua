@@ -1,5 +1,5 @@
 ---@class RepeatOptions
----@field fn function Function to make repeatable with motions
+---@field fn fun(opts: { forward: boolean }): any Function to make repeatable with motions
 
 ---@class RepeatPair
 ---@field keys string|[string,string] Key(s) to be used when creating a map
