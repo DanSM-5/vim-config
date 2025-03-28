@@ -27,6 +27,8 @@ local ref_jump = function (forward)
   })({ forward = forward })
 end
 
+---Mapper from commands to lsp handler functions
+---@type [string, string][]
 local cmd_to_lsp_handlers = {
   { 'Definitions', 'definition' },
   { 'Declarations', 'declaration' },
@@ -40,8 +42,60 @@ local cmd_to_lsp_handlers = {
   { 'CodeActions', 'code_action' },
 }
 
----@type table<string, fun(...)>
-local handlers = {}
+vim.lsp.buf.code_action()
+
+---@class config.LspHandlers
+---
+--- Jumps to the definition of the symbol under the cursor.
+---@field definition fun(opts?: vim.lsp.LocationOpts)
+---
+--- Jumps to the declaration of the symbol under the cursor.
+--- @note Many servers do not implement this method. Generally, see |vim.lsp.buf.definition()| instead.
+---@field declaration fun(opts?: vim.lsp.LocationOpts)
+---
+--- Jumps to the definition of the type of the symbol under the cursor.
+---@field type_definition fun(opts?: vim.lsp.LocationOpts)
+---
+--- Lists all the implementations for the symbol under the cursor in the
+--- quickfix window.
+---@field implementation fun(opts?: vim.lsp.LocationOpts)
+---
+--- Lists all the references to the symbol under the cursor in the quickfix window.
+---
+--- See:
+---   * [Documentation](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_references)
+---@field references fun(context?: lsp.ReferenceContext, opts?: vim.lsp.ListOpts)
+---
+--- Lists all symbols in the current buffer in the |location-list|.
+---@field document_symbol fun(opts?: vim.lsp.ListOpts)
+---
+--- Lists all symbols in the current workspace in the quickfix window.
+---
+--- The list is filtered against {query}; if the argument is omitted from the
+--- call, the user is prompted to enter a string on the command line. An empty
+--- string means no filtering is done.
+---@field workspace_symbol fun(query: string?, opts?: vim.lsp.ListOpts)
+---
+--- Lists all the call sites of the symbol under the cursor in the
+-- |quickfix| window. If the symbol can resolve to multiple
+--- items, the user can pick one in the |inputlist()|.
+---@field incoming_calls fun()
+---
+--- Lists all the items that are called by the symbol under the
+--- cursor in the |quickfix| window. If the symbol can resolve to
+--- multiple items, the user can pick one in the |inputlist()|.
+---@field outgoing_calls fun()
+---
+--- Selects a code action available at the current
+--- cursor position.
+---
+--- See:
+---   * [Documentation](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_codeAction)
+---   * [vim.lsp.protocol.CodeActionTriggerKind](lua://vim.lsp.protocol.CodeActionTriggerKind)
+---@field code_action fun(opts?: vim.lsp.buf.code_action.Opts)
+
+---@type config.LspHandlers
+local handlers = ({}) --[[@as config.LspHandlers]]
 
 local set_handlers = function ()
   for _, handler in ipairs(cmd_to_lsp_handlers) do
