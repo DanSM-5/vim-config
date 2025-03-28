@@ -222,14 +222,14 @@ return {
       vim.cmd.retab()
       vim.cmd.write()
     end, '[Lsp]: Format buffer')
-    set_map('n', '<space>ci', handlers.incoming_calls, '[Lsp]: Incoming Calls')
-    set_map('n', '<space>co', handlers.outgoing_calls, '[Lsp]: Outgoing Calls')
+    set_map('n', '<space>ci', vim.lsp.buf.incoming_calls, '[Lsp]: Incoming Calls')
+    set_map('n', '<space>co', vim.lsp.buf.outgoing_calls, '[Lsp]: Outgoing Calls')
 
     set_map('n', '<space>sw', function ()
-      handlers.workspace_symbol('')
+      vim.lsp.buf.workspace_symbol('')
     end, '[Lsp] Open workspace symbols')
     set_map('n', '<space>sd', function ()
-      handlers.document_symbol({})
+      vim.lsp.buf.document_symbol({})
     end, '[Lsp] Open document symbols')
     set_map('v', '<space>ca', '<cmd>RangeCodeActions<cr>', '[Lsp] Range code actions')
 
