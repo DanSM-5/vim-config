@@ -1,10 +1,31 @@
 ---@module 'shared.types'
+---@module 'utils.repeat_motion'
+---@module 'utils.refjump'
 
 local exclude_filetypes = {
   'help',
 }
 
 local exists = vim.fn.exists
+
+---Get the function for on_forward and on_backward
+---@param forward boolean
+local ref_jump = function (forward)
+  ---References cache
+  ---@type RefjumpReference[]?
+  local references
+
+  -- NOTE: It is important to make only this part repeatable and not the whole keymap
+  -- so that references will be a brand new reference variable but
+  -- it will have the cached references if repeating the motion
+  require('utils.repeat_motion').repeat_direction({
+    fn = function (opts)
+      require('utils.refjump').reference_jump(opts, references, function (refs)
+        references = refs
+      end)
+    end,
+  })({ forward = forward })
+end
 
 local cmd_to_lsp_handlers = {
   { 'Definitions', 'definition' },
@@ -157,5 +178,12 @@ return {
       handlers.document_symbol({})
     end, '[Lsp] Open document symbols')
     set_map('v', '<space>ca', '<cmd>RangeCodeActions<cr>', '[Lsp] Range code actions')
+
+
+    local nxo = { 'n', 'x', 'o' }
+    if client:supports_method('textDocument/documentHighlight', buf) then
+      set_map(nxo, ']r', function() ref_jump(true) end, '[Reference] Next reference')
+      set_map(nxo, '[r', function() ref_jump(false) end, '[Reference] Next reference')
+    end
   end,
 }
