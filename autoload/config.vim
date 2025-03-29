@@ -431,8 +431,8 @@ func! s:Set_user_keybindings () abort
   if exists(':Repeatable')
     " Duplicate and comment current line
     if has('nvim')
-      Repeatable nmap yc :<C-U>t.<cr>kgccj
-      Repeatable nmap yC :<C-U>t.<cr>gcck
+      Repeatable nmap yc <cmd>t.<cr>kgccj
+      Repeatable nmap yC <cmd>t.<cr>gcck
     else
       Repeatable nmap yc yygccp
       Repeatable nmap yC yypgcck
@@ -441,10 +441,11 @@ func! s:Set_user_keybindings () abort
 
   " Duplicate line above and below without moving cursor
   if has('nvim')
-    nnoremap <A-y> :<C-U>t.<CR>
-    nnoremap <A-e> :<C-U>t-1<CR>
-    inoremap <A-y> <esc>:<C-U>t.<CR>a
-    inoremap <A-e> <esc>:<C-U>t-1<CR>a
+    " nnoremap <A-y> <cmd>t.<cr>
+    nnoremap <A-y> <cmd>t.<cr>
+    nnoremap <A-e> <cmd>t-1<cr>
+    inoremap <A-y> <cmd>t.<cr>
+    inoremap <A-e> <cmd>t-1<cr>
   else
     nnoremap <A-y> v0yO<esc>pjly$kp`[jh
     nnoremap <A-e> v0yO<esc>pjly$kp`[h
