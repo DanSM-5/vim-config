@@ -19,6 +19,59 @@ let s:fzfcmd_config = substitute(
   \)
 let s:rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
 
+" Copied from fzf plugin to replace fzf#shellescape
+" The intention is to remove fzf.vim as a dependency however
+" I now know that fzf#shellescape comes with regular fzf plugin
+
+" if s:is_windows
+"   function! s:fzf_call(fn, ...)
+"     let shellslash = &shellslash
+"     try
+"       set noshellslash
+"       return call(a:fn, a:000)
+"     finally
+"       let &shellslash = shellslash
+"     endtry
+"   endfunction
+
+" else
+
+"   function! s:fzf_call(fn, ...)
+"     return call(a:fn, a:000)
+"   endfunction
+" endif
+
+" function! s:shellesc_cmd(arg)
+"   let e = '"'
+"   let slashes = 0
+"   for c in split(a:arg, '\zs')
+"     if c ==# '\'
+"       let slashes += 1
+"     elseif c ==# '"'
+"       let e .= repeat('\', slashes + 1)
+"       let slashes = 0
+"     else
+"       let slashes = 0
+"     endif
+"     let e .= c
+"   endfor
+"   let e .= repeat('\', slashes) .'"'
+"   return substitute(substitute(e, '[&|<>()^!"]', '^&', 'g'), '%', '%%', 'g')
+" endfunction
+
+" function! fzfcmd#shellescape(arg, ...)
+"   let shell = get(a:000, 0, s:is_windows ? 'cmd.exe' : 'sh')
+"   if shell =~# 'cmd.exe$'
+"     return s:shellesc_cmd(a:arg)
+"   endif
+"   try
+"     let [shell, &shell] = [&shell, shell]
+"     return s:fzf_call('shellescape', a:arg)
+"   finally
+"     let [shell, &shell] = [&shell, shell]
+"   endtry
+" endfunction
+
 function! fzfcmd#fzf_selected_list(fzf_options, fullscreen, list) abort
   if len(a:list) == 0
     return
@@ -482,9 +535,9 @@ function fzfcmd#todo_comments(keywords, fullscreen) abort
         \ })
 endfunction
 
-" A = ArgLead		the leading portion of the argument currently being completed on
-" C = CmdLine		the entire command line
-" P = CursorPos	the cursor position in it (byte index)
+" A = ArgLead   the leading portion of the argument currently being completed on
+" C = CmdLine   the entire command line
+" P = CursorPos the cursor position in it (byte index)
 function fzfcmd#todo_comments_completion(A, L, P) abort
   return s:todo_keywords
 endfunction
