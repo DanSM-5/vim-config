@@ -42,7 +42,7 @@ return {
       vim.api.nvim_set_hl(0, 'QuickFixLine', { link = 'CursorLine', force = true })
       vim.api.nvim_set_hl(0, 'Comment', { fg = '#7f848e', ctermfg = 102 , force = true })
 
-      require('shared.highlights').set_diagnostics()
+      require('shared.highlights').setup()
 
       -- Set variables for ToggleBg
       -- g.theme_hidden_cursorLine = ''

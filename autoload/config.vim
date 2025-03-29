@@ -514,11 +514,6 @@ func! s:Set_user_keybindings () abort
   NXOnoremap <expr>n (v:searchforward ? 'n' : 'N').'zv'
   NXOnoremap <expr>N (v:searchforward ? 'N' : 'n').'zv'
 
-  " Indent text object
-  " :h indent-object
-  xmap ii <Plug>(indent-object_linewise-none)
-  omap ii <Plug>(indent-object_blockwise-none)
-
   " Delete marks in line under cursor
   nnoremap <leader>`d <cmd>call utils#delete_marks_curr_line()<cr>
 

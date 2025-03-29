@@ -1,6 +1,7 @@
 -- Tree sitter configs
 
 local function set_keymaps()
+  local nxo = { 'n', 'x', 'o' }
   local repeat_motion = require('utils.repeat_motion')
   local repeat_pair = repeat_motion.repeat_pair
   local create_repeatable_pair = repeat_motion.create_repeatable_pair
@@ -340,7 +341,7 @@ local function set_keymaps()
   -- Fold jump next/prev
   repeat_pair({
     keys = 'z',
-    mode = { 'n', 'x', 'o' },
+    mode = nxo,
     desc_forward = '[Fold] Move to next fold',
     desc_backward = '[Fold] Move to previous fold',
     on_forward = function ()
@@ -355,7 +356,7 @@ local function set_keymaps()
   -- Spelling next/prev
   repeat_pair({
     keys = 's',
-    mode = { 'n', 'x', 'o' },
+    mode = nxo,
     desc_forward = '[Spell] Move to next spelling mistake',
     desc_backward = '[Spell] Move to previous spelling mistake',
     on_forward = function ()
@@ -394,7 +395,7 @@ local function set_keymaps()
 
   repeat_pair({
     keys = 'c',
-    mode = { 'n', 'x', 'o' },
+    mode = nxo,
     desc_forward = '[GitSings] Move to next hunk',
     desc_backward = '[GitSings] Move to previous hunk',
     on_forward = function ()
@@ -620,6 +621,35 @@ local function set_keymaps()
     { desc = '[Bracket]: Go to next matching bracket', silent = true, noremap = true })
   vim.keymap.set('n', '[{', prev_matching_bracket,
     { desc = '[Bracket]: Go to previous matching bracket', silent = true, noremap = true })
+
+
+  ---Move to the next indent scope using direction
+  ---@param direction boolean
+  local move_scope = function (direction)
+    local ok, mini_indent = pcall(require, 'mini.indentscope')
+
+    if not ok then
+      vim.notify('GitSings not found', vim.log.levels.WARN)
+      return
+    end
+
+    local dir = direction and 'bottom' or 'top'
+
+    mini_indent.operator(dir)
+  end
+  -- TODO: Consider if overriding this defaults is correct
+  repeat_pair({
+    keys = 'i',
+    mode = nxo,
+    on_forward = function ()
+      move_scope(true)
+    end,
+    on_backward = function ()
+      move_scope(false)
+    end,
+    desc_forward = '[MiniIndent] Go to indent scope top',
+    desc_backward = '[MiniIndent] Go to indent scope bottom',
+  })
 end
 
 return {

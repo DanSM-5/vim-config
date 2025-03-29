@@ -301,3 +301,14 @@ nnoremap <silent> [} :<C-u>silent call search('[{}]', 'b')<cr>
 nnoremap <silent> ]{ :<C-u>silent call searchpair('{', '', '}')<cr>
 nnoremap <silent> [{ :<C-u>silent call searchpair('{', '', '}', 'b')<cr>
 
+" Indent text object. Consider to use blockwise variants for python
+" :h indent-object
+" Inner indent
+xmap ii <Plug>(indent-object_linewise-none)
+omap ii <Plug>(indent-object_linewise-none)
+" omap ii <Plug>(indent-object_blockwise-none)
+" Outher indent considering both start and end
+xmap ia <Plug>(indent-object_linewise-both)
+omap ia <Plug>(indent-object_linewise-both)
+" omap ia <Plug>(indent-object_blockwise-both)
+

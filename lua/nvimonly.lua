@@ -22,7 +22,6 @@ require('config.nvim_gitsigns').setup()
 require('config.oil_nvim').setup()
 require('config.nvim_autopairs').setup()
 require('config.treesitter_context').setup()
-require('config.nvim_indent-blankline').setup()
 require('config.nvim_prelive').setup()
 require('config.nvim_markview').setup()
 require('config.nvim_fugitive-difftool').setup()
@@ -34,6 +33,9 @@ require('config.nvim_grugfar').setup()
 require('config.nvim_bqf').setup()
 require('config.nvim_quicker').setup()
 require('config.nvim_hierarchy').setup()
+
+require('config.nvim_indent-blankline').setup()
+require('config.nvim_mindent').setup()
 
 -- NOTE: At some point I thought, why not put everything in an array
 -- and load like below. Then I figured it messed up the lsp as it
@@ -89,5 +91,5 @@ require('nvim-ts-autotag').setup({
 vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
 
 require('shared.nvim_load')
-require('shared.highlights').set_diagnostics()
+require('shared.highlights').setup()
 

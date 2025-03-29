@@ -264,8 +264,6 @@ call plug#begin()
   Plug 'psliwka/vim-smoothie'
   Plug 'rbong/vim-flog'
   Plug 'mbbill/undotree'
-  " Indent text objects
-  Plug 'urxvtcd/vim-indent-object'
 
   " Convert css colors
   " Plug 'amadeus/vim-convert-color-to',
@@ -306,6 +304,7 @@ call plug#begin()
     Plug 'OXY2DEV/markview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
     Plug 'lukas-reineke/indent-blankline.nvim'
+    Plug 'echasnovski/mini.indentscope'
     " Snippets
     if executable('make')
       Plug 'L3MON4D3/LuaSnip', { 'do': 'make install_jsregexp' }
@@ -428,6 +427,9 @@ call plug#begin()
 
     " Search and replace
     Plug 'dyng/ctrlsf.vim'
+
+    " Indent text objects
+    Plug 'urxvtcd/vim-indent-object'
 
     " command-line completion
     " Plug 'girishji/vimsuggest', { 'branch': 'main' }

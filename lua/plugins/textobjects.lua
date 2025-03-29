@@ -36,8 +36,4 @@ return {
       require('config.nvim_mai').setup()
     end,
   },
-  {
-    'urxvtcd/vim-indent-object',
-    event = 'VeryLazy',
-  },
 }
