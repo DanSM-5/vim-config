@@ -202,7 +202,7 @@ return {
       vim.cmd.vsplit()
       handlers.definition()
     end, '[Lsp]: Go to definition in vsplit')
-    set_map('n', 'K', function () vim.lsp.buf.hover({ border = 'rounded' }) end, '[Lsp]: Hover action')
+    set_map('n', 'K', function () vim.lsp.buf.hover({ border = 'rounded', max_height = 50 }) end, '[Lsp]: Hover action')
     set_map('n', '<space>i', handlers.implementation, '[Lsp]: Go to implementation')
     set_map('n', '<C-k>', function ()
        vim.lsp.buf.signature_help({ border = 'rounded' })
