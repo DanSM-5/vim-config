@@ -527,6 +527,20 @@ func! s:Set_user_keybindings () abort
 
   " Search in visual selected area
   xnoremap g/ <esc>/\%V
+
+  " Keymaps for builtin completion menu using tab
+  let pumMaps = {
+    \   '<Tab>': '<C-n>',
+    \   '<S-Tab>': '<C-p>',
+    \   '<Down>':  '<C-n>',
+    \   '<Up>': '<C-p>',
+    \   '<CR>': '<C-y>',
+    \ }
+
+  for insertKmap in keys(pumMaps)
+    let pumKmap = pumMaps[insertKmap]
+    exec 'inoremap <expr> '.insertKmap.' pumvisible() ? "'.pumKmap.'" : "'.insertKmap.'"'
+  endfor
 endf
 
 func! s:Set_os_specific_before () abort
