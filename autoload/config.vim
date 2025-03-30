@@ -833,11 +833,15 @@ func! s:SetFZF () abort
   imap <c-o><c-f> <plug>(fzf-complete-path)
   imap <c-o><c-l> <plug>(fzf-complete-line)
 
-  " Git fzf
+  " Git search
   command! -nargs=* -bang -bar GitSearchLog call gitsearch#log(<q-args>, <bang>0)
   command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
   command! -nargs=* -bang -bar GitSearchString call gitsearch#string(<q-args>, <bang>0)
   command! -nargs=? -bang -bar -complete=file GitSearchFile call gitsearch#file(<q-args>, <bang>0)
+  " Git fzf
+  command! -nargs=0 -bang -bar GCheckout call fzfgit#checkout(<bang>0)
+  command! -nargs=0 -bang -bar GApplyStash call fzfgit#stashes(<bang>0)
+  command! -nargs=0 -bang -bar GCTag call fzfgit#tags(<bang>0)
 
   " Custom fzf commands
   command! -nargs=* -bang -complete=customlist,fzftxt#completion FTxt call fzftxt#select(<q-args>, <bang>0)
