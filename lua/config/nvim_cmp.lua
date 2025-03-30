@@ -120,6 +120,13 @@ local cmp_module = {
 
     local cmp_select = { behavior = cmp.SelectBehavior.Replace }
     local cmp_mappings = cmp.mapping.preset.insert({
+      -- ['<C-y>'] = cmp.mapping(function(fallback)
+      --   if cmp.visible() then
+      --     cmp.confirm({ select = false })
+      --   else
+      --     fallback()
+      --   end
+      -- end, { 'i' }),
       ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(cmp_select), { 'i' }),
       ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(cmp_select), { 'i' }),
       ['<C-Space>'] = cmp.mapping.complete(),
