@@ -6,8 +6,12 @@ return {
         highlight = { 'RainbowGrey' },
         char = '▎',
       },
+      whitespace = {
+        remove_blankline_trail = true,
+      },
       scope = {
-        enabled = false
+        enabled = false,
+        highlight = { 'RainbowRed' },
       },
     })
   end,
