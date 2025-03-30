@@ -9,6 +9,9 @@ if s:is_windows && ($MSYSTEM =~? 'MINGW' || $MSYSTEM =~? 'MSYS') && ($OSTYPE == 
   let s:is_gitbash = 1
 endif
 
+
+" Common functionality
+
 function! s:get_options(opts) abort
   let opts = type(a:opts) == v:t_list ? a:opts : []
 
@@ -44,6 +47,8 @@ function! s:sink_on_dir(directory, FuncRef, list) abort
 endfunction
 
 
+" ### Git Branches
+
 function! fzfgit#select_branch(opts) abort
   let opts = get(a:opts, 'options', [])
   let name = get(a:opts, 'name', 'git_select_branch')
@@ -51,7 +56,6 @@ function! fzfgit#select_branch(opts) abort
   let fullscreen = get(a:opts, 'fullscreen', 0)
   let Get_repo_ref = exists('*FugitiveWorkTree') ? function('FugitiveWorkTree') : function('utils#git_path')
   let directory = get(a:opts, 'directory', Get_repo_ref())
-  " let prompt = get(a:opts, 'prompt', 'Branches> ')
 
   let cmd = 'git -C '.directory.' branch -a --color=always | sort'
   let preview = ''
@@ -138,6 +142,9 @@ function! fzfgit#checkout(fullscreen) abort
     \ })
 endfunction
 
+
+" ### Git Stashes
+
 function! fzfgit#select_stash(opts) abort
   let opts = get(a:opts, 'options', [])
   let name = get(a:opts, 'name', 'git_select_stash')
@@ -189,6 +196,9 @@ function! fzfgit#stashes(fullscreen) abort
     \ })
 endfunction
 
+
+" ### Git Tags
+
 function! fzfgit#select_tag(opts) abort
   let opts = get(a:opts, 'options', [])
   let name = get(a:opts, 'name', 'git_select_tag')
@@ -211,7 +221,7 @@ function! fzfgit#select_tag(opts) abort
   try
     call fzf#run(fzf#wrap(name, spec, fullscreen))
   catch /.*/
-    echoerr 'Could not select'
+    echoerr '[Tags] Could not select'
     call Callback([])
   endtry
 endfunction
