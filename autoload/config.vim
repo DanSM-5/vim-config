@@ -1248,7 +1248,7 @@ function! config#CurrentOS ()
   " Remove annoying error log for MSYS bash and zsh on start (uname not
   " available)
   " echo ''
-  if has("gui_mac") || has('mac') || has('macunix') || $OSTYPE == 'darwin'
+  if has("gui_mac") || has('mac') || has('macunix') || $OSTYPE == 'darwin' || has('osx') || has('osxdarwin')
     let g:is_mac = 1
     let known_os = s:mac
   " TODO: Fix windows falling in this detection
