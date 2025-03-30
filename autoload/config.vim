@@ -528,10 +528,11 @@ func! s:Set_user_keybindings () abort
   let pumMaps = {
     \   '<Tab>': '<C-n>',
     \   '<S-Tab>': '<C-p>',
-    \   '<Down>':  '<C-n>',
-    \   '<Up>': '<C-p>',
     \   '<CR>': '<C-y>',
     \ }
+    " Disabled to keep arrows behavior
+    " \   '<Down>':  '<C-n>',
+    " \   '<Up>': '<C-p>',
 
   for insertKmap in keys(pumMaps)
     let pumKmap = pumMaps[insertKmap]
