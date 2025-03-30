@@ -124,18 +124,29 @@ local function find_root(lookFor)
 end
 
 -- Try to gess root dir
+---Tries to guess the root directory of a file
+---and returns nil if nothing is found
+---@param marker string|nil Name used to identify the rook of a project. If nil `.git` is used.
+---@param initial string|nil Initial path to use as the base of the search. If nil, use current buffer path.
+---@return string|nil path string when found or nil
+local find_root_dir = function (marker, initial)
+  local project_base_identifier = marker or '.git'
+  local path = initial and vim.fn.fnamemodify(initial, ':p:h') or vim.fn.expand('%:p:h')
+  return vim.fs.dirname(vim.fs.find(project_base_identifier, {
+    path = path,
+    upward = true,
+  })[1])
+end
+
+-- Try to gess root dir
 ---Tries to guess the root directory of a project
 ---or defaults to current buffer directory
 ---@param marker string|nil Name used to identify the rook of a project. If nil `.git` is used.
 ---@param initial string|nil Initial path to use as the base of the search. If nil, use current buffer path.
----@return string It should always return a string
+---@return string path It should always return a string
 local get_root_dir = function (marker, initial)
-  local project_base_identifier = marker or '.git'
-  local path = initial or vim.fn.expand('%:p:h')
-  return vim.fs.dirname(vim.fs.find(project_base_identifier, {
-    path = path,
-    upward = true,
-  })[1]) or path
+  local found = find_root_dir(marker, initial)
+  return found and found or (initial or vim.fn.expand('%:p:h'))
 end
 
 --- Creates a weak reference to an object.
@@ -494,9 +505,19 @@ local get_dynamic_object = function ()
   return meta
 end
 
+---Check if a given directory is a git directory
+---@param dir string The initial directory
+---@return boolean git_repo
+local is_git_dir = function (dir)
+  local found = find_root_dir('.git', dir)
+  return found ~= nil
+end
+
 return {
   find_root = find_root,
   get_root_dir = get_root_dir,
+  find_root_dir = find_root_dir,
+  is_git_dir = is_git_dir,
   concat = array_concat,
   split = split,
   shallow_clone = shallow_clone,

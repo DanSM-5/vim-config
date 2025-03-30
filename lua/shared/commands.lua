@@ -118,3 +118,23 @@ end, {
   bar = true,
   complete = function () return { 'on', 'off' }  end,
 })
+
+vim.api.nvim_create_user_command('Fshow', function (opts)
+  local dir = opts.fargs[1]
+  if dir == nil then
+    dir = vim.fn.expand('%:p:h')
+  end
+
+  if not require('utils.stdlib').is_git_dir(dir) then
+    vim.notify('Not a git repository', vim.log.levels.ERROR)
+    return
+  end
+
+  require('utils.fshow').fshow(dir)
+end, {
+  complete = 'dir',
+  nargs = '?',
+  bar = true,
+  bang = true,
+  desc = '[FShow] Show the commits in fzf',
+})
