@@ -2,7 +2,7 @@ local BIG_FILE_SIZE = 1.5 * 1024 * 1024 -- 1.5MB
 local FILETYPE = 'bigfile'
 
 return {
-  setup = function()
+  load = function()
     -- Disable certain features when opening large files
     local big_file = vim.api.nvim_create_augroup('BigFile', { clear = true })
     vim.filetype.add({

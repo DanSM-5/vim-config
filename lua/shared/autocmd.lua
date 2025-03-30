@@ -39,7 +39,9 @@ vim.api.nvim_create_autocmd('VimEnter', {
   desc = 'Create repeatable bindings',
   pattern = { '*' },
   callback = function ()
-    require('config.treesitter').set_keymaps()
+    --- Not loaded until VimEnter to ensure the
+    --- appropriate repeat direction module is loaded
+    require('shared.maps').set_repeatable_maps()
   end
 })
 
