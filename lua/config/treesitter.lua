@@ -27,6 +27,11 @@ local function fold_virt_text(result, s, lnum, coloff)
 end
 
 function _G.custom_foldtext()
+  -- Return default with marker as it is likely
+  -- formatted for thay method
+  if vim.o.foldmethod == 'marker' then
+    return vim.fn.foldtext()
+  end
   local start = vim.fn.getline(vim.v.foldstart):gsub('\t', string.rep(' ', vim.o.tabstop))
   local end_str = vim.fn.getline(vim.v.foldend)
   local end_ = vim.trim(end_str)
