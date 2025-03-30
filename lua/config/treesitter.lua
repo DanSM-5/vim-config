@@ -5,9 +5,18 @@ return {
     require('nvim-treesitter').define_modules({
       fold_treesiter = {
         attach = function(buf, lang)
-          -- Options set only for buffers with treesitter parser
+          -- local windows = vim.fn.win_findbuf(buf)
+          -- for _, winid in ipairs(windows) do
+          --   -- Options set only for buffers with treesitter parser
+          --   vim.wo[winid].foldmethod = 'expr'
+          --   vim.wo[winid].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+          -- end
+
           vim.opt_local.foldmethod = 'expr'
-          vim.opt_local.foldexpr = 'nvim_treesitter#foldexpr()'
+          vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+          -- Does not work on startup
+          -- vim.opt_local.foldexpr = 'nvim_treesitter#foldexpr()'
+
           -- Options set in global config
           -- exec 'set fillchars=fold:\ '
           -- set foldmethod=indent
@@ -18,8 +27,15 @@ return {
           -- Unset changes
           -- vim.opt_local.foldmethod = 'indent'
           -- vim.opt_local.foldexpr = ''
-          vim.opt_local.foldmethod = vim.go.foldmethod
-          vim.opt_local.foldexpr = vim.go.foldexpr
+
+          -- local windows = vim.fn.win_findbuf(buf)
+          -- for _, winid in ipairs(windows) do
+          --   vim.wo[winid].foldmethod = vim.go.foldmethod
+          --   vim.wo[winid].foldexpr = vim.go.foldexpr
+          -- end
+
+            vim.opt_local.foldmethod = vim.go.foldmethod
+            vim.opt_local.foldexpr = vim.go.foldexpr
         end,
         is_supported = function(lang)
           return true
