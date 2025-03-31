@@ -30,7 +30,7 @@ return {
       '<leader>fa',
       '<leader>ss',
       '<leader>sS',
-      '[a', ']a',
+      '[S', ']S',
     },
     cmd = {
       'AerialToggle',

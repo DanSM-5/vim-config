@@ -32,7 +32,7 @@ local set_keymaps = function(bufnr)
   )
 
   repeat_pair({
-    keys = 'a',
+    keys = 'S',
     desc_forward = '[Aerial] Move to next symbol',
     desc_backward = '[Aerial] Move to previous symbol',
     on_forward = aerial_next,
