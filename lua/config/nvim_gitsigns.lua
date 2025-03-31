@@ -12,6 +12,10 @@ return {
 
     -- Set mappings
     gitsigns.setup({
+      -- Set to above diagnostic signs (10) so that in multi
+      -- sign column setups (2 or more), the hunk sing does not
+      -- misalign with the rest of the hunk by being pushed right.
+      sign_priority = 11, -- defaults to 6
       on_attach = function(bufnr)
         -- Navigation
         -- vim.keymap.set('n', '<space>nh', gitsigns.next_hunk, { desc = 'Gitsigns: Go to next hunk', buffer = bufnr })
