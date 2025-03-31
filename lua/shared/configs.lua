@@ -3,3 +3,4 @@
 --   vim.o.winborder = 'rounded'
 -- end
 
+vim.o.emoji = true
