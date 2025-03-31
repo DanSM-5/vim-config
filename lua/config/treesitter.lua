@@ -1,5 +1,10 @@
 -- Tree sitter configs
 
+local ignore_methods = {
+  'marker',
+  'manual',
+}
+
 local function fold_virt_text(result, s, lnum, coloff)
   if not coloff then
     coloff = 0
@@ -29,7 +34,7 @@ end
 function _G.custom_foldtext()
   -- Return default with marker as it is likely
   -- formatted for thay method
-  if vim.o.foldmethod == 'marker' then
+  if vim.tbl_contains(ignore_methods, vim.o.foldmethod) then
     return vim.fn.foldtext()
   end
   local start = vim.fn.getline(vim.v.foldstart):gsub('\t', string.rep(' ', vim.o.tabstop))
@@ -38,9 +43,9 @@ function _G.custom_foldtext()
   local result = {}
   fold_virt_text(result, start, vim.v.foldstart - 1)
   table.insert(result, { ' ... ', 'Delimiter' })
-  fold_virt_text(result, end_, vim.v.foldend - 1, #(end_str:match("^(%s+)") or ""))
+  fold_virt_text(result, end_, vim.v.foldend - 1, #(end_str:match('^(%s+)') or ''))
   local lines = vim.v.foldend - vim.v.foldstart + 1
-  table.insert(result, { ' # 󰁂 lines: '..lines , 'Comment' })
+  table.insert(result, { ' # 󰁂 lines: ' .. lines, 'Comment' })
   return result
 end
 
@@ -78,8 +83,8 @@ return {
           --   vim.wo[winid].foldexpr = vim.go.foldexpr
           -- end
 
-            vim.opt_local.foldmethod = vim.go.foldmethod
-            vim.opt_local.foldexpr = vim.go.foldexpr
+          vim.opt_local.foldmethod = vim.go.foldmethod
+          vim.opt_local.foldexpr = vim.go.foldexpr
         end,
         is_supported = function(lang)
           return true
@@ -95,7 +100,7 @@ return {
         is_supported = function()
           return true
         end,
-      }
+      },
     })
 
     local config = require('nvim-treesitter.configs')
@@ -164,8 +169,8 @@ return {
           -- mapping query_strings to modes.
           selection_modes = {
             ['@parameter.outer'] = 'v', -- charwise
-            ['@function.outer'] = 'v',  -- 'V' -- linewise
-            ['@class.outer'] = 'v'      -- '<c-v>', -- blockwise
+            ['@function.outer'] = 'v', -- 'V' -- linewise
+            ['@class.outer'] = 'v', -- '<c-v>', -- blockwise
           },
           -- If you set this to `true` (default is `false`) then any textobject is
           -- extended to include preceding or succeeding whitespace. Succeeding
@@ -186,7 +191,7 @@ return {
             [']]'] = { query = '@class.outer', desc = '[TS] Next class start' },
             [']k'] = { query = '@block.*', desc = '[TS] Next block start' },
             [']C'] = { query = '@comment.outer', desc = '[TS] Next comment start' },
-            [']f'] = { query = "@local.scope", query_group = "locals", desc = "[TS] Next scope" },
+            [']f'] = { query = '@local.scope', query_group = 'locals', desc = '[TS] Next scope' },
             --
             -- You can use regex matching (i.e. lua pattern) and/or pass a list in a 'query' key to group multiple queries.
             -- [']o'] = '@loop.*',
@@ -207,7 +212,7 @@ return {
             ['[['] = { query = '@class.outer', desc = '[TS] Previous class start' },
             ['[k'] = { query = '@block.*', desc = '[TS] Previous block start' },
             ['[C'] = { query = '@comment.outer', desc = '[TS] Previous comment start' },
-            ['[f'] = { query = "@local.scope", query_group = "locals", desc = "[TS] Next scope" },
+            ['[f'] = { query = '@local.scope', query_group = 'locals', desc = '[TS] Next scope' },
           },
           goto_previous_end = {
             ['[M'] = { query = '@function.outer', desc = '[TS] Previous function end' },
@@ -252,5 +257,5 @@ return {
     --   },
     --   filetype = 'ps1',
     -- }
-  end
+  end,
 }
