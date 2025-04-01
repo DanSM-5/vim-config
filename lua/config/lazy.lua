@@ -66,6 +66,11 @@ require("lazy").setup({
       -- An external dependency is the default for <leader>l... WTF!!!
       ['<localleader>l'] = {
         function (plugin)
+          if not (vim.uv or vim.loop).fs_stat(plugin.dir) then
+            vim.notify('Invalid dir: '..plugin.dir, vim.log.levels.WARN)
+            return
+          end
+
           -- NOTE: Termux refuses to execute scripts even if
           -- they are on the path. Using simple logger.
           if vim.g.is_termux == 1 then
