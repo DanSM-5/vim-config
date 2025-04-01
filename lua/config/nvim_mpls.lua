@@ -20,7 +20,7 @@ local set_autocmds = function()
 
         for _, client in ipairs(clients) do
           if client.name == name then
-            client.request(
+            client:request(
               'mpls/editorDidChangeFocus',
               { uri = vim.uri_from_bufnr(bufnr) },
               function(err, result) end,
@@ -90,11 +90,11 @@ local set_commands = function()
       command = 'open-preview',
       arguments = {},
     }
-    mpls_client.request('workspace/executeCommand', params, function(err, result)
+    mpls_client:request('workspace/executeCommand', params, function(err, result)
       if err then
         print('Error executing command: ' .. err.message)
       end
-    end)
+    end, bufnr)
   end, { bang = true, nargs = '?', complete = 'path', desc = '[MPLS] Request open preview for md file' })
 end
 
