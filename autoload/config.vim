@@ -708,10 +708,6 @@ func! s:Mac_conf_after () abort
   endif
 endf
 
-func! s:CallCleanCommand (comm) abort
-  return substitute(system(a:comm), '\', 'g', '\\')
-endf
-
 func! s:CleanCR () abort
   " normal :%s/\r$//g<cr>
   try
@@ -977,7 +973,6 @@ func! s:DefineCommands () abort
   command! -nargs=1 NXOnoremap nnoremap <args><Bar>xnoremap <args><Bar>onoremap <args>
 
   " Call command and remove carriage return
-  command! -nargs=1 -complete=shellcmd CallCleanCommand call s:CallCleanCommand(<f-args>)
   command! -nargs=0 CleanCR call s:CleanCR()
   command! -nargs=0 CleanTrailingSpaces call s:CleanTrailingSpaces()
 
