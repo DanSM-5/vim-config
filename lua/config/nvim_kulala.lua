@@ -52,9 +52,30 @@ local set_commands = function ()
       }
     )
     vim.api.nvim_create_user_command(
+      'KulalaFromCurl',
+      kulala.from_curl, {
+        desc = '[Kulala] Converts a curl cmd to http',
+        bar = true,
+      }
+    )
+    vim.api.nvim_create_user_command(
       'KulalaClose',
       kulala.close, {
-        desc = '[Kulala] Closes the kulala window and the current buffer (.http or .rest file)',
+        desc = '[Kulala] Closes the kulala window and the current buffer',
+        bar = true,
+      }
+    )
+    vim.api.nvim_create_user_command(
+      'KulalaOpen',
+      kulala.open, {
+        desc = '[Kulala] Open the kulala window in the current buffer',
+        bar = true,
+      }
+    )
+    vim.api.nvim_create_user_command(
+      'KulalaVersion',
+      kulala.version, {
+        desc = '[Kulala] Prints the version of kulala',
         bar = true,
       }
     )
@@ -168,20 +189,11 @@ local set_keymaps = function (opts)
   })
 end
 
--- local set_autocmds = function ()
---   vim.api.nvim_create_autocmd('FileType', {
---     pattern = { 'http', 'rest' },
---     callback = function (opts)
---       set_keymaps({ buf = opts.buf })
---     end,
---   })
--- end
-
 local setup = function ()
   require('kulala').setup({
     -- enable reading vscode rest client environment variables
     vscode_rest_client_environmentvars = true,
-    environment_scope = 'g',
+    -- environment_scope = 'g',
   })
   set_commands()
 
@@ -198,6 +210,5 @@ end
 return {
   set_commands = set_commands,
   set_keymaps = set_keymaps,
-  -- set_autocmds = set_autocmds,
   setup = setup,
 }

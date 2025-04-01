@@ -3,13 +3,17 @@ local group_autocmd_name = 'LoadKulala'
 local loaded = false
 local registered = false
 local load_group = vim.api.nvim_create_augroup(group_autocmd_name, { clear = true })
+local filetypes = {
+  'http',
+  'rest',
+}
 
 ---Get Spec table
 ---@return LazyPluginSpec
 local get_spec = function ()
   return {
     'mistweaverco/kulala.nvim',
-    ft = { 'http' },
+    ft = filetypes,
     cmd = {
       'KulalaRun',
       'KulalaRunAll',
@@ -18,7 +22,10 @@ local get_spec = function ()
       'KulalaShowStats',
       'KulalaScratchpad',
       'KulalaCopy',
+      'KulalaFromCurl',
       'KulalaClose',
+      'KulalaOpen',
+      'KulalaVersion',
       'KulalaToggleView',
       'KulalaSearch',
       'KulalaPrev',
@@ -31,7 +38,7 @@ local get_spec = function ()
     },
     config = function ()
       require('config.nvim_kulala').setup()
-    end
+    end,
   }
 end
 
@@ -54,6 +61,10 @@ local set_module_state = function (opts)
   end
 end
 
+---Loads kulala.nvim on demand. This plays with the internals
+---of lazy.nvim which may have issues on future versions.
+---
+---Ref: [Flow from Lazy](https://github.com/folke/lazy.nvim/blob/6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a/lua/lazy/core/loader.lua#L37)
 local load_plugins = function ()
   if loaded then
     return
@@ -80,6 +91,7 @@ local load_plugins = function ()
   end
 
   -- Parse spec into plugin
+  -- Ref: https://github.com/folke/lazy.nvim/blob/6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a/lua/lazy/core/plugin.lua#L318
   config.spec:parse(kulala_spec)
 
   -- copy state. Hope if doesn't break 🫠
@@ -95,17 +107,18 @@ local load_plugins = function ()
     end
   end
 
-  local plugin = config.plugins['kulala.nvim']
+  -- If god is on our side, the plugin should be now available here
+  local kulala_nvim = config.plugins['kulala.nvim']
 
-  if plugin == nil then
-    vim.notify('[Kulala] plugin not installed *', vim.log.levels.DEBUG)
+  if kulala_nvim == nil then
+    vim.notify('[Kulala] plugin not installed', vim.log.levels.DEBUG)
     return
   end
 
-  -- if plugin.init then
-  --   plugin.init(plugin)
-  --   vim.notify('Init pluging ?', vim.log.levels.INFO)
-  -- end
+  -- Implement handlers for lazy load
+  -- keys, event, cmd, ft
+  -- Ref: https://github.com/folke/lazy.nvim/blob/6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a/lua/lazy/core/handler/init.lua#L31
+  require('lazy.core.handler').enable(kulala_nvim)
 
   -- Now we can install and load the plugin :)
   -- This should not be that hard 😅
@@ -115,9 +128,7 @@ local load_plugins = function ()
     wait = true,
     show = false,
     clear = false,
-    plugins = {
-      plugin,
-    },
+    plugins = { kulala_nvim },
   })
 
   local buf = vim.api.nvim_get_current_buf()
@@ -125,21 +136,21 @@ local load_plugins = function ()
     buf = buf,
   })
 
-  if filetype ~= 'http' then
+  if not vim.tbl_contains(filetypes, filetype) then
     return
   end
 
   -- If something went wrong, we should not be able to get the
-  -- plugin again from the config.
-  plugin = config.plugins['kulala.nvim']
+  -- plugin again from the config. 🙃
+  kulala_nvim = config.plugins['kulala.nvim']
 
-  if plugin == nil then
+  if kulala_nvim == nil then
     vim.notify('[Kulala] plugin not installed', vim.log.levels.DEBUG)
     return
   end
 
-  lazy.load({ plugins = { plugin }, wait = true })
-  -- require('config.nvim_kulala').set_keymaps({ buf = buf })
+  -- Finally, you did it 🙈
+  lazy.load({ plugins = { kulala_nvim }, wait = true })
 end
 
 local register_servers = function ()
@@ -164,7 +175,7 @@ local register_servers = function ()
     buf = vim.api.nvim_get_current_buf()
   })
 
-  if filetype == 'http' then
+  if vim.tbl_contains(filetypes, filetype) then
     vim.notify('[Lsp] Starting kulala_ls', vim.log.levels.INFO)
     vim.cmd.LspStart('kulala_ls')
   end
@@ -177,7 +188,7 @@ end
 
 local set_autocmds = function ()
   vim.api.nvim_create_autocmd('FileType', {
-    pattern = 'http',
+    pattern = 'http,rest',
     once = true,
     group = load_group,
     callback = function ()
