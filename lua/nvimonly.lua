@@ -76,6 +76,7 @@ require('config.nvim_mindent').setup()
 -- require('Comment').setup({})
 require('neo-img').setup()
 require('split').setup({})
+require('nvim-surround').setup({})
 require('ts-node-action').setup({})
 -- Start nvim autotag
 require('nvim-ts-autotag').setup({

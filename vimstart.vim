@@ -85,6 +85,9 @@ let g:gitgutter_max_signs = -1
 " Use custom grep
 " let g:gitgutter_grep = 'rg'
 
+" Prevent vim-sandwich from loading keymaps
+let g:sandwich_no_default_key_mappings = 1
+
 " fzf-lsp keys
 let g:fzf_lsp_preview_window = ['right', 'ctrl-/', 'ctrl-^']
 
@@ -247,7 +250,7 @@ command! -nargs=? PlugHelp call fzf#run(fzf#wrap({
 call plug#begin()
   " List your plugins here
   " Plug 'tpope/vim-sensible'
-  Plug 'tpope/vim-surround'
+  " Plug 'tpope/vim-surround'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-rhubarb'
   Plug 'tpope/vim-repeat'
@@ -276,6 +279,9 @@ call plug#begin()
   Plug 'bagrat/vim-buffet'
 
   if has('nvim')
+    " Surrounding plugin
+    Plug 'kylechui/nvim-surround'
+
     " Shared libraries
     Plug 'nvim-lua/plenary.nvim'
     " LSP plugings for neovim
@@ -430,6 +436,8 @@ call plug#begin()
 
     " Indent text objects
     Plug 'urxvtcd/vim-indent-object'
+
+    Plug 'machakann/vim-sandwich'
 
     " command-line completion
     " Plug 'girishji/vimsuggest', { 'branch': 'main' }
