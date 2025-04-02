@@ -903,6 +903,9 @@ func! s:SetFZF () abort
   nnoremap <C-o>b <cmd>Buffers<cr>
   " Set usual ctrl-o behavior to double the sequence
   nnoremap <C-o><C-o> <C-o>
+
+  " Allow to paste from registers in fzf buffer in normal mode
+  autocmd! FileType fzf nnoremap <expr> <leader>" fzfcmd#paste('p')
 endf
 
 func! s:SetVimSystemCopyMaps () abort

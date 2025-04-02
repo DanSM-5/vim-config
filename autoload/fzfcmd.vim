@@ -608,3 +608,8 @@ function! fzfcmd#fzfrg_dir(query, fullscreen) abort
 
   call fzf#run(fzf#wrap('fzfdir', spec_dir, a:fullscreen))
 endfunction
+
+function fzfcmd#paste(mode) abort
+  let @" = getreg(nr2char(getchar())) 
+  return a:mode
+endfunction
