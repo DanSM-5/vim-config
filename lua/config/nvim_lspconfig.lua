@@ -58,6 +58,10 @@ return {
       --   -- Only show virtual line diagnostics for the current cursor line
       --   current_line = true,
       -- },
+      jump = {
+        float = true,
+      },
+      -- update_in_insert = true,
     })
 
     -- Start with inlay hints enabled
