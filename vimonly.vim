@@ -319,6 +319,7 @@ omap ia <Plug>(indent-object_linewise-both)
 silent! nmap <unique> ys <Plug>(sandwich-add)
 silent! xmap <unique> ys <Plug>(sandwich-add)
 silent! omap <unique> ys <Plug>(sandwich-add)
+silent! xmap <unique> S <Plug>(sandwich-add)
 
 " delete
 silent! nmap <unique> ds <Plug>(sandwich-delete)
