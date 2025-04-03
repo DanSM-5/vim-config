@@ -195,7 +195,6 @@ function! fzfcmd#fzfrg_windows_preview(spec, fullscreen) abort
 
   let bash_path = shellescape(utils#get_bash())
   " let preview_path = substitute('/c' . $HOMEPATH . '/vim-config/utils/preview.sh', '\\', '/', 'g')
-  echomsg s:fzfcmd_scripts
   let preview_path = utils#windows_to_msys_path(s:fzfcmd_scripts) . '/preview.sh'
   let command_preview = bash_path . ' ' . preview_path . ' {}'
 
@@ -350,12 +349,33 @@ function! fzfcmd#fzfrg_fuzzy(query, fullscreen)
   endtry
 endfunction
 
+function! fzfcmd#nofile_scratch()
+  let l:bufname = empty(bufname()) ? 'nofile' : bufname() " Get name
+  let l:bufname = substitute(l:bufname, '[\\\/ :!><|]', '_', 'g') " Clean name
+  let l:filename = tempname() " Get temp
+  let l:filename = fnamemodify(l:filename, ':p:h') " Only dir
+  let l:filename = l:filename . '/' . l:bufname " Fullpath
+  call writefile(getbufline('%', 1, '$'), l:filename) " Save buffer
+  return l:filename
+endfunction
+
 " Variation of fzfcmd#fzfrg_rg that searches on the current buffer only
 function! fzfcmd#fzfrg_current(query, fullscreen)
+  let curr_file = ''
+  let buff_path = ''
+
+  " Allow grepping on nofile buffers or non-existing buffers
+  if &buftype == 'nofile' || !filereadable(bufname())
+    let scratch = fzfcmd#nofile_scratch()
+    let curr_file = s:is_windows ? shellescape(fnamemodify(scratch, ':t')) : fzf#shellescape(fnamemodify(scratch, ':t'))
+    let buff_path = fnamemodify(scratch, ':p:h')
+  else
+    let curr_file = s:is_windows ? shellescape(expand('%:t')) : fzf#shellescape(expand('%:t'))
+    let buff_path = expand('%:p:h')
+  endif
+
   let fzf_rg_args = s:rg_args . ' --with-filename '
   let curr_path = getcwd()
-  let buff_path = expand('%:p:h')
-  let curr_file = s:is_windows ? shellescape(expand('%:t')) : fzf#shellescape(expand('%:t'))
   let command_fmt = 'rg' . fzf_rg_args . '-- %s ' . curr_file  . ' || true'
 
   let opts = {
