@@ -193,7 +193,9 @@ local setup = function ()
   require('kulala').setup({
     -- enable reading vscode rest client environment variables
     vscode_rest_client_environmentvars = true,
-    -- environment_scope = 'g',
+    -- debug = true, -- get full stacktrace
+    -- environment_scope = 'g', -- scope to buffer 'b' or global 'g'
+    tag = 'v5.1.0',
   })
   set_commands()
 
