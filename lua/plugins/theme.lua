@@ -31,7 +31,7 @@ return {
     priority = 1000,
     config = function ()
       -- For simple use cases, below line is all that's needed
-      vim.cmd('colorscheme onedark')
+      vim.cmd.colorscheme('onedark')
       vim.cmd('hi CursorLine guibg=#313640')
       require('config.treesitter_context').setup()
 
