@@ -219,6 +219,12 @@ return {
     set_map('n', 'gr', handlers.references, '[Lsp]: Go to references')
     set_map('n', '<space>f', function()
       vim.lsp.buf.format({ async = false })
+
+      -- If we ever need it but hope we don't 😓
+      if vim.env.VIM_DONT_RETAB ~= nil then
+        return
+      end
+
       vim.cmd.retab()
       vim.cmd.write()
     end, '[Lsp]: Format buffer')
