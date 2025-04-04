@@ -16,7 +16,7 @@ let g:is_termux = 0
 let g:is_container = 0
 
 " General options
-let g:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border' ]
+let g:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border=rounded' ]
 let g:fzf_bind_options = g:fzf_base_options + [
       \      '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
       \      '--bind', 'ctrl-/:change-preview-window(down|hidden|)',

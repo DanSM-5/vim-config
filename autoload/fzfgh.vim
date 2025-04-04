@@ -14,7 +14,8 @@ endif
 " @return List of PRs
 function! fzfgh#get_prs(opts) abort
   let cmd = get(a:opts, 'cmd', 'gh pr list')
-  return systemlist(cmd)
+  let prs = systemlist(cmd)
+  return filter(prs, '!empty(v:val)')
 endfunction
 
 
@@ -140,7 +141,7 @@ function! fzfgh#select_prs(fullscreen) abort
   let fullscreen = a:fullscreen
   let options = exists('g:fzf_bind_options') ? g:fzf_bind_options : [
     \     '--cycle',
-    \     '--ansi', '--input-border',
+    \     '--ansi',
     \     '--bind', 'alt-c:clear-query',
     \     '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
     \     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
@@ -172,35 +173,41 @@ function! fzfgh#select_prs(fullscreen) abort
   " \   '--with-nth', '1,2,3',
   let prs_options = [
     \   '--expect=ctrl-f,ctrl-o,ctrl-s',
-    \   '--header-lines', '4',
+    \   '--header-lines', '2',
     \   '--prompt', 'GitHub PRs> ',
     \   '--preview', preview,
     \   '--preview-window', '50%',
+    \   '--input-border=rounded',
+    \   '--preview-border=rounded',
+    \   '--header-border=rounded',
+    \   '--header-lines-border=bottom',
     \   '--header', 'ctrl-f: Filter PRs | ctrl-o: Open in browser | ctrl-s: Checkout to PR'
     \ ] + options + ['--no-multi'] + shell_opts
 
 
   let filters = [
-	  \	  'Assigned to me',
-	  \	  'Created by me',
-	  \	  'Needs my review',
-	  \	  'Draft PRs only',
-	  \	  'Ready PRs only',
-	  \	  'Merged PRs',
-	  \	  'Closed PRs'
+    \   'Assigned to me',
+    \   'Created by me',
+    \   'Needs my review',
+    \   'Draft PRs only',
+    \   'Ready PRs only',
+    \   'Merged PRs',
+    \   'Closed PRs',
+    \   'None'
     \ ]
   let filter_cmds = [
-	  \	  '--assigned @me',
-	  \	  '--author @me',
-	  \	  "--search 'review-requested:@me'",
-	  \	  '--draft',
-	  \	  "--search 'draft:false'",
-	  \	  '--state merged',
-	  \	  '--state closed'
+    \   '--assigned @me',
+    \   '--author @me',
+    \   "--search 'review-requested:@me'",
+    \   '--draft',
+    \   "--search 'draft:false'",
+    \   '--state merged',
+    \   '--state closed',
+    \   ''
     \ ]
   let filter_spec = {
     \   'source': filters,
-    \   'options': options + ['--no-multi'],
+    \   'options': options + ['--no-multi', '--header', 'esc: Without filter', '--input-border=rounded'],
     \ }
 
   function! s:filter_sink(filter) closure
