@@ -10,7 +10,7 @@ local exists = vim.fn.exists
 
 ---Get the function for on_forward and on_backward
 ---@param forward boolean
-local ref_jump = function (forward)
+local ref_jump = function(forward)
   ---References cache
   ---@type RefjumpReference[]?
   local references
@@ -19,8 +19,8 @@ local ref_jump = function (forward)
   -- so that references will be a brand new reference variable but
   -- it will have the cached references if repeating the motion
   require('utils.repeat_motion').repeat_direction({
-    fn = function (opts)
-      require('utils.refjump').reference_jump(opts, references, function (refs)
+    fn = function(opts)
+      require('utils.refjump').reference_jump(opts, references, function(refs)
         references = refs
       end)
     end,
@@ -97,11 +97,11 @@ vim.lsp.buf.code_action()
 ---@type config.LspHandlers
 local handlers = ({}) --[[@as config.LspHandlers]]
 
-local set_handlers = function ()
+local set_handlers = function()
   for _, handler in ipairs(cmd_to_lsp_handlers) do
     local cmd, name = handler[1], handler[2]
-    handlers[name] = function (...)
-      if exists(':'..cmd) then
+    handlers[name] = function(...)
+      if exists(':' .. cmd) then
         vim.cmd[cmd]()
         return
       end
@@ -127,11 +127,9 @@ return {
     if not buf then
       buf = vim.api.nvim_get_current_buf()
       vim.notify(
-        string.format(
-          'No bufnr provided by on_attach of `%s`, fallbacking to current buffer',
-          client.name
-        ),
-      vim.log.levels.WARN)
+        string.format('No bufnr provided by on_attach of `%s`, fallbacking to current buffer', client.name),
+        vim.log.levels.WARN
+      )
     end
 
     -- Prevent adding keymaps if we are excluding specific file types such as help
@@ -194,18 +192,20 @@ return {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     set_map('n', 'gD', handlers.declaration, '[Lsp]: Go to declaration')
     set_map('n', 'gd', handlers.definition, '[Lsp]: Go to definition')
-    set_map('n', '<space>vs', function ()
+    set_map('n', '<space>vs', function()
       vim.cmd.split()
       handlers.definition()
     end, '[Lsp]: Go to definition in vsplit')
-    set_map('n', '<space>vv', function ()
+    set_map('n', '<space>vv', function()
       vim.cmd.vsplit()
       handlers.definition()
     end, '[Lsp]: Go to definition in vsplit')
-    set_map('n', 'K', function () vim.lsp.buf.hover({ border = 'rounded', max_height = 50 }) end, '[Lsp]: Hover action')
+    set_map('n', 'K', function()
+      vim.lsp.buf.hover({ border = 'rounded', max_height = 50 })
+    end, '[Lsp]: Hover action')
     set_map('n', '<space>i', handlers.implementation, '[Lsp]: Go to implementation')
-    set_map('n', '<C-k>', function ()
-       vim.lsp.buf.signature_help({ border = 'rounded' })
+    set_map('n', '<C-k>', function()
+      vim.lsp.buf.signature_help({ border = 'rounded' })
     end, '[Lsp]: Show signature help')
     set_map('n', '<space>wa', vim.lsp.buf.add_workspace_folder, '[Lsp]: Add workspace')
     set_map('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, '[Lsp]: Remove workspace')
@@ -231,19 +231,22 @@ return {
     set_map('n', '<space>ci', vim.lsp.buf.incoming_calls, '[Lsp]: Incoming Calls')
     set_map('n', '<space>co', vim.lsp.buf.outgoing_calls, '[Lsp]: Outgoing Calls')
 
-    set_map('n', '<space>sw', function ()
+    set_map('n', '<space>sw', function()
       vim.lsp.buf.workspace_symbol('')
     end, '[Lsp] Open workspace symbols')
-    set_map('n', '<space>sd', function ()
+    set_map('n', '<space>sd', function()
       vim.lsp.buf.document_symbol({})
     end, '[Lsp] Open document symbols')
     set_map('v', '<space>ca', '<cmd>RangeCodeActions<cr>', '[Lsp] Range code actions')
 
-
     local nxo = { 'n', 'x', 'o' }
     if client:supports_method('textDocument/documentHighlight', buf) then
-      set_map(nxo, ']r', function() ref_jump(true) end, '[Reference] Next reference')
-      set_map(nxo, '[r', function() ref_jump(false) end, '[Reference] Next reference')
+      set_map(nxo, ']r', function()
+        ref_jump(true)
+      end, '[Reference] Next reference')
+      set_map(nxo, '[r', function()
+        ref_jump(false)
+      end, '[Reference] Next reference')
     end
   end,
 }
