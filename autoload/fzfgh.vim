@@ -236,7 +236,6 @@ function! fzfgh#select_prs(fullscreen) abort
       return
     endif
 
-    let pr = a:selection[1]
     let expected_key = a:selection[0]
 
     if !empty(expected_key)
@@ -252,6 +251,8 @@ function! fzfgh#select_prs(fullscreen) abort
       " Unexpected key?
       return
     endif
+
+    let pr = a:selection[1]
 
     return fzfgh#open_pr(pr)
   endfunction
