@@ -142,7 +142,16 @@ return {
       auto_install = true,
       highlight = { enable = true },
       indent = { enable = true },
-      -- for 'nvim-treesitter/nvim-treesitter-textobjects',
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = '<space>nn',
+          node_incremental = '<space>nn',
+          scope_incremental = '<space>nN',
+          node_decremental = '<space>np',
+        },
+      },
+      -- For 'nvim-treesitter/nvim-treesitter-textobjects',
       textobjects = {
         lsp_interop = {
           enable = true,
