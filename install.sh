@@ -37,7 +37,7 @@ if [ -n "$APPDATA" ]; then
   nvim="$appdata/nvim"
   # replace directory if exist
   [ -d "$nvim" ] && mv "$nvim" "$nvim.bac"
-  [ -L "$nvim" ] && return
+  [ -L "$nvim" ] && exit
 
   ln -s "$location" "$nvim"
 fi
