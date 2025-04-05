@@ -119,7 +119,7 @@ local remove_default = function ()
   -- "gO" is mapped in Normal mode to vim.lsp.buf.document_symbol()
   -- CTRL-S is mapped in Insert mode to vim.lsp.buf.signature_help()
   -- Ref: https://neovim.io/doc/user/lsp.html
-  if vim.fn.has('nvim-0.11.0') == 0 then
+  if vim.fn.has('nvim-0.11.0') == 1 then
     -- Unset defaults and let lsp-settings/keymaps.lua handle the keys
     vim.keymap.del('n', 'grr')
     vim.keymap.del('n', 'grn')
