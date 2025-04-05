@@ -183,11 +183,11 @@ return {
     set_map('n', '<space>tt', function()
       local config = type(vim.diagnostic.config().virtual_text) == 'boolean' and { current_line = true } or true
       vim.diagnostic.config({ virtual_text = config })
-    end, '[Lsp]: Toggle inlay hints')
+    end, '[Lsp]: Toggle virtual text diagnostics current line only')
     set_map('n', '<space>tl', function()
       local config = type(vim.diagnostic.config().virtual_lines) == 'boolean' and { current_line = true } or false
       vim.diagnostic.config({ virtual_lines = config })
-    end, '[Lsp]: Toggle inlay hints')
+    end, '[Lsp]: Toggle virtual lines diagnostics show current line')
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     set_map('n', 'gD', handlers.declaration, '[Lsp]: Go to declaration')
