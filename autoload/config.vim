@@ -1449,6 +1449,7 @@ func! config#before () abort
   " Fzf configs
   let g:fzf_vim = {}
   let g:fzf_history_dir = '~/.cache/fzf-history'
+  let g:fzf_lsp_pretty = 1
 
   silent call s:Set_netrw()
   silent call s:Set_os_specific_before()
