@@ -103,7 +103,7 @@ local set_handlers = function()
     local cmd, name = handler[1], handler[2]
     handlers[name] = function(...)
       if exists(':' .. cmd) then
-        vim.cmd[cmd]()
+        vim.cmd[cmd](...)
         return
       end
 
@@ -193,11 +193,11 @@ return {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     set_map('n', 'gD', handlers.declaration, '[Lsp]: Go to declaration')
     set_map('n', 'gd', handlers.definition, '[Lsp]: Go to definition')
-    set_map('n', '<space>vs', function()
+    set_map('n', '<space>ds', function()
       vim.cmd.split()
       handlers.definition()
     end, '[Lsp]: Go to definition in vsplit')
-    set_map('n', '<space>vv', function()
+    set_map('n', '<space>dv', function()
       vim.cmd.vsplit()
       handlers.definition()
     end, '[Lsp]: Go to definition in vsplit')
@@ -229,14 +229,20 @@ return {
       vim.cmd.retab()
       vim.cmd.write()
     end, '[Lsp]: Format buffer')
-    set_map('n', '<space>ci', vim.lsp.buf.incoming_calls, '[Lsp]: Incoming Calls')
-    set_map('n', '<space>co', vim.lsp.buf.outgoing_calls, '[Lsp]: Outgoing Calls')
+    set_map('n', '<space>ci', handlers.incoming_calls, '[Lsp]: Incoming Calls')
+    set_map('n', '<space>co', handlers.outgoing_calls, '[Lsp]: Outgoing Calls')
 
     set_map('n', '<space>sw', function()
-      vim.lsp.buf.workspace_symbol('')
+      handlers.workspace_symbol('')
+    end, '[Lsp] Open workspace symbols')
+    set_map('n', '<space>sW', function()
+      handlers.workspace_symbol(vim.fn.expand('<cword>'))
     end, '[Lsp] Open workspace symbols')
     set_map('n', '<space>sd', function()
-      vim.lsp.buf.document_symbol({})
+      handlers.document_symbol({})
+    end, '[Lsp] Open document symbols')
+    set_map('n', 'gO', function()
+      handlers.document_symbol({})
     end, '[Lsp] Open document symbols')
     set_map('v', '<space>ca', '<cmd>RangeCodeActions<cr>', '[Lsp] Range code actions')
 
