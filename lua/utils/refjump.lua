@@ -21,7 +21,13 @@ local function hl_enable(references, bufnr)
     local start_col = ref.range.start.character
     local end_col = ref.range['end'].character
 
-    vim.api.nvim_buf_add_highlight(bufnr, highlight_namespace, reference_hl_name, line, start_col, end_col)
+    -- vim.api.nvim_buf_add_highlight(bufnr, highlight_namespace, reference_hl_name, line, start_col, end_col)
+    vim.hl.range(bufnr, highlight_namespace, reference_hl_name, { line, start_col }, { line, end_col }, {
+      -- {regtype} (string, default: 'v' i.e. charwise) Type of range. See getregtype()
+      -- {inclusive} (boolean, default: false) Indicates whether the range is end-inclusive
+      -- {priority} (integer, default: vim.hl.priorities.user) Highlight priority
+      -- {timeout} (integer, default: -1 no timeout) Time in ms before highlight is cleared
+    })
   end
 
   highlight_references = true
@@ -106,13 +112,13 @@ local function find_next_reference(references, forward, count, current_position)
 end
 
 ---@param next_reference RefjumpReference
-local function jump_to(next_reference)
+---@param encoding string
+local function jump_to(next_reference, encoding)
   local bufnr = vim.api.nvim_get_current_buf()
   local uri = vim.uri_from_bufnr(bufnr)
   local next_location = { uri = uri, range = next_reference.range }
   -- NOTE: encoding is hard-coded here. It's apparently usually utf-16. But
   -- perhaps it should be calculated dynamically?
-  local encoding = 'utf-16'
 
   -- vim.lsp.util.jump_to_location(next_location, encoding)
   vim.lsp.util.show_document(next_location, encoding, { focus = true })
@@ -124,14 +130,15 @@ end
 ---@param next_reference RefjumpReference
 ---@param forward boolean
 ---@param references RefjumpReference[]
-local function jump_to_next_reference(next_reference, forward, references)
+---@param encoding string
+local function jump_to_next_reference(next_reference, forward, references, encoding)
   -- If no reference is found, loop around
   if not next_reference then
     next_reference = forward and references[1] or references[#references]
   end
 
   if next_reference then
-    jump_to(next_reference)
+    jump_to(next_reference, encoding)
   else
     vim.notify('refjump.nvim: Could not find the next reference', vim.log.levels.WARN)
   end
@@ -141,9 +148,10 @@ end
 ---@param forward boolean
 ---@param count integer
 ---@param current_position integer[]
-local function jump_to_next_reference_and_highlight(references, forward, count, current_position)
+---@param encoding string
+local function jump_to_next_reference_and_highlight(references, forward, count, current_position, encoding)
   local next_reference = find_next_reference(references, forward, count, current_position)
-  jump_to_next_reference(next_reference, forward, references)
+  jump_to_next_reference(next_reference, forward, references, encoding)
 
   -- if require('refjump').get_options().highlights.enable then
   --   require('refjump.highlight').enable(references, 0)
@@ -161,18 +169,25 @@ end
 ---@param current_position integer[]
 ---@param opts { forward: boolean }
 ---@param count integer
+---@param client_id integer client id of the lsp
 ---@param references? RefjumpReference[]
 ---@param with_references? function(RefjumpReference[]) Called if `references` is `nil` with LSP references for item at `current_position`
-local function reference_jump_from(current_position, opts, count, references, with_references)
+local function reference_jump_from(current_position, opts, count, references, client_id, with_references)
   opts = opts or { forward = true }
+
+  local client = vim.lsp.get_client_by_id(client_id)
+  local encoding = 'utf-16'
+  if client then
+    encoding = client.offset_encoding
+  end
 
   -- If references have already been computed (i.e. we're repeating the jump)
   if references then
-    jump_to_next_reference_and_highlight(references, opts.forward, count, current_position)
+    jump_to_next_reference_and_highlight(references, opts.forward, count, current_position, encoding)
     return
   end
 
-  local params = vim.lsp.util.make_position_params(0, 'utf-16')
+  local params = vim.lsp.util.make_position_params(0, encoding)
 
   -- We call `textDocument/documentHighlight` here instead of
   -- `textDocument/references` for performance reasons. The latter searches the
@@ -196,7 +211,7 @@ local function reference_jump_from(current_position, opts, count, references, wi
       return a.range.start.line < b.range.start.line
     end)
 
-    jump_to_next_reference_and_highlight(refs, opts.forward, count, current_position)
+    jump_to_next_reference_and_highlight(refs, opts.forward, count, current_position, encoding)
 
     if with_references then
       with_references(refs)
@@ -212,15 +227,16 @@ end
 ---server and passed to `with_references`.
 ---@param opts { forward: boolean }
 ---@param references? RefjumpReference[]
+---@param client_id integer client id of the lsp
 ---@param with_references? fun(refs: RefjumpReference[]) Called if `references` is `nil` with LSP references for item at `current_position`
-local function reference_jump(opts, references, with_references)
+local function reference_jump(opts, references, client_id, with_references)
   -- local compatible_lsp_clients = vim.lsp.get_clients({
   --   method = 'textDocument/documentHighlight',
   -- })
 
   local current_position = vim.api.nvim_win_get_cursor(0)
   local count = vim.v.count1
-  reference_jump_from(current_position, opts, count, references, with_references)
+  reference_jump_from(current_position, opts, count, references, client_id, with_references)
 end
 
 -- Start highlights
