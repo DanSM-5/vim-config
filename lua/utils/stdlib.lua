@@ -387,21 +387,35 @@ end
 --- @param c string|integer Characted value
 --- @return string Hexadecimal representation of character
 local char_to_hex = function(c)
-  return string.format("%%%02X", string.byte(c))
+  return string.format("%02X", string.byte(c))
+end
+
+--- Transform char to hex prefixed with %
+--- @param c string|integer Characted value
+--- @return string Hexadecimal representation of character prefixed with %
+local encode_char_uri = function(c)
+  return '%'..char_to_hex(c)
 end
 
 ---Encode function for URIs
+--- @see vim.uri_encode
 ---@param url string String to encode
-local function encodeURI(url)
+---@param opts? { encode_spaces: boolean } Options for encoding
+local function encodeURI(url, opts)
   if url == nil then
     return
   end
+  opts = opts or { encode_spaces = false }
   url = url:gsub("\n", "\r\n")
   -- For more conservative enconding that encodes "_", "-", ".", "~"
   -- url = url:gsub("([^%w ])", char_to_hex)
   -- To be closer to RFC 3986, section 2.3: https://tools.ietf.org/html/rfc3986#section-2.3
-  url = url:gsub("([^%w _%%%-%.~])", char_to_hex)
-  url = url:gsub(" ", "+")
+  url = url:gsub("([^%w _%%%-%.~])", encode_char_uri)
+  if opts.encode_spaces then
+    url = url:gsub(" ", encode_char_uri)
+  else
+    url = url:gsub(" ", "+")
+  end
   return url
 end
 
@@ -413,7 +427,9 @@ local hex_to_char = function(x)
 end
 
 ---Decode function for URIs
+---@see vim.uri_decode
 ---@param url string Decoded string
+---@return string|nil decoded uri
 local decodeURI = function(url)
   if url == nil then
     return
