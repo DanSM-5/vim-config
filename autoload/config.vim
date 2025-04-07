@@ -276,6 +276,27 @@ function! s:ToggleScroll() abort
   endif
 endfunction
 
+function FugitiveToggle() abort
+  let fugitive_win = 0
+
+  for winnr in range(1, winnr('$'))
+    let bufnr = winbufnr(winnr)
+    let filetype = getbufvar(bufnr, '&filetype')
+    if filetype == 'fugitive'
+      let fugitive_win = winnr
+    endif
+  endfor
+
+  if fugitive_win
+    " Close fugitive
+    execute fugitive_win . 'wincmd w'
+    quit
+  else
+    " Open fugitive
+    Git
+  endif
+endfunction
+
 " keymaps
 func! s:Set_user_keybindings () abort
   silent call s:SetVimSystemCopyMaps()
@@ -332,7 +353,7 @@ func! s:Set_user_keybindings () abort
   nnoremap <leader>cl q:
 
   " Call vim fugitive
-  nnoremap <leader>gg <cmd>Git<cr>
+  nnoremap <leader>gg <cmd>call FugitiveToggle()<cr>
 
   " ]<End> or ]<Home> move current line to the end or the begin of current buffer
   nnoremap <silent>]<End> ddGp``
