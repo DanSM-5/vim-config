@@ -383,13 +383,44 @@ local function key_set(t, key, value)
   last[path[#path]] = value
 end
 
----Decode URIs
----@param str string Decoded string
-local function decodeURI(str)
-  local char, gsub, tonumber = string.char, string.gsub, tonumber
-  local function _(hex) return char(tonumber(hex, 16)) end
-  local s = gsub(str, '%%(%x%x)', _)
-  return s
+--- Transform char to hex
+--- @param c string|integer Characted value
+--- @return string Hexadecimal representation of character
+local char_to_hex = function(c)
+  return string.format("%%%02X", string.byte(c))
+end
+
+---Encode function for URIs
+---@param url string String to encode
+local function encodeURI(url)
+  if url == nil then
+    return
+  end
+  url = url:gsub("\n", "\r\n")
+  -- For more conservative enconding that encodes "_", "-", ".", "~"
+  -- url = url:gsub("([^%w ])", char_to_hex)
+  -- To be closer to RFC 3986, section 2.3: https://tools.ietf.org/html/rfc3986#section-2.3
+  url = url:gsub("([^%w _%%%-%.~])", char_to_hex)
+  url = url:gsub(" ", "+")
+  return url
+end
+
+---Convert hexadecimal representation into a char
+---@param x string
+---@return string
+local hex_to_char = function(x)
+  return string.char(tonumber(x, 16))
+end
+
+---Decode function for URIs
+---@param url string Decoded string
+local decodeURI = function(url)
+  if url == nil then
+    return
+  end
+  url = url:gsub("+", " ")
+  url = url:gsub("%%(%x%x)", hex_to_char)
+  return url
 end
 
 ---Create a finally function block
@@ -540,6 +571,9 @@ return {
   throttle = throttle,
   dump = dump,
   decodeURI = decodeURI,
+  encodeURI = encodeURI,
+  hex_to_char = hex_to_char,
+  char_to_hex = char_to_hex,
   create_finally = create_finally,
   finally = finally,
   get_dynamic_object = get_dynamic_object,
