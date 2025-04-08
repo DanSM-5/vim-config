@@ -262,29 +262,30 @@ local cmp_module = {
 
     require('cmp_git').setup({})
     require('luasnip.loaders.from_vscode').lazy_load()
-
+    -- Refresh sources on InsertEnter
+    -- Ref: https://github.com/hrsh7th/cmp-nvim-lsp/blob/a8912b88ce488f411177fc8aed358b04dc246d7b/lua/cmp_nvim_lsp/init.lua#L96C1-L96C35
+    require('cmp_nvim_lsp').setup()
   end,
 
   get_update_capabilities = function ()
-    local cmp_lsp = require('cmp_nvim_lsp')
-    ---@type lsp.ClientCapabilities
-    local capabilities =
-      vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
-
-    ---@type config.UpdateCapabilities
+    ---@param base LspConfigExtended
+    ---@return LspConfigExtended
     local update_capabilities = function (base)
-      if base.capabilities then
-        local config = vim.tbl_deep_extend('force', base, {
-          ---@type lsp.ClientCapabilities
-          capabilities = vim.tbl_deep_extend('force', {},
-            vim.lsp.protocol.make_client_capabilities(),
-            cmp_lsp.default_capabilities(base.capabilities))
-        })
+      local cmp_lsp = require('cmp_nvim_lsp')
+      ---@type lsp.ClientCapabilities
+      local baseCapabilities = base.capabilities and base.capabilities or {}
 
-        return config
-      end
+      ---@type lsp.ClientCapabilities
+      -- local capabilities =
+      --   vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
 
-      local config = vim.tbl_deep_extend('force', {}, base, { capabilities = capabilities })
+      local config = vim.tbl_deep_extend('force', base, {
+        ---@type lsp.ClientCapabilities
+        capabilities = vim.tbl_deep_extend('force', {},
+          vim.lsp.protocol.make_client_capabilities(),
+          cmp_lsp.default_capabilities(baseCapabilities)
+        )
+      })
 
       return config
     end

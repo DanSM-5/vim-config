@@ -1,7 +1,7 @@
 -- Types used inside lsp-settings and lsp-sources configurations
 
 --- Same as lspconfig.Config but to avoid issues if module is not loaded
---- @class LspConfigExtended: vim.lsp.ClientConfig
+--- @class LspConfigExtended: vim.lsp.Config
 --- @field cmd? string[]|fun(dispatchers: vim.lsp.rpc.Dispatchers): vim.lsp.rpc.PublicClient
 --- @field enabled? boolean
 --- @field single_file_support? boolean
