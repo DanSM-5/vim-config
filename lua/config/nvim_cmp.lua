@@ -275,11 +275,7 @@ local cmp_module = {
       ---@type lsp.ClientCapabilities
       local baseCapabilities = base.capabilities and base.capabilities or {}
 
-      ---@type lsp.ClientCapabilities
-      -- local capabilities =
-      --   vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
-
-      local config = vim.tbl_deep_extend('force', base, {
+      local config = vim.tbl_deep_extend('force', {}, base, {
         ---@type lsp.ClientCapabilities
         capabilities = vim.tbl_deep_extend('force', {},
           vim.lsp.protocol.make_client_capabilities(),
