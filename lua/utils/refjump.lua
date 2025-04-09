@@ -176,6 +176,7 @@ local function reference_jump_from(current_position, opts, count, references, cl
   opts = opts or { forward = true }
 
   local client = vim.lsp.get_client_by_id(client_id)
+  -- If no client, 'utf-16' seems like the most appropriate default
   local encoding = 'utf-16'
   if client then
     encoding = client.offset_encoding
@@ -188,12 +189,7 @@ local function reference_jump_from(current_position, opts, count, references, cl
   end
 
   local params = vim.lsp.util.make_position_params(0, encoding)
-
-  -- We call `textDocument/documentHighlight` here instead of
-  -- `textDocument/references` for performance reasons. The latter searches the
-  -- entire workspace, but `textDocument/documentHighlight` only searches the
-  -- current buffer, which is what we want.
-  vim.lsp.buf_request(0, 'textDocument/documentHighlight', params, function(err, refs, _, _)
+  local lsp_request_handler = function(err, refs, _)
     if err then
       vim.notify('refjump.nvim: LSP Error: ' .. err.message, vim.log.levels.ERROR)
       return
@@ -216,7 +212,23 @@ local function reference_jump_from(current_position, opts, count, references, cl
     if with_references then
       with_references(refs)
     end
-  end)
+  end
+
+  -- The client should be valid unless terminated in the small window from function call
+  -- to reference_jump and the moment this is executed. In such case (althogh unlikely)
+  -- Default to the private function `vim.lsp.buf_request` as it should try to get a
+  -- valid lsp client that supports the requested method and then call client:request on it.
+
+  if client then
+    -- We call `textDocument/documentHighlight` here instead of
+    -- `textDocument/references` for performance reasons. The latter searches the
+    -- entire workspace, but `textDocument/documentHighlight` only searches the
+    -- current buffer, which is what we want.
+    client:request('textDocument/documentHighlight', params, lsp_request_handler)
+  else
+    -- This function is private and probably we shouldn't rely on it.
+    vim.lsp.buf_request(0, 'textDocument/documentHighlight', params, lsp_request_handler)
+  end
 end
 
 ---Move cursor to next LSP reference in the current buffer if `forward` is
