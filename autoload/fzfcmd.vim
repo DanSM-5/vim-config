@@ -629,6 +629,18 @@ function! fzfcmd#fzfrg_dir(query, fullscreen) abort
   call fzf#run(fzf#wrap('fzfdir', spec_dir, a:fullscreen))
 endfunction
 
+function! fzfcmd#rg_files(fullscreen, ...) abort
+  let query = a:1
+  let files = join((a:000)[1:], ' ')
+  let command_fmt = printf('rg ' . s:rg_args .. ' %s || true', '%s '.files)
+  call fzfcmd#fzfrg_base({
+        \ 'command_fmt': command_fmt,
+        \ 'prompt': 'RgFiles> ',
+        \ 'query': query,
+        \ 'fullscreen': a:fullscreen
+        \ })
+endfunction
+
 function fzfcmd#paste(mode) abort
   let @" = getreg(nr2char(getchar())) 
   return a:mode
