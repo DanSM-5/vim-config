@@ -152,6 +152,7 @@ local configs = {
   },
   powershell_es = {
     use_legacy = true,
+    bundle_path = vim.fn.stdpath('data') .. '/mason/packages/powershell-editor-services',
   },
 }
 
