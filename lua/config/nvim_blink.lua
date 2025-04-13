@@ -337,8 +337,8 @@ local blink_module = {
 
   get_update_capabilities = function ()
     ---Update capabilities of base config
-    ---@param base LspConfigExtended
-    ---@return LspConfigExtended
+    ---@param base config.LspConfigExtended
+    ---@return config.LspConfigExtended
     local function update_capabilities(base)
       local blink = require('blink.cmp')
       ---@type lsp.ClientCapabilities

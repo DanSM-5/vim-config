@@ -2,7 +2,7 @@
 
 ---This includes devices such as termux or runing inside containers
 ---which require special built binaries.
----@type LspServersSettings[]
+---@type config.LspServerEntry[]
 local special_binaries = {
   {
     server = 'lua-language-server',

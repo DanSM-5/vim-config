@@ -268,8 +268,8 @@ local cmp_module = {
   end,
 
   get_update_capabilities = function ()
-    ---@param base LspConfigExtended
-    ---@return LspConfigExtended
+    ---@param base config.LspConfigExtended
+    ---@return config.LspConfigExtended
     local update_capabilities = function (base)
       local cmp_lsp = require('cmp_nvim_lsp')
       ---@type lsp.ClientCapabilities

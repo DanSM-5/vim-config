@@ -52,7 +52,7 @@ local get_completion_module_from_settings = function ()
 end
 
 ---Get the lsp handler for mason_lspconfig and other functions that register lsp clients
----@return fun(server_name: string, options?: LspServersSettings.options):nil
+---@return fun(server_name: string, options?: config.LspServerEntry.options):nil
 local function get_lsp_handler ()
     -- Get the hook to enable lsp completions
   local update_capabilities = get_completion_module_from_settings()
@@ -76,7 +76,7 @@ local function get_lsp_handler ()
 
     local base_config = require('lsp-servers.config').get_config(server_name) or {}
 
-    ---@type LspConfigExtended
+    ---@type config.LspConfigExtended
     local config = update_capabilities(base_config)
 
     -- Add keymaps on buffer with lsp

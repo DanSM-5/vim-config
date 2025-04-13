@@ -1,6 +1,6 @@
 ---@module 'lsp-servers.types'
 
----@type table<string, LspConfigExtended>
+---@type table<string, config.LspConfigExtended>
 local configs = {
   lua_ls = {
     on_attach = function(client, bufnr)
@@ -137,12 +137,12 @@ local configs = {
 return {
   ---Get the configuration for a given lsp server
   ---@param name string
-  ---@return LspConfigExtended | nil
+  ---@return config.LspConfigExtended | nil
   get_config = function(name)
     local shallow_clone = require('utils.stdlib').shallow_clone
     local general_config = shallow_clone(configs[name] or {})
 
-    ---@type boolean, LspConfigExtended
+    ---@type boolean, config.LspConfigExtended
     local local_ok, local_config = pcall(require, 'lsp-configs.local.'..name)
 
     if local_ok then

@@ -4,17 +4,17 @@
 ---@param name string
 ---@param buf? integer
 local start_client = function (name, buf)
-  ---@type boolean, LspConfigExtended
+  ---@type boolean, config.LspConfigExtended
   local has_config, lspconfig_config = pcall(require, 'lspconfig.configs.'..name)
   if not has_config then
     -- a default config can still be available in configs
     -- check manually if such config is available
     local has_configs, configs = pcall(require, 'lspconfig.configs')
     if has_configs and configs[name] and configs[name].config_def and configs[name].config_def.default_config then
-      ---@type LspConfigExtended
+      ---@type config.LspConfigExtended
       lspconfig_config = configs[name].config_def.default_config
     else
-      ---@type LspConfigExtended
+      ---@type config.LspConfigExtended
       lspconfig_config = {}
     end
   end
@@ -90,7 +90,7 @@ return {
     vim.g.LspStartClient = start_client
     ---Enable and start a lsp client
     ---@param name string
-    ---@param config LspServersSettings.options
+    ---@param config config.LspServerEntry.options
     ---@param buffer? integer
     vim.g.LspSetupClient = function (name, config, buffer)
       handler(name, config)

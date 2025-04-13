@@ -1,7 +1,7 @@
 ---@module 'lsp-servers.types'
 
 ---Lsp servers to be setup when not using mason registry
----@type LspServersSettings[]
+---@type config.LspServerEntry[]
 local manual_setup = {
   {
     -- WARN: ctags-lsp attaches to all buffers which could cause issues due to additional keybindings

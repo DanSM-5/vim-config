@@ -1,6 +1,6 @@
 ---@module 'lsp-servers.types'
 
----@param config { lspconfig_handler: LspHandlerFunc; servers: LspServersSettings[] }
+---@param config { lspconfig_handler: LspHandlerFunc; servers: config.LspServerEntry[] }
 ---@return nil
 local setup_servers = function (config)
   for _, settings in ipairs(config.servers) do
