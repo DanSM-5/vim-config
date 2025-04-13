@@ -87,6 +87,21 @@ local function get_lsp_handler ()
     end
 
     require('lspconfig')[server_name].setup(config)
+
+    -- In progress
+    -- if config.use_legacy then
+    --   require('lspconfig')[server_name].setup(config)
+    -- else
+    --   -- FIXME: If lazy loaded, the first buffer does not attach
+    --   -- We need to find a solution
+    --   vim.lsp.config(server_name, config)
+    --   vim.lsp.enable(server_name, true)
+    --   local clients = vim.lsp.get_clients({ name = server_name })
+    --   if #clients > 0 then
+    --     local current = vim.api.nvim_get_current_buf()
+    --     vim.lsp.buf_attach_client(bufnr, clients[1].id)
+    --   end
+    -- end
   end
 
   return lspconfig_handler
@@ -126,13 +141,16 @@ return {
         'jsonls',
       }
 
-    if not vim.fn.has('nvim-10') then
+    -- Keymaps for legacy support. To remove when nvim-0.12.0 is released
+    if vim.fn.has('nvim-0.11.0') == 0 then
       -- Configure hover window
+      ---@diagnostic disable-next-line: deprecated
       vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
         border = 'rounded',
         -- max_widht = 50,
         max_height = 50,
       })
+      ---@diagnostic disable-next-line: deprecated
       vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
         border = 'rounded',
       })

@@ -1,3 +1,5 @@
+---@module 'lazy'
+
 -- indicate wheter to use cmp or blink
 local use_blink = os.getenv('USE_BLINK') == '1'
 
@@ -15,6 +17,7 @@ local luasnip_spec = {
 }
 
 -- Entry point of lsp related plugins
+---@type LazyPluginSpec[]
 return {
   {
     'williamboman/mason.nvim',
@@ -142,6 +145,11 @@ return {
       'nvim-tree/nvim-web-devicons',
       -- Ctags lsp
       -- 'netmute/ctags-lsp.nvim',
+      {
+        -- For jsonls to add schemas
+        'b0o/SchemaStore.nvim',
+        lazy = true,
+      },
     },
     -- event = 'VimEnter',
     event = 'VeryLazy',

@@ -66,7 +66,18 @@ local configs = {
     },
   },
   vimls = {},
-  biome = {},
+  biome = {
+    use_legacy = true,
+  },
+  eslint = {
+    use_legacy = true,
+  },
+  eslint_d = {
+    use_legacy = true,
+  },
+  stylua = {
+    use_legacy = true,
+  },
   -- For bash lsp
   bashls = {
     filetypes = { 'sh', 'bash', 'zsh' },
@@ -81,10 +92,17 @@ local configs = {
     filetypes = { 'go', 'c' },
   },
   jsonls = {
+    -- Keeping both on_new_config and before_init to support old and new setup
+    -- use_legacy = true,
+
     -- lazyload schemastore when needed
-    on_new_config = function(new_config)
-      new_config.settings.json.schemas = new_config.settings.json.schemas or {}
-      vim.list_extend(new_config.settings.json.schemas, require('schemastore').json.schemas())
+    on_new_config = function(config)
+      config.settings.json.schemas = config.settings.json.schemas or {}
+      vim.list_extend(config.settings.json.schemas, require('schemastore').json.schemas())
+    end,
+    before_init = function (params, config)
+      config.settings.json.schemas = config.settings.json.schemas or {}
+      vim.list_extend(config.settings.json.schemas, require('schemastore').json.schemas())
     end,
     settings = {
       json = {
@@ -131,6 +149,9 @@ local configs = {
         semanticTokens = true,
       },
     },
+  },
+  powershell_es = {
+    use_legacy = true,
   },
 }
 
