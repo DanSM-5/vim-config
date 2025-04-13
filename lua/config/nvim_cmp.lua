@@ -264,7 +264,11 @@ local cmp_module = {
     require('luasnip.loaders.from_vscode').lazy_load()
     -- Refresh sources on InsertEnter
     -- Ref: https://github.com/hrsh7th/cmp-nvim-lsp/blob/a8912b88ce488f411177fc8aed358b04dc246d7b/lua/cmp_nvim_lsp/init.lua#L96C1-L96C35
-    require('cmp_nvim_lsp').setup()
+    local cmp_lsp = require('cmp_nvim_lsp')
+    cmp_lsp.setup()
+    -- Refresh now to have lsp suggestions the first time we go into insert mode.
+    -- Notice that this do work when lsp's have finished loaded the workspace.
+    cmp_lsp._on_insert_enter()
   end,
 
   get_update_capabilities = function ()
