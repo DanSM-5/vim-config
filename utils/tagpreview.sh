@@ -60,7 +60,7 @@ if [ -z "$FZF_PREVIEW_COMMAND" ] && [ "${BATNAME:+x}" ]; then
              --terminal-width="${FZF_PREVIEW_COLUMNS}" \
              --line-range="${START_LINE}:${END_LINE}" \
              --highlight-line="${CENTER}" \
-             --language=vimhelp \
+             --language vimhelp \
              "$FILE"
   exit $?
 fi

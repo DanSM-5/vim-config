@@ -649,7 +649,7 @@ endfunction
 function! fzfcmd#helptags(fullscreen) abort
   if !s:is_windows
     let helptags_spec = fzf#vim#with_preview({ "placeholder": "--tag {2}:{3}:{4}" })
-    let helptags_spec.options = g:fzf_preview_options + helptags_spec.options + ['--no-mulit', '--preview', s:fzfcmd_scripts.'/tagpreview.sh {2}:{3}:{4}']
+    let helptags_spec.options = g:fzf_preview_options + ['--no-multi', '--preview', "/usr/bin/bash '".s:fzfcmd_scripts."/tagpreview.sh' {2}:{3}:{4}"]
 
     call fzf#vim#helptags(helptags_spec, a:fullscreen)
     return
