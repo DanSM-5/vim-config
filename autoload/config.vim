@@ -879,7 +879,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang RgHistory call fzfcmd#fzfrg_history(<q-args>, <bang>0)
   command! -nargs=* -bang Highlights call fzfcmd#highlights(<q-args>, <bang>0)
   command! -nargs=* -bang DirGrep call fzfcmd#fzfrg_dir(<q-args>, <bang>0)
-  command! -nargs=* -bang RgFiles call fzfcmd#rg_files(<bang>0, <f-args>)
+  command! -nargs=* -bang -complete=file RgFiles call fzfcmd#rg_files(<bang>0, <f-args>)
   command! -bar -bang Helptags call fzfcmd#helptags(<bang>0)
 
   command! -bang -nargs=? -complete=dir Files
