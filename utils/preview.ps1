@@ -6,9 +6,11 @@ if (!$args) {
   exit 1
 }
 
-# TODO: Handle tag preview?
 if ($args[0] -eq '--tag') {
-  exit 0
+  $tags_script = "$PSScriptRoot/tagpreview.ps1"
+  $new_args = $args[1..($args.Length - 1)]
+  & $tags_script @new_args
+  exit $?
 }
 
 $segments = $args[0].trim("'").trim('"') -Split ':'

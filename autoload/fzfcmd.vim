@@ -645,3 +645,30 @@ function fzfcmd#paste(mode) abort
   let @" = getreg(nr2char(getchar())) 
   return a:mode
 endfunction
+
+function! fzfcmd#helptags(fullscreen) abort
+  if !s:is_windows
+    let helptags_spec = fzf#vim#with_preview({ "placeholder": "--tag {2}:{3}:{4}" })
+    let helptags_spec.options = g:fzf_preview_options + helptags_spec.options + ['--no-mulit', '--preview', s:fzfcmd_scripts.'/tagpreview.sh {2}:{3}:{4}']
+
+    call fzf#vim#helptags(helptags_spec, a:fullscreen)
+    return
+  endif
+
+  " NOTE: The preview won't work correctly using windows powershell
+  " It is related to extracting the line number from the help file
+  " using vim/nvim. On windows powershell the command never returns.
+  " Leaveing here as fallback but won't work.
+  let pwsh = executable('pwsh') ? 'pwsh' : 'powershell'
+
+  let helptags_spec = {
+    \   'options': g:fzf_preview_options + [
+    \     '--no-multi',
+    \     '--with-shell', pwsh.' -NoLogo -NonInteractive -NoProfile -Command',
+    \     '--preview', s:fzfcmd_scripts . "/tagpreview.ps1 {+f}",
+    \   ],
+    \   'placeholder': '--tag {2}:{3}:{4}'
+    \ }
+
+    call fzf#vim#helptags(helptags_spec, a:fullscreen)
+endfunction

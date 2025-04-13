@@ -35,6 +35,11 @@ let g:fzf_preview_options = g:fzf_bind_options + [
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
       \ ]
 
+let s:fzfcmd_scripts = substitute(
+  \ exists('g:fzfcmd_scripts') ? g:fzfcmd_scripts : expand('<sfile>:p:h:h') . '/utils',
+  \ '\\', '/', 'g'
+  \)
+
 func! s:SetConfigurationsBefore () abort
   silent call s:SetCamelCaseMotion()
   silent call s:SetRG()
@@ -875,6 +880,7 @@ func! s:SetFZF () abort
   command! -nargs=* -bang Highlights call fzfcmd#highlights(<q-args>, <bang>0)
   command! -nargs=* -bang DirGrep call fzfcmd#fzfrg_dir(<q-args>, <bang>0)
   command! -nargs=* -bang RgFiles call fzfcmd#rg_files(<bang>0, <f-args>)
+  command! -bar -bang Helptags call fzfcmd#helptags(<bang>0)
 
   command! -bang -nargs=? -complete=dir Files
     \ call fzfcmd#fzf_files(<q-args>, g:fzf_preview_options, <bang>0)
@@ -884,9 +890,11 @@ func! s:SetFZF () abort
   " builds the paths for the bash.exe executable
   " On powershell, however, vim has issues not showing preview window
   " and it may get stuck as in git bash if called before fzf#vim#with_preview
-  if g:is_gitbash || (!has('nvim') && g:is_windows)
-    command! -bang -nargs=? GFiles
-      \ call fzfcmd#fzf_gitbash_files(<q-args>, g:fzf_preview_options, <bang>0)
+  if g:is_gitbash
+    if !has('nvim')
+      command! -bang -nargs=? GFiles
+        \ call fzfcmd#fzf_gitbash_files(<q-args>, g:fzf_preview_options, <bang>0)
+    endif
   endif
 
   " fzf options with custom preview
