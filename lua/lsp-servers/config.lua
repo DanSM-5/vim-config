@@ -10,6 +10,7 @@ local configs = {
     end,
     settings = {
       Lua = {
+        signatureHelp = { enabled = true },
         runtime = { version = 'LuaJIT' },
         telemetry = { enabled = false },
         workspace = { library = vim.api.nvim_get_runtime_file('', true), checkThirdparty = false },
@@ -18,6 +19,7 @@ local configs = {
           insert_final_newline = true,
           defaultConfig = {
             insert_final_newline = true,
+            quote_style = 'single',
           },
         },
       },
