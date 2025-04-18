@@ -61,7 +61,7 @@ local blink_module = {
       ['<Down>'] = { 'select_next', 'fallback' },
       ['<C-e>'] = { 'hide', 'fallback' },
       ['<C-b>'] = { 'show', 'fallback' },
-      ['<C-y>'] = { 'select_and_accept' },
+      ['<C-y>'] = { 'accept', 'fallback' },
       ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
       ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
       ['<C-/>'] = { 'show', 'show_documentation', 'hide_documentation' },
@@ -274,14 +274,14 @@ local blink_module = {
       },
       snippets = {
         preset = 'luasnip', -- 'default'
-        expand = function(snippet) require('luasnip').lsp_expand(snippet) end,
-        active = function(filter)
-          if filter and filter.direction then
-            return require('luasnip').jumpable(filter.direction)
-          end
-          return require('luasnip').in_snippet()
-        end,
-        jump = function(direction) require('luasnip').jump(direction) end,
+        -- expand = function(snippet) require('luasnip').lsp_expand(snippet) end,
+        -- active = function(filter)
+        --   if filter and filter.direction then
+        --     return require('luasnip').jumpable(filter.direction)
+        --   end
+        --   return require('luasnip').in_snippet()
+        -- end,
+        -- jump = function(direction) require('luasnip').jump(direction) end,
 
         -- Default
         -- Function to use when expanding LSP provided snippets
