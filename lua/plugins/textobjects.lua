@@ -1,12 +1,4 @@
-local autopairs_deps = os.getenv('USE_BLINK') == '1' and {}
-  or {
-    {
-      'iguanacucumber/magazine.nvim',
-      -- 'hrsh7th/nvim-cmp', -- Currently substituted by magazine.nvim
-      -- NOTE: Using magazine.nvim as as nvim-cmp replacement
-      name = 'nvim-cmp',
-    },
-  }
+local use_blink = os.getenv('USE_BLINK') == '1'
 
 return {
   {
@@ -21,9 +13,8 @@ return {
     'windwp/nvim-autopairs',
     event = 'InsertEnter',
     -- Optional dependency
-    dependencies = autopairs_deps,
     config = function()
-      require('config.nvim_autopairs').setup()
+      require('config.nvim_autopairs').setup({ use_cmp = not use_blink })
     end,
   },
   {

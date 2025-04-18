@@ -7,7 +7,7 @@
 -- :h lspconfig-all
 
 -- indicate wheter to use cmp or blink
--- local use_blink = os.getenv('USE_BLINK') == '1'
+local use_blink = os.getenv('USE_BLINK') == '1'
 
 require('lsp-servers.nvim_mason').setup()
 -- NOTE: Only load cmp for now. Blink is not defined in vimstart.
@@ -20,7 +20,7 @@ require('config.neo_tree').setup()
 require('config.nvim_comments').setup()
 require('config.nvim_gitsigns').setup()
 require('config.oil_nvim').setup()
-require('config.nvim_autopairs').setup()
+require('config.nvim_autopairs').setup({ use_cmp = not use_blink })
 require('config.treesitter_context').setup()
 require('config.nvim_prelive').setup()
 require('config.nvim_markview').setup()
