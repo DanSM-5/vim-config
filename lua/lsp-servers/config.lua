@@ -156,6 +156,17 @@ local configs = {
     use_legacy = true,
     bundle_path = vim.fn.stdpath('data') .. '/mason/packages/powershell-editor-services',
   },
+  harper_ls = {
+    use_legacy = true,
+    settings = {
+      harper_ls = {
+        linters = {
+          SentenceCapitalization = false,
+          -- SpellCheck = false
+        },
+      },
+    },
+  },
 }
 
 return {
