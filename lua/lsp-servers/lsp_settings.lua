@@ -58,7 +58,7 @@ local function get_lsp_handler ()
   local update_capabilities = get_completion_module_from_settings()
     .get_update_capabilities()
 
-  ---@type LspHandlerFunc
+  ---@type config.LspHandlerFunc
   local lspconfig_handler = function(server_name, options)
     if server_name == nil or type(server_name) ~= 'string' then
       vim.notify('No valid server name provided', vim.log.levels.WARN)
@@ -165,7 +165,7 @@ return {
     -- Buffer information
     -- See `:help vim.lsp.buf`
 
-    ---@type LspHandlerFunc
+    ---@type config.LspHandlerFunc
     local lspconfig_handler = get_lsp_handler()
 
     -- Use utils to attach global functions

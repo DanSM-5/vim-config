@@ -1,6 +1,6 @@
 ---@module 'lsp-servers.types'
 
----@param config { lspconfig_handler: LspHandlerFunc; servers: config.LspServerEntry[] }
+---@param config { lspconfig_handler: config.LspHandlerFunc; servers: config.LspServerEntry[] }
 ---@return nil
 local setup_servers = function (config)
   for _, settings in ipairs(config.servers) do
@@ -15,7 +15,7 @@ local setup_servers = function (config)
   end
 end
 
----@param config { lspconfig_handler: LspHandlerFunc; } Handler function that setups an lsp
+---@param config { lspconfig_handler: config.LspHandlerFunc; } Handler function that setups an lsp
 ---@param module_name string Name of the module to load with sources
 ---@return nil
 local configure = function (config, module_name)
@@ -37,15 +37,15 @@ end
 return {
   configure = configure,
   setup_servers = setup_servers,
-  ---@type LspSpecialSetupFunc
+  ---@type config.LspSpecialSetupFunc
   set_special_binaries = function(config)
     configure(config, 'lsp-sources.special_binaries')
   end,
-  ---@type LspSpecialSetupFunc
+  ---@type config.LspSpecialSetupFunc
   set_manual_setup = function (config)
     configure(config, 'lsp-sources.manual_setup')
   end,
-  ---@type LspSpecialSetupFunc
+  ---@type config.LspSpecialSetupFunc
   set_device_specific = function (config)
     configure(config, 'lsp-sources.local')
   end,

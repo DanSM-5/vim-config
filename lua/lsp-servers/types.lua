@@ -24,10 +24,10 @@
 ---@field options? config.LspServerEntry.options Additional options when configuring the server
 
 --- Handler function that starts the lsp
----@alias LspHandlerFunc fun(server_name: string, options?: config.LspServerEntry.options):nil
+---@alias config.LspHandlerFunc fun(server_name: string, options?: config.LspServerEntry.options):nil
 
 --- Handler function for specially configured servers
----@alias LspSpecialSetupFunc fun(config: { lspconfig_handler: LspHandlerFunc }): nil
+---@alias config.LspSpecialSetupFunc fun(config: { lspconfig_handler: config.LspHandlerFunc }): nil
 
 --- Options for enabling completions
 ---@class config.LspSettings.options

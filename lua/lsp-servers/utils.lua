@@ -80,12 +80,12 @@ local start_client = function (name, buf)
 end
 
 return {
-  ---@param handler LspHandlerFunc
+  ---@param handler config.LspHandlerFunc
   setup = function (handler)
     -- Add functions to enable lsp clients
     -- with cmp capabilities on the fly
 
-    ---@type LspHandlerFunc
+    ---@type config.LspHandlerFunc
     vim.g.LspEnableClient = handler
     vim.g.LspStartClient = start_client
     ---Enable and start a lsp client
