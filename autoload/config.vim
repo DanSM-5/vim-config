@@ -70,7 +70,7 @@ func! s:SetConfigurationsBefore () abort
   " Enable fold method using indent
   " Ref: https://www.reddit.com/r/neovim/comments/10q2mjq/comment/j6nmuw8
   " also consider plugin: https://github.com/kevinhwang91/nvim-ufo
-  exec 'set fillchars=fold:\ ,foldopen:,foldsep:\ ,foldclose:'
+  exec 'set fillchars=fold:\ ,foldopen:,foldsep:\ ,foldclose:,diff:╱'
   set foldmethod=indent
   set nofoldenable
   set foldlevel=99
