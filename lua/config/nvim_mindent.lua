@@ -55,7 +55,8 @@ local mindent_config = {
   },
 
   -- Which character to use for drawing scope indicator
-  symbol = '▎',
+  -- symbol = '▎',
+  symbol = '▏',
 }
 
 local set_commands = function ()

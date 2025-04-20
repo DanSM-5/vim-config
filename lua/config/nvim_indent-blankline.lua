@@ -11,7 +11,8 @@ return {
     require('ibl').setup({
       indent = {
         highlight = { 'RainbowGrey' },
-        char = '▎',
+        -- char = '▎',
+        char = '▏',
       },
       whitespace = {
         remove_blankline_trail = true,
