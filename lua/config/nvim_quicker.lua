@@ -1,13 +1,18 @@
 local set_keymaps = function ()
-  vim.keymap.set('n', '<leader>q', function()
+  local create_repeatable_func = require('utils.repeat_motion').create_repeatable_func
+
+  local toggle_qf = create_repeatable_func(function()
     require('quicker').toggle()
-  end, {
-    desc = 'Toggle quickfix',
-  })
-  vim.keymap.set('n', '<leader>l', function()
+  end)
+  local toggle_locl = create_repeatable_func(function()
     require('quicker').toggle({ loclist = true })
-  end, {
-    desc = 'Toggle loclist',
+  end)
+
+  vim.keymap.set('n', '<leader>q', toggle_qf, {
+    desc = '[quickfix] Toggle quickfix',
+  })
+  vim.keymap.set('n', '<leader>Q', toggle_locl, {
+    desc = '[quickfix] Toggle loclist',
   })
 end
 
@@ -31,6 +36,7 @@ return {
         },
       },
     })
+    set_keymaps()
   end,
   set_keymaps = set_keymaps,
 }
