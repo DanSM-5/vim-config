@@ -107,7 +107,41 @@ local function get_lsp_handler ()
   return lspconfig_handler
 end
 
+---Attempt to attach a buffer to enabled clients from lspconfig or vim.lsp.enable
+---@param bufnr integer Buffer id to attach
+local try_attach_buffer = function (bufnr)
+  local bufname = vim.api.nvim_buf_get_name(bufnr)
+  if vim.bo[bufnr].buftype == 'nofile' or #bufname == 0 or (not vim.api.nvim_buf_is_valid(bufnr)) then
+    return
+  end
+
+  local lspconfig, configs = pcall(require, 'lspconfig.configs')
+  if lspconfig then
+    for _, key in ipairs(require('lspconfig.util').available_servers()) do
+      local config = configs[key]
+      if type(config.launch) == 'function' and (config.filetypes == nil or vim.tbl_contains(config.filetypes, vim.bo[bufnr].filetype)) then
+        config.launch(bufnr)
+      end
+    end
+  end
+
+  for _, key in ipairs(vim.tbl_keys(vim.lsp._enabled_configs)) do
+    if vim.lsp.config[key] and (vim.tbl_contains(vim.lsp.config[key].filetypes, vim.bo[bufnr].filetype) or vim.lsp.config[key].filetype == vim.bo[bufnr].filetype) then
+      local clients = vim.lsp.get_clients({ name = key })
+      if #clients > 0 then
+        vim.lsp.buf_attach_client(bufnr, clients[1].id)
+      else
+        local client_id = vim.lsp.start(vim.lsp.config[key])
+        if client_id then
+          vim.lsp.buf_attach_client(bufnr, client_id)
+        end
+      end
+    end
+  end
+end
+
 return {
+  try_attach_buffer = try_attach_buffer,
   update_lsp_settings = update_lsp_settings,
   set_lsp_settings = set_lsp_settings,
   get_lsp_settings = get_lsp_settings,

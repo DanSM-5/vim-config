@@ -150,25 +150,33 @@ return {
       'nvim-tree/nvim-web-devicons',
       -- Ctags lsp
       -- 'netmute/ctags-lsp.nvim',
-      {
-        -- For jsonls to add schemas
-        'b0o/SchemaStore.nvim',
-        lazy = true,
-      },
     },
     -- event = 'VimEnter',
     event = 'VeryLazy',
     config = function()
-      require('lsp-servers.lsp_settings').setup({
+      local lsp_settings = require('lsp-servers.lsp_settings')
+      lsp_settings.setup({
         completions = {
           enable = { lazydev = true },
           engine = use_blink and 'blink' or 'cmp'
         }
       })
+
       -- NOTE: Call lsp start manually to attempt to attach current buffer
-      vim.cmd('LspStart')
+      -- vim.cmd('LspStart')
+
+      -- Try attach the current buffer
+      lsp_settings.try_attach_buffer(vim.api.nvim_get_current_buf())
     end,
   },
+
+
+  {
+    -- For jsonls to add schemas
+    'b0o/SchemaStore.nvim',
+    lazy = true, -- only load when it's require
+  },
+
   -- TODO: Review how to use powershell editor services
   -- {
   --   "TheLeoP/powershell.nvim",
