@@ -281,10 +281,12 @@ end
 
 ---@generic T
 ---@param list T[]
----@param fn fun(v: T):boolean?
+---@param fn fun(value: T, index?: integer, tbl?: T[]): boolean?
 ---@return T[]
-local function filter(fn, list)
+local function filter(list, fn)
+  ---@type `T`
   local ret = {}
+  ---@type integer, `T`
   for _, v in ipairs(list) do
     if fn(v) then
       table.insert(ret, v)
@@ -335,21 +337,92 @@ end
 
 ---Execute a delegate function for each element in a table
 ---@generic V
----@param t table<string, V>
----@param fn fun(key: string, value: V)
----@param opts? {case_sensitive?: boolean}
+---@param t table<string|integer, V>
+---@param fn fun(value: V, key: string|integer, tbl?: table<string|integer>, V)
+---@param opts? { case_sensitive?: boolean; pairs?: boolean }
 local function foreach(t, fn, opts)
+  opts = opts or {}
+
   ---@type string[]
   local keys = vim.tbl_keys(t)
   pcall(table.sort, keys, function(a, b)
-    if opts and opts.case_sensitive then
+    if opts.case_sensitive then
       return a < b
     end
     return a:lower() < b:lower()
   end)
-  for _, key in ipairs(keys) do
-    fn(key, t[key])
+
+  local mapper = opts.pairs and pairs or ipairs
+
+  for _, key in mapper(keys) do
+    fn(t[key], key, t)
   end
+end
+
+---Executes a mapping function to all elements of a numeric table
+---@generic V, T
+---@param list V[]
+---@param fn fun(value: V, index?: integer, tbl?: V[]): T
+---@return T[] Returns the mapped table
+local function map(list, fn)
+  ---@type `T`[]
+  local out_table = {}
+
+  ---@type integer, `V`
+  for index, value in ipairs(list) do
+    table.insert(out_table, fn(value, index, list))
+  end
+
+  return out_table
+end
+
+---Get a Collection of key-value pairs from a table
+---@generic K, V
+---@param tbl table<K, V>
+---@return [K, V][] 
+local function entries(tbl)
+  ---@type [`K`, `V`][]
+  local out_table = {}
+
+  ---@type integer, `V`
+  for key, value in pairs(tbl) do
+    table.insert(out_table, { key, value })
+  end
+
+  return out_table
+end
+
+
+---Get a Collection of key-value pairs from a table
+---@generic K
+---@param tbl table<K, unknown>
+---@return K[] 
+local function keys(tbl)
+  ---@type `K`[]
+  local out_table = {}
+
+  ---@type `K`
+  for key, _ in pairs(tbl) do
+    table.insert(out_table, key)
+  end
+
+  return out_table
+end
+
+---Get a Collection of key-value pairs from a table
+---@generic V
+---@param tbl table<unknown, V>
+---@return V[] 
+local function values(tbl)
+  ---@type `V`[]
+  local out_table = {}
+
+  ---@type integer, `V`
+  for _, value in pairs(tbl) do
+    table.insert(out_table, value)
+  end
+
+  return out_table
 end
 
 ---@param t table
@@ -572,6 +645,10 @@ return {
   merge = merge,
   foreach = foreach,
   filter = filter,
+  map = map,
+  entries = entries,
+  keys = keys,
+  values = values,
   contains = contains,
   find = find,
   every = every,
