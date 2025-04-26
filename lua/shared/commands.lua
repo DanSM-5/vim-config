@@ -160,5 +160,17 @@ end, {
   bang = true,
   -- bar = true,
   nargs = '+',
-  complete = function () return { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave', '@yandex', '@github' } end
+  complete = function (args)
+    local engines = { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave', '@yandex', '@github' }
+    if type(args) == 'string' and #args > 0 then
+      local matched = vim.tbl_filter(function (engine)
+        local _, matches = string.gsub(engine, args, '')
+        return matches > 0
+      end, engines)
+
+      return #matched > 0 and matched or engines
+    end
+
+    return engines
+  end
 })
