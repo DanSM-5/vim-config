@@ -139,6 +139,7 @@ local function set_repeat_direction_maps()
   local repeat_motion = require('utils.repeat_motion')
   local repeat_pair = repeat_motion.repeat_pair
   local create_repeatable_pair = repeat_motion.create_repeatable_pair
+  local create_repeatable_func = repeat_motion.create_repeatable_func
   -- NOTE: Setting repeatable keymaps ',' (left) and ';' (right)
   repeat_motion.set_motion_keys()
 
@@ -785,6 +786,37 @@ local function set_repeat_direction_maps()
     desc_forward = '[MiniIndent] Go to indent scope top',
     desc_backward = '[MiniIndent] Go to indent scope bottom',
   })
+
+
+  local move_line_end, move_line_almost_end = create_repeatable_pair(function ()
+    vim.cmd.normal([[ddGp``]])
+  end, function ()
+    vim.cmd.normal([[ddGP``]])
+    -- vim.cmd.normal([[ddggP``]])
+  end)
+  local move_line_start, move_line_almost_start = create_repeatable_pair(function ()
+    vim.cmd.normal([[ddggP``]])
+  end, function ()
+    vim.cmd.normal([[ddggp``]])
+  end)
+
+  -- move current line to the end or the begin of current buffer (continuation)
+  vim.keymap.set('n', ']<End>', move_line_end, { desc = 'Move line to end of the buffer', noremap = true, silent = true })
+  vim.keymap.set('n', '[<End>', move_line_almost_end,
+    { desc = 'Move line to the second last line in the buffer', noremap = true, silent = true })
+  vim.keymap.set(
+    'n',
+    ']<Home>',
+    move_line_almost_start,
+    { desc = 'Move line to second line in the buffer', noremap = true, silent = true }
+  )
+  vim.keymap.set(
+    'n',
+    '[<Home>',
+    move_line_start,
+    { desc = 'Move line to start of the buffer', noremap = true, silent = true }
+  )
+
 end
 
 return {
