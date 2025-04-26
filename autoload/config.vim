@@ -361,11 +361,16 @@ func! s:Set_user_keybindings () abort
   " Call vim fugitive
   nnoremap <leader>gg <cmd>call FugitiveToggle()<cr>
 
-  " ]<End> or ]<Home> move current line to the end or the begin of current buffer
+  " Move current line to the end or the begin of current buffer
   nnoremap <silent>]<End> ddGp``
-  nnoremap <silent>]<Home> ddggP``
   vnoremap <silent>]<End> dGp``
-  vnoremap <silent>]<Home> dggP``
+  nnoremap <silent>[<End> ddGP``
+  vnoremap <silent>[<End> dGP``
+
+  nnoremap <silent>]<Home> ddggp``
+  vnoremap <silent>]<Home> dggp``
+  nnoremap <silent>[<Home> ddggP``
+  vnoremap <silent>[<Home> dggP``
 
   " Select blocks after indenting
   xnoremap < <gv
