@@ -5,6 +5,7 @@ local templates = {
   wikipedia = 'https://en.wikipedia.org/w/index.php?search=%s',
   brave = 'https://search.brave.com/search?q=%s',
   yandex = 'https://yandex.com/search/?text=%s',
+  github = 'https://github.com/search?type=repositories&q=%s'
 }
 
 local default_engine = 'brave'

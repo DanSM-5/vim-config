@@ -160,5 +160,5 @@ end, {
   bang = true,
   -- bar = true,
   nargs = '+',
-  complete = function () return { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave', '@yandex' } end
+  complete = function () return { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave', '@yandex', '@github' } end
 })
