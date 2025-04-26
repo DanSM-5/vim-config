@@ -126,6 +126,7 @@ local remove_default = function ()
     vim.keymap.del('n', 'gra')
     vim.keymap.del('x', 'gra')
     vim.keymap.del('n', 'gri')
+    -- vim.keymap.del('n', 'g0')
   end
 end
 
