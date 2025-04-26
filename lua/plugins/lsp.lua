@@ -153,6 +153,7 @@ return {
     },
     -- event = 'VimEnter',
     event = 'VeryLazy',
+    -- event = { "BufRead", "BufNewFile" },
     config = function()
       local lsp_settings = require('lsp-servers.lsp_settings')
       lsp_settings.setup({
