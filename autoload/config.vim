@@ -549,7 +549,8 @@ func! s:Set_user_keybindings () abort
   nnoremap gV `[v`]
 
   " Search in visual selected area
-  xnoremap g/ <esc>/\%V
+  xnoremap / <esc>/\%V
+  nnoremap g/ <esc>/\%V
 
   " Keymaps for builtin completion menu using tab
   let pumMaps = {
