@@ -33,7 +33,7 @@ local set_keymaps = function()
   )
   vim.keymap.set(
     'n',
-    '<leader>vp',
+    '<leader>vP',
     ':Neotree filesystem show toggle dir=$HOME/projects position=right<cr>',
     { desc = 'NeoTree: Open projects directory', silent = true }
   )
