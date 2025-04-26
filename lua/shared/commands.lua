@@ -138,3 +138,27 @@ end, {
   bang = true,
   desc = '[FShow] Show the commits in fzf',
 })
+
+vim.api.nvim_create_user_command('BSearch', function (args)
+  local first = args.fargs[1]
+  local engine = string.gsub(first, '@', '')
+  local search = require('utils.browser_search')
+  if string.sub(first, 1, 1) == '@' and search.is_valid_engine(engine) then
+    search.search_browser(
+      table.concat({ unpack(args.fargs, 2) }, ' '),
+      engine
+    )
+
+    return
+  end
+
+  require('utils.browser_search').search_browser(
+    table.concat(args.fargs, ' ')
+  )
+end, {
+  desc = 'Search in browser',
+  bang = true,
+  -- bar = true,
+  nargs = '+',
+  complete = function () return { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave' } end
+})
