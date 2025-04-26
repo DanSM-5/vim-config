@@ -471,6 +471,13 @@ func! s:Set_user_keybindings () abort
     endif
   endif
 
+  " TODO: Missing comment logic
+  " Similar to above applied to visual mode
+  xnoremap <expr> yc ':t+'.(getpos(".")[1] > getpos("v")[1]
+        \ ? getpos(".")[1] - getpos("v")[1]
+        \ : getpos("v")[1] - getpos(".")[1]).'<cr>'
+  xnoremap yC :t-1<cr>
+
   " Duplicate line above and below without moving cursor
   if has('nvim')
     " nnoremap <A-y> <cmd>t.<cr>
