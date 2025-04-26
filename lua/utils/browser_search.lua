@@ -4,6 +4,7 @@ local templates = {
   duckduckgo = 'https://duckduckgo.com/?q=%s',
   wikipedia = 'https://en.wikipedia.org/w/index.php?search=%s',
   brave = 'https://search.brave.com/search?q=%s',
+  yandex = 'https://yandex.com/search/?text=%s',
 }
 
 local default_engine = 'brave'
