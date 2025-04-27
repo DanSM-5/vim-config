@@ -54,7 +54,7 @@ local set_commands = function ()
           fullscreen = opts.bang,
           name = 'kulala',
           fzf_opts = fzf.fzf_with_options({
-            '--no-mulit',
+            '--no-multi',
           }, 'bind'),
           sink = function (selected)
             if #selected < 2 then
