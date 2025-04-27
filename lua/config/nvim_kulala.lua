@@ -79,9 +79,10 @@ local set_commands = function ()
 
     vim.api.nvim_create_user_command('Kulala', command_handler, {
       complete = function (curr)
+        local lowered = string.lower(curr)
         local subs = vim.tbl_keys(commands)
         local matched = vim.tbl_filter(function (sub)
-          local _, matches = string.gsub(sub, curr, '')
+          local _, matches = string.gsub(string.lower(sub), lowered, '')
           return matches > 0
         end, subs)
 
