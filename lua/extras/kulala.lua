@@ -187,6 +187,8 @@ local register_servers = function ()
 end
 
 local setup = function ()
+  vim.notify('Loading Kulala plugin')
+
   -- Delete default command
   pcall(vim.api.nvim_del_user_command, 'Kulala')
   -- Clear autocmd
@@ -209,15 +211,33 @@ end
 
 local set_commands = function ()
   vim.api.nvim_create_user_command('Kulala', function (opts)
-    if opts.fargs[1] ~= 'load' then
+    if opts.fargs[1] == 'load' or opts.bang then
+      setup()
       return
     end
 
-    setup()
+    if opts.fargs[1] == nil then
+      require('utils.fzf').fzf({
+        source = { 'yes', 'no' },
+        fzf_opts = {
+          '--header',
+          'Load kulala.nvim?',
+        },
+        sink = function (options)
+          if #options < 2 or options[2] == 'no' then
+            return
+          end
+
+          setup()
+        end
+      })
+
+      return
+    end
   end, {
     bar = true,
     complete = function () return { 'load' } end,
-    nargs = 1,
+    nargs = '*',
     desc = '[Kulala] Start kulala',
   })
 end
