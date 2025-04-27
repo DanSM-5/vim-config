@@ -236,6 +236,7 @@ local set_commands = function ()
     end
   end, {
     bar = true,
+    bang = true,
     complete = function () return { 'load' } end,
     nargs = '*',
     desc = '[Kulala] Start kulala',
