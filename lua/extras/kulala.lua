@@ -1,3 +1,5 @@
+---@module 'lazy'
+
 local server_name = 'kulala_ls'
 local group_autocmd_name = 'LoadKulala'
 local loaded = false
@@ -11,30 +13,33 @@ local filetypes = {
 ---Get Spec table
 ---@return LazyPluginSpec
 local get_spec = function ()
+  ---@type LazyPluginSpec
   return {
     'mistweaverco/kulala.nvim',
+    tag = 'v5.2.1',
     ft = filetypes,
     cmd = {
-      'KulalaRun',
-      'KulalaRunAll',
-      'KulalaReplay',
-      'KulalaInspect',
-      'KulalaShowStats',
-      'KulalaScratchpad',
-      'KulalaCopy',
-      'KulalaFromCurl',
-      'KulalaClose',
-      'KulalaOpen',
-      'KulalaVersion',
-      'KulalaToggleView',
-      'KulalaSearch',
-      'KulalaPrev',
-      'KulalaNext',
-      'KulalaScriptsClearGlobal',
-      'KulalaEnvGet',
-      'KulalaEnvSet',
-      'KulalaDownloadGQL',
-      'KulalaClearCache',
+      'Kulala',
+      -- 'KulalaRun',
+      -- 'KulalaRunAll',
+      -- 'KulalaReplay',
+      -- 'KulalaInspect',
+      -- 'KulalaShowStats',
+      -- 'KulalaScratchpad',
+      -- 'KulalaCopy',
+      -- 'KulalaFromCurl',
+      -- 'KulalaClose',
+      -- 'KulalaOpen',
+      -- 'KulalaVersion',
+      -- 'KulalaToggleView',
+      -- 'KulalaSearch',
+      -- 'KulalaPrev',
+      -- 'KulalaNext',
+      -- 'KulalaScriptsClearGlobal',
+      -- 'KulalaEnvGet',
+      -- 'KulalaEnvSet',
+      -- 'KulalaDownloadGQL',
+      -- 'KulalaClearCache',
     },
     config = function ()
       require('config.nvim_kulala').setup()
@@ -182,8 +187,13 @@ local register_servers = function ()
 end
 
 local setup = function ()
+  -- Delete default command
+  pcall(vim.api.nvim_del_user_command, 'Kulala')
+  -- Clear autocmd
+  load_group = vim.api.nvim_create_augroup(group_autocmd_name, { clear = true })
+
   load_plugins()
-  register_servers()
+  -- register_servers()
 end
 
 local set_autocmds = function ()
@@ -198,13 +208,16 @@ local set_autocmds = function ()
 end
 
 local set_commands = function ()
-  vim.api.nvim_create_user_command('KulalaLoad', function ()
-    -- Clear autocmd
-    load_group = vim.api.nvim_create_augroup(group_autocmd_name, { clear = true })
+  vim.api.nvim_create_user_command('Kulala', function (opts)
+    if opts.fargs[1] ~= 'load' then
+      return
+    end
+
     setup()
   end, {
     bar = true,
-    desc = '[Kulala] Start kulala'
+    complete = function () return { 'load' } end,
+    desc = '[Kulala] Start kulala',
   })
 end
 
