@@ -146,6 +146,15 @@ local set_commands = function ()
       }
     )
 
+    vim.api.nvim_create_user_command(
+      'KulalaFormatAll',
+      format_all, {
+        desc = '[Kulala] Format all files in cwd',
+        bar = true,
+        nargs = 0,
+      }
+    )
+
     -- vim.api.nvim_create_user_command(
     --   'KulalaRun',
     --   kulala.run, {

@@ -20,6 +20,8 @@ local get_spec = function ()
     ft = filetypes,
     cmd = {
       'Kulala',
+      'KulalaFormat',
+      'KulalaFormatAll',
       -- 'KulalaRun',
       -- 'KulalaRunAll',
       -- 'KulalaReplay',
