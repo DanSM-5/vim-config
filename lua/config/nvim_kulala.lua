@@ -36,6 +36,82 @@ local format_all = function ()
   end)
 end
 
+---Convert file to http
+---@param format 'openapi' | 'postman' | 'bruno' Input format. Default 'openapi'.
+---@param file string file to convert or a url to fetch the file to convert.
+---@param on_exit? fun(file: string) Function to run on exit.
+local convert = function (format, file, on_exit)
+  on_exit = on_exit or vim.schedule_wrap(function (converted_file)
+    vim.cmd.edit(converted_file)
+  end)
+
+  vim.system({ 'kulala-fmt', 'convert', '--from', format, file }, {
+    text = true,
+    stdout = function (err, data)
+      if err then
+        vim.schedule(function ()
+          vim.notify('Could not convert file', vim.log.levels.ERROR)
+        end)
+        return
+      end
+
+      --Sample:
+      --Converted OpenAPI spec file: notes/swagger.json --> notes/swagger.default.http
+      local output = require('utils.stdlib').split(data, '-->')
+
+      if output[2] and (vim.uv or vim.loop).fs_stat(string.gsub(output[2], '%s+', '')) then
+        local converted_file = string.gsub(output[2], '%s+', '')
+        on_exit(converted_file)
+      end
+    end
+  })
+end
+
+---Convert file to http
+---@param format 'openapi' | 'postman' | 'bruno' Input format. Default 'openapi'.
+---@param file_or_url string file to convert or a url to fetch the file to convert.
+---@param outfile? string filename to use if a url was provided. Defaults to last segment of the url.
+local convert_to_http = function (format, file_or_url, outfile)
+  local use_format = format or 'openapi'
+
+  if (vim.uv or vim.loop).fs_stat(file_or_url) then
+    -- vim.fn.system({ 'kulala-fmt', 'convert', '--from', use_format, file_or_url })
+    convert(format, file_or_url)
+    return
+  end
+
+  local tmp_dir = vim.fn.tempname()
+  tmp_dir = vim.fn.fnamemodify(tmp_dir, '%:p:h')
+  local cwd = vim.fn.getcwd()
+  local name = outfile
+
+  if name == nil then
+    -- Use last path segment as name
+    local segments = require('utils.stdlib').split(file_or_url, '/')
+    name = segments[#segments]
+    -- Remove query string and fragment
+    name = string.gsub(name, '%?.*$', '')
+    name = string.gsub(name, '%#.*$', '')
+  end
+
+  local download_file = tmp_dir .. '/' .. name
+
+  if (vim.uv or vim.loop).fs_stat(download_file) then
+    vim.notify('[Convert] Out file "'..download_file..'" already exists', vim.log.levels.WARN)
+    return
+  end
+
+  local final_name = cwd .. '/' .. name .. '.http'
+  local on_converted = vim.schedule_wrap(function (converted_file)
+    os.rename(converted_file, final_name)
+    vim.cmd.edit(final_name)
+  end)
+
+  vim.system({ 'curl', '-sL', file_or_url, '-o', download_file }, { text = true }, function ()
+    convert(format, download_file, on_converted)
+  end)
+end
+
 local set_commands = function ()
   local has_kulala, kulala = pcall(require, 'kulala')
 
@@ -78,6 +154,7 @@ local set_commands = function ()
       clearCache = kulala.clear_cached_files,
       format = format_file,
       formatAll = format_all,
+      convert = convert_to_http,
     }
 
 
