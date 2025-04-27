@@ -17,7 +17,7 @@ local format_file = function (filename)
 
     if filename == nil or filename == '%' then
       -- ensure latest version is loaded
-      vim.cmd.edit()
+      vim.schedule(vim.cmd.edit)
     end
   end)
 end
@@ -32,7 +32,7 @@ local format_all = function ()
   }, function ()
     -- TODO: Handle errors?
 
-    vim.cmd.edit()
+    vim.schedule(vim.cmd.edit)
   end)
 end
 
