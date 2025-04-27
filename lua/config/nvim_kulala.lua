@@ -41,6 +41,10 @@ end
 ---@param file string file to convert or a url to fetch the file to convert.
 ---@param on_exit? fun(file: string) Function to run on exit.
 local convert = function (format, file, on_exit)
+  if not (vim.uv or vim.loop).fs_stat(file) then
+    return
+  end
+
   on_exit = on_exit or vim.schedule_wrap(function (converted_file)
     vim.cmd.edit(converted_file)
   end)
@@ -55,12 +59,20 @@ local convert = function (format, file, on_exit)
         return
       end
 
+      if data == '' or data == nil then
+        return
+      end
+
       --Sample:
       --Converted OpenAPI spec file: notes/swagger.json --> notes/swagger.default.http
-      local output = require('utils.stdlib').split(data, '-->')
+      local output = require('utils.stdlib').split(data, '%-->')
+      if output[2] == nil then
+        return
+      end
 
-      if output[2] and (vim.uv or vim.loop).fs_stat(string.gsub(output[2], '%s+', '')) then
-        local converted_file = string.gsub(output[2], '%s+', '')
+      local converted_file = string.gsub(output[2], '%s+', '')
+
+      if (vim.uv or vim.loop).fs_stat(converted_file) then
         on_exit(converted_file)
       end
     end
@@ -105,9 +117,13 @@ local convert_to_http = function (format, file_or_url, outfile)
   local on_converted = vim.schedule_wrap(function (converted_file)
     os.rename(converted_file, final_name)
     vim.cmd.edit(final_name)
+    local tmp_files = vim.fn.readdir(tmp_dir)
+    for _, tmp_f in ipairs(tmp_files) do
+      pcall(os.remove, tmp_f)
+    end
   end)
 
-  vim.system({ 'curl', '-sL', file_or_url, '-o', download_file }, { text = true }, function ()
+  vim.system({ 'curl', '-sL', '--create-dirs', file_or_url, '-o', download_file }, { text = true }, function ()
     convert(format, download_file, on_converted)
   end)
 end
