@@ -197,7 +197,7 @@ local options_sets = {
 
 ---Apply a default set of options
 ---@param opts string[] options to extend
----@param name string Type of set to apply
+---@param name 'bind'|'preview' Type of set to apply
 ---@return string[] New set of options
 local fzf_with_options = function (opts, name)
   local opts_set = options_sets[name] or {}
