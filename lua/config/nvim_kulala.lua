@@ -44,12 +44,13 @@ local set_commands = function ()
     ---@param opts vim.api.keyset.create_user_command.command_args
     local command_handler = function (opts)
       local sub_command = opts.fargs[1]
+      local subs = vim.tbl_keys(commands)
 
       -- Select in fuzzy finder
       if not sub_command then
         local fzf = require('utils.fzf')
         fzf.fzf({
-          source = vim.tbl_keys(commands),
+          source = subs,
           fullscreen = opts.bang,
           name = 'kulala',
           fzf_opts = fzf.fzf_with_options({
@@ -64,9 +65,10 @@ local set_commands = function ()
             commands[sub]()
           end
         })
+
+        return
       end
 
-      local subs = vim.tbl_keys(commands)
       if not vim.tbl_contains(subs, sub_command) then
         vim.notify('[Kulala] Invalid sub command', vim.log.levels.WARN)
         return
