@@ -1,3 +1,41 @@
+---Format http file. Requires kulala-fmt
+---@param filename? string File to format
+local format_file = function (filename)
+  if vim.fn.executable('kulala-fmt') == 0 then
+    vim.notify('Requires kulala-fmt!', vim.log.levels.ERROR)
+    return;
+  end
+
+  -- Save before formatting
+  vim.cmd.write()
+
+  ---@type string
+  local file = (filename == nil or filename == '%') and vim.fn.expand('%:p') or filename --[[@as string]]
+
+  vim.system({ 'kulala-fmt', 'format', file }, { text = true }, function ()
+    -- TODO: Handle errors?
+
+    if filename == nil or filename == '%' then
+      -- ensure latest version is loaded
+      vim.cmd.edit()
+    end
+  end)
+end
+
+---Format all http files in current directory. Requires kulala-fmt
+local format_all = function ()
+  vim.fn.wall()
+
+  vim.system({ 'kulala-fmt', 'format' }, {
+    text = true,
+    cwd = vim.fn.getcwd(),
+  }, function ()
+    -- TODO: Handle errors?
+
+    vim.cmd.edit()
+  end)
+end
+
 local set_commands = function ()
   local has_kulala, kulala = pcall(require, 'kulala')
 
@@ -18,27 +56,30 @@ local set_commands = function ()
     end
 
     local commands = {
-      Run = kulala.run,
-      RunAll = kulala.run_all,
-      Replay = kulala.replay,
-      Inspect = kulala.inspect,
-      ShowStats = kulala.show_stats,
-      Scratchpad = kulala.scratchpad,
-      Copy = kulala.copy,
-      FromCurl = kulala.from_curl,
-      Close = kulala.close,
-      Open = kulala.open,
-      Version = kulala.version,
-      ToggleView = kulala.toggle_view,
-      Search = kulala.search,
-      Prev = jump_next,
-      Next = jump_prev,
-      ScriptsClearGlobal = kulala.scripts_clear_global,
-      EnvGet = get_selected_env,
-      EnvSet = set_selected_env,
-      DownloadGQL = kulala.download_graphql_schema,
-      ClearCache = kulala.clear_cached_files,
+      run = kulala.run,
+      runAll = kulala.run_all,
+      replay = kulala.replay,
+      inspect = kulala.inspect,
+      showStats = kulala.show_stats,
+      scratchpad = kulala.scratchpad,
+      copy = kulala.copy,
+      fromCurl = kulala.from_curl,
+      close = kulala.close,
+      open = kulala.open,
+      version = kulala.version,
+      toggleView = kulala.toggle_view,
+      search = kulala.search,
+      prev = jump_next,
+      next = jump_prev,
+      scriptsClearGlobal = kulala.scripts_clear_global,
+      envGet = get_selected_env,
+      envSet = set_selected_env,
+      downloadGQL = kulala.download_graphql_schema,
+      clearCache = kulala.clear_cached_files,
+      format = format_file,
+      formatAll = format_all,
     }
+
 
     ---Handler callback for Kulala command
     ---@param opts vim.api.keyset.create_user_command.command_args
@@ -94,6 +135,14 @@ local set_commands = function ()
       desc = '[Kulala] Commands for kulala',
       force = true,
     })
+
+    vim.api.nvim_create_user_command(
+      'KulalaFormat',
+      format_file, {
+        desc = '[Kulala] Format current file',
+        bar = true,
+      }
+    )
 
     -- vim.api.nvim_create_user_command(
     --   'KulalaRun',
@@ -286,6 +335,16 @@ local set_keymaps = function (opts)
     buffer = opts.buf,
     noremap = true,
     desc = '[Kulala] Run the current request',
+  })
+  vim.keymap.set('n', '<localleader>f', format_file, {
+    desc = '[Kulala] Format current file',
+    buffer = opts.buf,
+    noremap = true,
+  })
+  vim.keymap.set('n', '<localleader>F', format_all, {
+    desc = '[Kulala] Format all files in cwd',
+    buffer = opts.buf,
+    noremap = true,
   })
 end
 
