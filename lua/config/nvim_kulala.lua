@@ -141,6 +141,8 @@ local set_commands = function ()
       format_file, {
         desc = '[Kulala] Format current file',
         bar = true,
+        nargs = 1,
+        complete = 'dir',
       }
     )
 
