@@ -85,6 +85,7 @@ local set_commands = function ()
 
         return #matched > 0 and matched or subs
       end,
+      nargs = '*',
       bang = true,
       bar = true,
       desc = '[Kulala] Commands for kulala',
