@@ -19,7 +19,8 @@ local fzf_bind_options = array_concat(fzf_base_options, {
             '--bind', 'alt-a:select-all',
             '--bind', 'alt-d:deselect-all' })
 
-local fzf_preview_options = array_concat(fzf_bind_options, {
+---@type string[]
+local fzf_preview_options = vim.fn.extend(fzf_bind_options, {
        '--layout=reverse',
        '--preview-window', '60%,wrap',
        '--preview', 'bat -pp --color=always --style=numbers {}' })
@@ -189,6 +190,20 @@ local fzf_projects = function ()
     end)
 end
 
+local options_sets = {
+  bind = fzf_bind_options,
+  preview = fzf_preview_options,
+}
+
+---Apply a default set of options
+---@param opts string[] options to extend
+---@param name string Type of set to apply
+---@return string[] New set of options
+local fzf_with_options = function (opts, name)
+  local opts_set = options_sets[name] or {}
+  return vim.fn.extend(opts_set, opts)
+end
+
 return {
   fzf = fzf,
   select_buffer_lsp = select_buffer_lsp,
@@ -201,5 +216,6 @@ return {
   fzf_options_with_binds = fzf_options_with_binds,
   fzf_options_with_preview = fzf_options_with_preview,
   fzf_projects = fzf_projects,
+  fzf_with_options = fzf_with_options,
 }
 
