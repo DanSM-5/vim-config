@@ -93,7 +93,7 @@ local convert_to_http = function (format, file_or_url, outfile)
   end
 
   local tmp_dir = vim.fn.tempname()
-  tmp_dir = vim.fn.fnamemodify(tmp_dir, '%:p:h')
+  tmp_dir = vim.fn.fnamemodify(tmp_dir, ':p:h')
   local cwd = vim.fn.getcwd()
   local name = outfile
 
