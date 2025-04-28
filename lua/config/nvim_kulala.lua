@@ -117,10 +117,10 @@ local convert_to_http = function (format, file_or_url, outfile)
   local on_converted = vim.schedule_wrap(function (converted_file)
     os.rename(converted_file, final_name)
     vim.cmd.edit(final_name)
-    local tmp_files = vim.fn.readdir(tmp_dir)
-    for _, tmp_f in ipairs(tmp_files) do
-      pcall(os.remove, tmp_f)
-    end
+    -- local tmp_files = vim.fn.readdir(tmp_dir)
+    -- for _, tmp_f in ipairs(tmp_files) do
+    --   pcall(os.remove, tmp_f)
+    -- end
   end)
 
   vim.system({ 'curl', '-sL', '--create-dirs', file_or_url, '-o', download_file }, { text = true }, function ()
