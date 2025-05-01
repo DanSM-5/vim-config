@@ -33,7 +33,7 @@ end
 
 function _G.custom_foldtext()
   -- Return default with marker as it is likely
-  -- formatted for thay method
+  -- formatted for that method
   if vim.tbl_contains(ignore_methods, vim.o.foldmethod) then
     return vim.fn.foldtext()
   end
