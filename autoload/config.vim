@@ -498,6 +498,11 @@ func! s:Set_user_keybindings () abort
   " However, there is no easy way to cancel when in operation pending mode
   " (o-pending). Thus this map exists as a hack for NOOP with <C-o>.
   nnoremap <C-o><esc> <esc>
+  " Set jumps with alt so it doesn't affect <c-o> overrides
+  nnoremap <A-o> <C-o>
+  nnoremap <A-i> <C-i>
+  " Set usual ctrl-o behavior to double the sequence
+  nnoremap <C-o><C-o> <C-o>
 
   " Keymaps for diffget. Useful when resolving conflicts
   " Cursor must be on conflict hunk
@@ -535,6 +540,8 @@ func! s:Set_user_keybindings () abort
     execute "set <A-t>=\et"
     execute "set <A-e>=\ee"
     execute "set <A-y>=\ey"
+    execute "set <A-o>=\eo"
+    execute "set <A-i>=\ei"
 
     " Alt-arrow combinations throw error
     " execute "set <A-Up>=\e[1;3A"
@@ -945,8 +952,6 @@ func! s:SetFZF () abort
   xnoremap <leader>fq <cmd>call GrepVisual()<cr>
   " Opened buffers
   nnoremap <C-o>b <cmd>Buffers<cr>
-  " Set usual ctrl-o behavior to double the sequence
-  nnoremap <C-o><C-o> <C-o>
 
   " Allow to paste from registers in fzf buffer in normal mode
   autocmd! FileType fzf nnoremap <expr> <leader>" fzfcmd#paste('p')
