@@ -12,6 +12,9 @@ return {
 
     -- Set mappings
     gitsigns.setup({
+      -- Enable debug logs
+      -- debug_mode = true,
+
       -- Set to above diagnostic signs (10) so that in multi
       -- sign column setups (2 or more), the hunk sing does not
       -- misalign with the rest of the hunk by being pushed right.

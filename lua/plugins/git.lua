@@ -1,4 +1,6 @@
+---@module 'lazy'
 
+---@type LazyPluginSpec[]
 return {
   {
     'tpope/vim-fugitive',
@@ -10,6 +12,8 @@ return {
   {
     'lewis6991/gitsigns.nvim',
     event = 'VeryLazy',
+    commit = 'fcfa7a989',
+    -- commit = 'c852602',
     config = function ()
       require('config.nvim_gitsigns').setup()
     end,
