@@ -545,7 +545,9 @@ local function set_repeat_direction_maps()
 
   -- Move to next/prev Tab
   repeat_pair({
-    keys = '<tab>',
+    prefix_backward = 'g',
+    prefix_forward = 'g',
+    keys = { 't', 'T' },
     desc_forward = '[Tab] Move to next tab',
     desc_backward = '[Tab] Move to previous tab',
     on_forward = function ()
