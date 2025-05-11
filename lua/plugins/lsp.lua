@@ -3,6 +3,13 @@
 -- indicate wheter to use cmp or blink
 local use_blink = os.getenv('USE_BLINK') == '1'
 
+-- TODO: Update Mason and mason-lspconfig when
+-- commands `LspStart`, `LspStop`, `LspRestart`
+-- are available in neovim without lspconfig.
+-- Notice that LSPs that are loaded the old way
+-- `require('lspconfig')['<name>'].setup({})` may not work.
+-- Those require a workaround.
+
 ---@type LazyPluginSpec
 local luasnip_spec = {
   'L3MON4D3/LuaSnip',
@@ -64,6 +71,7 @@ return {
   {
     'williamboman/mason.nvim',
     event = 'VeryLazy',
+    commit = 'fc98833',
     config = function ()
       require('lsp-servers.nvim_mason').setup()
     end,
@@ -143,7 +151,10 @@ return {
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Hook to mason
-      'williamboman/mason-lspconfig.nvim',
+      {
+        'williamboman/mason-lspconfig.nvim',
+        commit = '1a31f82',
+      },
       -- Lsp for linters/formatters
       'nvimtools/none-ls.nvim',
       -- Dependency
