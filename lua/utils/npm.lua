@@ -46,18 +46,20 @@ end
 ---Runs the npm command in a new terminal buffer
 ---@param dir string Directory in which the `npm run` command is executed
 ---@param args string[] | nil Argument for the `npm run` command
-local run = function (dir, args)
+---@param fullscreen? boolean Whether to display in fullscreen
+local run = function (dir, args, fullscreen)
   local new_args = require('utils.stdlib').shallow_clone(args or {})
 
   table.insert(new_args, 1, 'run')
 
-  open_term(dir, 'npm', new_args)
+  open_term(dir, 'npm', new_args, fullscreen)
 end
 
 ---Select a npm command to run in a terminal buffer
 ---@param dir? string Directory or buffer from where to search a package.json
 ---@param fullscreen? boolean Open on fullscreen
-local runfzf = function(dir, fullscreen)
+---@param t_fullscreen? boolean Open terminal on fullscreen
+local runfzf = function(dir, fullscreen, t_fullscreen)
   local cwd = nil
 
   if dir ~= nil then
@@ -127,7 +129,7 @@ local runfzf = function(dir, fullscreen)
       return
     end
 
-    run(cwd, { npm_command })
+    run(cwd, { npm_command }, t_fullscreen)
   end
 
   require('utils.fzf').fzf({

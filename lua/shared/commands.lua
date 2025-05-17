@@ -7,25 +7,28 @@ end, { nargs = '?', bang = true, force = true })
 ---Create NR (npm run) command
 ---@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('NR', function(opts)
+  local terminal_fullscreen = opts.bang
+
   if #opts.fargs == 0 then
     -- Clean trailing lash or backslash
     local dir = require('utils.stdlib').find_root('package.json'):gsub('[\\/]$', '')
 
-    require('utils.npm').runfzf(dir)
+    require('utils.npm').runfzf(dir, false, terminal_fullscreen)
     return
   end
 
   -- Find directory with package.json
-  local dir = opts.bang
-      and vim.fn.expand('%:p:h')
-      or require('utils.stdlib').find_root('package.json')
+  -- local dir = opts.bang
+  --     and vim.fn.expand('%:p:h')
+  --     or require('utils.stdlib').find_root('package.json')
+  local dir = require('utils.stdlib').find_root('package.json')
 
   if dir == nil then
     vim.notify('NPMRUN: Directory not found', vim.log.levels.WARN)
     return
   end
 
-  require('utils.npm').run(dir, opts.fargs)
+  require('utils.npm').run(dir, opts.fargs, terminal_fullscreen)
 end, { bang = true, nargs = '*', complete = 'dir', force = true, desc = '[NR] Small wrapper for `npm run` command' })
 
 ---Create Npm command
