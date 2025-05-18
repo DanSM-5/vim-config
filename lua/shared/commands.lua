@@ -93,7 +93,6 @@ vim.api.nvim_create_user_command('IndentGuides', function (opts)
     option = option == 'on'
   end
 
-  local has_ibl, ibl = pcall(require, 'ibl')
   if vim.fn.exists(':IBLToggle') then
     -- local ibl_option = option ~= nil and option or (not ibl_state)
     -- ibl_state = ibl_option -- state update
@@ -108,7 +107,7 @@ vim.api.nvim_create_user_command('IndentGuides', function (opts)
     end
   end
 
-  local has_mindent, mindent = pcall(require, 'mini.indentscope')
+  local has_mindent = pcall(require, 'mini.indentscope')
   if has_mindent then
     local mindent_option = option ~= nil and option or vim.g.miniindentscope_disable
     -- Notice, this is a negated variable
