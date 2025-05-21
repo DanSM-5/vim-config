@@ -95,7 +95,7 @@ local set_commands = function()
         print('Error executing command: ' .. err.message)
       end
     end, bufnr)
-  end, { bang = true, nargs = '?', complete = 'path', desc = '[MPLS] Request open preview for md file' })
+  end, { bang = true, nargs = '?', complete = 'file', desc = '[MPLS] Request open preview for md file' })
 end
 
 local configure = function()
