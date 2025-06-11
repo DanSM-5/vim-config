@@ -18,6 +18,12 @@ local manual_setup = {
     lsp = 'basics_ls',
     options = { keymaps = false }
   },
+  {
+    -- WARN: basics_ls attaches to all buffers which could cause issues due to additional keybindings
+    -- Exclusions can be added in `./lua/lsp-servers/keymaps.lua`
+    server = 'ast-grep',
+    lsp = 'ast_grep',
+  },
 }
 
 return manual_setup
