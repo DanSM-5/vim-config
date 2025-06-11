@@ -746,9 +746,9 @@ local function set_repeat_direction_maps()
   )
   local next_bracket_pair, prev_bracket_pair = create_repeatable_pair(
     function()
-      vim.fn.search('[{}]')
+      vim.fn.search('[\\[\\]{}()<>]', 'w')
     end, function()
-      vim.fn.search('[{}]', 'b')
+      vim.fn.search('[\\[\\]{}()<>]', 'wb')
     end
   )
   vim.keymap.set('n', ']}', next_bracket_pair,
