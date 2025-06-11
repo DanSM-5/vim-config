@@ -453,13 +453,11 @@ local function set_repeat_direction_maps()
 
   -- Add empty lines after/before cursor
   local empty_line_next = function()
-    vim.print('there')
     -- TODO: update once it is possible to assign a Lua function to options #25672
     vim.go.operatorfunc = "v:lua.require'vim._buf'.space_below"
     vim.cmd[[normal g@l]]
   end
   local empty_line_prev = function()
-    vim.print('here')
     -- TODO: update once it is possible to assign a Lua function to options #25672
     vim.go.operatorfunc = "v:lua.require'vim._buf'.space_above"
     vim.cmd[[normal g@l]]

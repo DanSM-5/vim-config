@@ -71,11 +71,12 @@ return {
   {
     'williamboman/mason.nvim',
     event = 'VeryLazy',
-    commit = 'fc98833',
+    -- commit = 'fc98833',
     config = function ()
       require('lsp-servers.nvim_mason').setup()
     end,
   },
+
   {
     -- Find symbols
     'stevearc/aerial.nvim',
@@ -146,14 +147,13 @@ return {
       require('config.nvim_cmp').configure({ lazydev = true })
     end,
   },
-
   {
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Hook to mason
       {
         'williamboman/mason-lspconfig.nvim',
-        commit = '1a31f82',
+        -- commit = '1a31f82',
       },
       -- Lsp for linters/formatters
       'nvimtools/none-ls.nvim',
@@ -162,6 +162,7 @@ return {
       -- Ctags lsp
       -- 'netmute/ctags-lsp.nvim',
     },
+
     -- event = 'VimEnter',
     event = 'VeryLazy',
     -- event = { "BufRead", "BufNewFile" },
@@ -175,10 +176,12 @@ return {
       })
 
       -- NOTE: Call lsp start manually to attempt to attach current buffer
-      -- vim.cmd('LspStart')
+      -- vim.cmd.LspStart()
 
       -- Try attach the current buffer
       lsp_settings.try_attach_buffer(vim.api.nvim_get_current_buf())
+      -- Other hacks to attach after lazy load
+      -- vim.cmd.edit()
     end,
   },
 

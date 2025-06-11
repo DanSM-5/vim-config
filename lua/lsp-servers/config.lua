@@ -68,12 +68,8 @@ local configs = {
     },
   },
   vimls = {},
-  biome = {
-    use_legacy = true,
-  },
-  eslint = {
-    use_legacy = true,
-  },
+  biome = {},
+  eslint = {},
   eslint_d = {
     use_legacy = true,
   },

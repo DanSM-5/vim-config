@@ -10,8 +10,13 @@
 local use_blink = os.getenv('USE_BLINK') == '1'
 
 require('lsp-servers.nvim_mason').setup()
+local completion_opts = { lazydev = false }
 -- NOTE: Only load cmp for now. Blink is not defined in vimstart.
-require('config.nvim_cmp').configure({ lazydev = false })
+if use_blink then
+  require('config.nvim_blink').configure(completion_opts)
+else
+  require('config.nvim_cmp').configure(completion_opts)
+end
 require('lsp-servers.lsp_settings').setup()
 require('lsp-servers.nvim_fzf_lsp').setup()
 require('config.nvim_aerial').setup()

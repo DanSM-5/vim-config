@@ -86,22 +86,12 @@ local function get_lsp_handler ()
       config.on_attach = require('lsp-servers.keymaps').set_lsp_keys
     end
 
-    require('lspconfig')[server_name].setup(config)
-
-    -- In progress
-    -- if config.use_legacy then
-    --   require('lspconfig')[server_name].setup(config)
-    -- else
-    --   -- FIXME: If lazy loaded, the first buffer does not attach
-    --   -- We need to find a solution
-    --   vim.lsp.config(server_name, config)
-    --   vim.lsp.enable(server_name, true)
-    --   local clients = vim.lsp.get_clients({ name = server_name })
-    --   if #clients > 0 then
-    --     local current = vim.api.nvim_get_current_buf()
-    --     vim.lsp.buf_attach_client(bufnr, clients[1].id)
-    --   end
-    -- end
+    if config.use_legacy then
+      require('lspconfig')[server_name].setup(config)
+    else
+      vim.lsp.config(server_name, config)
+      vim.lsp.enable(server_name, true)
+    end
   end
 
   return lspconfig_handler
@@ -126,7 +116,7 @@ local try_attach_buffer = function (bufnr)
   end
 
   for _, key in ipairs(vim.tbl_keys(vim.lsp._enabled_configs)) do
-    if vim.lsp.config[key] and (vim.tbl_contains(vim.lsp.config[key].filetypes, vim.bo[bufnr].filetype) or vim.lsp.config[key].filetype == vim.bo[bufnr].filetype) then
+    if vim.lsp.config[key] and (vim.tbl_contains(vim.lsp.config[key].filetypes or {}, vim.bo[bufnr].filetype) or vim.lsp.config[key].filetype == vim.bo[bufnr].filetype) then
       local clients = vim.lsp.get_clients({ name = key })
       if #clients > 0 then
         vim.lsp.buf_attach_client(bufnr, clients[1].id)
@@ -207,15 +197,22 @@ return {
 
     local mason_lspconfig_opts = {
       ensure_installed = language_servers,
-      handlers = {
-        lspconfig_handler,
-      },
+      automatic_enable = false,
+      -- Deprecated in nvim 0.11.2
+      -- handlers = {
+      --   lspconfig_handler,
+      -- },
     }
 
     -- Setup mason_lspconfig to activate lsp servers
     -- automatically
     local mason_lsp = require('mason-lspconfig')
     mason_lsp.setup(mason_lspconfig_opts)
+
+    -- Manually enable lsp servers
+    for _, server_name in ipairs(mason_lsp.get_installed_servers()) do
+      lspconfig_handler(server_name)
+    end
 
     local none_ls = require('null-ls')
     none_ls.setup({
