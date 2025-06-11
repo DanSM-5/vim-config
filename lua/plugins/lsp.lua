@@ -174,14 +174,6 @@ return {
           engine = use_blink and 'blink' or 'cmp'
         }
       })
-
-      -- NOTE: Call lsp start manually to attempt to attach current buffer
-      -- vim.cmd.LspStart()
-
-      -- Try attach the current buffer
-      lsp_settings.try_attach_buffer(vim.api.nvim_get_current_buf())
-      -- Other hacks to attach after lazy load
-      -- vim.cmd.edit()
     end,
   },
 
