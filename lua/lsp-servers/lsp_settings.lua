@@ -66,7 +66,8 @@ local function get_lsp_handler ()
     end
 
     -- Ensure not null
-    options = options or {}
+    ---@type config.LspServerEntry.options
+    options = vim.tbl_deep_extend('force', { enable = true }, options or {})
 
     -- Prevent mason-lspconfig from trying to start the LSP server
     -- for rust_analyzer. This is done through mrcjkb/rustaceanvim plugin
@@ -90,7 +91,10 @@ local function get_lsp_handler ()
       require('lspconfig')[server_name].setup(config)
     else
       vim.lsp.config(server_name, config)
-      vim.lsp.enable(server_name, true)
+
+      if options.enable then
+        vim.lsp.enable(server_name, true)
+      end
     end
   end
 

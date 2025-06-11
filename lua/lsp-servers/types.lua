@@ -4,9 +4,9 @@
 --- @class config.LspConfigExtended: vim.lsp.Config
 --- @field cmd? string[]|fun(dispatchers: vim.lsp.rpc.Dispatchers): vim.lsp.rpc.PublicClient
 --- @field enabled? boolean
---- @field single_file_support? boolean
 --- @field filetypes? string[]
 --- @field filetype? string
+--- @deprecated Deprecated in favor of before_init
 --- @field on_new_config? fun(new_config: config.LspConfigExtended?, new_root_dir: string)
 --- @field autostart? boolean
 --- @field package _on_attach? fun(client: vim.lsp.Client, bufnr: integer)
@@ -16,6 +16,7 @@
 --- Options on setup to control the behavior of the server
 ---@class config.LspServerEntry.options
 ---@field keymaps? boolean|nil Additional options when configuring the server
+---@field enable? boolean|nil Whether to call enable or not for vim.lsp.enable.
 
 --- Settings for lsp's configured manually
 ---@class config.LspServerEntry
@@ -39,7 +40,7 @@
 ---@field completions config.LspSettings.options
 
 --- Update capabilities function
----@alias config.UpdateCapabilities fun(base: config.LspConfigExtended): config.LspConfigExtended
+---@alias config.UpdateCapabilities fun(base: config.LspConfigExtended | vim.lsp.Config): config.LspConfigExtended
 
 --- Options for completion modules
 ---@class config.CompletionOpts
