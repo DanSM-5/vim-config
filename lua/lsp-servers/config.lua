@@ -70,12 +70,8 @@ local configs = {
   vimls = {},
   biome = {},
   eslint = {},
-  eslint_d = {
-    use_legacy = true,
-  },
-  stylua = {
-    use_legacy = true,
-  },
+  eslint_d = {},
+  stylua = {},
   -- For bash lsp
   bashls = {
     filetypes = { 'sh', 'bash', 'zsh' },
@@ -149,11 +145,9 @@ local configs = {
     },
   },
   powershell_es = {
-    use_legacy = true,
-    bundle_path = vim.fn.stdpath('data') .. '/mason/packages/powershell-editor-services',
+    bundle_path = vim.fn.stdpath('data') .. '\\mason\\packages\\powershell-editor-services',
   },
   harper_ls = {
-    use_legacy = true,
     settings = {
       harper_ls = {
         linters = {
