@@ -1,14 +1,22 @@
 local name = 'mpls'
 local configured = false
+local filetypes = { 'markdown', 'markdown.mdx', 'makdown.mdx' }
 
 local set_autocmds = function()
+  ---@type uv_timer_t | nil
   local debounce_timer = nil
   local debounce_delay = 300
 
-  local function sendMessageToMPLS()
+  local clean_timer = function ()
     if debounce_timer then
       debounce_timer:stop()
+      debounce_timer:close()
+      debounce_timer = nil
     end
+  end
+
+  local function sendMessageToMPLS()
+    clean_timer()
 
     debounce_timer = (vim.uv or vim.loop).new_timer()
     debounce_timer:start(
@@ -16,26 +24,45 @@ local set_autocmds = function()
       0,
       vim.schedule_wrap(function()
         local bufnr = vim.api.nvim_get_current_buf()
+
+        -- Start client if buffer is markdown
+        ---@type string
+        local curr_buff_ft = vim.api.nvim_get_option_value('filetype', {
+          buf = bufnr,
+        })
+
+        if not vim.tbl_contains(filetypes, curr_buff_ft) then
+          clean_timer()
+          return
+        end
+
         local clients = vim.lsp.get_clients({ name = name, bufnr = bufnr })
 
+        -- clients[1]:notify()
         for _, client in ipairs(clients) do
           if client.name == name then
-            client:request(
-              'mpls/editorDidChangeFocus',
-              { uri = vim.uri_from_bufnr(bufnr) },
-              function(err, result) end,
-              bufnr
-            )
+            -- NOTE: Updated to client:notify as per mpls documentation
+            -- client:request(
+            --   'mpls/editorDidChangeFocus',
+            --   { uri = vim.uri_from_bufnr(bufnr) },
+            --   function(err, result) end,
+            --   bufnr
+            -- )
+
+            client:notify('mpls/editorDidChangeFocus', { uri = vim.uri_from_bufnr(bufnr) })
           end
         end
+
+        clean_timer()
       end)
     )
   end
 
   vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = '*.md',
+    pattern = { '*.md', '*.mdx' },
     callback = sendMessageToMPLS,
     group = vim.api.nvim_create_augroup('MarkdownFocus', { clear = true }),
+    desc = '[MPSL] Notify MPLS of buffer focus changes'
   })
 end
 
@@ -59,7 +86,7 @@ local set_commands = function()
     })
 
     -- Stop if requested buffer is not markdown
-    if curr_buff_ft ~= 'markdown' then
+    if not vim.tbl_contains(filetypes, curr_buff_ft) then
       return
     end
 
@@ -90,9 +117,11 @@ local set_commands = function()
       command = 'open-preview',
       arguments = {},
     }
-    mpls_client:request('workspace/executeCommand', params, function(err, result)
+    mpls_client:request('workspace/executeCommand', params, function(err, _)
       if err then
-        print('Error executing command: ' .. err.message)
+        vim.notify('Error executing command: ' .. err.message, vim.log.levels.ERROR)
+      else
+        vim.notify('Preview opened', vim.log.levels.INFO)
       end
     end, bufnr)
   end, { bang = true, nargs = '?', complete = 'file', desc = '[MPLS] Request open preview for md file' })
@@ -105,14 +134,13 @@ local configure = function()
 
   configured = true
   set_commands()
-  set_commands()
 
   ---@type vim.lsp.Config
   local config = {
     name = name,
-    cmd = { name, '--dark-mode', '--enable-emoji' },
-    filetypes = { 'markdown' },
-    root_markers = { '.git' },
+    cmd = { name, '--dark-mode', '--enable-emoji', '--enable-footnotes', '--code-style', 'onedark' },
+    filetypes = filetypes,
+    root_markers = { '.marksman.toml', '.git' },
     workspace_required = false,
     settings = {},
     on_attach = require('lsp-servers.keymaps').set_lsp_keys,
@@ -136,11 +164,15 @@ local function start(opts)
   configure()
 
   -- Prevent running if client does not exist
-  if vim.fn.executable(name) == 0 then
+  if vim.fn.executable(name) == 0 or opts.skip_load then
     return
   end
 
   vim.lsp.enable(name)
+
+  if (vim.uv or vim.loop).fs_stat(opts.file or '') then
+    vim.cmd.edit(opts.file)
+  end
 end
 
 ---Download mpls lsp server from github releases
