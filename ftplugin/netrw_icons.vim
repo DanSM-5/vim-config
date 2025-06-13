@@ -74,11 +74,14 @@ function s:NetrwAddIcons() abort
     if exists('*WebDevIconsGetFileTypeSymbol')
       let symbol = WebDevIconsGetFileTypeSymbol(b:netrw_curdir..'/'..node, is_dir)
     elseif is_symlink
-      let symbol = '??'
+      let symbol = ''
+      " let symbol = '🔗'
     elseif is_dir
-      let symbol = '??'
+      let symbol = ''
+      " let symbol = '📁'
     else
-      let symbol = '??'
+      let symbol = '󰈙'
+      " let symbol = '📄'
     endif
 
     if symbol != ''

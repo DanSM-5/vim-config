@@ -1476,7 +1476,7 @@ func! s:Set_netrw () abort
 
   " nnoremap <leader>se <cmd>Hex<cr>
 
-  autocmd FileType netrw setl bufhidden=delete
+  " autocmd FileType netrw setl bufhidden=delete
   " autocmd FileType netrw setl bufhidden=wipe
 
   " augroup netrw_mapping
