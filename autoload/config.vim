@@ -1440,7 +1440,12 @@ function OpenNetrw() abort
       exec 'cd ' . gitpath
       " NOTE: Need to check for an optional trailing '*'
       silent call search(' ' . cur_file . '\*\?$')
-      echo 'Opening ' . cur_file
+      " echo 'Opening ' . cur_file
+
+      " BUG: Netrw will halt if trying to navigate upwards with `-`
+      " It works fine after toggling the help banner for some unknown reason
+      normal I
+      normal I
     else
       Lex!
     endif
