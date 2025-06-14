@@ -1461,9 +1461,12 @@ func! s:Set_netrw () abort
   let g:netrw_banner = 0
   let g:netrw_browse_split = 4
   let g:netrw_altv = 1
+  let g:netrw_alto = 1
   let g:netrw_winsize = 25
   let g:netrw_liststyle = 3
   let g:netrw_fastbrowse = 0
+  let g:netrw_altfile = 1
+  " let g:netrw_preview = 1
 
   " NOTE: Makes netrw buffer stick around after :bd
   " let g:netrw_liststyle = 3
@@ -1490,10 +1493,13 @@ func! s:Set_netrw () abort
   " augroup END
 
   " Set bufhidden=wipe to prevent netrw buffers hanging around
-  augroup netrw
+  augroup netrw_buff_behavior
     autocmd!
     autocmd FileType netrw setlocal bufhidden=wipe
   augroup end
+
+  " Try to run an autocmd on netrw buffers
+  " https://superuser.com/questions/697039/how-can-i-trigger-a-vim-autocmd-when-entering-a-netrw-window
 endfunction
 
 func! config#before () abort
