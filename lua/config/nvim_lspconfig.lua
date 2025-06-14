@@ -61,6 +61,13 @@ return {
       jump = {
         float = true,
       },
+
+      float = {
+        border = 'rounded',
+        source = true,
+        header = 'Diagnostics',
+        -- prefix = '💥 ',
+      }
       -- update_in_insert = true,
     })
 
