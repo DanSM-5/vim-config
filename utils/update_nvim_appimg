@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+[[ -v debug ]] && set -x
+
+platform="$(uname | tr '[:upper:]' '[:lower:]')"
+ext='appimage'
+nvim='nvim'
+
+if [ "$(uname -m)" = 'x86_64' ]; then
+  architecture='x86_64'
+else
+  architecture='arm64'
+fi
+
+https://github.com/neovim/neovim/releases/tag/v0.11.2
+string_url="$(curl -sL 'https://api.github.com/repos/neovim/neovim/releases/latest' |
+  grep "browser_download_url.*${platform}-${architecture}.${ext}"'"' |
+  cut -d : -f 2,3 |
+  tr -d \" | tr -d ' ')"
+
+if [ -z "$string_url" ]; then
+  exit 1
+fi
+
+download_file="$nvim"
+download_path="$HOME/.local/bin/$download_file"
+
+# It will always override unless you use `--no-clobber` flag
+curl -sL "$string_url" -o "$download_path"
+
+chmod +x "$download_path"
