@@ -18,5 +18,4 @@ bufnr="$(sed 's/\x1b\[[0-9;]*[mGKHF]//g' <<< "$selected" | sed -nE 's|.*\[([0-9]
 touch "$remove_list"
 
 # Store selected line for future removal
-echo "$bufnr" >> "$remove_list"
-
+printf '%s\n' "$bufnr" >> "$remove_list"
