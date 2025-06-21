@@ -6,8 +6,7 @@
 --- @field enabled? boolean
 --- @field filetypes? string[]
 --- @field filetype? string
---- @deprecated Deprecated in favor of before_init
---- @field on_new_config? fun(new_config: config.LspConfigExtended?, new_root_dir: string)
+--- @field on_new_config? fun(new_config: config.LspConfigExtended?, new_root_dir: string) Deprecated, use before_init instead.
 --- @field autostart? boolean
 --- @field package _on_attach? fun(client: vim.lsp.Client, bufnr: integer)
 --- @field root_dir? string|fun(filename: string, bufnr: number)
