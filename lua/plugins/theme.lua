@@ -50,8 +50,7 @@ return {
       -- g.theme_comment = ''
 
       ---@type [string, string, string][]
-      vim.g.theme_toggle_hi = vim.tbl_deep_extend('force',
-        vim.g.theme_toggle_hi, {
+      local new_hlt = {
         vim.fn.Std_hlt('Normal'),
         vim.fn.Std_hlt('Visual', 'hi Visual guibg=#39496e'),
         vim.fn.Std_hlt('NormalNC'),
@@ -59,7 +58,12 @@ return {
         vim.fn.Std_hlt('CursorLine', ':'),
         vim.fn.Std_hlt('CursorLineNr', 'hi CursorLineNr guibg=#313640'),
         vim.fn.Std_hlt('SignColumn'),
-      })
+      }
+
+      for k,v in ipairs(vim.g.theme_toggle_hi or {}) do table.insert(new_hlt, v) end
+
+      vim.g.theme_toggle_hi = new_hlt
+      vim.print(vim.g.theme_toggle_hi)
 
       -- Normal, NormalNC, LineNr
       -- CursorLineNr

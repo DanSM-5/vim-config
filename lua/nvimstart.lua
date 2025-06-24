@@ -77,6 +77,10 @@ g.smoothie_no_default_mappings = 1
 
 -- fzf-lsp keys
 g.fzf_lsp_preview_window = { 'right', 'ctrl-/', 'ctrl-^' }
+
+
+---@type [string, string, string][]
+g.theme_toggle_hi = {}
 --: }}} :------------------------------------------------------------------
 
 --: Global functions {{{ :-------------------------------------------------
@@ -126,12 +130,6 @@ vim.cmd([[
 ]])
 
 vim.fn.OnVimEnter = function ()
-
-  -- To add highlight declarations
-  -- vim.g.theme_toggle_hi = vim.tbl_deep_extend('force',
-  --   vim.g.theme_toggle_hi, {
-  --   -- vim.fn.Std_hlt('Normal'),
-  -- })
 
   vim.cmd.ToggleBg()
   vim.cmd.SetTab()
