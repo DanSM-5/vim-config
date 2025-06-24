@@ -139,7 +139,6 @@ local function set_repeat_direction_maps()
   local repeat_motion = require('utils.repeat_motion')
   local repeat_pair = repeat_motion.repeat_pair
   local create_repeatable_pair = repeat_motion.create_repeatable_pair
-  local create_repeatable_func = repeat_motion.create_repeatable_func
   -- NOTE: Setting repeatable keymaps ',' (left) and ';' (right)
   repeat_motion.set_motion_keys()
 
