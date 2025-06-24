@@ -63,7 +63,6 @@ return {
       for k,v in ipairs(vim.g.theme_toggle_hi or {}) do table.insert(new_hlt, v) end
 
       vim.g.theme_toggle_hi = new_hlt
-      vim.print(vim.g.theme_toggle_hi)
 
       -- Normal, NormalNC, LineNr
       -- CursorLineNr
