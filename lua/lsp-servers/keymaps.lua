@@ -4,6 +4,8 @@
 
 local exclude_filetypes = {
   'help',
+  'fzf',
+  'fugitive',
 }
 
 local exists = vim.fn.exists
