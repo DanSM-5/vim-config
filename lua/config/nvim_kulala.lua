@@ -65,7 +65,8 @@ local convert = function (format, file, on_exit)
 
       --Sample:
       --Converted OpenAPI spec file: notes/swagger.json --> notes/swagger.default.http
-      local output = require('utils.stdlib').split(data, '%-->')
+      -- local output = require('utils.stdlib').split(data, '%-->')
+      local output = vim.split(data, ' --> ')
       if output[2] == nil then
         return
       end
