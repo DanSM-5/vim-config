@@ -43,8 +43,6 @@ local cmd_to_lsp_handlers = {
   { 'CodeActions', 'code_action' },
 }
 
-vim.lsp.buf.code_action()
-
 ---@class config.LspHandlers
 ---
 --- Jumps to the definition of the symbol under the cursor.
