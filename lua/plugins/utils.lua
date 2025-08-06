@@ -1,3 +1,6 @@
+---@module 'lazy'
+
+---@type LazyPluginSpec[]
 return {
   -- lua only http client
   -- {
@@ -29,6 +32,9 @@ return {
     'amadeus/vim-convert-color-to',
     cmd = { 'ConvertColorTo' },
     -- Also consider: NTBBloodbath/color-converter.nvim
+  },
+  {
+    'brianhuster/unnest.nvim'
   },
 }
 
