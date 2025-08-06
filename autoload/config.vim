@@ -59,10 +59,12 @@ func! s:SetConfigurationsBefore () abort
   omap ]n <Plug>(jumpconflict-context-next)
 
   " Move to next/previous tab
+  " Using built-in gt/gT | :h gt | :h gT
+  "
   " nnoremap <silent> ]T <cmd>tabnext<cr>
   " nnoremap <silent> [T <cmd>tabprevious<cr>
-  nnoremap <silent> ]<tab> <cmd>tabnext<cr>
-  nnoremap <silent> [<tab> <cmd>tabprevious<cr>
+  " nnoremap <silent> ]<tab> <cmd>tabnext<cr>
+  " nnoremap <silent> [<tab> <cmd>tabprevious<cr>
 
   " Auto increment letters when using ctrl-a
   set nrformats+=alpha
