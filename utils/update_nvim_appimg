@@ -12,7 +12,6 @@ else
   architecture='arm64'
 fi
 
-https://github.com/neovim/neovim/releases/tag/v0.11.2
 string_url="$(curl -sL 'https://api.github.com/repos/neovim/neovim/releases/latest' |
   grep "browser_download_url.*${platform}-${architecture}.${ext}"'"' |
   cut -d : -f 2,3 |
