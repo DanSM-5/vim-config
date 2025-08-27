@@ -4,10 +4,10 @@
 ---@type LazyPluginSpec|LazyPluginSpec[]
 return {
   {
-    event = 'VeryLazy',
     'nvim-treesitter/nvim-treesitter',
+    event = 'VeryLazy',
     dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
+        'nvim-treesitter/nvim-treesitter-textobjects',
       {
         'nvim-treesitter/nvim-treesitter-context',
         ---@type TSContext.UserConfig
