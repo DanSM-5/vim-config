@@ -2,6 +2,7 @@
 
 return {
   setup = function()
+    local query = require('nvim-treesitter.query')
     require('nvim-treesitter').define_modules({
       fold = {
         attach = function(buf, lang)
@@ -34,12 +35,14 @@ return {
           --   vim.wo[winid].foldexpr = vim.go.foldexpr
           -- end
 
+          -- NOTE: We use global setup when detaching because `buf`
+          -- could be open in a different or multiple windows
+          -- so trying to recover window option is tricky.
+          -- Better to always fallback to a known value.
           vim.opt_local.foldmethod = vim.go.foldmethod
           vim.opt_local.foldexpr = vim.go.foldexpr
         end,
-        is_supported = function(lang)
-          return true
-        end,
+        is_supported = query.has_folds,
       },
       fold_text = {
         attach = function()
