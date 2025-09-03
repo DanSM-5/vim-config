@@ -33,6 +33,10 @@ local special_binaries = {
     lsp = 'html',
   },
   {
+    server = 'marksman',
+    lsp = 'marksman',
+  },
+  {
     server = 'json-lsp',
     lsp = 'vscode-json-languageserver',
   },

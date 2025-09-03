@@ -167,6 +167,7 @@ return {
         'html',
         'emmet_language_server',
         'jsonls',
+        'marksman',
       }
 
     -- Keymaps for legacy support. To remove when nvim-0.12.0 is released
