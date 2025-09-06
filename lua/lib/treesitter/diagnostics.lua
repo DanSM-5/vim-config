@@ -32,6 +32,7 @@ end
 ---@param ctx ts.mod.Context
 ---@return boolean
 function Module.enabled(ctx)
+  local util = require('treesitter-modules.lib.util')
   return util.enabled(Module.config, ctx)
 end
 

@@ -1,5 +1,3 @@
-local util = require('treesitter-modules.lib.util')
-
 ---@class (exact) ts.mod.fold.Config: ts.mod.module.Config
 
 ---@class ts.mod.Fold: ts.mod.Module
@@ -34,6 +32,7 @@ end
 ---@param ctx ts.mod.Context
 ---@return boolean
 function Module.enabled(ctx)
+  local util = require('treesitter-modules.lib.util')
   return util.enabled(Module.config, ctx)
 end
 
