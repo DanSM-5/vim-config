@@ -162,11 +162,15 @@ end, {
   bang = true,
   -- bar = true,
   nargs = '+',
-  complete = function (args)
+  complete = function (current, cmd)
+    -- Only complete first arg
+    if #vim.split(cmd, ' ') > 2 then
+      return
+    end
     local engines = { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave', '@yandex', '@github' }
-    if type(args) == 'string' and #args > 0 then
+    if type(current) == 'string' and #current > 0 then
       local matched = vim.tbl_filter(function (engine)
-        local _, matches = string.gsub(engine, args, '')
+        local _, matches = string.gsub(engine, current, '')
         return matches > 0
       end, engines)
 
