@@ -30,6 +30,7 @@ return {
         'html',
         'javascript',
         'jsdoc',
+        'json',
         'json5',
         'lua',
         'markdown',
