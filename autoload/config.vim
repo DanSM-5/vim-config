@@ -1178,22 +1178,22 @@ endf
 
 func! s:RemapAltUpDownNormal () abort
   " move selected lines up one line
-  vnoremap <silent><A-up> :m '<-2<CR>gv=gv
+  vnoremap <expr> <silent><A-up> ":m '<-".(v:count1 + 1)."<CR>gv=gv"
 
   " move selected lines down one line
-  vnoremap <silent><A-down> :m '>+1<CR>gv=gv
+  vnoremap <expr> <silent><A-down> ":m '>+".v:count1."<CR>gv=gv"
 
   " move current line up one line
-  nnoremap <silent><A-up> :<C-u>m .-2<CR>==
+  nnoremap <expr> <silent><A-up> ":<C-u>m .-".(v:count1 + 1)."<CR>=="
 
   " move current line down one line
-  nnoremap <silent><A-down> :<C-u>m .+1<CR>==
+  nnoremap <expr> <silent><A-down> ":<C-u>m .+".v:count1."<CR>=="
 
   " move current line up in insert mode
-  inoremap <silent><A-up> <Esc>:m .-2<CR>==gi
+  inoremap <expr> <silent><A-up> "<Esc>:m .-".(v:count1 + 1)."<CR>==gi"
 
   " move current line down in insert mode
-  inoremap <silent><A-down> <Esc>:m .+1<CR>==gi
+  inoremap <expr> <silent><A-down> "<Esc>:m .+".v:count1."<CR>==gi"
 endf
 
 func! s:RemapAltUpDownSpecial () abort
