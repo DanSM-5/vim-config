@@ -99,7 +99,7 @@ function bda#kwbd(kwbdStage)
     endif
     let s:kwbdBufNum = bufnr("%")
     let s:kwbdWinNum = winnr()
-    windo call s:Kwbd(2)
+    windo call bda#kwbd(2)
     execute s:kwbdWinNum . 'wincmd w'
     let s:buflistedLeft = 0
     let s:bufFinalJump = 0
