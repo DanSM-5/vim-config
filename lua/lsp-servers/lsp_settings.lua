@@ -87,14 +87,25 @@ local function get_lsp_handler ()
       config.on_attach = require('lsp-servers.keymaps').set_lsp_keys
     end
 
-    if config.use_legacy then
-      require('lspconfig')[server_name].setup(config)
-    else
-      vim.lsp.config(server_name, config)
+    -- Get current config (from lsp_config)
+    local lsp_config = vim.lsp.config[server_name]
 
-      if options.enable then
-        vim.lsp.enable(server_name, true)
+    -- Wrap on_attach to avoid override it
+    if lsp_config.on_attach ~= nil and config.on_attach ~= nil then
+      local config_on_attach = config.on_attach
+      local lsp_config_on_attach = lsp_config.on_attach
+      config.on_attach = function (client, bufnr)
+        ---@diagnostic disable-next-line: need-check-nil
+        lsp_config_on_attach(client, bufnr)
+        ---@diagnostic disable-next-line: need-check-nil
+        config_on_attach(client, bufnr)
       end
+    end
+
+    vim.lsp.config(server_name, config)
+
+    if options.enable then
+      vim.lsp.enable(server_name, true)
     end
   end
 
