@@ -273,17 +273,20 @@ local cmp_module = {
 
   get_update_capabilities = function ()
     ---@param base config.LspConfigExtended
+    ---@param lsp_config config.LspConfigExtended
     ---@return config.LspConfigExtended
-    local update_capabilities = function (base)
+    local update_capabilities = function (base, lsp_config)
       local cmp_lsp = require('cmp_nvim_lsp')
       ---@type lsp.ClientCapabilities
       local baseCapabilities = base.capabilities and base.capabilities or {}
+      local lspConfigCapabilities = lsp_config.capabilities and lsp_config.capabilities or {}
+      local capabilities = vim.tbl_deep_extend('force', lspConfigCapabilities, baseCapabilities)
 
       local config = vim.tbl_deep_extend('force', {}, base, {
         ---@type lsp.ClientCapabilities
         capabilities = vim.tbl_deep_extend('force', {},
           vim.lsp.protocol.make_client_capabilities(),
-          cmp_lsp.default_capabilities(baseCapabilities)
+          cmp_lsp.default_capabilities(capabilities)
         )
       })
 

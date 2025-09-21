@@ -75,10 +75,12 @@ local function get_lsp_handler ()
       return
     end
 
+    -- Get current config (from lsp_config)
+    local lsp_config = vim.lsp.config[server_name] or {}
     local base_config = require('lsp-servers.config').get_config(server_name) or {}
 
     ---@type config.LspConfigExtended
-    local config = update_capabilities(base_config)
+    local config = update_capabilities(base_config, lsp_config)
 
     -- Add keymaps on buffer with lsp
     -- NOTE: Only include automatically on configs that do not include a `on_attach`
@@ -86,9 +88,6 @@ local function get_lsp_handler ()
     if options.keymaps ~= false and config.on_attach == nil then
       config.on_attach = require('lsp-servers.keymaps').set_lsp_keys
     end
-
-    -- Get current config (from lsp_config)
-    local lsp_config = vim.lsp.config[server_name]
 
     -- Wrap on_attach to avoid override it
     if lsp_config.on_attach ~= nil and config.on_attach ~= nil then
