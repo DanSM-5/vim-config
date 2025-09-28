@@ -101,7 +101,7 @@ $git_all_cmd = "$git_base_cmd --all $args"
 
 try {
   while ($true) {
-    $out = git log --graph --color=always -all `
+    $out = git log --graph --color=always --all `
         --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" |
     fzf @down_options `
       --bind "ctrl-f:reload:$git_current_cmd" `
