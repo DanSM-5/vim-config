@@ -120,14 +120,30 @@ vim.api.nvim_create_user_command('IndentGuides', function (opts)
     end
   end
 
-  local has_mindent = pcall(require, 'mini.indentscope')
-  if has_mindent then
-    local mindent_option = option ~= nil and option or vim.g.miniindentscope_disable
-    -- Notice, this is a negated variable
-    vim.g.miniindentscope_disable = not mindent_option
-  end
+  local mindent_option = option ~= nil and option or vim.g.miniindentscope_disable
+  -- Notice, this is a negated variable
+  vim.g.miniindentscope_disable = not mindent_option
 end, {
   desc = '[Indent] Change indent guides visibility',
+  nargs = '?',
+  bang = true,
+  bar = true,
+  complete = function () return { 'on', 'off' }  end,
+})
+
+vim.api.nvim_create_user_command('MiToggle', function (opts)
+  ---@type string|boolean|nil
+  local option = opts.fargs[1]
+
+  if option ~= nil then
+    option = option == 'on'
+  end
+
+  local mindent_option = option ~= nil and option or vim.g.miniindentscope_disable
+  -- Notice, this is a negated variable
+  vim.g.miniindentscope_disable = not mindent_option
+end, {
+  desc = '[Indent] Toggle mini_indent',
   nargs = '?',
   bang = true,
   bar = true,
