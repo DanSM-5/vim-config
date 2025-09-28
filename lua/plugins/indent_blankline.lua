@@ -8,7 +8,7 @@ return {
     end,
   },
   {
-    'echasnovski/mini.indentscope',
+    'nvim-mini/mini.indentscope',
     event = 'VeryLazy',
     config = function ()
       require('config.nvim_mindent').setup()

@@ -310,7 +310,7 @@ call plug#begin()
     Plug 'OXY2DEV/markview.nvim'
     Plug 'nvim-treesitter/nvim-treesitter-context'
     Plug 'lukas-reineke/indent-blankline.nvim'
-    Plug 'echasnovski/mini.indentscope'
+    Plug 'nvim-mini/mini.indentscope'
     " Snippets
     if executable('make')
       Plug 'L3MON4D3/LuaSnip', { 'do': 'make install_jsregexp' }
@@ -376,7 +376,7 @@ call plug#begin()
     " Cursor based text objects
     Plug 'ColinKennedy/cursor-text-objects.nvim', { 'tag': 'v1.*' }
     " Improve 'a' and 'i' text objects
-    Plug 'echasnovski/mini.ai'
+    Plug 'nvim-mini/mini.ai'
 
     " Commands on refs. :Cursor* commands on :Git log --oneline buffer
     Plug 'oflisback/cursor-git-ref-command.nvim'
