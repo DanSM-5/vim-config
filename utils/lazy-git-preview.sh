@@ -87,7 +87,7 @@ git_all_cmd="$git_base_cmd --all $*"
 # main loop
 while out=$(fzf-down \
     --query="$q" \
-    --bind "start:reload:$git_current_cmd" \
+    --bind "start:reload:$git_all_cmd" \
     --bind "ctrl-f:reload:$git_current_cmd" \
     --bind "ctrl-a:reload:$git_all_cmd" \
     ); do
