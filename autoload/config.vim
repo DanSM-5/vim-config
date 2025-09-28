@@ -836,7 +836,7 @@ endfunction
 func! s:SetFZF () abort
   " fzf commands
   " fzf
-  nnoremap <leader>ff <cmd>Files<cr>
+  " nnoremap <leader>ff <cmd>Files<cr>
   " Lines in buffers
   nnoremap <leader>fl <cmd>Lines<cr>
   " Lines in current buffer
@@ -863,11 +863,13 @@ func! s:SetFZF () abort
   nnoremap <leader>fj <cmd>Jumps<cr>
   " Changes across buffers
   nnoremap <leader>fc <cmd>Changes<cr>
+  " Show open buffers
+  nnoremap <leader>ff <cmd>Buffers<cr>
 
   " Set grep commands
   nnoremap <leader>lg <cmd>Lg<cr>
   nnoremap <leader>fg <cmd>RG<cr>
-  nnoremap <leader>fG <cmd>Rg<cr>
+  nnoremap <leader>fG <c-u>:Rg<space>
 
   " Mapping selecting mappings in respective mode using fzf
   " nmap <leader><tab> <plug>(fzf-maps-n)
@@ -956,7 +958,8 @@ func! s:SetFZF () abort
   nnoremap <C-o>b <cmd>Buffers<cr>
 
   " Allow to paste from registers in fzf buffer in normal mode
-  autocmd! FileType fzf nnoremap <expr> <leader>" fzfcmd#paste('p')
+  autocmd! FileType fzf nnoremap <buffer> <expr> <leader>" fzfcmd#pastereg('p')
+  autocmd! FileType fzf nnoremap <buffer> <expr> <leader>v fzfcmd#paste('p')
 endf
 
 func! s:SetVimSystemCopyMaps () abort

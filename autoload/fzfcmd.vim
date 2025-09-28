@@ -641,7 +641,11 @@ function! fzfcmd#rg_files(fullscreen, ...) abort
         \ })
 endfunction
 
-function fzfcmd#paste(mode) abort
+function! fzfcmd#paste(mode) abort
+  let @" = getreg(nr2char(34)) 
+  return a:mode
+endfunction
+function! fzfcmd#pastereg(mode) abort
   let @" = getreg(nr2char(getchar())) 
   return a:mode
 endfunction
