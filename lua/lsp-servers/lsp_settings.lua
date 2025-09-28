@@ -232,7 +232,7 @@ return {
     local none_ls = require('null-ls')
     none_ls.setup({
       sources = {
-        none_ls.builtins.formatting.stylua,
+        -- none_ls.builtins.formatting.stylua,
         none_ls.builtins.code_actions.gitrebase,
         -- https://github.com/CKolkey/ts-node-action
         none_ls.builtins.code_actions.ts_node_action,

@@ -4,8 +4,8 @@
 local configs = {
   lua_ls = {
     on_attach = function(client, bufnr)
-      client.server_capabilities.documentFormattingProvider = true
-      client.server_capabilities.documentRangeFormattingProvider = true
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
       require('lsp-servers.keymaps').set_lsp_keys(client, bufnr)
     end,
     settings = {
@@ -71,7 +71,6 @@ local configs = {
   biome = {},
   eslint = {},
   eslint_d = {},
-  stylua = {},
   -- For bash lsp
   bashls = {
     filetypes = { 'sh', 'bash', 'zsh' },
@@ -157,6 +156,30 @@ local configs = {
       },
     },
   },
+  stylua = {
+    cmd = function (dispatchers)
+      --config-path
+
+      local cmd = {
+        'stylua',
+        '--lsp',
+      }
+
+      local path = vim.api.nvim_buf_get_name(0)
+      local config = vim.fs.find('stylua.toml', {
+        path = path,
+        upward = true,
+      })[1]
+
+      if config then
+        vim.print('config: '..config)
+        table.insert(cmd, '--config-path')
+        table.insert(cmd, config)
+      end
+
+      return vim.lsp.rpc.start(cmd, dispatchers)
+    end
+  }
 }
 
 return {
