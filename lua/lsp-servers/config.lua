@@ -172,7 +172,6 @@ local configs = {
       })[1]
 
       if config then
-        vim.print('config: '..config)
         table.insert(cmd, '--config-path')
         table.insert(cmd, config)
       end
