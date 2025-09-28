@@ -765,7 +765,7 @@ local function set_repeat_direction_maps()
     local ok, mini_indent = pcall(require, 'mini.indentscope')
 
     if not ok then
-      vim.notify('GitSings not found', vim.log.levels.WARN)
+      vim.notify('mini_indent not found', vim.log.levels.WARN)
       return
     end
 

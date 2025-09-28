@@ -60,19 +60,20 @@ local mindent_config = {
 }
 
 local set_commands = function ()
-  vim.api.nvim_create_user_command('IndentBoder', function (opts)
+  vim.api.nvim_create_user_command('IndentWithBoder', function (opts)
     ---@type string|boolean|nil
     local option = opts.fargs[1]
-    local mini_indent = require('mini.indentscope')
+    -- local mini_indent = require('mini.indentscope')
 
     if option == nil then
-      option = not mini_indent.config.options.try_as_border
+      option = not MiniIndentscope.config.options.try_as_border
     else
       option = option == 'on'
     end
 
-    mindent_config.options.try_as_border = option
-    mini_indent.setup(mindent_config)
+    -- mindent_config.options.try_as_border = option
+    -- mini_indent.setup(mindent_config)
+    MiniIndentscope.config.options.try_as_border = option
   end, {
     nargs = '?',
     bang = true,
