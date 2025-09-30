@@ -1,4 +1,3 @@
-
 ---Press yc to copy unamed(") register to system(*) register
 -- vim.keymap.set('n', 'yd', function()
 --   -- require('utils.register').regmove('+', '"')
@@ -8,7 +7,6 @@
 --   -- require('utils.register').regmove('"', '+')
 --   vim.fn['utils#register_move']('"', '+')
 -- end, { noremap = true, desc = 'Copy from anon register to system cliboard register' })
-
 
 -- -- Mapping to remove marks on the line uner the cursor
 -- vim.keymap.set({ 'n' }, '<leader>`d', function()
@@ -36,7 +34,6 @@
 --     end
 --   end
 -- end, { desc = 'Delete all marks for current line' })
-
 
 -- ---Get the text between the marks a and b using the appropriate mode
 -- ---@param a_mark string Reference mark a
@@ -110,7 +107,7 @@
 
 ---Unset default keymaps that could conflict with other
 ---user defined keymaps
-local remove_default = function ()
+local remove_default = function()
   --  grr gra grn gri i_CTRL-S Some keymaps are created unconditionally when Nvim starts:
   -- "grn" is mapped in Normal mode to vim.lsp.buf.rename()
   -- "gra" is mapped in Normal and Visual mode to vim.lsp.buf.code_action()
@@ -158,7 +155,7 @@ local function set_repeat_direction_maps()
   local quickfix_next = function()
     cmd({ cmd = 'cnext', count = vim.v.count1 })
   end
-  local quickfix_prev =  function()
+  local quickfix_prev = function()
     cmd({ cmd = 'cprevious', count = vim.v.count1 })
   end
   repeat_pair({
@@ -193,7 +190,7 @@ local function set_repeat_direction_maps()
   end, { desc = '[Quickfix] Move to first item', noremap = true })
 
   -- Move to next/prev item in file
-  local quickfix_next_file =  function()
+  local quickfix_next_file = function()
     cmd({ cmd = 'cnfile', count = vim.v.count1 })
   end
   local quickfix_prev_file = function()
@@ -206,7 +203,6 @@ local function set_repeat_direction_maps()
     on_forward = quickfix_next_file,
     on_backward = quickfix_prev_file,
   })
-
 
   -- Location list mappings
 
@@ -262,7 +258,6 @@ local function set_repeat_direction_maps()
     on_forward = locationlist_next_file,
     on_backward = locationlist_prev_file,
   })
-
 
   -- Argument list
 
@@ -320,7 +315,6 @@ local function set_repeat_direction_maps()
       cmd({ cmd = 'first' })
     end
   end, { desc = '[Argumentlist] Move to first entry', noremap = true })
-
 
   -- Tags
 
@@ -393,7 +387,6 @@ local function set_repeat_direction_maps()
     on_backward = tag_prev_preview,
   })
 
-
   -- Buffers
 
   -- Move to next/prev buffer
@@ -450,17 +443,16 @@ local function set_repeat_direction_maps()
     end
   end, { desc = '[Buffers] Move to first buffer', noremap = true })
 
-
   -- Add empty lines after/before cursor
   local empty_line_next = function()
     -- TODO: update once it is possible to assign a Lua function to options #25672
     vim.go.operatorfunc = "v:lua.require'vim._buf'.space_below"
-    vim.cmd[[normal g@l]]
+    vim.cmd([[normal g@l]])
   end
   local empty_line_prev = function()
     -- TODO: update once it is possible to assign a Lua function to options #25672
     vim.go.operatorfunc = "v:lua.require'vim._buf'.space_above"
-    vim.cmd[[normal g@l]]
+    vim.cmd([[normal g@l]])
   end
   repeat_pair({
     keys = '<space>',
@@ -470,30 +462,28 @@ local function set_repeat_direction_maps()
     on_backward = empty_line_prev,
   })
 
-
   -- Fold jump next/prev
   repeat_pair({
     keys = 'z',
     mode = nxo,
     desc_forward = '[Fold] Move to next fold',
     desc_backward = '[Fold] Move to previous fold',
-    on_forward = function ()
-      vim.api.nvim_feedkeys(vim.v.count1..'zj', 'xn', true)
+    on_forward = function()
+      vim.api.nvim_feedkeys(vim.v.count1 .. 'zj', 'xn', true)
     end,
-    on_backward = function ()
-      vim.api.nvim_feedkeys(vim.v.count1..'zk', 'xn', true)
+    on_backward = function()
+      vim.api.nvim_feedkeys(vim.v.count1 .. 'zk', 'xn', true)
     end,
   })
 
-
   -- Spelling next/prev
   ---@param forward boolean Direction of the keymap
-  local spell_direction = function (forward)
+  local spell_direction = function(forward)
     -- `]s`/`[s` only work if `spell` is enabled
     local spell = vim.wo.spell
     vim.wo.spell = true
     local direction = (forward and ']' or '[') .. 's'
-    vim.api.nvim_feedkeys(vim.v.count1..direction, 'xn', true)
+    vim.api.nvim_feedkeys(vim.v.count1 .. direction, 'xn', true)
     vim.wo.spell = spell
   end
   repeat_pair({
@@ -501,17 +491,16 @@ local function set_repeat_direction_maps()
     mode = nxo,
     desc_forward = '[Spell] Move to next spelling mistake',
     desc_backward = '[Spell] Move to previous spelling mistake',
-    on_forward = function ()
+    on_forward = function()
       spell_direction(true)
     end,
-    on_backward = function ()
+    on_backward = function()
       spell_direction(false)
     end,
   })
 
-
   -- Move to next/previous hunk
-  local move_hunk = function (forward)
+  local move_hunk = function(forward)
     if vim.wo.diff then -- If we're in a diff
       local direction_key = forward and ']' or '['
       vim.cmd.normal({ vim.v.count1 .. direction_key .. 'c', bang = true })
@@ -532,14 +521,13 @@ local function set_repeat_direction_maps()
     mode = nxo,
     desc_forward = '[GitSings] Move to next hunk',
     desc_backward = '[GitSings] Move to previous hunk',
-    on_forward = function ()
+    on_forward = function()
       move_hunk(true)
     end,
-    on_backward = function ()
+    on_backward = function()
       move_hunk(false)
     end,
   })
-
 
   -- Move to next/prev Tab
   repeat_pair({
@@ -548,14 +536,13 @@ local function set_repeat_direction_maps()
     keys = { 't', 'T' },
     desc_forward = '[Tab] Move to next tab',
     desc_backward = '[Tab] Move to previous tab',
-    on_forward = function ()
-      vim.cmd(vim.v.count1..'tabnext')
+    on_forward = function()
+      vim.cmd(vim.v.count1 .. 'tabnext')
     end,
-    on_backward = function ()
-      vim.cmd(vim.v.count1..'tabprevious')
+    on_backward = function()
+      vim.cmd(vim.v.count1 .. 'tabprevious')
     end,
   })
-
 
   -- Jump to next conflict
   local jumpconflict_next = function()
@@ -573,7 +560,6 @@ local function set_repeat_direction_maps()
     on_forward = jumpconflict_next,
     on_backward = jumpconflict_prev,
   })
-
 
   -- Move to next todo comment
   local todo_next = function()
@@ -600,7 +586,6 @@ local function set_repeat_direction_maps()
     on_forward = todo_next,
     on_backward = todo_prev,
   })
-
 
   local ctrl_w = vim.api.nvim_replace_termcodes('<C-w>', true, true, true)
   local vsplit_bigger, vsplit_smaller = create_repeatable_pair(function()
@@ -648,11 +633,9 @@ local function set_repeat_direction_maps()
     diagnostic_jump_prev = vim.diagnostic.goto_prev
   end
 
-  local diagnostic_next,
-  diagnostic_prev
-  = create_repeatable_pair(
-  ---Move to next diagnostic
-  ---@param options vim.diagnostic.JumpOpts | nil
+  local diagnostic_next, diagnostic_prev = create_repeatable_pair(
+    ---Move to next diagnostic
+    ---@param options vim.diagnostic.JumpOpts | nil
     function(options)
       local opts = options or {}
       ---@diagnostic disable-next-line
@@ -671,15 +654,11 @@ local function set_repeat_direction_maps()
 
   -- diagnostic
   vim.keymap.set('n', ']d', function()
-      diagnostic_next({ wrap = true })
-    end,
-    { desc = '[Diagnostic] Go to next diagnostic message', silent = true, noremap = true }
-  )
+    diagnostic_next({ wrap = true })
+  end, { desc = '[Diagnostic] Go to next diagnostic message', silent = true, noremap = true })
   vim.keymap.set('n', '[d', function()
-      diagnostic_prev({ wrap = true })
-    end,
-    { desc = '[Diagnostic] Go to previous diagnostic message', silent = true, noremap = true }
-  )
+    diagnostic_prev({ wrap = true })
+  end, { desc = '[Diagnostic] Go to previous diagnostic message', silent = true, noremap = true })
 
   -- diagnostic ERROR
   vim.keymap.set('n', ']e', function()
@@ -733,35 +712,46 @@ local function set_repeat_direction_maps()
   -- vim.keymap.set('n', ']{', next_open_bracket, { desc = '[Bracket]: Go to next open bracket', silent = true, noremap = true })
   -- vim.keymap.set('n', '[{', prev_open_bracket, { desc = '[Bracket]: Go to previous open bracket', silent = true, noremap = true })
 
-  local next_matching_bracket, prev_matching_bracket = create_repeatable_pair(
-    function()
-      ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
-      vim.fn.searchpair('{', '', '}')
-    end, function()
-      ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
-      vim.fn.searchpair('{', '', '}', 'b')
-    end
+  local next_matching_bracket, prev_matching_bracket = create_repeatable_pair(function()
+    ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
+    vim.fn.searchpair('{', '', '}')
+  end, function()
+    ---@diagnostic disable-next-line Diagnostic have the wrong function signature for searchpair
+    vim.fn.searchpair('{', '', '}', 'b')
+  end)
+  local next_bracket_pair, prev_bracket_pair = create_repeatable_pair(function()
+    vim.fn.search('[\\[\\]{}()<>]', 'w')
+  end, function()
+    vim.fn.search('[\\[\\]{}()<>]', 'wb')
+  end)
+  vim.keymap.set(
+    'n',
+    ']}',
+    next_bracket_pair,
+    { desc = '[Bracket]: Go to next bracket pair', silent = true, noremap = true }
   )
-  local next_bracket_pair, prev_bracket_pair = create_repeatable_pair(
-    function()
-      vim.fn.search('[\\[\\]{}()<>]', 'w')
-    end, function()
-      vim.fn.search('[\\[\\]{}()<>]', 'wb')
-    end
+  vim.keymap.set(
+    'n',
+    '[}',
+    prev_bracket_pair,
+    { desc = '[Bracket]: Go to previous bracket pair', silent = true, noremap = true }
   )
-  vim.keymap.set('n', ']}', next_bracket_pair,
-    { desc = '[Bracket]: Go to next bracket pair', silent = true, noremap = true })
-  vim.keymap.set('n', '[}', prev_bracket_pair,
-    { desc = '[Bracket]: Go to previous bracket pair', silent = true, noremap = true })
-  vim.keymap.set('n', ']{', next_matching_bracket,
-    { desc = '[Bracket]: Go to next matching bracket', silent = true, noremap = true })
-  vim.keymap.set('n', '[{', prev_matching_bracket,
-    { desc = '[Bracket]: Go to previous matching bracket', silent = true, noremap = true })
-
+  vim.keymap.set(
+    'n',
+    ']{',
+    next_matching_bracket,
+    { desc = '[Bracket]: Go to next matching bracket', silent = true, noremap = true }
+  )
+  vim.keymap.set(
+    'n',
+    '[{',
+    prev_matching_bracket,
+    { desc = '[Bracket]: Go to previous matching bracket', silent = true, noremap = true }
+  )
 
   ---Move to the next indent scope using direction
   ---@param direction boolean
-  local move_scope = function (direction)
+  local move_scope = function(direction)
     local ok, mini_indent = pcall(require, 'mini.indentscope')
 
     if not ok then
@@ -777,33 +767,41 @@ local function set_repeat_direction_maps()
   repeat_pair({
     keys = 'i',
     mode = nxo,
-    on_forward = function ()
+    on_forward = function()
       move_scope(true)
     end,
-    on_backward = function ()
+    on_backward = function()
       move_scope(false)
     end,
     desc_forward = '[MiniIndent] Go to indent scope top',
     desc_backward = '[MiniIndent] Go to indent scope bottom',
   })
 
-
-  local move_line_end, move_line_almost_end = create_repeatable_pair(function ()
+  local move_line_end, move_line_almost_end = create_repeatable_pair(function()
     vim.cmd.normal([[ddGp``]])
-  end, function ()
+  end, function()
     vim.cmd.normal([[ddGP``]])
     -- vim.cmd.normal([[ddggP``]])
   end)
-  local move_line_start, move_line_almost_start = create_repeatable_pair(function ()
+  local move_line_start, move_line_almost_start = create_repeatable_pair(function()
     vim.cmd.normal([[ddggP``]])
-  end, function ()
+  end, function()
     vim.cmd.normal([[ddggp``]])
   end)
 
   -- move current line to the end or the begin of current buffer (continuation)
-  vim.keymap.set('n', ']<End>', move_line_end, { desc = 'Move line to end of the buffer', noremap = true, silent = true })
-  vim.keymap.set('n', '[<End>', move_line_almost_end,
-    { desc = 'Move line to the second last line in the buffer', noremap = true, silent = true })
+  vim.keymap.set(
+    'n',
+    ']<End>',
+    move_line_end,
+    { desc = 'Move line to end of the buffer', noremap = true, silent = true }
+  )
+  vim.keymap.set(
+    'n',
+    '[<End>',
+    move_line_almost_end,
+    { desc = 'Move line to the second last line in the buffer', noremap = true, silent = true }
+  )
   vim.keymap.set(
     'n',
     ']<Home>',
@@ -816,12 +814,18 @@ local function set_repeat_direction_maps()
     move_line_start,
     { desc = 'Move line to start of the buffer', noremap = true, silent = true }
   )
-
 end
 
 return {
-  load = function ()
+  load = function()
     remove_default()
+
+    vim.keymap.set('n', '<leader>fs', function()
+      vim.cmd.Snippets()
+    end, {
+      noremap = true,
+      desc = '[fzf] Select snippets for ft',
+    })
   end,
   remove_default = remove_default,
   set_repeatable_maps = set_repeat_direction_maps,

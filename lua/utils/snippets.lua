@@ -326,7 +326,7 @@ local function format_item_display(it)
 end
 
 ---Select snippet from luasnip
----@param fullscreen boolean
+---@param fullscreen boolean?
 local snippets = function(fullscreen)
   local snps = get_snippets_by_ft()
 
