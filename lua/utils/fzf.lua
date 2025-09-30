@@ -1,29 +1,12 @@
-
-local array_concat = require('utils.stdlib').concat
 local rg_args = ' --column --line-number --no-ignore --no-heading --color=always --smart-case --hidden --glob "!plugged" --glob "!.git" --glob "!node_modules" '
----@type string[]
-local fzf_base_options = { '--multi', '--ansi', '--input-border', '--bind', 'alt-c:clear-query' }
----@type string[]
-local fzf_bind_options = array_concat(fzf_base_options, {
-            '--bind', 'ctrl-^:toggle-preview',
-            '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
-            '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
-            '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
-            '--bind', 'shift-up:preview-up,shift-down:preview-down',
-            '--bind', 'ctrl-s:toggle-sort',
-            '--cycle',
-            -- '--bind', '0:change-preview-window(down|hidden|)',
-            -- '--bind', '1:toggle-preview',
-            '--bind', 'alt-f:first',
-            '--bind', 'alt-l:last',
-            '--bind', 'alt-a:select-all',
-            '--bind', 'alt-d:deselect-all' })
 
 ---@type string[]
-local fzf_preview_options = vim.fn.extend(fzf_bind_options, {
-       '--layout=reverse',
-       '--preview-window', '60%,wrap',
-       '--preview', 'bat -pp --color=always --style=numbers {}' })
+local fzf_base_options = vim.g.fzf_base_options
+---@type string[]
+local fzf_bind_options = vim.g.fzf_bind_options
+
+---@type string[]
+local fzf_preview_options = vim.g.fzf_preview_options
 
 local fzf_original_default_opts = vim.env.FZF_DEFAULT_OPTS
 
@@ -139,6 +122,7 @@ local select_buffer_lsp = function (sink)
 
   local hist_file = 'fzf-select-lsp-client'
   -- local hist_path = get_history_param(hist_file)
+  local array_concat = require('utils.stdlib').concat
   local options = array_concat(fzf_bind_options, {
     '--prompt',
     'Buffer Clients> ',

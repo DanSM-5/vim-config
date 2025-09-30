@@ -75,9 +75,53 @@ g.smoothie_no_default_mappings = 1
 -- One dark color config
 -- let g:onedark_termcolors = 256
 
+
+-- Path to find scripts or executables
+g.scripts_dir = vim.fn.substitute(
+  vim.fn.exists('g:scripts_dir') and g.scripts_dir or vim.fn.stdpath('config') .. '/utils',
+  '\\', '/', 'g'
+)
+
+
 -- fzf-lsp keys
 g.fzf_lsp_preview_window = { 'right', 'ctrl-/', 'ctrl-^' }
 
+
+function merge(t1, t2)
+  for _, v in ipairs(t2) do
+    t1[#t1 + 1] = v
+  end
+end
+
+-- General options
+local fzf_base_options = {
+  '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border=rounded'
+}
+local fzf_bind_options = {
+  '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
+  '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
+  '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
+  '--bind', 'shift-up:preview-up,shift-down:preview-down',
+  '--bind', 'ctrl-^:toggle-preview',
+  '--bind', 'ctrl-s:toggle-sort',
+  '--cycle',
+  '--bind', 'alt-f:first',
+  '--bind', 'alt-l:last',
+  '--bind', 'alt-a:select-all',
+  '--bind', 'alt-d:deselect-all'
+}
+local fzf_preview_options = {
+  '--layout=reverse',
+  '--preview-window', '60%,wrap',
+  '--preview', 'bat -pp --color=always --style=numbers {}'
+}
+
+merge(fzf_bind_options, fzf_base_options)
+merge(fzf_preview_options, fzf_bind_options)
+
+g.fzf_base_options = fzf_base_options
+g.fzf_bind_options = fzf_bind_options
+g.fzf_preview_options = fzf_preview_options
 
 ---@type [string, string, string][]
 g.theme_toggle_hi = {}

@@ -15,30 +15,6 @@ let g:is_mac = 0
 let g:is_termux = 0
 let g:is_container = 0
 
-" General options
-let g:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border=rounded' ]
-let g:fzf_bind_options = g:fzf_base_options + [
-      \      '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
-      \      '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
-      \      '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
-      \      '--bind', 'shift-up:preview-up,shift-down:preview-down',
-      \      '--bind', 'ctrl-^:toggle-preview',
-      \      '--bind', 'ctrl-s:toggle-sort',
-      \      '--cycle',
-      \      '--bind', 'alt-f:first',
-      \      '--bind', 'alt-l:last',
-      \      '--bind', 'alt-a:select-all',
-      \      '--bind', 'alt-d:deselect-all']
-let g:fzf_preview_options = g:fzf_bind_options + [
-      \ '--layout=reverse',
-      \ '--preview-window', '60%,wrap',
-      \ '--preview', 'bat -pp --color=always --style=numbers {}'
-      \ ]
-
-let s:fzfcmd_scripts = substitute(
-  \ exists('g:fzfcmd_scripts') ? g:fzfcmd_scripts : expand('<sfile>:p:h:h') . '/utils',
-  \ '\\', '/', 'g'
-  \)
 
 func! s:SetConfigurationsBefore () abort
   silent call s:SetCamelCaseMotion()

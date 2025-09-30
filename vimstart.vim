@@ -88,8 +88,36 @@ let g:gitgutter_max_signs = -1
 " Prevent vim-sandwich from loading keymaps
 let g:sandwich_no_default_key_mappings = 1
 
+" Path to find scripts or executables
+let g:scripts_dir = substitute(
+  \ exists('g:scripts_dir') ? g:scripts_dir : expand('<sfile>:p:h') . '/utils',
+  \ '\\', '/', 'g'
+  \)
+
+
 " fzf-lsp keys
 let g:fzf_lsp_preview_window = ['right', 'ctrl-/', 'ctrl-^']
+
+" General options
+let g:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border=rounded' ]
+let g:fzf_bind_options = g:fzf_base_options + [
+      \      '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
+      \      '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
+      \      '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
+      \      '--bind', 'shift-up:preview-up,shift-down:preview-down',
+      \      '--bind', 'ctrl-^:toggle-preview',
+      \      '--bind', 'ctrl-s:toggle-sort',
+      \      '--cycle',
+      \      '--bind', 'alt-f:first',
+      \      '--bind', 'alt-l:last',
+      \      '--bind', 'alt-a:select-all',
+      \      '--bind', 'alt-d:deselect-all']
+let g:fzf_preview_options = g:fzf_bind_options + [
+      \ '--layout=reverse',
+      \ '--preview-window', '60%,wrap',
+      \ '--preview', 'bat -pp --color=always --style=numbers {}'
+      \ ]
+
 
 ": }}} :------------------------------------------------------------------
 
