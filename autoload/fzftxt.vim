@@ -170,7 +170,8 @@ function! fzftxt#open(filename) abort
   let filename = ''
 
   if empty(a:filename)
-    let temp_name = trim(system('date +%d-%m-%Y_%H-%M-%S'))
+    let cmd = has('win32') ? 'powershell -NoLogo -NonInteractive -NoProfile -Command Get-Date -Format "dd-MM-yyyy_HH-mm-ss"' : 'date +%d-%m-%Y_%H-%M-%S'
+    let temp_name = trim(system(cmd))
     let filename = 'note_' . temp_name . '.md'
   else
     let filename = trim(trim(a:filename, '/'), '\')
