@@ -31,7 +31,7 @@ local ref_jump = function(forward, client_id)
 end
 
 ---Mapper from commands to lsp handler functions
----@type [string, string][]
+---@type [string, string, fun(...)?][]
 local cmd_to_lsp_handlers = {
   { 'Definitions', 'definition' },
   { 'Declarations', 'declaration' },
@@ -39,7 +39,18 @@ local cmd_to_lsp_handlers = {
   { 'Implementations', 'implementation' },
   { 'References', 'references' },
   { 'DocumentSymbols', 'document_symbol' },
-  { 'WorkspaceSymbols', 'workspace_symbol' },
+  {
+    'WorkspaceSymbols',
+    'workspace_symbol',
+    function(...)
+      if exists(':WorkspaceSymbols') then
+        vim.cmd.WorkspaceSymbols()
+        return
+      end
+
+      return vim.lsp.buf.workspace_symbol(...)
+    end,
+  },
   { 'IncomingCalls', 'incoming_calls' },
   { 'OutgoingCalls', 'outgoing_calls' },
   { 'CodeActions', 'code_action' },
@@ -101,13 +112,18 @@ local handlers = ({}) --[[@as config.LspHandlers]]
 local set_handlers = function()
   for _, handler in ipairs(cmd_to_lsp_handlers) do
     local cmd, name = handler[1], handler[2]
-    handlers[name] = function(...)
-      if exists(':' .. cmd) then
-        vim.cmd[cmd](...)
-        return
-      end
 
-      return vim.lsp.buf[name](...)
+    if handler[3] ~= nil then
+      handlers[name] = handler[3]
+    else
+      handlers[name] = function(...)
+        if exists(':' .. cmd) then
+          vim.cmd[cmd](...)
+          return
+        end
+
+        return vim.lsp.buf[name](...)
+      end
     end
   end
 end
