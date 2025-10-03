@@ -39,7 +39,7 @@
 ---@field completions config.LspSettings.options
 
 --- Update capabilities function
----@alias config.UpdateCapabilities fun(base: config.LspConfigExtended | vim.lsp.Config, lsp_config: config.LspConfigExtended | vim.lsp.Config): config.LspConfigExtended
+---@alias config.UpdateCapabilities fun(base: config.LspConfigExtended | vim.lsp.Config, lsp_config?: config.LspConfigExtended | vim.lsp.Config): config.LspConfigExtended
 
 --- Options for completion modules
 ---@class config.CompletionOpts

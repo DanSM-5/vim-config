@@ -271,11 +271,15 @@ local cmp_module = {
     cmp_lsp._on_insert_enter()
   end,
 
+  ---Get the capabilities update function from the completion module
+  ---@return config.UpdateCapabilities
   get_update_capabilities = function ()
     ---@param base config.LspConfigExtended
-    ---@param lsp_config config.LspConfigExtended
+    ---@param lsp_config? config.LspConfigExtended
     ---@return config.LspConfigExtended
     local update_capabilities = function (base, lsp_config)
+      base = base or {}
+      lsp_config = lsp_config or {}
       local cmp_lsp = require('cmp_nvim_lsp')
       ---@type lsp.ClientCapabilities
       local baseCapabilities = base.capabilities and base.capabilities or {}

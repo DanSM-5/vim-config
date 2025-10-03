@@ -335,12 +335,16 @@ local blink_module = {
     blink.setup(blink_opts)
   end,
 
+  ---Get the capabilities update function from the completion module
+  ---@return config.UpdateCapabilities
   get_update_capabilities = function ()
     ---Update capabilities of base config
     ---@param base config.LspConfigExtended
-    ---@param lsp_config config.LspConfigExtended
+    ---@param lsp_config? config.LspConfigExtended
     ---@return config.LspConfigExtended
     local function update_capabilities(base, lsp_config)
+      base = base or {}
+      lsp_config = lsp_config or {}
       local blink = require('blink.cmp')
       ---@type lsp.ClientCapabilities
       local baseCapabilities = base.capabilities and base.capabilities or {}
