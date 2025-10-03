@@ -953,7 +953,7 @@ func! BufferCd () abort
     exec 'cd '. buffer_path
     echon 'Changed to: ' . buffer_path
   else
-    echon 'Unable to cd into: ' . buffer_path
+    echon 'Unable to cd into current buffer '
   endif
 endf
 
