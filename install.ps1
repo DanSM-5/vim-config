@@ -19,7 +19,7 @@ $windows = ($IsWindows -or $env:OS -eq 'Windows_NT')
 
 foreach ($loc in $symlink_locations) {
   if (!(Test-Path -LiteralPath $loc -ErrorAction SilentlyContinue)) {
-    New-Item -ItemType SymbolicLink -Tartget $location -Path $loc
+    New-Item -ItemType SymbolicLink -Target $location -Path $loc
     continue
   }
 
@@ -39,7 +39,7 @@ foreach ($loc in $symlink_locations) {
     Remove-Item -LiteralPath $loc
   }
 
-  New-Item -ItemType SymbolicLink -Tartget $location -Path $loc
+  New-Item -ItemType SymbolicLink -Target $location -Path $loc
 }
 
 # Nvim from scoop reads from APPDATA
@@ -48,7 +48,7 @@ if ($windows) {
   $nvim = "$appdata/nvim"
 
   if (!(Test-Path -LiteralPath $nvim -ErrorAction SilentlyContinue)) {
-    New-Item -ItemType SymbolicLink -Tartget $location -Path $nvim
+    New-Item -ItemType SymbolicLink -Target $location -Path $nvim
     exit
   }
 
@@ -65,5 +65,5 @@ if ($windows) {
     Remove-Item -LiteralPath $nvim
   }
 
-  New-Item -ItemType SymbolicLink -Tartget $location -Path $nvim
+  New-Item -ItemType SymbolicLink -Target $location -Path $nvim
 }
