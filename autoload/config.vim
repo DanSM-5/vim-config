@@ -947,8 +947,10 @@ func! s:SetVimSystemCopyMaps () abort
   nmap zP <Plug>SystemPasteLine
 endf
 
-func! BufferCd () abort
-  let buffer_path = utils#git_path()
+func! BufferCd (...) abort
+  let buffer = (empty(a:1) || a:1 == 0) ? '%' : '#'..a:1
+  let buffer = expand(printf('%s:p:h', buffer))
+  let buffer_path = utils#git_path(buffer)
   if !empty(buffer_path)
     exec 'cd '. buffer_path
     echon 'Changed to: ' . buffer_path
@@ -957,7 +959,7 @@ func! BufferCd () abort
   endif
 endf
 
-function s:OpenCommitInBrowser() abort
+function! s:OpenCommitInBrowser() abort
   execute 'GBrowse ' . expand('<cword>')
 endfunction
 
@@ -1015,7 +1017,7 @@ func! s:DefineCommands () abort
 
   command! -nargs=1 Eval silent call Eval(<f-args>)
 
-  command! Bcd call BufferCd()
+  command! -nargs=? -bar Bcd call BufferCd(<q-args>)
   nnoremap <silent> <leader>cd <cmd>Bcd<cr>
 
   " Toggle scrolloff

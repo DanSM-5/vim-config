@@ -69,17 +69,18 @@ function! utils#current_buffer_path () abort
   " return trim(shellescape(expand('%:p:h')))
 endfunction
 
-function! utils#git_path () abort
+function! utils#git_path (...) abort
+  let path = empty(a:1) ? expand('%:p:h') : a:1
   " Directory holding the current file
-  let file_dir = trim(expand('%:p:h'))
+  let file_dir = trim(path)
 
-  let gitcmd = 'cd '.shellescape(file_dir).' && git rev-parse --show-toplevel'
-  if (has('win32') || has('win32unix')) && !has('nvim')
-    " WARN: Weird behavior started to occur in which vim in windows
-    " requires an additional shellescape to run when command has parenthesis
-    " or when it has quotations
-    let gitcmd = shellescape(gitcmd)
-  endif
+  let gitcmd = printf('git -C %s rev-parse --show-toplevel', shellescape(file_dir))
+  " if (has('win32') || has('win32unix')) && !has('nvim')
+  "   " WARN: Weird behavior started to occur in which vim in windows
+  "   " requires an additional shellescape to run when command has parenthesis
+  "   " or when it has quotations
+  "   let gitcmd = shellescape(gitcmd)
+  " endif
   let gitpath = trim(system(gitcmd))
 
   if isdirectory(gitpath)
