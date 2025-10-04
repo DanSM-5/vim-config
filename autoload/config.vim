@@ -948,7 +948,7 @@ func! s:SetVimSystemCopyMaps () abort
 endf
 
 func! BufferCd (...) abort
-  let buffer = (empty(a:1) || a:1 == 0) ? '%' : '#'..a:1
+  let buffer = (exists('a:1') && !empty(a:1) && a:1 != 0) ? '#'..a:1 : '%'
   let buffer = expand(printf('%s:p:h', buffer))
   let buffer_path = utils#git_path(buffer)
   if !empty(buffer_path)
@@ -1325,7 +1325,7 @@ endfunction
 
 
 function BlameLine(...) abort
-  let commit_count = empty(a:1) ? '5' : a:1
+  let commit_count = (exists('a:1') && !empty(a:1)) ? a:1 : '5'
   let root = utils#find_root('.git')
   let line = line('.')
   let file = expand('%:p')

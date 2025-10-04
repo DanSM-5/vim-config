@@ -70,7 +70,7 @@ function! utils#current_buffer_path () abort
 endfunction
 
 function! utils#git_path (...) abort
-  let path = empty(a:1) ? expand('%:p:h') : a:1
+  let path = (exists('a:1') && !empty(a:)) ? a:1 : expand('%:p:h')
   " Directory holding the current file
   let file_dir = trim(path)
 
