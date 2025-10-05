@@ -49,7 +49,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
 vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('TextYankedGroup', { clear = true }),
   callback = function ()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
   desc = 'Highlight yanked text',
 })
