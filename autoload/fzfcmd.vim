@@ -558,7 +558,20 @@ endfunction
 " A = ArgLead   the leading portion of the argument currently being completed on
 " C = CmdLine   the entire command line
 " P = CursorPos the cursor position in it (byte index)
-function fzfcmd#todo_comments_completion(A, L, P) abort
+function fzfcmd#todo_comments_completion(A, C, P) abort
+  let trimmed = trim(a:C)
+  let length = len(split(a:C, '\W\+'))
+  " Only complete first arg
+  if length > 2 || (length == 2 && a:C != trimmed)
+    return
+  endif
+
+  if type(a:A) == v:t_string && strlen(a:A) > 0
+    " return get_matched(engines, current)
+    return sort(utils#get_matched(s:todo_keywords, a:A))
+  endif
+   
+  " Return all
   return s:todo_keywords
 endfunction
 

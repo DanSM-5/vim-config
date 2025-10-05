@@ -326,3 +326,7 @@ function! utils#get_sid(pattern) abort
   return sid
 endfunction
 
+function utils#get_matched(list, value) abort
+  let found = filter(copy(a:list), printf('v:val =~ "%s"', a:value))
+  return empty(found) ? a:list : found
+endfunction
