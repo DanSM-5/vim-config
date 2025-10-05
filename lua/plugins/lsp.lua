@@ -265,7 +265,9 @@ return {
   {
     'lafarr/hierarchy.nvim',
     cmd = { 'FunctionReferences' },
-    keys = { { '<leader>sc', mode = { 'n', 'v' } } },
+    keys = {
+      { '<space>cs', mode = { 'n', 'v' } },
+    },
     config = function ()
       require('config.nvim_hierarchy').setup()
     end

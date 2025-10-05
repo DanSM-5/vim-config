@@ -1,5 +1,5 @@
 local set_keymaps = function ()
-  vim.keymap.set({ 'n', 'x' }, '<leader>sc', '<cmd>FunctionReferences<cr>', {
+  vim.keymap.set({ 'n', 'x' }, '<space>cs', '<cmd>FunctionReferences<cr>', {
     desc = '[Hierarchy] Open call hierarchy of function under cursor',
     noremap = true,
   })
