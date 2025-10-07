@@ -520,6 +520,30 @@ function utils.iter_group_results(bufnr, query_group, root, root_lang)
   return utils.iter_prepared_matches(query, params.root, params.source, params.start, params.stop)
 end
 
+-- Gets a property at path
+---@param tbl table the table to access
+---@param path string the '.' separated path
+---@return table|nil result the value at path or nil
+function utils.get_at_path(tbl, path)
+  if path == "" then
+    return tbl
+  end
+
+  local segments = vim.split(path, '.', { plain = true, trimempty = true })
+  ---@type table[]|table
+  local result = tbl
+
+  for _, segment in ipairs(segments) do
+    if type(result) == 'table' then
+      ---@type table
+      -- TODO: figure out the actual type of tbl
+      result = result[segment]
+    end
+  end
+
+  return result
+end
+
 -- Return all nodes corresponding to a specific capture path (like @definition.var, @reference.type)
 -- Works like M.get_references or M.get_scopes except you can choose the capture
 -- Can also be a nested capture like @definition.function to get all nodes defining a function.
@@ -940,65 +964,6 @@ function LspInterop.peek_definition_code(query_string, query_group, lsp_request,
   end
 end
 
----Get available textobjects
----@param opts { lang: string; buf: integer; query_group: string }
----@return string[]
-local function available_textobjects(opts)
-  local lang = opts.lang or utils.get_buf_lang(opts.buf)
-
-  if lang == nil then
-    return {}
-  end
-  local query_group = opts.query_group or "textobjects"
-  local parsed_queries = vim.treesitter.query.get(lang, query_group)
-  if not parsed_queries then
-    return {}
-  end
-  local found_textobjects = parsed_queries.captures or {}
-  for _, p in pairs(parsed_queries.info.patterns) do
-    for _, q in ipairs(p) do
-      local query, arg1 = unpack(q)
-      if query == "make-range!" and not vim.tbl_contains(found_textobjects, arg1) then
-        table.insert(found_textobjects, arg1)
-      end
-    end
-  end
-  return found_textobjects
-  --patterns = {
-  --[2] = { { "make-range!", "function.inner", 2, 3 } },
-  --[4] = { { "make-range!", "function.inner", 2, 3 } },
-  --[11] = { { "make-range!", "parameter.outer", 2, 12 } },
-  --[12] = { { "make-range!", "parameter.outer", 12, 3 } },
-  --[13] = { { "make-range!", "parameter.outer", 2, 12 } },
-  --[14] = { { "make-range!", "parameter.outer", 12, 3 } }
-  --}
-end
-
--- Create command peek definition
-vim.api.nvim_create_user_command('TSTextobjectPeekDefinitionCode', function(args)
-  LspInterop.peek_definition_code(unpack(args.fargs))
-end, {
-  complete = function (current, cmd)
-    if #vim.split(cmd, ' ') > 2 then
-      return {}
-    end
-
-    local buf = vim.api.nvim_get_current_buf()
-    local lang = utils.get_buf_lang(buf)
-    local available_to = available_textobjects({ lang = lang, buf = buf })
-
-    local matched = vim.tbl_filter(function (to)
-      local _, matches = string.gsub(to, '^'..current, '')
-      return matches > 0
-    end, available_to)
-
-    return #matched > 0 and '@'..matched or vim.tbl_map(function (to) return '@'..to end, available_to)
-
-  end,
-  bang = true,
-  desc = '[TS] Peak definition on float window',
-  nargs = '+',
-})
-
+LspInterop.utils = utils
 
 return LspInterop

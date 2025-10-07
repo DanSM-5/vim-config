@@ -121,4 +121,74 @@ function Module.detach(ctx)
 end
 
 
+---Get available textobjects
+---@param opts { lang?: string; buf: integer; query_group: string }
+---@return string[]
+local function available_textobjects(opts)
+  -- local lsp_interop = require('extras.ts_lsp_interop')
+  -- local lang = opts.lang or lsp_interop.utils.get_buf_lang(opts.buf)
+
+  local lang = opts.lang or vim.treesitter.language.get_lang(
+    vim.api.nvim_get_option_value('filetype', { buf = opts.buf })
+  )
+
+  if lang == nil then
+    return {}
+  end
+  local query_group = opts.query_group or "textobjects"
+  local parsed_queries = vim.treesitter.query.get(lang, query_group)
+  if not parsed_queries then
+    return {}
+  end
+  local found_textobjects = parsed_queries.captures or {}
+  for _, p in pairs(parsed_queries.info.patterns) do
+    for _, q in ipairs(p) do
+      local query, arg1 = unpack(q)
+      if query == "make-range!" and not vim.tbl_contains(found_textobjects, arg1) then
+        table.insert(found_textobjects, arg1)
+      end
+    end
+  end
+  return found_textobjects
+  --patterns = {
+  --[2] = { { "make-range!", "function.inner", 2, 3 } },
+  --[4] = { { "make-range!", "function.inner", 2, 3 } },
+  --[11] = { { "make-range!", "parameter.outer", 2, 12 } },
+  --[12] = { { "make-range!", "parameter.outer", 12, 3 } },
+  --[13] = { { "make-range!", "parameter.outer", 2, 12 } },
+  --[14] = { { "make-range!", "parameter.outer", 12, 3 } }
+  --}
+end
+
+-- Create command peek definition
+vim.api.nvim_create_user_command('TSTextobjectPeekDefinitionCode', function(args)
+  local lsp_interop = require('extras.ts_lsp_interop')
+  lsp_interop.peek_definition_code(unpack(args.fargs))
+end, {
+  complete = function (current, cmd)
+    if #vim.split(cmd, ' ') > 2 then
+      return {}
+    end
+
+    local buf = vim.api.nvim_get_current_buf()
+    local lang = vim.treesitter.language.get_lang(
+      vim.api.nvim_get_option_value('filetype', { buf = buf })
+    )
+    local available_to = available_textobjects({ lang = lang, buf = buf })
+
+    ---@type string[]
+    local matched = vim.tbl_filter(function (to)
+      local _, matches = string.gsub(to, '^'..current, '')
+      return matches > 0
+    end, available_to)
+
+    return #matched > 0 and '@'..matched[1] or vim.tbl_map(function (to) return '@'..to end, available_to)
+
+  end,
+  bang = true,
+  desc = '[TS] Peak definition on float window',
+  nargs = '+',
+})
+
+
 return Module
