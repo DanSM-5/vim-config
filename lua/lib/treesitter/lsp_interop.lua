@@ -174,7 +174,7 @@ end, {
     local lang = vim.treesitter.language.get_lang(
       vim.api.nvim_get_option_value('filetype', { buf = buf })
     )
-    local available_to = available_textobjects({ lang = lang, buf = buf })
+    local available_to = vim.tbl_map(function (to) return '@'..to end, available_textobjects({ lang = lang, buf = buf }))
 
     ---@type string[]
     local matched = vim.tbl_filter(function (to)
@@ -182,7 +182,7 @@ end, {
       return matches > 0
     end, available_to)
 
-    return #matched > 0 and '@'..matched[1] or vim.tbl_map(function (to) return '@'..to end, available_to)
+    return #matched > 0 and matched or available_to
 
   end,
   bang = true,
