@@ -4,17 +4,32 @@ return {
     local fold_ui = require('lib.treesitter.fold_ui')
     local fold_text = require('lib.treesitter.fold_text')
     local diagnostics = require('lib.treesitter.diagnostics')
+    local lsp_interop = require('lib.treesitter.lsp_interop')
 
     textobjects.setup({ enable = true, disable = false })
     fold_ui.setup({ enable = true, disable = false })
     fold_text.setup({ enable = true, disable = false })
     diagnostics.setup({ enable = true, disable = true })
+    lsp_interop.setup({ enable = true, disable = false,
+      data = {
+        keymap_modes = { 'n', 'x' },
+        keymaps_per_buf = {
+          ['<space>df'] = '@function.outer',
+          ['<space>dF'] = '@class.outer',
+        },
+        floating_preview_opts = {
+          border = 'rounded',
+        },
+        dot_repeatable = true,
+      }
+    })
 
     local manager = require('treesitter-modules.core.manager')
     table.insert(manager.modules, textobjects)
     table.insert(manager.modules, fold_ui)
     table.insert(manager.modules, fold_text)
     table.insert(manager.modules, diagnostics)
+    table.insert(manager.modules, lsp_interop)
 
     require('treesitter-modules').setup({
       -- list of parser names, or 'all', that must be installed

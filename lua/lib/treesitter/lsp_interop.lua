@@ -22,7 +22,7 @@ local nx_mode_functions = {
 ---@field data { keymap_modes: string|string[]; keymaps_per_buf: table<string, string>; dot_repeatable: boolean; floating_preview_opts?: vim.lsp.util.open_floating_preview.Opts }
 
 ---@class ts.mod.lsp_interop: ts.mod.Module
----@field config ts.mod.lsp_interop.Config
+---@field public config ts.mod.lsp_interop.Config
 local Module = {}
 
 ---@type ts.mod.lsp_interop.Config
