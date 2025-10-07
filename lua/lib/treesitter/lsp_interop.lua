@@ -18,14 +18,14 @@ local nx_mode_functions = {
 }
 
 
----@class (exact) ts.mod.fold.Config: ts.mod.module.Config
+---@class (exact) ts.mod.lsp_interop.Config: ts.mod.module.Config
 ---@field data { keymap_modes: string|string[]; keymaps_per_buf: table<string, string>; dot_repeatable: boolean; floating_preview_opts?: vim.lsp.util.open_floating_preview.Opts }
 
----@class ts.mod.Fold: ts.mod.Module
----@field config ts.mod.fold.Config
+---@class ts.mod.lsp_interop: ts.mod.Module
+---@field config ts.mod.lsp_interop.Config
 local Module = {}
 
----@type ts.mod.fold.Config
+---@type ts.mod.lsp_interop.Config
 Module.config = {
   enable = false,
   disable = false,
@@ -41,7 +41,7 @@ Module.methods = {}
 Module.expressions = {}
 
 ---called from state on setup
----@param config ts.mod.fold.Config
+---@param config ts.mod.lsp_interop.Config
 function Module.setup(config)
   Module.config = config
 end
