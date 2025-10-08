@@ -177,10 +177,10 @@ function Hierarchy.build_reference_lines(node, lines, indent, expanded_nodes)
   lines = lines or {}
   expanded_nodes = expanded_nodes or {}
 
-  local icon = '??'
+  local icon = '󰅲'
 
   if node.name:match('[Dd]ebug') then
-    icon = '?'
+    icon = '⭐'
   end
 
   local has_refs = node.references and next(node.references) ~= nil
@@ -189,7 +189,7 @@ function Hierarchy.build_reference_lines(node, lines, indent, expanded_nodes)
   local expanded = expanded_nodes[node.name .. node.uri]
 
   if has_refs then
-    prefix = prefix .. (expanded and ' ' or '? ')
+    prefix = prefix .. (expanded and '▼ ' or '▶ ')
   else
     prefix = prefix .. '  '
   end
@@ -280,7 +280,7 @@ function Hierarchy.display_custom_ui()
 
   vim.api.nvim_buf_clear_namespace(Hierarchy.refs_buf, Hierarchy.refs_ns, 0, -1)
   for i, line in ipairs(lines) do
-    local icon_start = line.text:find('??') or line.text:find('?')
+    local icon_start = line.text:find('󰅲') or line.text:find('⭐')
     if icon_start then
       vim.hl.range(Hierarchy.refs_buf, Hierarchy.refs_ns, 'Special', { i - 1, icon_start - 1 }, { i - 1, icon_start })
     end
@@ -302,7 +302,8 @@ function Hierarchy.display_custom_ui()
     end
   end
 
-  local keymap_opts = { noremap = true, silent = true, buf = Hierarchy.refs_buf }
+  ---@type vim.keymap.set.Opts
+  local keymap_opts = { noremap = true, silent = true, buffer = Hierarchy.refs_buf }
   vim.keymap.set('n', '<CR>', function ()
     Hierarchy.toggle_reference_node()
   end, keymap_opts)
@@ -425,7 +426,7 @@ function Hierarchy.redraw_references_buffer()
 
   vim.api.nvim_buf_clear_namespace(Hierarchy.refs_buf, Hierarchy.refs_ns, 0, -1)
   for i, line in ipairs(lines) do
-    local icon_start = line.text:find('??') or line.text:find('?')
+    local icon_start = line.text:find("󰅲") or line.text:find("⭐")
     if icon_start then
       vim.hl.range(Hierarchy.refs_buf, Hierarchy.refs_ns, 'Special', { i - 1, icon_start - 1 }, { i - 1, icon_start })
     end
