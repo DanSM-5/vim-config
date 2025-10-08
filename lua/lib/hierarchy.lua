@@ -302,30 +302,18 @@ function Hierarchy.display_custom_ui()
     end
   end
 
-  local keymap_opts = { noremap = true, silent = true }
-  vim.api.nvim_buf_set_keymap(
-    Hierarchy.refs_buf,
-    'n',
-    '<CR>',
-    [[<cmd>lua require('hierarchy').toggle_reference_node()<CR>]],
-    keymap_opts
-  )
+  local keymap_opts = { noremap = true, silent = true, buf = Hierarchy.refs_buf }
+  vim.keymap.set('n', '<CR>', function ()
+    Hierarchy.toggle_reference_node()
+  end, keymap_opts)
 
-  vim.api.nvim_buf_set_keymap(
-    Hierarchy.refs_buf,
-    'n',
-    '<2-LeftMouse>',
-    [[<cmd>lua require('hierarchy').toggle_reference_node()<CR>]],
-    keymap_opts
-  )
+  vim.keymap.set('n', '<2-LeftMouse>', function ()
+    Hierarchy.toggle_reference_node()
+  end, keymap_opts)
 
-  vim.api.nvim_buf_set_keymap(
-    Hierarchy.refs_buf,
-    'n',
-    'gd',
-    [[<cmd>lua require('hierarchy').goto_function_definition()<CR>]],
-    keymap_opts
-  )
+  vim.keymap.set('n', 'gd', function ()
+    Hierarchy.goto_function_definition()
+  end, keymap_opts)
 
   local win_width = math.floor(vim.api.nvim_get_option_value('columns', {}) * 0.4)
 
