@@ -262,15 +262,5 @@ return {
       require('lsp-servers.nvim_fzf_lsp').setup()
     end,
   },
-  {
-    'lafarr/hierarchy.nvim',
-    cmd = { 'FunctionReferences' },
-    keys = {
-      { '<space>cs', mode = { 'n', 'v' } },
-    },
-    config = function ()
-      require('config.nvim_hierarchy').setup()
-    end
-  }
 }
 

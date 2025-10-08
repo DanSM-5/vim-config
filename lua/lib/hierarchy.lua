@@ -484,8 +484,10 @@ function Hierarchy.goto_function_definition()
   end
 end
 
----@param direction hierarchy.Direction
-function Hierarchy.find_recursive_calls(depth, direction)
+---@param direction hierarchy.Direction Direction to search inwards or outwards
+---@param depth? integer How deep to search in the calls
+---@param lsp_client? vim.lsp.Client Optional client instance to use
+function Hierarchy.find_recursive_calls(direction, depth, lsp_client)
   Hierarchy.reference_tree = {
     name = '',
     uri = '',
@@ -497,7 +499,7 @@ function Hierarchy.find_recursive_calls(depth, direction)
   Hierarchy.pending_items = 0
   Hierarchy.depth = depth or 3
 
-  local client = vim.lsp.get_clients({ method = method })[1]
+  local client = lsp_client or vim.lsp.get_clients({ method = method })[1]
   if not client then
     vim.notify('No LSP client found for call hierarchy', vim.log.levels.ERROR)
     return
@@ -542,41 +544,6 @@ function Hierarchy.find_recursive_calls(depth, direction)
 
   local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
   client:request(method, params, handler_prepareCallHierarchy)
-end
-
-function Hierarchy.setup(opts)
-  opts = opts or {}
-  if opts.depth then
-    Hierarchy.depth = opts.depth
-  end
-
-  vim.api.nvim_create_user_command('FunctionReferences', function(cmd_opts)
-    local depth = Hierarchy.depth
-    local direction = 'outcoming'
-    if cmd_opts.args and cmd_opts.args ~= '' then
-      local args = vim.split(cmd_opts.args, ' ')
-      direction = args[1] and args[1]:lower()
-      depth = tonumber(args[2]) or Hierarchy.depth
-    end
-
-    Hierarchy.find_recursive_calls(depth, direction)
-  end, {
-    nargs = '?',
-    desc = 'Find function references recursively. Usage: FunctionReferences [incoming|outcoming] [depth]',
-    complete = function(param, cmd)
-      if #vim.split(cmd, ' ') > 2 then
-        return
-      end
-
-      local options = { 'incoming', 'outcoming' }
-      local matched = vim.tbl_filter(function(option)
-        local _, matches = string.gsub(option, '^' .. param, '')
-        return matches > 0
-      end, options)
-
-      return #matched > 0 and matched or options
-    end,
-  })
 end
 
 return Hierarchy
