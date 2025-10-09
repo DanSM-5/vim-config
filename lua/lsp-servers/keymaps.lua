@@ -188,7 +188,7 @@ return {
         opts.desc = desc
       end
 
-      vim.keymap.set(mode, key, func, opts)
+      pcall(vim.keymap.set, mode, key, func, opts)
     end
 
     set_map('n', '<space>td', function()
