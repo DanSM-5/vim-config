@@ -1,3 +1,6 @@
+---@module 'lazy'
+
+---@type LazyPluginSpec[]
 return {
   -- built-in in neovim 0.10
   -- {
