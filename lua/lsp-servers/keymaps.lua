@@ -42,13 +42,18 @@ local cmd_to_lsp_handlers = {
   {
     'WorkspaceSymbols',
     'workspace_symbol',
-    function(...)
+    ---Handler wrapper for workspace symbols
+    ---@param query? string
+    ---@param opts? vim.lsp.ListOpts
+    ---@return nil
+    function(query, opts)
       if exists(':WorkspaceSymbols') then
-        vim.cmd.WorkspaceSymbols()
+        require('fzf_lsp').workspace_symbol_call({ query = query })
         return
       end
 
-      return vim.lsp.buf.workspace_symbol(...)
+      vim.diagnostic.get(nil)
+      return vim.lsp.buf.workspace_symbol(query, opts)
     end,
   },
   { 'IncomingCalls', 'incoming_calls' },
