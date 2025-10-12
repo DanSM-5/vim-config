@@ -48,6 +48,8 @@ return {
         'json',
         'json5',
         'lua',
+        'luadoc',
+        'luau',
         'markdown',
         'markdown_inline',
         'powershell',
