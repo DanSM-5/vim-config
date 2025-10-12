@@ -47,7 +47,7 @@ local cmd_to_lsp_handlers = {
     ---@param opts? vim.lsp.ListOpts
     ---@return nil
     function(query, opts)
-      if exists(':WorkspaceSymbols') then
+      if exists(':WorkspaceSymbols') > 0 then
         require('fzf_lsp').workspace_symbol_call({ query = query })
         return
       end
