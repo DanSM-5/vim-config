@@ -147,8 +147,8 @@ vim.cmd([[
     endif
   endfunction
 
-  function! g:SetTab (space) abort
-    let space = empty(a:space) ? '2' : a:space
+  function! g:SetTab (...) abort
+    let space = (exists('a:1') && !empty(a:1)) ? a:1 : '2'
     exec 'set tabstop=' . space . ' softtabstop=' . space . ' shiftwidth=' . space
     set expandtab
     set ruler
