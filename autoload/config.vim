@@ -1487,6 +1487,9 @@ func! config#before () abort
   let g:fzf_history_dir = '~/.cache/fzf-history'
   let g:fzf_lsp_pretty = 1
 
+  " Layout right and diff bottom
+  let g:undotree_WindowLayout = 4
+
   silent call s:Set_netrw()
   silent call s:Set_os_specific_before()
   silent call s:SetBufferOptions()
