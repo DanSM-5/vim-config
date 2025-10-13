@@ -185,6 +185,12 @@ end
 -- Config before runs on startup
 fn['config#before']()
 
+
+if vim.fn.has('nvim-0.12.0') == 1 then
+  vim.opt.fillchars:append({ foldinner = ' ' })
+  vim.o.foldcolumn = 'auto'
+end
+
 -- Config after run on VimEnter
 vim.api.nvim_create_autocmd('VimEnter', {
   pattern = { '*' },
