@@ -240,7 +240,6 @@ return {
   -- },
   {
     'DanSM-5/fzf-lsp.nvim',
-    dir = vim.fs.joinpath(vim.fn.expand('~'), 'projects', 'fzf-lsp.nvim'),
     cmd = {
       'Definitions',
       'Declarations',
