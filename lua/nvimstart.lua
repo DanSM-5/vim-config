@@ -84,7 +84,11 @@ g.scripts_dir = vim.fn.substitute(
 
 
 -- fzf-lsp keys
-g.fzf_lsp_preview_window = { 'right', 'ctrl-/', 'ctrl-^' }
+g.fzf_lsp_override_opts = {
+  '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
+  '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
+  '--bind', 'ctrl-^:toggle-preview',
+}
 
 
 -- General options
