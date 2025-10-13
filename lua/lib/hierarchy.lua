@@ -26,7 +26,7 @@ function Hierarchy.safe_call(fn, ...)
   return result
 end
 
----@param item table
+---@param item lsp.CallHierarchyItem
 ---@param parent_node table
 local function create_reference_node(item, parent_node)
   --- Check if the item is an exact self-reference
@@ -102,6 +102,9 @@ local function request_outgoingCalls(item, current_depth, parent_node, client_id
   client:request('callHierarchy/outgoingCalls', params, handler_outgoingCalls)
 end
 
+---@param item lsp.CallHierarchyItem
+---@param current_depth integer
+---@param parent_node table
 ---@param client_id integer
 local function request_incomingCalls(item, current_depth, parent_node, client_id)
   local client = vim.lsp.get_clients({ id = client_id })[1]
@@ -162,11 +165,21 @@ function Hierarchy.process_item_calls(item, current_depth, parent_node, client_i
   end
 end
 
+---Process outgoing items
+---@param item lsp.CallHierarchyItem
+---@param current_depth integer
+---@param parent_node table
+---@param client_id integer
 function Hierarchy.process_outcoming_item_calls(item, current_depth, parent_node, client_id)
   Hierarchy.process_item_calls(item, current_depth, parent_node, client_id)
   request_outgoingCalls(item, current_depth, parent_node, client_id)
 end
 
+---Process incoming items
+---@param item lsp.CallHierarchyItem
+---@param current_depth integer
+---@param parent_node table
+---@param client_id integer
 function Hierarchy.process_incoming_item_calls(item, current_depth, parent_node, client_id)
   Hierarchy.process_item_calls(item, current_depth, parent_node, client_id)
   request_incomingCalls(item, current_depth, parent_node, client_id)
@@ -508,6 +521,7 @@ function Hierarchy.find_recursive_calls(direction, depth, lsp_client)
 
   ---@type lsp.Handler
   local handler_prepareCallHierarchy = function(err, result, ctx)
+    ---@cast result lsp.CallHierarchyItem[]
     if err or not result or vim.tbl_isempty(result) then
       vim.notify('Could not prepare call hierarchy', vim.log.levels.ERROR)
       return
