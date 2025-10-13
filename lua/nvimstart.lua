@@ -87,12 +87,6 @@ g.scripts_dir = vim.fn.substitute(
 g.fzf_lsp_preview_window = { 'right', 'ctrl-/', 'ctrl-^' }
 
 
-local function merge(t1, t2)
-  for _, v in ipairs(t2) do
-    t1[#t1 + 1] = v
-  end
-end
-
 -- General options
 local fzf_base_options = {
   '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border=rounded'
@@ -116,8 +110,8 @@ local fzf_preview_options = {
   '--preview', 'bat -pp --color=always --style=numbers {}'
 }
 
-merge(fzf_bind_options, fzf_base_options)
-merge(fzf_preview_options, fzf_bind_options)
+vim.list_extend(fzf_bind_options, fzf_base_options)
+vim.list_extend(fzf_preview_options, fzf_bind_options)
 
 g.fzf_base_options = fzf_base_options
 g.fzf_bind_options = fzf_bind_options
