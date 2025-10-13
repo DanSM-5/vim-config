@@ -255,9 +255,6 @@ return {
       'Diagnostics',
       'DiagnosticsAll',
     },
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-    },
     config = function()
       require('lsp-servers.nvim_fzf_lsp').setup()
     end,
