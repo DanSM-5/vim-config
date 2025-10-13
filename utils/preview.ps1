@@ -50,10 +50,10 @@ if (-Not $CENTER) {
 }
 
 # Sometimes bat is installed as batcat.
-if (Get-Command -Name 'batcat' -All) {
+if (Get-Command -Name 'batcat' -All -ErrorAction SilentlyContinue) {
   $BATNAME = 'batcat'
-} elseif (Get-Command -Name 'bat' -All) {
-  $BATNAME = 'cat'
+} elseif (Get-Command -Name 'bat' -All -ErrorAction SilentlyContinue) {
+  $BATNAME = 'bat'
 }
 
 if ($BATNAME -and !($env:FZF_PREVIEW_COMMAND)) {
