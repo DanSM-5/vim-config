@@ -10,12 +10,10 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-# TODO: Handle tag preview?
 if [ "$1" = --tag ]; then
-  # shift
-  # "$(dirname "${BASH_SOURCE[0]}")/tagpreview.sh" "$@"
-  # exit $?
-  exit 0
+  shift
+  "$(dirname "${BASH_SOURCE[0]}")/tagpreview.sh" "$@"
+  exit $?
 fi
 
 IFS=':' read -r -a INPUT <<< "$1"
