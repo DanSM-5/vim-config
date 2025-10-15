@@ -61,5 +61,10 @@ return {
       require('config.nvim_cursor_ref').setup()
     end,
   },
+  {
+    'santhosh-tekuri/wordiff.nvim',
+    ft = { 'diff', 'gitcommit', 'git' },
+    opts = {},
+  },
 }
 
