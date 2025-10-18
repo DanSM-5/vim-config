@@ -19,7 +19,7 @@
   "friendly-snippets": { "branch": "main", "commit": "572f5660cf05f8cd8834e096d7b4c921ba18e175" },
   "fugitive-difftool.nvim": { "branch": "main", "commit": "4448c1c909d832c2192953d1ce019bc84f648ab3" },
   "fzf": { "branch": "master", "commit": "8cdfb23df69df0a991d122185b00e8900875a8cf" },
-  "fzf-lsp.nvim": { "branch": "main", "commit": "ed33c747f522e606b20b131b48518da1554537f3" },
+  "fzf-lsp.nvim": { "branch": "main", "commit": "5507478e31c0c2a0438882a78e00ad80ce376782" },
   "fzf.vim": { "branch": "master", "commit": "879db51d0965515cdaef9b7f6bdeb91c65d2829e" },
   "gitsigns.nvim": { "branch": "main", "commit": "fcfa7a989cd6fed10abf02d9880dc76d7a38167d" },
   "grug-far.nvim": { "branch": "main", "commit": "2e991081c0e653e151fc9e659514d7c2fc31d22a" },
@@ -77,5 +77,6 @@
   "vim-smoothie": { "branch": "master", "commit": "df1e324e9f3395c630c1c523d0555a01d2eb1b7e" },
   "vim-suda": { "branch": "master", "commit": "9adda7d195222d4e2854efb2a88005a120296c47" },
   "vim-system-copy": { "branch": "master", "commit": "32e40cc45402ac1f265b26654bd7c67ef2f4d379" },
-  "vim-visual-multi": { "branch": "master", "commit": "a6975e7c1ee157615bbc80fc25e4392f71c344d4" }
+  "vim-visual-multi": { "branch": "master", "commit": "a6975e7c1ee157615bbc80fc25e4392f71c344d4" },
+  "wordiff.nvim": { "branch": "main", "commit": "0a697fdddf792a4c42b6fe6badf979ee4c06aef8" }
 }
