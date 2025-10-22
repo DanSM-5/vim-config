@@ -845,6 +845,7 @@ func! s:SetFZF () abort
   " Set grep commands
   nnoremap <leader>lg <cmd>Lg<cr>
   nnoremap <leader>fg <cmd>RG<cr>
+  xnoremap <leader>fg y:RG <c-r>"<cr>
   nnoremap <leader>fG <c-u>:Rg<space>
 
   " Mapping selecting mappings in respective mode using fzf
