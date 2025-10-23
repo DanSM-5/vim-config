@@ -268,11 +268,11 @@ return {
     set_map('v', '<space>ca', '<cmd>RangeCodeActions<cr>', '[Lsp] Range code actions')
 
     if client:supports_method('textDocument/prepareCallHierarchy') then
-      set_map({ 'n', 'x' }, '<space>cs', function ()
+      set_map({ 'n', 'x' }, '<space>cs', function()
         local hierarchy = require('lib.hierarchy')
         hierarchy.find_recursive_calls('outcoming', hierarchy.depth, client)
       end, '[Hierarchy] Open [outcoming] call hierarchy of function under cursor')
-      set_map({ 'n', 'x' }, '<space>cS', function ()
+      set_map({ 'n', 'x' }, '<space>cS', function()
         local hierarchy = require('lib.hierarchy')
         hierarchy.find_recursive_calls('incoming', hierarchy.depth, client)
       end, '[Hierarchy] Open [incoming] call hierarchy of function under cursor')
