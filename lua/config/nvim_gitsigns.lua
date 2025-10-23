@@ -3,7 +3,7 @@ return {
     local gitsigns = require('gitsigns')
 
     -- Quickfix command
-    vim.api.nvim_create_user_command('Gqf', function (opts)
+    vim.api.nvim_create_user_command('Gqf', function(opts)
       -- NOTE: to use quickfix on buffer only use
       -- :Gitsigns setqflist
       local target = opts.bang and 'attached' or 'all'
@@ -29,38 +29,65 @@ return {
 
         -- Actions
         vim.keymap.set('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'Gitsigns: Stage hunk', buffer = bufnr })
-        vim.keymap.set('v', '<leader>hs',
-          function() gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })end,
-          { desc = 'Gitsigns: Stage hunk', buffer = bufnr }
-        )
+        vim.keymap.set('v', '<leader>hs', function()
+          gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+        end, { desc = 'Gitsigns: Stage hunk', buffer = bufnr })
         vim.keymap.set('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'Gitsigns: Stage buffer', buffer = bufnr })
         vim.keymap.set('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'Gitsigns: Reset hunk', buffer = bufnr })
-        vim.keymap.set('v', '<leader>hr',
-          function() gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })end,
-          { desc = 'Gitsigns: Reset hunk', buffer = bufnr }
-        )
+        vim.keymap.set('v', '<leader>hr', function()
+          gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+        end, { desc = 'Gitsigns: Reset hunk', buffer = bufnr })
         vim.keymap.set('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'Gitsigns: Reset buffer', buffer = bufnr })
         -- Keep until removed
-        vim.keymap.set('n', '<leader>hu', gitsigns.undo_stage_hunk, { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr })
-        vim.keymap.set('v', '<leader>hu', function ()
+        vim.keymap.set(
+          'n',
+          '<leader>hu',
+          gitsigns.undo_stage_hunk,
+          { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr }
+        )
+        vim.keymap.set('v', '<leader>hu', function()
           -- Call stage_hunk on staged signs
           gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
         end, { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr })
-        vim.keymap.set('n', '<leader>hU', gitsigns.reset_buffer_index , { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr })
-        vim.keymap.set('n', '<leader>hp', gitsigns.preview_hunk,
-          { desc = 'Gitsigns: Preview hunk, repeat to enter preview window', buffer = bufnr })
-        vim.keymap.set('n', '<leader>hb', function() gitsigns.blame_line { full = true } end,
-          { desc = 'Gitsigns: Blame line', buffer = bufnr })
-        vim.keymap.set('n', '<leader>hB', gitsigns.toggle_current_line_blame,
-          { desc = 'Gitsigns: Toggle line blame', buffer = bufnr })
+        vim.keymap.set(
+          'n',
+          '<leader>hU',
+          gitsigns.reset_buffer_index,
+          { desc = 'Gitsigns: Undo stage hunk', buffer = bufnr }
+        )
+        vim.keymap.set(
+          'n',
+          '<leader>hp',
+          gitsigns.preview_hunk,
+          { desc = 'Gitsigns: Preview hunk, repeat to enter preview window', buffer = bufnr }
+        )
+        vim.keymap.set('n', '<leader>hb', function()
+          gitsigns.blame_line({ full = true })
+        end, { desc = 'Gitsigns: Blame line', buffer = bufnr })
+        vim.keymap.set(
+          'n',
+          '<leader>hB',
+          gitsigns.toggle_current_line_blame,
+          { desc = 'Gitsigns: Toggle line blame', buffer = bufnr }
+        )
         vim.keymap.set('n', '<leader>hd', gitsigns.diffthis, { desc = 'Gitsigns: Diff hunk', buffer = bufnr })
-        vim.keymap.set('n', '<leader>hD', function() gitsigns.diffthis('~') end,
-          { desc = 'Gitsigns: Diff all', buffer = bufnr })
-        vim.keymap.set('n', '<leader>td', gitsigns.preview_hunk_inline, { desc = 'Gitsigns: Toggle deleted hunk', buffer = bufnr })
+        vim.keymap.set('n', '<leader>hD', function()
+          gitsigns.diffthis('~')
+        end, { desc = 'Gitsigns: Diff all', buffer = bufnr })
+        vim.keymap.set(
+          'n',
+          '<leader>td',
+          gitsigns.preview_hunk_inline,
+          { desc = 'Gitsigns: Toggle deleted hunk', buffer = bufnr }
+        )
         -- Text object
-        vim.keymap.set({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>',
-          { desc = 'Gitsigns: Text object inner hunk', buffer = bufnr })
-      end
+        vim.keymap.set(
+          { 'o', 'x' },
+          'ih',
+          ':<C-U>Gitsigns select_hunk<CR>',
+          { desc = 'Gitsigns: Text object inner hunk', buffer = bufnr }
+        )
+      end,
     })
-  end
+  end,
 }
