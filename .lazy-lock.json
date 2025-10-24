@@ -17,6 +17,7 @@
   "cursor-text-objects.nvim": { "branch": "main", "commit": "a493c5a886bb857b0debdc95dc9d2baef3184d55" },
   "devdocs.nvim": { "branch": "main", "commit": "6175927cb2baa93934f10d7a1eca03055ebf0e94" },
   "friendly-snippets": { "branch": "main", "commit": "572f5660cf05f8cd8834e096d7b4c921ba18e175" },
+  "fugitive-delta.nvim": { "branch": "master", "commit": "df9864ad42d67adcea31a878d2675ba21de253c2" },
   "fugitive-difftool.nvim": { "branch": "main", "commit": "4448c1c909d832c2192953d1ce019bc84f648ab3" },
   "fzf": { "branch": "master", "commit": "a0cabe021d76de5b6227d23b09808ffbe114aadd" },
   "fzf-lsp.nvim": { "branch": "main", "commit": "5507478e31c0c2a0438882a78e00ad80ce376782" },

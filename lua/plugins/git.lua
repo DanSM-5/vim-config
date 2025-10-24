@@ -66,5 +66,9 @@ return {
     ft = { 'diff', 'gitcommit', 'git' },
     opts = {},
   },
+  {
+    'farhanmustar/fugitive-delta.nvim',
+    ft = { 'git', 'gvgit', 'diff' },
+  },
 }
 
