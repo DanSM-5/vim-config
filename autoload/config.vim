@@ -563,6 +563,8 @@ func! s:Set_user_keybindings () abort
     let pumKmap = pumMaps[insertKmap]
     exec 'inoremap <expr> '.insertKmap.' pumvisible() ? "'.pumKmap.'" : "'.insertKmap.'"'
   endfor
+
+  nnoremap <leader>sv <cmd>call SearchInViewport()<cr>
 endf
 
 func! s:Set_os_specific_before () abort
@@ -747,6 +749,14 @@ endf
 
 func! s:SetCamelCaseMotion () abort
   let g:camelcasemotion_key = '<leader>'
+endf
+
+func! SearchInViewport () abort
+  let start = line('w0')
+  let end = line('w$')
+  let cmd = printf('%dmark < | %dmark >', start, end)
+  exec cmd
+  call feedkeys("/\\%V")
 endf
 
 func! s:SetRG () abort
