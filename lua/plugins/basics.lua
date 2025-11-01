@@ -149,7 +149,7 @@ return {
   },
   {
     -- Add option to Diff changes with swap file
-    'chrisbra/Recovery.vim',
+    'chrisbra/Recover.vim',
   }
 }
 
