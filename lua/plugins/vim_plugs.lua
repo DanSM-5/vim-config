@@ -2,21 +2,10 @@
 
 ---@type LazyPluginSpec[]
 return {
-  -- built-in in neovim 0.10
-  -- {
-  --   'tpope/vim-commentary'
-  -- },
-  -- Using lua version
-  -- {
-  --   'tpope/vim-surround'
-  -- },
   {
     'inkarkat/vim-ReplaceWithRegister',
     event = 'VeryLazy',
   },
-  -- {
-  --   'christoomey/vim-sort-motion',
-  -- },
   {
     'DanSM-5/vim-system-copy',
   },
@@ -69,15 +58,14 @@ return {
     'psliwka/vim-smoothie',
     event = 'VeryLazy',
   },
-  -- {
-  --   'airblade/vim-gitgutter'
-  -- },
   {
     'xiyaowong/nvim-cursorword',
     event = 'VeryLazy',
     config = function()
       -- NOTE: consider to keep or remove the background color and just keep the underline
-      vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
+
+      -- vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
+      vim.api.nvim_set_hl(0, 'CursorWord', { underline = true, cterm = { underline = true }, bg = '#4b5263', force = true })
     end,
   },
   {
