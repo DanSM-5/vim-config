@@ -3,13 +3,17 @@
 ---@type LazyPluginSpec[]
 return {
   {
+    -- Raplace text using motions and prevent saving replaced text
+    -- Mapped to `cr` for motions
     'inkarkat/vim-ReplaceWithRegister',
     event = 'VeryLazy',
   },
   {
+    -- Functions to copy to clipboard using motions
     'DanSM-5/vim-system-copy',
   },
   {
+    -- Multi cursor plugin
     'mg979/vim-visual-multi',
     event = 'VeryLazy',
     config = function ()
@@ -33,9 +37,11 @@ return {
     end
   },
   {
+    -- Helper function to make functions/keymaps dot repeatable
     'tpope/vim-repeat',
   },
   {
+    -- Add `Repeatable` command to improve vim-repeat ergonomics
     'kreskij/Repeatable.vim',
     dependencies = {
       'tpope/vim-repeat',
@@ -43,22 +49,27 @@ return {
     cmd = { 'Repeatable' },
   },
   {
+    -- Allow move in camel case, snake case and kebab case
     'bkad/CamelCaseMotion',
     event = 'VeryLazy',
   },
   {
+    -- Improve '*' and '#' functionality
     'haya14busa/vim-asterisk',
     event = 'VeryLazy',
   },
   {
+    -- Request save file as sudo
     'lambdalisue/vim-suda',
     cmd = { 'SudaRead', 'SudaWrite' }
   },
   {
+    -- Smooth scroll functions
     'psliwka/vim-smoothie',
     event = 'VeryLazy',
   },
   {
+    -- Highlight matching words under the cursor
     'xiyaowong/nvim-cursorword',
     event = 'VeryLazy',
     config = function()
@@ -69,6 +80,7 @@ return {
     end,
   },
   {
+    -- Undotree UI
     'mbbill/undotree',
     lazy = true,
     keys = {
@@ -80,6 +92,7 @@ return {
     -- end
   },
   {
+    -- Serve files similar to live-server in vscode
     'hat0uma/prelive.nvim',
     cmd = {
       'PreLiveGo',
@@ -93,6 +106,7 @@ return {
     end,
   },
   {
+    -- Auto closing html/jsx tags
     'windwp/nvim-ts-autotag',
     ft = {
       'astro',
@@ -123,9 +137,19 @@ return {
     end,
   },
   {
+    -- split lines with different modes
     'wurli/split.nvim',
-    keys = { 'gs', 'gss', 'gS', 'gSS' },
+    keys = {
+      'gs',
+      'gss',
+      'gS',
+      'gSS'
+     },
     opts = {},
   },
+  {
+    -- Add option to Diff changes with swap file
+    'chrisbra/Recovery.vim',
+  }
 }
 
