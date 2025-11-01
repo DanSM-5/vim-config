@@ -59,6 +59,7 @@ function! snap#snap(...) abort
 
   " range is used for getting the code from the buffer
   let lines = all ? getline(1, '$') : getline(line1, line2)
+  let lines = type(lines) == v:t_string ? [lines] : lines
   let code = join(lines, "\n")
 
   " also try '--from-clipboard' if new lines are an issue

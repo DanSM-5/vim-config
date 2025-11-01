@@ -948,7 +948,7 @@ func! s:SetFZF () abort
   autocmd! FileType fzf nnoremap <buffer> <expr> <leader>" fzfcmd#pastereg('p')
   autocmd! FileType fzf nnoremap <buffer> <expr> <leader>v fzfcmd#paste('p')
 
-  command! -nargs=? -bang -bar -complete=file -range Snap call snap#snap(<line1>, <line2>, <bang>0, <f-args>)
+  command! -nargs=* -bang -bar -complete=file -range Snap call snap#snap(<line1>, <line2>, <bang>0, <f-args>)
 endf
 
 func! s:SetVimSystemCopyMaps () abort
