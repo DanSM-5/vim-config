@@ -26,4 +26,16 @@ return {
       require('config.nvim_blink_indent').setup()
     end
   },
+
+  {
+    -- Highlight matching words under the cursor
+    'xiyaowong/nvim-cursorword',
+    event = 'VeryLazy',
+    config = function()
+      -- NOTE: consider to keep or remove the background color and just keep the underline
+
+      -- vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
+      vim.api.nvim_set_hl(0, 'CursorWord', { underline = true, cterm = { underline = true }, bg = '#4b5263', force = true })
+    end,
+  },
 }
