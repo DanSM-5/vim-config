@@ -267,24 +267,28 @@ return {
     end, '[Lsp] Open document symbols')
     set_map('v', '<space>ca', '<cmd>RangeCodeActions<cr>', '[Lsp] Range code actions')
 
+    -- use id to prevent preserving a ref to the client
+    -- in the closure of the callback functions
+    local client_id = client.id
+
     if client:supports_method('textDocument/prepareCallHierarchy') then
       set_map({ 'n', 'x' }, '<space>cs', function()
         local hierarchy = require('lib.hierarchy')
-        hierarchy.find_recursive_calls('outcoming', hierarchy.depth, client)
+        hierarchy.find_recursive_calls('outcoming', hierarchy.depth, client_id)
       end, '[Hierarchy] Open [outcoming] call hierarchy of function under cursor')
       set_map({ 'n', 'x' }, '<space>cS', function()
         local hierarchy = require('lib.hierarchy')
-        hierarchy.find_recursive_calls('incoming', hierarchy.depth, client)
+        hierarchy.find_recursive_calls('incoming', hierarchy.depth, client_id)
       end, '[Hierarchy] Open [incoming] call hierarchy of function under cursor')
     end
 
     local nxo = { 'n', 'x', 'o' }
     if client:supports_method('textDocument/documentHighlight', buf) then
       set_map(nxo, ']r', function()
-        ref_jump(true, client.id)
+        ref_jump(true, client_id)
       end, '[Reference] Next reference')
       set_map(nxo, '[r', function()
-        ref_jump(false, client.id)
+        ref_jump(false, client_id)
       end, '[Reference] Next reference')
     end
   end,
