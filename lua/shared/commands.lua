@@ -37,7 +37,7 @@ vim.api.nvim_create_user_command('NR', function(opts)
   local dir = require('utils.stdlib').find_root('package.json')
 
   if dir == nil then
-    vim.notify('NPMRUN: Directory not found', vim.log.levels.WARN)
+    vim.notify('[NPMRUN] Directory not found', vim.log.levels.WARN)
     return
   end
 
@@ -51,7 +51,7 @@ vim.api.nvim_create_user_command('Npm', function(opts)
   local dir = require('utils.stdlib').find_root('package.json')
   if dir == nil then
     if opts.fargs[1] == 'run' then
-      vim.notify('NPMRUN: package.json not found', vim.log.levels.WARN)
+      vim.notify('[NPMRUN] package.json not found', vim.log.levels.WARN)
       return
     else
       dir = vim.fn.getcwd()
@@ -95,8 +95,10 @@ end, {
   complete = 'file'
 })
 
----@type boolean It should control mini_indentscope
+---@type boolean Control mini_indentscope
 vim.g.miniindentscope_disable = false
+---@type boolean Contron blink.indent
+vim.g.indent_guide = true
 
 vim.api.nvim_create_user_command('IndentGuides', function (opts)
   ---@type string|boolean|nil
@@ -106,20 +108,25 @@ vim.api.nvim_create_user_command('IndentGuides', function (opts)
     option = option == 'on'
   end
 
-  if vim.fn.exists(':IBLToggle') then
-    -- local ibl_option = option ~= nil and option or (not ibl_state)
-    -- ibl_state = ibl_option -- state update
-    -- ibl.update({ enabled = ibl_state })
+  -- if vim.fn.exists(':IBLToggle') then
+  --   -- local ibl_option = option ~= nil and option or (not ibl_state)
+  --   -- ibl_state = ibl_option -- state update
+  --   -- ibl.update({ enabled = ibl_state })
 
-    if option == nil then
-      vim.cmd.IBLToggle()
-    elseif option then
-      vim.cmd.IBLEnable()
-    else
-      vim.cmd.IBLDisable()
-    end
-  end
+  --   if option == nil then
+  --     vim.cmd.IBLToggle()
+  --   elseif option then
+  --     vim.cmd.IBLEnable()
+  --   else
+  --     vim.cmd.IBLDisable()
+  --   end
+  -- end
 
+  -- blink.indent control
+  local blink_indent = option ~= nil and option or (not vim.g.indent_guide)
+  vim.g.indent_guide = blink_indent
+
+  -- mini.indent control
   local mindent_option = option ~= nil and option or vim.g.miniindentscope_disable
   -- Notice, this is a negated variable
   vim.g.miniindentscope_disable = not mindent_option
@@ -131,7 +138,7 @@ end, {
   complete = function () return { 'on', 'off' }  end,
 })
 
-vim.api.nvim_create_user_command('MiToggle', function (opts)
+vim.api.nvim_create_user_command('MIToggle', function (opts)
   ---@type string|boolean|nil
   local option = opts.fargs[1]
 
