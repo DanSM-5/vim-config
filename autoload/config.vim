@@ -292,6 +292,13 @@ func! s:Set_user_keybindings () abort
   xnoremap <expr> <Leader>p clipboard#paste('p')
   xnoremap <expr> <Leader>P clipboard#paste('P')
 
+  " Yank paths
+  nnoremap <silent> <leader>yf <cmd>let @+=expand('%:.')<cr>
+  nnoremap <silent> <leader>yF <cmd>let @+=expand('%:p')<cr>
+  nnoremap <silent> <leader>yp <cmd>let @+=expand('%:.:p')<cr>
+  nnoremap <silent> <leader>yP <cmd>let @+=expand('%:p:h')<cr>
+  nnoremap <silent> <leader>yn <cmd>let @+=expand('%:t')<cr>
+
   " Quick buffer overview an completion to change
   nnoremap <leader>gb :<C-u>ls<CR>:b<Space>
 
