@@ -295,7 +295,7 @@ func! s:Set_user_keybindings () abort
   " Yank paths
   nnoremap <silent> <leader>yf <cmd>let @+=expand('%:.')<cr>
   nnoremap <silent> <leader>yF <cmd>let @+=expand('%:p')<cr>
-  nnoremap <silent> <leader>yp <cmd>let @+=expand('%:.:p')<cr>
+  nnoremap <silent> <leader>yp <cmd>let @+=expand('%:.:h')<cr>
   nnoremap <silent> <leader>yP <cmd>let @+=expand('%:p:h')<cr>
   nnoremap <silent> <leader>yn <cmd>let @+=expand('%:t')<cr>
 
