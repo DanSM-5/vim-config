@@ -13,6 +13,17 @@ return {
         -- default: 'lspinfo', 'packer', 'checkhealth', 'help', 'man', 'gitcommit', 'dashboard', ''
         filetypes = { include_defaults = true, 'fzf', 'fugitive' },
       },
+      mappings = {
+        -- which lines around the scope are included for 'ai': 'top', 'bottom', 'both', or 'none'
+        border = 'both',
+        -- set to '' to disable
+        -- textobjects (e.g. `y2ii` to yank current and outer scope)
+        object_scope = 'ii',
+        object_scope_with_border = 'ai',
+        -- motions
+        goto_top = '', -- '[i',
+        goto_bottom = '', -- ']i',
+      },
       static = {
         enabled = true,
         char = '▏',
@@ -22,7 +33,7 @@ return {
         highlights = { 'BlinkIndent' },
       },
       scope = {
-        enabled = false,
+        enabled = true,
         char = '▏',
         priority = 1000,
         -- set this to a single highlight, such as 'BlinkIndent' to disable rainbow-style indent guides

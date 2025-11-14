@@ -11,13 +11,13 @@ return {
   --   end,
   -- },
 
-  {
-    'nvim-mini/mini.indentscope',
-    event = 'VeryLazy',
-    config = function ()
-      require('config.nvim_mindent').setup()
-    end,
-  },
+  -- {
+  --   'nvim-mini/mini.indentscope',
+  --   event = 'VeryLazy',
+  --   config = function ()
+  --     require('config.nvim_mindent').setup()
+  --   end,
+  -- },
 
   {
     'saghen/blink.indent',
