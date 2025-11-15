@@ -749,34 +749,6 @@ local function set_repeat_direction_maps()
     { desc = '[Bracket]: Go to previous matching bracket', silent = true, noremap = true }
   )
 
-  -- ---Move to the next indent scope using direction
-  -- ---@param direction boolean
-  -- local move_scope = function(direction)
-  --   local ok, mini_indent = pcall(require, 'mini.indentscope')
-
-  --   if not ok then
-  --     vim.notify('mini_indent not found', vim.log.levels.WARN)
-  --     return
-  --   end
-
-  --   local dir = direction and 'bottom' or 'top'
-
-  --   mini_indent.operator(dir)
-  -- end
-  -- -- TODO: Consider if overriding this defaults is correct
-  -- repeat_pair({
-  --   keys = 'i',
-  --   mode = nxo,
-  --   on_forward = function()
-  --     move_scope(true)
-  --   end,
-  --   on_backward = function()
-  --     move_scope(false)
-  --   end,
-  --   desc_forward = '[MiniIndent] Go to indent scope top',
-  --   desc_backward = '[MiniIndent] Go to indent scope bottom',
-  -- })
-
   ---@type fun(), fun()
   local indent_scope_top_n, indent_scope_bottom_n
   ---@type fun(), fun()
