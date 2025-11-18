@@ -33,7 +33,7 @@ function! snap#snap(...) abort
   endif
 
   if has('wsl') && output == 'clipboard'
-    let output = tempname() . 'png'
+    let output = tempname() . '.png'
     let handle_wsl_img = 1
   endif
 
