@@ -58,11 +58,11 @@ function! snap#snap(...) abort
             \ ]
 
       if has('nvim')
-        call jobstart(cp_img_cmd, { "on_exit": function('s:log_complete', output) })
+        call jobstart(cp_img_cmd, { "on_exit": function('s:log_complete', [output]) })
       else
         " Vim recommends to set the job to a script varialbe to avoid
         " getting the job GC before it completes
-        let s:snap_job = job_start(cp_img_cmd, { "exit_cb": function('s:log_complete', output) })
+        let s:snap_job = job_start(cp_img_cmd, { "exit_cb": function('s:log_complete', [output]) })
       endif
       return
     endif
