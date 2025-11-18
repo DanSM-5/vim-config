@@ -51,6 +51,8 @@ function! snap#snap(...) abort
             \ '-NoLogo',
             \ '-NonInteractive',
             \ '-NoProfile',
+            \ '-ExecutionPolicy',
+            \ 'Bypass',
             \ '-windowstyle',
             \ 'hidden',
             \ '-Command',
