@@ -49,7 +49,7 @@ function! snap#snap(...) abort
             \ 'hidden',
             \ '-Command',
             \ printf("Add-Type -AssemblyName System.Windows.Forms; [Windows.Forms.Clipboard]::SetImage($([System.Drawing.Image]::FromFile('%s')))", img)
-      ]
+            \ ]
 
       if has('nvim')
         call jobstart(cp_img_cmd, { "on_exit": function('s:log_complete') })
