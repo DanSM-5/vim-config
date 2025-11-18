@@ -4,8 +4,14 @@ endif
 
 let g:loaded_snap = 1
 
-function! s:log_complete(...) abort
-  echomsg "[Snap] Snap completed"
+function! s:log_complete(tmp, ...) abort
+  try
+    echomsg "[Snap] Snap completed"
+  finally
+    if exists('a:tmp') && filereadable(a:tmp)
+      call delete(a:tmp)
+    endif
+  endtry
 endfunction
 
 function! snap#snap(...) abort
@@ -52,11 +58,11 @@ function! snap#snap(...) abort
             \ ]
 
       if has('nvim')
-        call jobstart(cp_img_cmd, { "on_exit": function('s:log_complete') })
+        call jobstart(cp_img_cmd, { "on_exit": function('s:log_complete', output) })
       else
         " Vim recommends to set the job to a script varialbe to avoid
         " getting the job GC before it completes
-        let s:snap_job = job_start(cp_img_cmd, { "exit_cb": function('s:log_complete') })
+        let s:snap_job = job_start(cp_img_cmd, { "exit_cb": function('s:log_complete', output) })
       endif
       return
     endif
