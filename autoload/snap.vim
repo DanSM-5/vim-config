@@ -4,7 +4,7 @@ endif
 
 let g:loaded_snap = 1
 
-function! s:log_complete() abort
+function! s:log_complete(...) abort
   echomsg "[Snap] Snap completed"
 endfunction
 
