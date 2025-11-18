@@ -6,7 +6,7 @@ let g:loaded_snap = 1
 
 function! s:log_complete() abort
   echomsg "[Snap] Snap completed"
-endif
+endfunction
 
 function! snap#snap(...) abort
   if !executable('codesnap')
