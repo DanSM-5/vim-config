@@ -13,7 +13,7 @@ else
 fi
 
 string_url="$(curl -sL 'https://api.github.com/repos/neovim/neovim/releases/latest' |
-  grep "browser_download_url.*${platform}-${architecture}.${ext}"'"' |
+  grep "browser_download_url.*${platform}-${architecture}.${ext}"'"$' |
   cut -d : -f 2,3 |
   tr -d \" | tr -d ' ')"
 
@@ -25,6 +25,6 @@ download_file="$nvim"
 download_path="$HOME/.local/bin/$download_file"
 
 # It will always override unless you use `--no-clobber` flag
-curl -sL "$string_url" -o "$download_path"
+curl -sSL "$string_url" -o "$download_path"
 
 chmod +x "$download_path"
