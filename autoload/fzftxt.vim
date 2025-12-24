@@ -21,6 +21,12 @@ else
   let s:fzf_preview = substitute(s:fzftxt_scripts . '/rg_preview.sh', '\\', '/', 'g') . ' {}'
 endif
 
+" Helper to get the txt directory location
+function! s:get_txt_dir() abort
+  let txt_dir = exists('g:txt_dir') ? g:txt_dir : (empty($TXT_LOCATION) ? '~/prj/txt' : $TXT_LOCATION)
+  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+endfunction
+
 function! fzftxt#format_qfl(list) abort
   let filename = s:is_gitbash ? substitute(a:list[0], '\\', '/', 'g') : a:list[0]
   let lnum = exists('a:list[1]') ? str2nr(a:list[1]) : 0
@@ -49,8 +55,7 @@ endfunction
 
 function! fzftxt#select(query, fullscreen) abort
   let curr_path = getcwd()
-  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
-  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+  let txt_dir = s:get_txt_dir()
   let files_command = 'fd --color=always --type file . '
   let grep_command='rg --with-filename --line-number --color=always {q}'
 
@@ -113,8 +118,7 @@ endfunction
 
 function! fzftxt#select_simple(query, fullscreen) abort
   let curr_path = getcwd()
-  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
-  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+  let txt_dir = s:get_txt_dir()
   let source_command = 'fd --color=always -tf '
   " let preview_window = a:fullscreen ? 'up,80%,wrap' : 'right,80%,wrap'
   " \     '--preview-window', preview_window,
@@ -165,8 +169,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
 endfunction
 
 function! fzftxt#open(filename) abort
-  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
-  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+  let txt_dir = s:get_txt_dir()
   let filename = ''
 
   if empty(a:filename)
@@ -192,8 +195,7 @@ endfunction
 " C = CmdLine		the entire command line
 " P = CursorPos	the cursor position in it (byte index)
 function fzftxt#completion(A, L, P) abort
-  let txt_dir = exists('g:txt_dir') ? g:txt_dir : '~/prj/txt'
-  let txt_dir = substitute(expand(txt_dir), '\\', '/', 'g')
+  let txt_dir = s:get_txt_dir()
 
   " TODO: Check later if we can add completion
   " for nested directories
