@@ -10,9 +10,22 @@ local configs = {
     end,
     settings = {
       Lua = {
-        signatureHelp = { enabled = true },
+        codeLens = { enable = true },
+        signatureHelp = { enable = true },
+        hint = {
+          enable = true,
+          paramName = 'All',
+          paramType = true,
+        },
+        completion = {
+          enable = true,
+          autoRequire = true,
+          callSnippet = 'Both',
+          displayContext = 5,
+          keywordSnippet = 'Both',
+        },
         runtime = { version = 'LuaJIT' },
-        telemetry = { enabled = false },
+        telemetry = { enable = false },
         workspace = { library = vim.api.nvim_get_runtime_file('', true), checkThirdparty = false },
         format = {
           enable = true,
