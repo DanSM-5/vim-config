@@ -195,9 +195,6 @@ return {
       })
     end
 
-    -- Setup lsp servers
-    require('config.nvim_lspconfig').setup()
-
     -- Configure aerial.nvim
     -- require('config.nvim_aerial').setup()
 
