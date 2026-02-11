@@ -16,32 +16,6 @@ vim.api.nvim_create_user_command('InspectLspClient', function(opts)
   require('utils.inspect_lsp_client').inspect_lsp_client(opts)
 end, { nargs = '?', bang = true, force = true })
 
----Create NR (npm run) command
-vim.api.nvim_create_user_command('NR', function(opts)
-  local terminal_fullscreen = opts.bang
-
-  if #opts.fargs == 0 then
-    -- Clean trailing lash or backslash
-    local dir = require('utils.stdlib').find_root('package.json'):gsub('[\\/]$', '')
-
-    require('utils.npm').runfzf(dir, false, terminal_fullscreen)
-    return
-  end
-
-  -- Find directory with package.json
-  -- local dir = opts.bang
-  --     and vim.fn.expand('%:p:h')
-  --     or require('utils.stdlib').find_root('package.json')
-  local dir = require('utils.stdlib').find_root('package.json')
-
-  if dir == nil then
-    vim.notify('[NPMRUN] Directory not found', vim.log.levels.WARN)
-    return
-  end
-
-  require('utils.npm').run(dir, opts.fargs, terminal_fullscreen)
-end, { bang = true, nargs = '*', complete = 'dir', force = true, desc = '[NR] Small wrapper for `[p]npm run` command' })
-
 ---Node package manager wrapper function
 ---@param opts vim.api.keyset.create_user_command.command_args
 ---@param runner 'npm' | 'pnpm'
@@ -72,24 +46,61 @@ local node_runner_wrapper = function(opts, runner)
   require('utils.npm')[runner](dir, opts.fargs, opts.bang)
 end
 
+---Node quick runner
+---@param opts vim.api.keyset.create_user_command.command_args
+---@param runner 'npm' | 'pnpm'
+local node_quick_runner = function(opts, runner)
+  local terminal_fullscreen = opts.bang
+
+  if #opts.fargs == 0 then
+    -- Clean trailing lash or backslash
+    local dir = require('utils.stdlib').find_root('package.json'):gsub('[\\/]$', '')
+
+    require('utils.npm').runfzf(dir, runner, false, terminal_fullscreen)
+    return
+  end
+
+  -- Find directory with package.json
+  -- local dir = opts.bang
+  --     and vim.fn.expand('%:p:h')
+  --     or require('utils.stdlib').find_root('package.json')
+  local dir = require('utils.stdlib').find_root('package.json')
+
+  if dir == nil then
+    vim.notify('[NPMRUN] Directory not found', vim.log.levels.WARN)
+    return
+  end
+
+  require('utils.npm').run(dir, runner, opts.fargs, terminal_fullscreen) 
+end
+
+---Create NR (npm run) command
+vim.api.nvim_create_user_command('NR', function(opts)
+  node_quick_runner(opts, 'npm')
+end, { bang = true, nargs = '*', complete = 'dir', bar = true, force = true, desc = '[NR] Small wrapper for `[p]npm run` command' })
+---Create MR (pnpm run) command
+vim.api.nvim_create_user_command('MR', function(opts)
+  node_quick_runner(opts, 'pnpm')
+end, { bang = true, nargs = '*', complete = 'dir', bar = true, force = true, desc = '[NR] Small wrapper for `[p]npm run` command' })
+
 ---Create Npm command
 vim.api.nvim_create_user_command('Npm', function(opts)
   node_manager_wrapper(opts, 'npm')
-end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for the npm command' })
+end, { force = true, bang = true, bar = true, nargs = '*', desc = '[Npm] Small wrapper for the npm command' })
 ---Create Pnpm command
 vim.api.nvim_create_user_command('Pnpm', function(opts)
   node_manager_wrapper(opts, 'pnpm')
-end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for the pnpm command' })
+end, { force = true, bang = true, bar = true, nargs = '*', desc = '[Npm] Small wrapper for the pnpm command' })
 
 ---Create Npx command
 vim.api.nvim_create_user_command('Npx', function(opts)
   node_runner_wrapper(opts, 'npx')
-end, { force = true, bang = true, nargs = '*', desc = '[Npx] Small wrapper for the npx command' })
+end, { force = true, bang = true, bar = true, nargs = '*', desc = '[Npx] Small wrapper for the npx command' })
 
 ---Create Pnpx command
 vim.api.nvim_create_user_command('Pnpx', function(opts)
   node_runner_wrapper(opts, 'pnpx')
-end, { force = true, bang = true, nargs = '*', desc = '[Npx] Small wrapper for the npx command' })
+end, { force = true, bang = true, bar = true, nargs = '*', desc = '[Npx] Small wrapper for the npx command' })
 
 -- Override regular LF autocommand
 ---Create LF command to use lf binary to select files
