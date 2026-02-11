@@ -167,13 +167,17 @@ return {
     event = 'VeryLazy',
     -- event = { "BufRead", "BufNewFile" },
     config = function()
-      local lsp_settings = require('lsp-servers.lsp_settings')
-      lsp_settings.setup({
-        completions = {
-          enable = { lazydev = true },
-          engine = use_blink and 'blink' or 'cmp'
-        }
-      })
+      coroutine.resume(coroutine.create(function ()
+        vim.schedule(function()
+          local lsp_settings = require('lsp-servers.lsp_settings')
+          lsp_settings.setup({
+            completions = {
+              enable = { lazydev = true },
+              engine = use_blink and 'blink' or 'cmp'
+            }
+          })
+        end)
+      end))
     end,
   },
 
