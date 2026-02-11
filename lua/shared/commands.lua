@@ -12,13 +12,11 @@ local function get_matched(options, value)
 end
 
 ---Show information about lsp client on float window
----@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('InspectLspClient', function(opts)
   require('utils.inspect_lsp_client').inspect_lsp_client(opts)
 end, { nargs = '?', bang = true, force = true })
 
 ---Create NR (npm run) command
----@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('NR', function(opts)
   local terminal_fullscreen = opts.bang
 
@@ -42,12 +40,12 @@ vim.api.nvim_create_user_command('NR', function(opts)
   end
 
   require('utils.npm').run(dir, opts.fargs, terminal_fullscreen)
-end, { bang = true, nargs = '*', complete = 'dir', force = true, desc = '[NR] Small wrapper for `npm run` command' })
+end, { bang = true, nargs = '*', complete = 'dir', force = true, desc = '[NR] Small wrapper for `[p]npm run` command' })
 
----Create Npm command
----@param opts { bang: boolean, fargs: string[] }
-vim.api.nvim_create_user_command('Npm', function(opts)
-  -- Find directory with package.json
+---Node package manager wrapper function
+---@param opts vim.api.keyset.create_user_command.command_args
+---@param runner 'npm' | 'pnpm'
+local node_manager_wrapper = function (opts, runner)
   local dir = require('utils.stdlib').find_root('package.json')
   if dir == nil then
     if opts.fargs[1] == 'run' then
@@ -58,19 +56,39 @@ vim.api.nvim_create_user_command('Npm', function(opts)
     end
   end
 
-  require('utils.npm').npm(dir, opts.fargs, opts.bang)
-end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for the npm command' })
+  require('utils.npm')[runner](dir, opts.fargs, opts.bang)
+end
 
----Create Npx command
----@param opts { bang: boolean, fargs: string[] }
-vim.api.nvim_create_user_command('Npx', function(opts)
+---Node runner wrapper function
+---@param opts vim.api.keyset.create_user_command.command_args
+---@param runner 'npx' | 'pnpx'
+local node_runner_wrapper = function(opts, runner)
   -- Find directory with package.json
   local dir = require('utils.stdlib').find_root('package.json')
   if dir == nil then
     dir = vim.fn.getcwd()
   end
 
-  require('utils.npm').npx(dir, opts.fargs, opts.bang)
+  require('utils.npm')[runner](dir, opts.fargs, opts.bang)
+end
+
+---Create Npm command
+vim.api.nvim_create_user_command('Npm', function(opts)
+  node_manager_wrapper(opts, 'npm')
+end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for the npm command' })
+---Create Pnpm command
+vim.api.nvim_create_user_command('Pnpm', function(opts)
+  node_manager_wrapper(opts, 'pnpm')
+end, { force = true, bang = true, nargs = '*', desc = '[Npm] Small wrapper for the pnpm command' })
+
+---Create Npx command
+vim.api.nvim_create_user_command('Npx', function(opts)
+  node_runner_wrapper(opts, 'npx')
+end, { force = true, bang = true, nargs = '*', desc = '[Npx] Small wrapper for the npx command' })
+
+---Create Pnpx command
+vim.api.nvim_create_user_command('Pnpx', function(opts)
+  node_runner_wrapper(opts, 'pnpx')
 end, { force = true, bang = true, nargs = '*', desc = '[Npx] Small wrapper for the npx command' })
 
 -- Override regular LF autocommand

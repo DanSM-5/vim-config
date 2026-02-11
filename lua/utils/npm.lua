@@ -1,6 +1,6 @@
 ---Runs the npm command in a new terminal buffer
 ---@param dir string Directory to use to run the command
----@param cmd 'npm' | 'npx' Command to execute
+---@param cmd 'npm' | 'npx' | 'pnpm' Command to execute
 ---@param args string[] | nil Argument for the command
 ---@param fullscreen boolean | nil Ensure full screen view (new tab)
 local open_term = function (dir, cmd, args, fullscreen)
@@ -43,7 +43,7 @@ local open_term = function (dir, cmd, args, fullscreen)
 
 end
 
----Runs the npm command in a new terminal buffer
+---Runs the script command in a new terminal buffer
 ---@param dir string Directory in which the `npm run` command is executed
 ---@param args string[] | nil Argument for the `npm run` command
 ---@param fullscreen? boolean Whether to display in fullscreen
@@ -52,7 +52,8 @@ local run = function (dir, args, fullscreen)
 
   table.insert(new_args, 1, 'run')
 
-  open_term(dir, 'npm', new_args, fullscreen)
+  local npm_cmd = vim.g.npm_cmd or 'npm'
+  open_term(dir, npm_cmd, new_args, fullscreen)
 end
 
 ---Select a npm command to run in a terminal buffer
@@ -157,11 +158,29 @@ local npx = function (dir, args, fullscreen)
   open_term(dir, 'npx', args, fullscreen)
 end
 
+---Runs the `npm` command in a new terminal buffer
+---@param dir string Directory to use to run the command
+---@param args string[] | nil Argument for the command
+---@param fullscreen boolean | nil Ensure full screen view (new tab)
+local pnpm = function (dir, args, fullscreen)
+  open_term(dir, 'pnpm', args, fullscreen)
+end
+
+local pnpx = function (dir, args, fullscreen)
+  local new_args = require('utils.stdlib').shallow_clone(args or {})
+  table.insert(new_args, 1, 'exec')
+  open_term(dir, 'pnpm', args, fullscreen)
+end
+
+
+
 return {
   open = open_term,
   runfzf = runfzf,
   run = run,
   npm = npm,
   npx = npx,
+  pnpm = pnpm,
+  pnpx = pnpx,
 }
 
