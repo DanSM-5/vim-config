@@ -22,9 +22,9 @@ return {
   {
     'saghen/blink.indent',
     event = 'VeryLazy',
-    config = function ()
+    config = function()
       require('config.nvim_blink_indent').setup()
-    end
+    end,
   },
 
   {
@@ -35,7 +35,30 @@ return {
       -- NOTE: consider to keep or remove the background color and just keep the underline
 
       -- vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
-      vim.api.nvim_set_hl(0, 'CursorWord', { underline = true, cterm = { underline = true }, bg = '#4b5263', force = true })
+      vim.api.nvim_set_hl(
+        0,
+        'CursorWord',
+        { underline = true, cterm = { underline = true }, bg = '#4b5263', force = true }
+      )
     end,
+  },
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      extensions = {
+        'aerial',
+        'fugitive',
+        'fzf',
+        'lazy',
+        'mason',
+        'neo-tree',
+        'oil',
+        'quickfix',
+      },
+      options = {
+        theme = 'onedark',
+      },
+    },
   },
 }
