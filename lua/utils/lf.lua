@@ -57,19 +57,19 @@ local lf = function(dir, fullscreen)
     temporaryTabId = vim.api.nvim_get_current_tabpage()
   end
 
-  -- Apend buffer in current window
+  -- Append buffer in current window
   vim.api.nvim_win_set_buf(0, buf)
 
-  -- Run termopen on the context of the created buffer
+  -- Run jobstart on the context of the created buffer
   vim.api.nvim_buf_call(buf, function()
     -- Name the buffer
     vim.api.nvim_buf_set_name(buf, 'LF Select')
     vim.fn.jobstart({ 'lf', '-selection-path=' .. temp }, {
       term = true,
       cwd = cwd,
-      on_exit = function(jobId, code, evt)
+      on_exit = function(jobId, data, event)
         -- NOTE: when closing without selection we need to
-        -- move to a different buffer to avoid afecting
+        -- move to a different buffer to avoid affecting
         -- the window layout.
         local on_no_selection = function()
           if fullscreen then
