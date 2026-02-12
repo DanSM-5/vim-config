@@ -23,21 +23,21 @@ local open_term = function (dir, cmd, args, fullscreen)
   vim.api.nvim_win_set_buf(0, buf)
 
   ---@type string[]
-  local termopen_args = { cmd }
+  local term_args = { cmd }
 
   if args and #args > 0 then
-    termopen_args = require('utils.stdlib').concat(termopen_args, args)
+    term_args = require('utils.stdlib').concat(term_args, args)
   end
 
   -- Run termopen on the context of the created buffer
   vim.api.nvim_buf_call(buf, function()
     -- Name the buffer
     vim.api.nvim_buf_set_name(buf, 'Npm Command')
-    vim.fn.termopen(termopen_args, {
+    vim.fn.jobstart(term_args, {
       cwd = dir,
-      on_exit = function(jobId, code, evt)
-        -- Should we do anything on exit?
-      end,
+      -- :h 'channel-bytes'
+      on_exit = function (jobId, data, event) end,
+      term = true,
     })
   end)
 
