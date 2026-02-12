@@ -90,7 +90,10 @@ func! s:SetConfigurationsBefore () abort
     " neovim implements 'linematch:{n}'
     " Ref: https://github.com/neovim/neovim/pull/14537
     " set diffopt=internal,filler,closeoff,indent-heuristic,linematch:120,algorithm:histogram
-    set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
+    " NOTE: neovim >= 0.11 has linematch:40 by default.
+    " It is important to override the default to avoid
+    " https://github.com/neovim/neovim/issues/22696
+    set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram,vertical
 
     " Set signcolumn
     set signcolumn=auto:2
