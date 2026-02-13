@@ -1136,14 +1136,30 @@ func! s:DefineCommands () abort
   " Cursor must be on conflict hunk. E.g. `]n` and `[n` (`[c` and `]c` should
   " work as well in diff view mode)
   "
+  " - The LOCAL (ours) version of the file is what the file looks like on your branch before the merge started.
+  " - The REMOTE (theirs) version of the file is what the file looks like on the other branch before the merge started.
+  " - The BASE version of the file is what the file looks like from before the point that your branch and the other branch diverged.
+  "   It’s the most recent common ancestor of both branches.
+  " - The MERGED is the file with the resulting git diff resolution. It contains conflict markers for things git could not
+  "   resolve automatically.
+  "
+  " NOTE: LOCAL and REMOTE will be inverted on a rebase because the checkout branch will be the REMOTE
+  " e.g. the branch name in the `git rebase` command.
+  "
+  " More:
+  " - https://stackoverflow.com/a/64383708
+  " - https://www.eseth.org/2020/mergetools.html
+  " - `man git mergetool`
+  "
   " ```bash
-  " git checkout `target`
-  " git merge `merge`
+  " # Sample command that can create a conflict
+  " git checkout `LOCAL`
+  " git merge `REMOTE`
   " ```
   "
-  " Select the changes on the left (target)
+  " Select the changes on the left (BASE)
   command! -bar GitSelectLeft :diffget //2 | diffupdate
-  " grab the changes on the right (merge)
+  " grab the changes on the right (REMOTE)
   command! -bar GitSelectRight :diffget //3 | diffupdate
   " Fugitive always set the buffer name with `//2` to the file to the left and
   " `//3` to the file to the right.
@@ -1151,12 +1167,12 @@ func! s:DefineCommands () abort
   " You can add the diff from one of the side buffers using `:diffput` or `dp` mapping.
   " Notice that `dp` does not require to run `:diffupdate` after
   "
-  " In two-way diff you can use `do` mapping for `:diffget`
+  " In two-way diff you can use `do` (diff obtain) mapping for `:diffget`
   "
   " Use `:only` from the main file to close the diff windows
   " or `:Gwrite` to save, stage and close the diff windows.
   "
-  " Run `:Gwrite!` from target or merge to keep only changed from that file.
+  " Run `:Gwrite!` from LOCAL or REMOTE to keep only changes from that file.
   " Be careful as this override the index.
 
   " Use as :Mkdr! for creating the path of a buffer which path doesn't exit
