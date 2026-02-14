@@ -115,7 +115,8 @@ repeat_motion.create_repeatable_func = function (fn)
       end
     end
 
-    vim.cmd('normal! g@l')
+    -- vim.cmd('normal! g@l')
+    vim.api.nvim_feedkeys('g@l', 'n', false)
   end
 end
 
