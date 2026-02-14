@@ -196,6 +196,41 @@ vim.api.nvim_create_autocmd('VimEnter', {
   callback = vim.fn.OnVimEnter
 })
 
+--- Prevent attaching lsp to known buffers
+vim.lsp.start = (function()
+  ---@type fun(config: vim.lsp.ClientConfig, opts?: vim.lsp.start.Opts)
+  local og_lsp_start = vim.lsp.start
+  -- known ignored filetypes
+  local exclude_filetypes = {
+    'help',
+    'fzf',
+    'fugitive',
+    'qf',
+  }
+
+  return function(...)
+    ---@type vim.lsp.start.Opts
+    local opt = select(2, ...) or {}
+    local bufnr = opt.bufnr
+
+    if bufnr then
+      if
+        not vim.api.nvim_buf_is_valid(bufnr)
+        or vim.bo[bufnr].buftype ~= '' -- non regular buffers
+        or vim.b[bufnr].fugitive_type -- known fugitive buffer
+        or vim.startswith(vim.api.nvim_buf_get_name(bufnr), 'fugitive://') -- fugitive buffer
+        or vim.tbl_contains(exclude_filetypes, vim.bo[bufnr].filetype) -- excluded filetypes
+      then
+        return
+      end
+    end
+
+    -- Start the client
+    return og_lsp_start(...)
+  end
+end)()
+
+
 --: }}} :------------------------------------------------------------------
 
 -- Return to last edit position when opening files
