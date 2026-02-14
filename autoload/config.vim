@@ -147,12 +147,7 @@ func! s:SetConfigurationsAfter () abort
   " Filter quickfix with :Cfilter :Lfilter
   autocmd QuickFixCmdPost *grep* cwindow
   if has('nvim')
-    " NOTE:
-    " Loading modules from neovim from nix causes it to load lua files
-    " with long names which causes issues with the cache loader of neovim
-    " Workaround is to diable the loader temporarily
-    " Ref: https://github.com/neovim/neovim/issues/25008
-    lua if vim.loader.disable ~= nil then vim.loader.disable() else vim.loader.enable(false) end
+    lua vim.loader.enable(false)
     packadd cfilter
     lua vim.loader.enable(true)
   else
