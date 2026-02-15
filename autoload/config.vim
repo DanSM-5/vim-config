@@ -953,8 +953,6 @@ func! s:SetFZF () abort
   " Allow to paste from registers in fzf buffer in normal mode
   autocmd! FileType fzf nnoremap <buffer> <expr> <leader>" fzfcmd#pastereg('p')
   autocmd! FileType fzf nnoremap <buffer> <expr> <leader>v fzfcmd#paste('p')
-
-  command! -nargs=* -bang -bar -complete=file -range Snap call snap#snap(<line1>, <line2>, <bang>0, <f-args>)
 endf
 
 func! s:SetVimSystemCopyMaps () abort
@@ -1125,7 +1123,12 @@ func! s:DefineCommands () abort
   command! -nargs=0 CleanSearch :nohlsearch
 
   " BlameLine
-  command! -bar -nargs=? BlameLine call BlameLine(<q-args>)
+  command! -bar -nargs=? BlameLine call gitutils#blame(<q-args>)
+  " Show git log of line or range
+  command! -nargs=* -bang -bar -complete=file -range Gitlog call gitutils#gitlog(<line1>, <line2>, <bang>0, <q-args>)
+
+  " Create a code snapshot image
+  command! -nargs=* -bang -bar -complete=file -range Snap call snap#snap(<line1>, <line2>, <bang>0, <f-args>)
 
   " Commands for diffget. Useful when resolving conflicts (tree-way diff).
   " Open fugitive `:Git` and open conflicted file in vsplit `dv` (Gvdiffsplit)
@@ -1358,35 +1361,6 @@ function! config#CurrentOS ()
   return known_os
 endfunction
 
-
-function BlameLine(...) abort
-  let commit_count = (exists('a:1') && !empty(a:1)) ? a:1 : '5'
-  let root = utils#find_root('.git')
-  let line = line('.')
-  let file = expand('%:p')
-  let name = expand('%:t')
-  if !filereadable(file)
-    return
-  endif
-
-  " Command
-  let args = 'git -C ' . shellescape(root) . ' log -n ' . commit_count . ' -u -L ' . line .. ',+1:' .. shellescape(file)
-  let blame_out = system(args)
-  if empty(blame_out)
-    return
-  endif
-  let buff_name = 'Blame ' . name
-
-  " Display blame on buffer
-  enew
-  exec 'silent! file ' . buff_name
-  pu = blame_out
-  pu = ''
-  silent call execute('normal ggdd')
-  setlocal nomod readonly
-  setlocal filetype=git
-  setlocal foldmethod=syntax
-endfunction
 
 function! SudoSave (fileName) abort
   let file = ''
