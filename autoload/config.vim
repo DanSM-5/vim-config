@@ -791,7 +791,8 @@ endfunction
 " Grep a string on current file or
 " in all files.
 function QueryGrep(query, all) abort
-  let escaped = escape(a:query, '#<>\/()[]{}.*+^$?|"'."'")
+  " let escaped = escape(a:query, '#<>\/()[]{}.*+^$?|"'."'")
+  let escaped = fnameescape(a:query)
   if a:all
     execute 'silent grep "'.escaped.'"'
   else
