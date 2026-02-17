@@ -35,20 +35,26 @@ return {
           signs.detach(evt.buf)
         end
 
-        vim.api.nvim_buf_call(evt.buf, function ()
+        vim.api.nvim_buf_call(evt.buf, function()
           -- Disable treesitter
           if vim.fn.exists(':TSBufDisable') then
-            vim.cmd.TSBufDisable('highlight ' .. evt.buf)
+            vim.schedule(function()
+              pcall(vim.cmd, 'TSBufDisable highlight ' .. evt.buf)
+            end)
           end
           -- vim.cmd('syntax off')
           local ft = vim.filetype.match({ buf = evt.buf }) or ''
-          vim.schedule(function ()
-            vim.bo[evt.buf].syntax = ft
+
+          vim.schedule(function()
+            pcall(function()
+              vim.bo[evt.buf].syntax = ft
+            end)
           end)
+
           -- Turn off all lsp clients in buffer
           local clients = vim.lsp.get_clients({ bufnr = evt.buf })
           for _, client in ipairs(clients) do
-            vim.lsp.buf_detach_client(evt.buf, client.id)
+            pcall(vim.lsp.buf_detach_client, evt.buf, client.id)
           end
         end)
 
@@ -61,4 +67,3 @@ return {
     })
   end,
 }
-
