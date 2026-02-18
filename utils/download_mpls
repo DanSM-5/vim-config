@@ -42,7 +42,7 @@ if [ "$OS" = 'Windows_NT' ]; then
 else
   tar -xzf "$download_path" -C "$extract_dir"
 fi
-chmod +x "$download_path/$mpls"
+chmod +x "$extract_dir/$mpls"
 
 mv "$extract_dir/$mpls" "$HOME/.local/bin/$mpls"
 

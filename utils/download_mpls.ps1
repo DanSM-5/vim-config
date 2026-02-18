@@ -50,7 +50,7 @@ if ($platform -eq 'windows') {
   Expand-Archive -Path $download_path -DestinationPath "$extract_dir" -Force
 } else {
   tar -xzf "$download_path" -C "$extract_dir"
-  chmod +x "${download_path}${dirsep}${mpls}"
+  chmod +x "${extract_dir}${dirsep}${mpls}"
 }
 
 Move-Item "${extract_dir}${dirsep}${mpls}" "${HOME}${dirsep}.local${dirsep}bin${dirsep}${mpls}" -Force
