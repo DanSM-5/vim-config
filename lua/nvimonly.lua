@@ -1,6 +1,10 @@
 -- Run lua code with
 -- :lua <LUA COMMAND>
 
+if vim.g.lazy_config == 1 then
+  return
+end
+
 -- Help and documentation
 -- :h lua
 -- :h lua-guide

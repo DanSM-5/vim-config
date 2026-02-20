@@ -47,6 +47,9 @@ set breakindent
 " Most global variables defined in this file should be place here unless
 " it is needed to be defined upon confiditional logic
 
+" Detect vim-compatible config
+let g:vimc_config = 1
+
 " Leader keys.
 let g:mapleader = "\\"
 let g:maplocalleader = ' '
@@ -487,7 +490,7 @@ hi NormalNC guifg=#abb2bf
 
 if has('nvim')
   " Entry poing for lua config for nvim
-  runtime lua/nvimonly.lua
+  lua require('nvimonly')
 else
   runtime vimonly.vim
 endif

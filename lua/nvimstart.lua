@@ -1,3 +1,7 @@
+if vim.g.vimc_config == 1 then
+  return
+end
+
 local fn, g = vim.fn, vim.g
 
 vim.g.lazy_config = 1
