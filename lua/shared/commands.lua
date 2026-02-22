@@ -1,16 +1,3 @@
----Get the matching value from the a list
----@param options string[]
----@param value string
----@return string[]
-local function get_matched(options, value)
-  local matched = vim.tbl_filter(function (option)
-    local _, matches = string.gsub(option, value, '')
-    return matches > 0
-  end, options)
-
-  return #matched > 0 and matched or options
-end
-
 ---Show information about lsp client on float window
 vim.api.nvim_create_user_command('InspectLspClient', function(opts)
   require('utils.inspect_lsp_client').inspect_lsp_client(opts)
@@ -111,7 +98,7 @@ end, { force = true, bar = true, nargs = '?', complete = 'dir', bang = true })
 
 
 ---@param opts { bang: boolean, fargs: string[] }
-vim.api.nvim_create_user_command('MPLS', function(opts)
+vim.api.nvim_create_user_command('Mpls', function(opts)
   require('config.nvim_mpls').start({
     skip_load = opts.bang,
     file = opts.fargs[1],
@@ -121,7 +108,7 @@ end, {
   bar = true,
   bang = true,
   nargs = '?',
-  complete = 'file'
+  complete = 'file',
 })
 
 ---@type boolean Contron blink.indent
@@ -193,7 +180,7 @@ end, {
 
     local engines = { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave', '@yandex', '@github' }
     if type(current) == 'string' and #current > 0 then
-      return get_matched(engines, current)
+      return require('utils.cmd').get_matched(engines, current)
     end
 
     return engines
@@ -284,7 +271,7 @@ end
 local ts_modules_complete_name = function (current)
   local names = ts_modules_get_names()
   if #current > 0 then
-    return get_matched(names, current)
+    return require('utils.cmd').get_matched(names, current)
   end
 
   return names
@@ -339,7 +326,7 @@ end, { desc = '[TSModules] Toggle module', bang = true, bar = true, complete = f
   end
 
   if #cmd_parts == 3 then
-    return get_matched({ 'enable', 'disable' }, current)
+    return require('utils.cmd').get_matched({ 'enable', 'disable' }, current)
   end
 
   return ts_modules_complete_name(current)
