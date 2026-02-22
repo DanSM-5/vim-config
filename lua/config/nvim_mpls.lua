@@ -7,7 +7,7 @@ local set_autocmds = function()
   local debounce_timer = nil
   local debounce_delay = 300
 
-  local clean_timer = function ()
+  local clean_timer = function()
     if debounce_timer then
       debounce_timer:stop()
       debounce_timer:close()
@@ -62,13 +62,14 @@ local set_autocmds = function()
     pattern = { '*.md', '*.mdx' },
     callback = sendMessageToMPLS,
     group = vim.api.nvim_create_augroup('MarkdownFocus', { clear = true }),
-    desc = '[MPSL] Notify MPLS of buffer focus changes'
+    desc = '[MPSL] Notify MPLS of buffer focus changes',
   })
 end
 
 local set_commands = function()
-  ---@param opts { fargs: string[]; bang: boolean; }
-  vim.api.nvim_create_user_command('MplsOpenPreview', function(opts)
+  ---Open preview handler
+  ---@param opts vim.api.keyset.create_user_command.command_args
+  local function open_preview(opts)
     ---@type number
     local bufnr
 
@@ -124,7 +125,100 @@ local set_commands = function()
         vim.notify('Preview opened', vim.log.levels.INFO)
       end
     end, bufnr)
-  end, { bang = true, nargs = '?', complete = 'file', desc = '[MPLS] Request open preview for md file' })
+  end
+
+  local commands = {
+    openPreview = open_preview,
+  }
+
+  local function completeMpls(curr)
+    -- TODO: Handle subcommand completion e.g. complete=file
+    local match_str = '^' .. string.lower(curr)
+    local sub_commands = vim.tbl_keys(commands)
+    return require('utils.cmd').get_matched(sub_commands, match_str, function(opt)
+      return string.lower(opt)
+    end)
+  end
+
+  -- Override Mpls command that loads the plugin
+  vim.api.nvim_create_user_command('Mpls', function(opts)
+    local sub_command = opts.fargs[1]
+    local sub_commands = vim.tbl_keys(commands)
+    if not sub_command or not vim.tbl_contains(sub_commands, sub_command) then
+      return
+    end
+
+    local new_opts = vim.tbl_deep_extend('force', opts, {
+      fargs = unpack(opts.fargs or {}, 2),
+    })
+
+    commands[sub_command](new_opts)
+  end, {
+    force = true,
+    nargs = '*',
+    bang = true,
+    bar = true,
+    desc = '[MPSL] Commands for mpls lsp',
+    complete = completeMpls,
+  })
+
+  -- vim.api.nvim_create_user_command('MplsOpenPreview', function(opts)
+  --   ---@type number
+  --   local bufnr
+
+  --   if opts.fargs[1] ~= nil and (vim.uv or vim.loop).fs_stat(opts.fargs[1]) then
+  --     local buff_name = opts.fargs[1]
+  --     bufnr = vim.fn.bufnr(buff_name, 1)
+  --   else
+  --     bufnr = vim.api.nvim_get_current_buf()
+  --   end
+
+  --   -- Start client if buffer is markdown
+  --   ---@type string
+  --   local curr_buff_ft = vim.api.nvim_get_option_value('filetype', {
+  --     buf = bufnr,
+  --   })
+
+  --   -- Stop if requested buffer is not markdown
+  --   if not vim.tbl_contains(filetypes, curr_buff_ft) then
+  --     return
+  --   end
+
+  --   local clients = vim.lsp.get_clients({ name = name })
+  --   ---@type vim.lsp.Client | nil
+  --   local mpls_client = nil
+
+  --   for _, client in ipairs(clients) do
+  --     if client.name == 'mpls' then
+  --       mpls_client = client
+  --       break
+  --     end
+  --   end
+
+  --   -- Only execute the command if the MPLS client is found
+  --   if not mpls_client then
+  --     print('mpls is not attached to the current buffer.')
+  --     return
+  --   end
+
+  --   -- If requested buffer is not attached
+  --   if not mpls_client.attached_buffers[bufnr] then
+  --     vim.lsp.buf_attach_client(bufnr, mpls_client.id)
+  --     vim.notify('[MPLS] bufnr: ' .. bufnr .. ' client: ' .. mpls_client.id, vim.log.levels.INFO)
+  --   end
+
+  --   local params = {
+  --     command = 'open-preview',
+  --     arguments = {},
+  --   }
+  --   mpls_client:request('workspace/executeCommand', params, function(err, _)
+  --     if err then
+  --       vim.notify('Error executing command: ' .. err.message, vim.log.levels.ERROR)
+  --     else
+  --       vim.notify('Preview opened', vim.log.levels.INFO)
+  --     end
+  --   end, bufnr)
+  -- end, { bang = true, nargs = '?', complete = 'file', desc = '[MPLS] Request open preview for md file' })
 end
 
 local configure = function()
@@ -147,7 +241,7 @@ local configure = function()
   }
 
   local update_capabilities =
-      require('lsp-servers.lsp_settings').get_completion_module_from_settings().get_update_capabilities()
+    require('lsp-servers.lsp_settings').get_completion_module_from_settings().get_update_capabilities()
   config = update_capabilities(config)
 
   vim.lsp.config(name, config)
@@ -160,6 +254,8 @@ end
 ---If bang is used, it won't try to attach any buffer
 ---@param opts { skip_load?: boolean, file?: string }
 local function start(opts)
+  opts = opts or {}
+
   -- Setup lsp config
   configure()
 
