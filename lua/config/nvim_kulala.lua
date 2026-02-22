@@ -1,9 +1,9 @@
 ---Format http file. Requires kulala-fmt
 ---@param filename? string File to format
-local format_file = function (filename)
+local format_file = function(filename)
   if vim.fn.executable('kulala-fmt') == 0 then
     vim.notify('Requires kulala-fmt!', vim.log.levels.ERROR)
-    return;
+    return
   end
 
   -- Save before formatting
@@ -12,7 +12,7 @@ local format_file = function (filename)
   ---@type string
   local file = (filename == nil or filename == '%') and vim.fn.expand('%:p') or filename --[[@as string]]
 
-  vim.system({ 'kulala-fmt', 'format', file }, { text = true }, function ()
+  vim.system({ 'kulala-fmt', 'format', file }, { text = true }, function()
     -- TODO: Handle errors?
 
     if filename == nil or filename == '%' then
@@ -23,13 +23,13 @@ local format_file = function (filename)
 end
 
 ---Format all http files in current directory. Requires kulala-fmt
-local format_all = function ()
+local format_all = function()
   vim.fn.wall()
 
   vim.system({ 'kulala-fmt', 'format' }, {
     text = true,
     cwd = vim.fn.getcwd(),
-  }, function ()
+  }, function()
     -- TODO: Handle errors?
 
     vim.schedule(vim.cmd.edit)
@@ -40,20 +40,20 @@ end
 ---@param format 'openapi' | 'postman' | 'bruno' Input format. Default 'openapi'.
 ---@param file string file to convert or a url to fetch the file to convert.
 ---@param on_exit? fun(file: string) Function to run on exit.
-local convert = function (format, file, on_exit)
+local convert = function(format, file, on_exit)
   if not (vim.uv or vim.loop).fs_stat(file) then
     return
   end
 
-  on_exit = on_exit or vim.schedule_wrap(function (converted_file)
+  on_exit = on_exit or vim.schedule_wrap(function(converted_file)
     vim.cmd.edit(converted_file)
   end)
 
   vim.system({ 'kulala-fmt', 'convert', '--from', format, file }, {
     text = true,
-    stdout = function (err, data)
+    stdout = function(err, data)
       if err then
-        vim.schedule(function ()
+        vim.schedule(function()
           vim.notify('Could not convert file', vim.log.levels.ERROR)
         end)
         return
@@ -76,7 +76,7 @@ local convert = function (format, file, on_exit)
       if (vim.uv or vim.loop).fs_stat(converted_file) then
         on_exit(converted_file)
       end
-    end
+    end,
   })
 end
 
@@ -84,7 +84,7 @@ end
 ---@param format 'openapi' | 'postman' | 'bruno' Input format. Default 'openapi'.
 ---@param file_or_url string file to convert or a url to fetch the file to convert.
 ---@param outfile? string filename to use if a url was provided. Defaults to last segment of the url.
-local convert_to_http = function (format, file_or_url, outfile)
+local convert_to_http = function(format, file_or_url, outfile)
   local use_format = format or 'openapi'
 
   if (vim.uv or vim.loop).fs_stat(file_or_url) then
@@ -110,12 +110,12 @@ local convert_to_http = function (format, file_or_url, outfile)
   local download_file = tmp_dir .. '/' .. name
 
   if (vim.uv or vim.loop).fs_stat(download_file) then
-    vim.notify('[Convert] Out file "'..download_file..'" already exists', vim.log.levels.WARN)
+    vim.notify('[Convert] Out file "' .. download_file .. '" already exists', vim.log.levels.WARN)
     return
   end
 
   local final_name = cwd .. '/' .. name .. '.http'
-  local on_converted = vim.schedule_wrap(function (converted_file)
+  local on_converted = vim.schedule_wrap(function(converted_file)
     os.rename(converted_file, final_name)
     vim.cmd.edit(final_name)
     -- local tmp_files = vim.fn.readdir(tmp_dir)
@@ -124,20 +124,19 @@ local convert_to_http = function (format, file_or_url, outfile)
     -- end
   end)
 
-  vim.system({ 'curl', '-sL', '--create-dirs', file_or_url, '-o', download_file }, { text = true }, function ()
+  vim.system({ 'curl', '-sL', '--create-dirs', file_or_url, '-o', download_file }, { text = true }, function()
     convert(format, download_file, on_converted)
   end)
 end
 
-local set_commands = function ()
+local set_commands = function()
   local has_kulala, kulala = pcall(require, 'kulala')
 
   if has_kulala then
+    local jump_next, jump_prev =
+      require('utils.repeat_motion').create_repeatable_pair(kulala.jump_next, kulala.jump_prev)
 
-    local jump_next, jump_prev = require('utils.repeat_motion')
-      .create_repeatable_pair(kulala.jump_next, kulala.jump_prev)
-
-    local get_selected_env = function ()
+    local get_selected_env = function()
       local curr_env = kulala.get_selected_env()
       vim.notify(curr_env, vim.log.levels.WARN)
     end
@@ -174,10 +173,9 @@ local set_commands = function ()
       convert = convert_to_http,
     }
 
-
     ---Handler callback for Kulala command
     ---@param opts vim.api.keyset.create_user_command.command_args
-    local command_handler = function (opts)
+    local command_handler = function(opts)
       local sub_command = opts.fargs[1]
       local subs = vim.tbl_keys(commands)
 
@@ -191,14 +189,14 @@ local set_commands = function ()
           fzf_opts = fzf.fzf_with_options({
             '--no-multi',
           }, 'bind'),
-          sink = function (selected)
+          sink = function(selected)
             if #selected < 2 then
               return
             end
 
             local sub = selected[2]
             commands[sub]()
-          end
+          end,
         })
 
         return
@@ -213,15 +211,13 @@ local set_commands = function ()
     end
 
     vim.api.nvim_create_user_command('Kulala', command_handler, {
-      complete = function (curr)
-        local match_str = '^'..string.lower(curr)
-        local subs = vim.tbl_keys(commands)
-        local matched = vim.tbl_filter(function (sub)
-          local _, matches = string.gsub(string.lower(sub), match_str, '')
-          return matches > 0
-        end, subs)
-
-        return #matched > 0 and matched or subs
+      complete = function(curr)
+        local match_str = '^' .. string.lower(curr)
+        local sub_commands = vim.tbl_keys(commands)
+        -- NOTE: if causing trouble, consider to make all subcommands lowecase string.lower()
+        return require('utils.cmd').get_matched(sub_commands, match_str, function(opt)
+          return string.lower(opt)
+        end)
       end,
       nargs = '*',
       bang = true,
@@ -230,24 +226,18 @@ local set_commands = function ()
       force = true,
     })
 
-    vim.api.nvim_create_user_command(
-      'KulalaFormat',
-      format_file, {
-        desc = '[Kulala] Format current file',
-        bar = true,
-        nargs = 1,
-        complete = 'dir',
-      }
-    )
+    vim.api.nvim_create_user_command('KulalaFormat', format_file, {
+      desc = '[Kulala] Format current file',
+      bar = true,
+      nargs = 1,
+      complete = 'dir',
+    })
 
-    vim.api.nvim_create_user_command(
-      'KulalaFormatAll',
-      format_all, {
-        desc = '[Kulala] Format all files in cwd',
-        bar = true,
-        nargs = 0,
-      }
-    )
+    vim.api.nvim_create_user_command('KulalaFormatAll', format_all, {
+      desc = '[Kulala] Format all files in cwd',
+      bar = true,
+      nargs = 0,
+    })
 
     -- vim.api.nvim_create_user_command(
     --   'KulalaRun',
@@ -408,20 +398,17 @@ local set_commands = function ()
     --     bar = true,
     --   }
     -- )
-
   end
-
 end
 
 ---Sets keymaps for kulala
 ---@param opts { buf: number } Buffer
-local set_keymaps = function (opts)
-  local jump_next, jump_prev = require('utils.repeat_motion')
-    .create_repeatable_pair(function ()
-      require('kulala').jump_next()
-    end, function ()
-      require('kulala').jump_prev()
-    end)
+local set_keymaps = function(opts)
+  local jump_next, jump_prev = require('utils.repeat_motion').create_repeatable_pair(function()
+    require('kulala').jump_next()
+  end, function()
+    require('kulala').jump_prev()
+  end)
 
   local nxo = { 'n', 'x', 'o' }
   vim.keymap.set(nxo, ']r', jump_next, {
@@ -434,7 +421,7 @@ local set_keymaps = function (opts)
     noremap = true,
     desc = '[Kulala] Move to previous request',
   })
-  vim.keymap.set('n', '<Enter>', function ()
+  vim.keymap.set('n', '<Enter>', function()
     require('kulala').run()
   end, {
     buffer = opts.buf,
@@ -453,7 +440,7 @@ local set_keymaps = function (opts)
   })
 end
 
-local setup = function ()
+local setup = function()
   require('kulala').setup({
     -- enable reading vscode rest client environment variables
     vscode_rest_client_environmentvars = true,
