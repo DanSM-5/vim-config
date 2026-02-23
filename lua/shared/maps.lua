@@ -940,6 +940,9 @@ return {
     remove_default()
     diagnostics_config()
 
+    -- Arg list navigation keymaps
+    require('config.args_list').set_keymaps()
+
     vim.keymap.set('n', '<leader>fs', function()
       vim.cmd.Snippets()
     end, {
