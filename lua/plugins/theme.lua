@@ -42,6 +42,8 @@ return {
       vim.api.nvim_set_hl(0, 'QuickFixLine', { link = 'CursorLine', force = true })
       vim.api.nvim_set_hl(0, 'Comment', { fg = '#7f848e', ctermfg = 102 , force = true })
       vim.api.nvim_set_hl(0, 'LspInlayHint', { link = 'Comment', force = true })
+      vim.api.nvim_set_hl(0, 'diffRemoved', { link = 'Removed', force = true })
+      vim.api.nvim_set_hl(0, 'diffAdded', { link = 'Added', force = true })
 
       require('shared.highlights').setup()
 
