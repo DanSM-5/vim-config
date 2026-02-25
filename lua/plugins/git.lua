@@ -70,5 +70,15 @@ return {
     'farhanmustar/fugitive-delta.nvim',
     ft = { 'git', 'gvgit', 'diff' },
   },
+  -- {
+  --   'barrettruth/diffs.nvim',
+  --   -- ft = { 'git', 'gvgit', 'diff' },
+  --   init = function (self)
+  --     vim.g.diffs = {
+  --       fugitive = true,
+  --       extra_filetypes = { 'git', 'gvgit', 'diff' },
+  --     }
+  --   end,
+  -- },
 }
 
