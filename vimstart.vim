@@ -99,7 +99,13 @@ let g:scripts_dir = substitute(
 
 
 " fzf-lsp keys
-let g:fzf_lsp_preview_window = ['right,wrap-word', 'ctrl-/', 'ctrl-^']
+" let g:fzf_lsp_preview_window = ['right,wrap-word', 'ctrl-/', 'ctrl-^']
+let g:fzf_lsp_override_opts = [
+      \ '--preview-window', 'right,wrap-word',
+      \ '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
+      \ '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
+      \ '--bind', 'ctrl-^:toggle-preview'
+      \ ]
 
 " General options
 let g:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border=rounded' ]
