@@ -92,6 +92,7 @@ g.fzf_lsp_override_opts = {
   '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
   '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
   '--bind', 'ctrl-^:toggle-preview',
+  '--preview-window', 'right,wrap-word',
 }
 
 
