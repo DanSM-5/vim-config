@@ -69,7 +69,7 @@ local fzf = function (opts)
   --       '--delimiter',
   --       ':',
   --       '--preview-window',
-  --       '+{2}-/2,wrap',
+  --       '+{2}-/2,wrap-word',
   --     })
   --     vim.list_extend(fzf_opts, vim.fn['fzf#vim#with_preview']().options)
   --   end

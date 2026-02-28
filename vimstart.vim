@@ -99,7 +99,7 @@ let g:scripts_dir = substitute(
 
 
 " fzf-lsp keys
-let g:fzf_lsp_preview_window = ['right', 'ctrl-/', 'ctrl-^']
+let g:fzf_lsp_preview_window = ['right,wrap-word', 'ctrl-/', 'ctrl-^']
 
 " General options
 let g:fzf_base_options = [ '--multi', '--ansi', '--bind', 'alt-c:clear-query', '--input-border=rounded' ]
@@ -117,7 +117,7 @@ let g:fzf_bind_options = g:fzf_base_options + [
       \      '--bind', 'alt-d:deselect-all']
 let g:fzf_preview_options = g:fzf_bind_options + [
       \ '--layout=reverse',
-      \ '--preview-window', '60%,wrap',
+      \ '--preview-window', '60%,wrap-word',
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
       \ ]
 

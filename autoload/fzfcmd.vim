@@ -97,9 +97,9 @@ endfunction
 function! fzfcmd#fzf_set_preview_window(spec, fullscreen) abort
   let new_spec = utils#clone_dictionary(a:spec)
   if a:fullscreen
-    let new_spec.options = new_spec.options + [ '--preview-window', 'up,60%,wrap' ]
+    let new_spec.options = new_spec.options + [ '--preview-window', 'up,60%,wrap-word' ]
   else
-    let new_spec.options = new_spec.options + [ '--preview-window', 'right,60%,wrap' ]
+    let new_spec.options = new_spec.options + [ '--preview-window', 'right,60%,wrap-word' ]
   endif
 
   return new_spec
@@ -238,7 +238,7 @@ function fzfcmd#fzfrg_base(opts) abort
         \     'options': ['--disabled', '--query', query,
         \                 '--ansi', '--prompt', prompt,
         \                 '--header', '| CTRL-R (RG mode) | CTRL-F (FZF mode) |',
-        \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap',
+        \                 '--multi', '--delimiter', ':', '--preview-window', '+{2}-/2,wrap-word',
         \                 '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt('.prompt.')+disable-search+reload(' . reload_command. ')+rebind(change,ctrl-f)',
         \                 '--bind', "ctrl-f:unbind(change,ctrl-f)+change-prompt(FZF> )+enable-search+clear-query+rebind(ctrl-r)",
         \                 '--bind', 'start:reload:'.initial_command,

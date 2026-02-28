@@ -114,7 +114,7 @@ local fzf_bind_options = {
 }
 local fzf_preview_options = {
   '--layout=reverse',
-  '--preview-window', '60%,wrap',
+  '--preview-window', '60%,wrap-word',
   '--preview', 'bat -pp --color=always --style=numbers {}'
 }
 
