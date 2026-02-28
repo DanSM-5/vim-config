@@ -59,7 +59,7 @@ function! fzfgit#select_branch(opts) abort
 
   let cmd = 'git -C '.directory.' branch -a --color=always | sort'
   let preview = ''
-  let options = ['--preview-window', '60%,wrap', '--prompt', 'Branches> ', '--bind', 'start:reload:'.cmd]
+  let options = ['--preview-window', '60%,wrap-word', '--prompt', 'Branches> ', '--bind', 'start:reload:'.cmd]
   let tmp_preview = ''
 
   if s:is_windows
@@ -157,7 +157,7 @@ function! fzfgit#select_stash(opts) abort
   let preview = 'git show --color=always {1} %s | bat -p --color=always'
   let preview = printf(preview, executable('delta') ? '| delta' : '')
   let options = [
-    \   '--preview-window', '60%,wrap',
+    \   '--preview-window', '60%,wrap-word',
     \   '--prompt', 'Stashes> ',
     \   '--delimiter', ':',
     \   '--accept-nth', '1',
@@ -210,7 +210,7 @@ function! fzfgit#select_tag(opts) abort
   let cmd = 'git -C '.directory.' tag --sort -version:refname'
   let preview = 'git show --color=always {} %s | bat -p --color=always'
   let preview = printf(preview, executable('delta') ? '| delta' : '')
-  let options = ['--preview-window', '70%,wrap', '--prompt', 'Tags> ', '--bind', 'start:reload:'.cmd, '--preview', preview]
+  let options = ['--preview-window', '70%,wrap-word', '--prompt', 'Tags> ', '--bind', 'start:reload:'.cmd, '--preview', preview]
   let options += s:get_options(opts)
 
   let spec = {

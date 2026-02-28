@@ -117,7 +117,7 @@ let g:fzf_bind_options = g:fzf_base_options + [
       \      '--bind', 'alt-d:deselect-all']
 let g:fzf_preview_options = g:fzf_bind_options + [
       \ '--layout=reverse',
-      \ '--preview-window', '60%,wrap',
+      \ '--preview-window', '60%,wrap-word',
       \ '--preview', 'bat -pp --color=always --style=numbers {}'
       \ ]
 

@@ -79,7 +79,7 @@ function! fzftxt#select(query, fullscreen) abort
       \     'options': [
       \     '--height', '80%', '--min-height', '20',
       \     '--delimiter', ':',
-      \     '--preview-window', '+{2}-/2,60%,wrap',
+      \     '--preview-window', '+{2}-/2,60%,wrap-word',
       \     '--prompt', 'Files> ',
       \     '--multi', '--ansi', '--border',
       \     '--info=inline', '--cycle',
@@ -120,7 +120,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
   let curr_path = getcwd()
   let txt_dir = s:get_txt_dir()
   let source_command = 'fd --color=always -tf '
-  " let preview_window = a:fullscreen ? 'up,80%,wrap' : 'right,80%,wrap'
+  " let preview_window = a:fullscreen ? 'up,80%,wrap-word' : 'right,80%,wrap-word'
   " \     '--preview-window', preview_window,
 
   silent call mkdir(txt_dir, 'p')
@@ -155,7 +155,7 @@ function! fzftxt#select_simple(query, fullscreen) abort
       \     '--bind', 'ctrl-^:toggle-preview',
       \     '--bind', 'ctrl-s:toggle-sort',
       \     '--layout=reverse',
-      \     '--preview-window', '60%,wrap',
+      \     '--preview-window', '60%,wrap-word',
       \     '--query', a:query,
       \     '--preview', s:fzf_preview]
       \ }
