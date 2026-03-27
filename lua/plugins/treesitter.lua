@@ -33,6 +33,8 @@ return {
     ---@type TSContext.UserConfig
     opts = {
       enable = true,
+      max_lines = 7,
+      min_window_height = 15,
     },
   },
   {
