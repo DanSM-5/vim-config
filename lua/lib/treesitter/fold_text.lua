@@ -38,11 +38,11 @@ end
 
 ---@param ctx ts.mod.Context
 function Module.attach(ctx)
-  local bufnr = ctx.buf
+  -- local bufnr = ctx.buf
   local winid = vim.api.nvim_get_current_win()
 
-  vim.wo[winid][bufnr].foldmethod = 'expr'
-  vim.wo[winid][bufnr].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+  vim.wo[winid][0].foldmethod = 'expr'
+  vim.wo[winid][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
   -- vim.opt_local.foldmethod = 'expr'
   -- vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
@@ -54,11 +54,12 @@ function Module.detach(ctx)
   -- could be open in a different or multiple windows
   -- so trying to recover window option is tricky.
   -- Better to always fallback to a known value.
-  local bufnr = ctx.buf
+
+  -- local bufnr = ctx.buf
   local winid = vim.api.nvim_get_current_win()
 
-  vim.wo[winid][bufnr].foldmethod = vim.go.foldmethod
-  vim.wo[winid][bufnr].foldexpr = vim.go.foldexpr
+  vim.wo[winid][0].foldmethod = vim.go.foldmethod
+  vim.wo[winid][0].foldexpr = vim.go.foldexpr
 
   -- vim.opt_local.foldmethod = vim.go.foldmethod
   -- vim.opt_local.foldexpr = vim.go.foldexpr
