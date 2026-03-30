@@ -17,4 +17,9 @@ return {
   --     require('config.completions').set_crates()
   --   end
   -- },
+  {
+    'kylechui/nvim-surround',
+    event = 'VeryLazy',
+    opts = {},
+  },
 }
