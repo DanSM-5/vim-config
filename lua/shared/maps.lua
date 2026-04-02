@@ -126,6 +126,13 @@ local remove_default = function()
     vim.keymap.del('n', 'grt')
     -- vim.keymap.del('n', 'g0')
   end
+  if vim.fn.has('nvim-0.12.0') == 1 then
+    -- Unset defaults for incremental selection due to conflicts
+    vim.keymap.del('x', '[n')
+    vim.keymap.del('x', ']n')
+    vim.keymap.del({ 'x', 'o' }, 'an')
+    vim.keymap.del({ 'x', 'o' }, 'in')
+  end
 end
 
 ---Set repeatable maps that use a combination of '[' and ']'
@@ -139,6 +146,22 @@ local function set_repeat_direction_maps()
   local create_repeatable_pair = repeat_motion.create_repeatable_pair
   -- NOTE: Setting repeatable keymaps ',' (left) and ';' (right)
   repeat_motion.set_motion_keys()
+
+  -- Treesitter builtin incremental selection
+  local incremental_selection_next = function()
+    require('vim.treesitter._select').select_next(vim.v.count1)
+  end
+  local incremental_selection_prev = function()
+    require('vim.treesitter._select').select_prev(vim.v.count1)
+  end
+  repeat_pair({
+    keys = 't',
+    mode = 'x',
+    desc_forward = '[TS] Incremental selection next node',
+    desc_backward = '[TS] Incremental selection previous node',
+    on_forward = incremental_selection_next,
+    on_backward = incremental_selection_prev,
+  })
 
   --- Execute a command and print errors without a stacktrace.
   --- @param opts table Arguments to |nvim_cmd()|
@@ -753,7 +776,7 @@ local function set_repeat_direction_maps()
   local indent_scope_top_n, indent_scope_bottom_n
   ---@type fun(), fun()
   local indent_scope_top_xo, indent_scope_bottom_xo
-  local get_indent_scope = function (...)
+  local get_indent_scope = function(...)
     local blink_indent_motion = require('blink.indent.motion')
     return blink_indent_motion.operator(...)
   end
@@ -773,12 +796,7 @@ local function set_repeat_direction_maps()
     indent_scope_top_xo()
   end)
 
-  vim.keymap.set(
-    'n',
-    '[i',
-    indent_top_n,
-    { desc = '[indent] Go to indent scope top', noremap = true, silent = true }
-  )
+  vim.keymap.set('n', '[i', indent_top_n, { desc = '[indent] Go to indent scope top', noremap = true, silent = true })
   vim.keymap.set(
     'n',
     ']i',
@@ -840,54 +858,46 @@ end
 local function diagnostics_config()
   -- Global diagnostic mappings
   -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-  vim.keymap.set(
-    'n',
-    '<space>e',
-    function ()
-      vim.diagnostic.open_float()
-    end,
-    { desc = '[Lsp] Open float window', silent = true, noremap = true }
-  )
-  vim.keymap.set(
-    'n',
-    '<space>E',
-    function ()
-      local curr_config = vim.diagnostic.config()
-      vim.diagnostic.config({ virtual_lines = { current_line = true }, virtual_text = false })
+  vim.keymap.set('n', '<space>e', function()
+    vim.diagnostic.open_float()
+  end, { desc = '[Lsp] Open float window', silent = true, noremap = true })
+  vim.keymap.set('n', '<space>E', function()
+    local curr_config = vim.diagnostic.config()
+    vim.diagnostic.config({ virtual_lines = { current_line = true }, virtual_text = false })
 
-      local unset = function ()
-        vim.diagnostic.config(curr_config)
-        pcall(vim.keymap.del, 'n', '<esc>', { buffer = true })
-      end
+    local unset = function()
+      vim.diagnostic.config(curr_config)
+      pcall(vim.keymap.del, 'n', '<esc>', { buffer = true })
+    end
 
-      vim.keymap.set('n', '<esc>', function ()
-        unset()
-      end, { silent = true, buffer = true, desc = '[Diagnostic] Hide virtual lines' })
+    vim.keymap.set('n', '<esc>', function()
+      unset()
+    end, { silent = true, buffer = true, desc = '[Diagnostic] Hide virtual lines' })
 
-      vim.api.nvim_create_autocmd('CursorMoved', {
-        once = true,
-        desc = '[Diagnostic] Hide virtual lines',
-        callback = unset
-      })
-    end,
-    { desc = '[Lsp] Open virtual lines', silent = true, noremap = true }
-  )
+    vim.api.nvim_create_autocmd('CursorMoved', {
+      once = true,
+      desc = '[Diagnostic] Hide virtual lines',
+      callback = unset,
+    })
+  end, { desc = '[Lsp] Open virtual lines', silent = true, noremap = true })
   vim.keymap.set('n', '<space>l', vim.diagnostic.setloclist, { desc = 'LSP: Open diagnostic list', silent = true })
-  vim.keymap.set('n', '<space>q', vim.diagnostic.setqflist , { desc = 'LSP: Open diagnostic list', silent = true })
+  vim.keymap.set('n', '<space>q', vim.diagnostic.setqflist, { desc = 'LSP: Open diagnostic list', silent = true })
 
   -- Signs for diagnostics
-  local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
+  local signs = { Error = ' ', Warn = ' ', Hint = '󰠠 ', Info = ' ' }
   -- for type, icon in pairs(signs) do
-  -- 	local hl = "DiagnosticSign" .. type
-  -- 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+  --  local hl = "DiagnosticSign" .. type
+  --  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
   -- end
   vim.diagnostic.config({
-    signs = { text = {
-      [vim.diagnostic.severity.ERROR] = signs.Error,
-      [vim.diagnostic.severity.WARN] = signs.Warn,
-      [vim.diagnostic.severity.HINT] = signs.Hint,
-      [vim.diagnostic.severity.INFO] = signs.Info,
-    } }
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = signs.Error,
+        [vim.diagnostic.severity.WARN] = signs.Warn,
+        [vim.diagnostic.severity.HINT] = signs.Hint,
+        [vim.diagnostic.severity.INFO] = signs.Info,
+      },
+    },
   })
 
   -- Start diagnostics (virtual text) enabled
@@ -907,7 +917,7 @@ local function diagnostics_config()
       source = true,
       header = 'Diagnostics',
       -- prefix = '💥 ',
-    }
+    },
     -- update_in_insert = true,
   })
 
@@ -935,20 +945,40 @@ local function diagnostics_config()
   -- vim.keymap.set('n', '<PageUp>', function() scrollLspWin(-5) end, { desc = '↑ Scroll LSP window' })
 end
 
+local function simple_maps()
+  -- Node incremental selection mappings with LSP fallback
+  vim.keymap.set({ 'x', 'o' }, 'at', function()
+    if vim.treesitter.get_parser(nil, nil, { error = false }) then
+      require('vim.treesitter._select').select_parent(vim.v.count1)
+    else
+      vim.lsp.buf.selection_range(vim.v.count1)
+    end
+  end, { desc = 'Select parent (outer) node' })
+
+  vim.keymap.set({ 'x', 'o' }, 'it', function()
+    if vim.treesitter.get_parser(nil, nil, { error = false }) then
+      require('vim.treesitter._select').select_child(vim.v.count1)
+    else
+      vim.lsp.buf.selection_range(-vim.v.count1)
+    end
+  end, { desc = 'Select child (inner) node' })
+
+  vim.keymap.set('n', '<leader>fs', function()
+    vim.cmd.Snippets()
+  end, {
+    noremap = true,
+    desc = '[fzf] Select snippets for ft',
+  })
+end
+
 return {
   load = function()
     remove_default()
+    simple_maps()
     diagnostics_config()
 
     -- Arg list navigation keymaps
     require('config.args_list').set_keymaps()
-
-    vim.keymap.set('n', '<leader>fs', function()
-      vim.cmd.Snippets()
-    end, {
-      noremap = true,
-      desc = '[fzf] Select snippets for ft',
-    })
   end,
   remove_default = remove_default,
   set_repeatable_maps = set_repeat_direction_maps,
