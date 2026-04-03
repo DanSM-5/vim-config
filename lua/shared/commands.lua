@@ -6,7 +6,7 @@ end, { nargs = '?', bang = true, force = true })
 ---Node package manager wrapper function
 ---@param opts vim.api.keyset.create_user_command.command_args
 ---@param runner 'npm' | 'pnpm'
-local node_manager_wrapper = function (opts, runner)
+local node_manager_wrapper = function(opts, runner)
   local dir = require('utils.stdlib').find_root('package.json')
   if dir == nil then
     if opts.fargs[1] == 'run' then
@@ -58,17 +58,39 @@ local node_quick_runner = function(opts, runner)
     return
   end
 
-  require('utils.npm').run(dir, runner, opts.fargs, terminal_fullscreen) 
+  require('utils.npm').run(dir, runner, opts.fargs, terminal_fullscreen)
 end
 
 ---Create NR (npm run) command
-vim.api.nvim_create_user_command('NR', function(opts)
-  node_quick_runner(opts, 'npm')
-end, { bang = true, nargs = '*', complete = 'dir', bar = true, force = true, desc = '[NR] Small wrapper for `[p]npm run` command' })
+vim.api.nvim_create_user_command(
+  'NR',
+  function(opts)
+    node_quick_runner(opts, 'npm')
+  end,
+  {
+    bang = true,
+    nargs = '*',
+    complete = 'dir',
+    bar = true,
+    force = true,
+    desc = '[NR] Small wrapper for `[p]npm run` command',
+  }
+)
 ---Create MR (pnpm run) command
-vim.api.nvim_create_user_command('MR', function(opts)
-  node_quick_runner(opts, 'pnpm')
-end, { bang = true, nargs = '*', complete = 'dir', bar = true, force = true, desc = '[NR] Small wrapper for `[p]npm run` command' })
+vim.api.nvim_create_user_command(
+  'MR',
+  function(opts)
+    node_quick_runner(opts, 'pnpm')
+  end,
+  {
+    bang = true,
+    nargs = '*',
+    complete = 'dir',
+    bar = true,
+    force = true,
+    desc = '[NR] Small wrapper for `[p]npm run` command',
+  }
+)
 
 ---Create Npm command
 vim.api.nvim_create_user_command('Npm', function(opts)
@@ -96,7 +118,6 @@ vim.api.nvim_create_user_command('LF', function(opts)
   require('utils.lf').lf(opts.fargs[1], opts.bang)
 end, { force = true, bar = true, nargs = '?', complete = 'dir', bang = true })
 
-
 ---@param opts { bang: boolean, fargs: string[] }
 vim.api.nvim_create_user_command('Mpls', function(opts)
   require('config.nvim_mpls').start({
@@ -114,7 +135,7 @@ end, {
 ---@type boolean Contron blink.indent
 vim.g.indent_guide = true
 
-vim.api.nvim_create_user_command('IndentGuides', function (opts)
+vim.api.nvim_create_user_command('IndentGuides', function(opts)
   ---@type string|boolean|nil
   local option = opts.fargs[1]
 
@@ -123,17 +144,19 @@ vim.api.nvim_create_user_command('IndentGuides', function (opts)
   end
 
   -- blink.indent control
-  local blink_indent = option ~= nil and option or (not vim.g.indent_guide)
+  local blink_indent = option ~= nil and option or not vim.g.indent_guide
   vim.g.indent_guide = blink_indent
 end, {
   desc = '[Indent] Change indent guides visibility',
   nargs = '?',
   bang = true,
   bar = true,
-  complete = function () return { 'on', 'off' }  end,
+  complete = function()
+    return { 'on', 'off' }
+  end,
 })
 
-vim.api.nvim_create_user_command('Fshow', function (opts)
+vim.api.nvim_create_user_command('Fshow', function(opts)
   local dir = opts.fargs[1]
   if dir == nil then
     dir = vim.fn.expand('%:p:h')
@@ -153,15 +176,12 @@ end, {
   desc = '[FShow] Show the commits in fzf',
 })
 
-vim.api.nvim_create_user_command('BSearch', function (args)
+vim.api.nvim_create_user_command('BSearch', function(args)
   local first = args.fargs[1]
   local engine = string.gsub(first, '@', '')
   local search = require('utils.browser_search')
   if string.sub(first, 1, 1) == '@' and search.is_valid_engine(engine) then
-    search.search_browser(
-      table.concat({ unpack(args.fargs, 2) }, ' '),
-      engine
-    )
+    search.search_browser(table.concat({ unpack(args.fargs, 2) }, ' '), engine)
 
     return
   end
@@ -172,7 +192,7 @@ end, {
   bang = true,
   -- bar = true,
   nargs = '+',
-  complete = function (current, cmd)
+  complete = function(current, cmd)
     -- Only complete first arg
     if #vim.split(cmd, ' ') > 2 then
       return
@@ -184,15 +204,14 @@ end, {
     end
 
     return engines
-  end
+  end,
 })
-
 
 ---Callback function for TSModule commands
 ---@param module string
 ---@param state 'enable'|'disable'|''|nil
 ---@param switch boolean|nil
-local ts_modules_callback = function (module, state, switch)
+local ts_modules_callback = function(module, state, switch)
   -- local module = args[1]
   -- local state = args[2]
 
@@ -207,7 +226,7 @@ local ts_modules_callback = function (module, state, switch)
 
   local manager = require('treesitter-modules.core.manager')
   local modules = manager.modules
-  local target_mod = require('utils.stdlib').find(function (mod)
+  local target_mod = require('utils.stdlib').find(function(mod)
     return mod.name() == module
   end, modules)
 
@@ -220,7 +239,7 @@ local ts_modules_callback = function (module, state, switch)
   local ctx = { buf = buf, language = lang }
   local set = manager.cache:get(buf)
 
-  local disable_module = function ()
+  local disable_module = function()
     if set:has(module) then
       set:remove(module)
       target_mod.detach(ctx)
@@ -229,7 +248,7 @@ local ts_modules_callback = function (module, state, switch)
       target_mod.disable = true
     end
   end
-  local enable_module = function ()
+  local enable_module = function()
     if not set:has(module) then
       set:add(module)
       target_mod.attach(ctx)
@@ -254,7 +273,7 @@ end
 
 ---Get module names
 ---@return string[]
-local ts_modules_get_names = function ()
+local ts_modules_get_names = function()
   local names = {}
   local ts_modules = require('treesitter-modules.core.manager').modules
 
@@ -268,7 +287,7 @@ end
 ---Complete function for module names
 ---@param current string
 ---@return string[]
-local ts_modules_complete_name = function (current)
+local ts_modules_complete_name = function(current)
   local names = ts_modules_get_names()
   if #current > 0 then
     return require('utils.cmd').get_matched(names, current)
@@ -280,10 +299,10 @@ end
 ---Change status of module 'on' / 'off'
 ---@param module string
 ---@param state 'on'|'off'
-local ts_modules_switch = function (module, state)
+local ts_modules_switch = function(module, state)
   local manager = require('treesitter-modules.core.manager')
   local modules = manager.modules
-  local target_mod = require('utils.stdlib').find(function (mod)
+  local target_mod = require('utils.stdlib').find(function(mod)
     return mod.name() == module
   end, modules)
 
@@ -304,7 +323,7 @@ end
 ---@param cmd string Current command line including command
 ---@param cur_pos integer Cursor position in cmd
 ---@return string[]
-local ts_modules_complete_fn = function (current, cmd, cur_pos)
+local ts_modules_complete_fn = function(current, cmd, cur_pos)
   if #vim.split(cmd, ' ') > 2 then
     return {}
   end
@@ -312,27 +331,33 @@ local ts_modules_complete_fn = function (current, cmd, cur_pos)
   return ts_modules_complete_name(current)
 end
 
-vim.api.nvim_create_user_command('TSModuleToggle', function (args)
+vim.api.nvim_create_user_command('TSModuleToggle', function(args)
   local module = args.fargs[1]
   local state = args.fargs[2]
   ts_modules_callback(module, state, args.bang)
-end, { desc = '[TSModules] Toggle module', bang = true, bar = true, complete = function (current, cmd, cur_pos)
-  vim.print({ current, cmd, cur_pos })
+end, {
+  desc = '[TSModules] Toggle module',
+  bang = true,
+  bar = true,
+  complete = function(current, cmd, cur_pos)
+    vim.print({ current, cmd, cur_pos })
 
-  local cmd_parts = vim.split(cmd, ' ')
+    local cmd_parts = vim.split(cmd, ' ')
 
-  if #cmd_parts >= 4 then
-    return
-  end
+    if #cmd_parts >= 4 then
+      return
+    end
 
-  if #cmd_parts == 3 then
-    return require('utils.cmd').get_matched({ 'enable', 'disable' }, current)
-  end
+    if #cmd_parts == 3 then
+      return require('utils.cmd').get_matched({ 'enable', 'disable' }, current)
+    end
 
-  return ts_modules_complete_name(current)
-end, nargs = '+' })
+    return ts_modules_complete_name(current)
+  end,
+  nargs = '+',
+})
 
-vim.api.nvim_create_user_command('TSModuleEnable', function (args)
+vim.api.nvim_create_user_command('TSModuleEnable', function(args)
   local module = args.fargs[1]
   if module ~= nil then
     return ts_modules_callback(module, 'enable', args.bang)
@@ -344,13 +369,13 @@ vim.api.nvim_create_user_command('TSModuleEnable', function (args)
     source = names,
     fullscreen = args.bang,
     fzf_opts = { '--no-multi', '--prompt', 'TSModule enable> ' },
-    sink = function (options)
+    sink = function(options)
       if #options < 2 then
         return
       end
       local selected = options[2]
       return ts_modules_callback(selected, 'enable')
-    end
+    end,
   })
 end, {
   desc = '[TSModules] Enable module',
@@ -360,7 +385,7 @@ end, {
   nargs = '?',
 })
 
-vim.api.nvim_create_user_command('TSModuleDisable', function (args)
+vim.api.nvim_create_user_command('TSModuleDisable', function(args)
   local module = args.fargs[1]
   if module ~= nil then
     return ts_modules_callback(module, 'disable', args.bang)
@@ -372,23 +397,23 @@ vim.api.nvim_create_user_command('TSModuleDisable', function (args)
     source = names,
     fullscreen = args.bang,
     fzf_opts = { '--no-multi', '--prompt', 'TSModule disable> ' },
-    sink = function (options)
+    sink = function(options)
       if #options < 2 then
         return
       end
       local selected = options[2]
       return ts_modules_callback(selected, 'disable')
-    end
+    end,
   })
 end, {
   desc = '[TSModules] Disable module',
   bang = true,
   bar = true,
   complete = ts_modules_complete_fn,
-  nargs = '?'
+  nargs = '?',
 })
 
-vim.api.nvim_create_user_command('TSModuleOn', function (args)
+vim.api.nvim_create_user_command('TSModuleOn', function(args)
   local module = args.fargs[1]
   ts_modules_switch(module, 'on')
 end, {
@@ -399,7 +424,7 @@ end, {
   nargs = 1,
 })
 
-vim.api.nvim_create_user_command('TSModuleOff', function (args)
+vim.api.nvim_create_user_command('TSModuleOff', function(args)
   local module = args.fargs[1]
   ts_modules_switch(module, 'off')
 end, {
@@ -410,7 +435,7 @@ end, {
   nargs = 1,
 })
 
-vim.api.nvim_create_user_command('Snippets', function (args)
+vim.api.nvim_create_user_command('Snippets', function(args)
   require('utils.snippets').snippets(args.bang)
 end, {
   desc = '[fzf] Show snippets (luasnip)',
@@ -418,7 +443,6 @@ end, {
   bar = true,
   nargs = 0,
 })
-
 
 vim.api.nvim_create_user_command('FunctionReferences', function(cmd_opts)
   local Hierarchy = require('lib.hierarchy')
@@ -448,3 +472,22 @@ end, {
     return #matched > 0 and matched or options
   end,
 })
+
+-- Define Lsp commnads removed in nvim-0.12.0
+
+if vim.fn.has('nvim-0.12.0') == 1 then
+  vim.api.nvim_create_user_command('LspInfo', 'checkhealth vim.lsp', {
+    desc = 'Show LSP Info',
+  })
+
+  vim.api.nvim_create_user_command('LspLog', function(_)
+    local state_path = vim.fn.stdpath('state')
+    local log_path = vim.fs.joinpath(state_path, 'lsp.log')
+
+    vim.cmd.edit(log_path)
+  end, {
+    desc = 'Show LSP log',
+  })
+
+  -- LspRestart can now be called as `lsp restart`
+end
