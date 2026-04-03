@@ -336,11 +336,6 @@ func! s:Set_user_keybindings () abort
   " map g* <Plug>(asterisk-gz*)
   " map g# <Plug>(asterisk-gz#)
 
-  " Command mode open in buffer ctrl+e
-  cnoremap <C-e> <C-f>
-  " Command mode open in buffer leader+t+e from normal mode
-  nnoremap <leader>cl q:
-
   " Call vim fugitive
   nnoremap <leader>gg <cmd>call FugitiveToggle()<cr>
 
