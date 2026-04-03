@@ -564,6 +564,7 @@ func! s:Set_user_keybindings () abort
     exec 'inoremap <expr> '.insertKmap.' pumvisible() ? "'.pumKmap.'" : "'.insertKmap.'"'
   endfor
 
+  " Search in the current available viewport
   nnoremap <leader>sv <cmd>call SearchInViewport()<cr>
 endf
 
