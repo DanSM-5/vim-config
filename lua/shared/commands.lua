@@ -486,7 +486,7 @@ if vim.fn.has('nvim-0.12.0') == 1 then
     local segments = vim.split(cmd, ' ', { plain = true })
 
     if #segments == 2 then
-      return require('lib.cmd').get_matched(vim.tbl_keys(lsp_subcmds), param)
+      return require('utils.cmd').get_matched(vim.tbl_keys(lsp_subcmds), param)
     end
 
     return {}
