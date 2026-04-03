@@ -62,35 +62,27 @@ local node_quick_runner = function(opts, runner)
 end
 
 ---Create NR (npm run) command
-vim.api.nvim_create_user_command(
-  'NR',
-  function(opts)
-    node_quick_runner(opts, 'npm')
-  end,
-  {
-    bang = true,
-    nargs = '*',
-    complete = 'dir',
-    bar = true,
-    force = true,
-    desc = '[NR] Small wrapper for `[p]npm run` command',
-  }
-)
+vim.api.nvim_create_user_command('NR', function(opts)
+  node_quick_runner(opts, 'npm')
+end, {
+  bang = true,
+  nargs = '*',
+  complete = 'dir',
+  bar = true,
+  force = true,
+  desc = '[NR] Small wrapper for `[p]npm run` command',
+})
 ---Create MR (pnpm run) command
-vim.api.nvim_create_user_command(
-  'MR',
-  function(opts)
-    node_quick_runner(opts, 'pnpm')
-  end,
-  {
-    bang = true,
-    nargs = '*',
-    complete = 'dir',
-    bar = true,
-    force = true,
-    desc = '[NR] Small wrapper for `[p]npm run` command',
-  }
-)
+vim.api.nvim_create_user_command('MR', function(opts)
+  node_quick_runner(opts, 'pnpm')
+end, {
+  bang = true,
+  nargs = '*',
+  complete = 'dir',
+  bar = true,
+  force = true,
+  desc = '[NR] Small wrapper for `[p]npm run` command',
+})
 
 ---Create Npm command
 vim.api.nvim_create_user_command('Npm', function(opts)
@@ -463,30 +455,60 @@ end, {
       return
     end
 
-    local options = { 'incoming', 'outcoming' }
-    local matched = vim.tbl_filter(function(option)
-      local _, matches = string.gsub(option, '^' .. param, '')
-      return matches > 0
-    end, options)
-
-    return #matched > 0 and matched or options
+    return require('utils.cmd').get_matched({ 'incoming', 'outcoming' }, string.format('^%s', param))
   end,
 })
 
 -- Define Lsp commnads removed in nvim-0.12.0
 
 if vim.fn.has('nvim-0.12.0') == 1 then
-  vim.api.nvim_create_user_command('LspInfo', 'checkhealth vim.lsp', {
-    desc = 'Show LSP Info',
-  })
+  ---@type table<string, { handler: fun() } | nil>
+  local lsp_subcmds = {
+    info = {
+      handler = function()
+        vim.cmd.checkhealth('vim.lsp')
+      end,
+    },
+    log = {
+      handler = function()
+        local state_path = vim.fn.stdpath('state')
+        local log_path = vim.fs.joinpath(state_path, 'lsp.log')
 
-  vim.api.nvim_create_user_command('LspLog', function(_)
-    local state_path = vim.fn.stdpath('state')
-    local log_path = vim.fs.joinpath(state_path, 'lsp.log')
+        vim.cmd.edit(log_path)
+      end,
+    },
+  }
 
-    vim.cmd.edit(log_path)
+  ---Completion function for :Lsp command
+  ---@param param string Current param being typed
+  ---@param cmd string Full cmd string
+  local function complete_lsp_cmd(param, cmd)
+    local segments = vim.split(cmd, ' ', { plain = true })
+
+    if #segments == 2 then
+      return require('lib.cmd').get_matched(vim.tbl_keys(lsp_subcmds), param)
+    end
+
+    return {}
+  end
+
+  vim.api.nvim_create_user_command('Lsp', function(info)
+    local sub = info.fargs[1]
+    local subcmd = lsp_subcmds[sub]
+
+    if subcmd == nil then
+      vim.notify(('[:Lsp] unknown subcmd "%s"'):format(sub))
+      return
+    end
+
+    subcmd.handler()
   end, {
-    desc = 'Show LSP log',
+    desc = '[:Lsp] missing options from `:lsp` command',
+    nargs = 1,
+    bang = true,
+    bar = true,
+    force = true,
+    complete = complete_lsp_cmd,
   })
 
   -- LspRestart can now be called as `lsp restart`
