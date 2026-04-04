@@ -909,7 +909,13 @@ local function diagnostics_config()
     --   current_line = true,
     -- },
     jump = {
-      float = true,
+      on_jump = function(_, bufnr)
+        vim.diagnostics.open_float({
+          bufnr = bufnr,
+          scope = 'cursor',
+          focus = false,
+        })
+      end,
     },
 
     float = {
