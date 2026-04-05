@@ -30,4 +30,9 @@ if vim.fn.has('nvim-0.12.0') == 1 then
       },
     },
   })
+
+  -- Built-in plugins
+  -- vim.cmd.packadd('nvim.difftool')
+  -- vim.cmd.packadd('nvim.tohtml')
+  -- vim.cmd.packadd('nvim.undotree')
 end
