@@ -6,7 +6,7 @@
 ---@param win integer
 ---@param k string
 ---@param v any
-function wo(win, k, v)
+local function wo(win, k, v)
   if vim.api.nvim_set_option_value then
     vim.api.nvim_set_option_value(k, v, { scope = 'local', win = win })
   else
@@ -68,7 +68,7 @@ local function float_term(cmd, opts)
   end
 
   local float_window = float(opts)
-  vim.fn.termopen(cmd, termopen_opts)
+  vim.fn.jobstart(cmd, termopen_opts)
   if opts.interactive ~= false then
     vim.cmd.startinsert()
     vim.api.nvim_create_autocmd('TermClose', {
