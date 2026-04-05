@@ -127,6 +127,7 @@ local remove_default = function()
     -- vim.keymap.del('n', 'g0')
   end
   if vim.fn.has('nvim-0.12.0') == 1 then
+    vim.keymap.del('n', 'grx') -- codelenses  vim.lsp.codelens.run()
     -- Unset defaults for incremental selection due to conflicts
     vim.keymap.del('x', '[n')
     vim.keymap.del('x', ']n')
