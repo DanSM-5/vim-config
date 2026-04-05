@@ -117,7 +117,7 @@ local function float_cmd(cmd, opts)
 end
 
 -- Opens a floating terminal (interactive by default)
--- Command stdout can be get back uning on_end callback
+-- Command stdout can be get back using on_end callback
 ---@param cmd? string[]
 ---@param opts? config.TermOptions|{interactive?:boolean}
 ---@param on_end? fun(output: string[])
@@ -137,7 +137,7 @@ local function run_command(cmd, opts, on_end)
     run = {
       -- Incantation to make sure powershell runs a script
       -- without loading a whole profile nor blocking it.
-      vim.fn.executable('pwsh') and 'pwsh' or 'powershell',
+      vim.fn.executable('pwsh') == 1 and 'pwsh' or 'powershell',
       '-NoLogo', '-NonInteractive', '-NoProfile', '-ExecutionPolicy', 'Bypass',
       '-File', vim.fn.substitute(scripts, '\\', '/', 'g') .. '/run.ps1',
     }
