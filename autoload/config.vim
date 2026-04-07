@@ -146,12 +146,12 @@ func! s:SetConfigurationsAfter () abort
 
   " Filter quickfix with :Cfilter :Lfilter
   autocmd QuickFixCmdPost *grep* cwindow
-  if has('nvim')
+  if has('nvim') && $IS_FROM_CONTAINER == 'true'
     lua vim.loader.enable(false)
     packadd cfilter
     lua vim.loader.enable(true)
   else
-    packadd! cfilter
+    packadd cfilter
   endif
 
   " For suda.vim to edit with sudo permission in vim and nvim
