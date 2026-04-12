@@ -512,4 +512,16 @@ if vim.fn.has('nvim-0.12.0') == 1 then
   })
 
   -- LspRestart can now be called as `lsp restart`
+
+  vim.api.nvim_create_user_command('Restart', function()
+    local tmp = os.tmpname()
+    vim.cmd.mksession({ bang = true, args = { tmp } })
+    vim.cmd.restart({ args = { 'source', tmp } })
+  end, {
+    force = true,
+    bang = true,
+    bar = true,
+    desc = '[Restart] Restart nvim and recover opened windows and buffers',
+    nargs = 0,
+  })
 end
