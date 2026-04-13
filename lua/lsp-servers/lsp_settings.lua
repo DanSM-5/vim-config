@@ -180,26 +180,14 @@ return {
         'marksman',
       }
 
-    -- Keymaps for legacy support. To remove when nvim-0.12.0 is released
-    if vim.fn.has('nvim-0.11.0') == 0 then
-      -- Configure hover window
-      ---@diagnostic disable-next-line: deprecated
-      vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-        border = 'rounded',
-        -- max_widht = 50,
-        max_height = 50,
-      })
-      ---@diagnostic disable-next-line: deprecated
-      vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-        border = 'rounded',
-      })
-    end
-
     -- Configure aerial.nvim
     -- require('config.nvim_aerial').setup()
 
     -- Buffer information
     -- See `:help vim.lsp.buf`
+
+    -- Enable codelens for lsp servers that supports it
+    vim.lsp.codelens.enable()
 
     ---@type config.LspHandlerFunc
     local lspconfig_handler = get_lsp_handler()
@@ -226,6 +214,23 @@ return {
       lspconfig_handler(server_name)
     end
 
+    -- configure when not using mason-lspconfig
+    local manual_setup = require('lsp-servers.lsp_manual_config')
+    local manual_setup_config = {
+      lspconfig_handler = lspconfig_handler,
+    }
+
+    -- Load lsp manually from the manual selected list for environments such
+    -- as termux which uses lsps not built with gnu libraries
+    if special_binaries then
+      manual_setup.set_special_binaries(manual_setup_config)
+    end
+    manual_setup.set_manual_setup(manual_setup_config)
+    manual_setup.set_device_specific(manual_setup_config)
+
+    -- Configure none-ls for linters and formatters
+    -- Preferred over conform.nvim and nvim-lint due to
+    -- adding useful code actions
     local none_ls = require('null-ls')
     none_ls.setup({
       sources = {
@@ -246,20 +251,6 @@ return {
         -- none_ls.builtins.diagnostics.prettier,
       },
     })
-
-    -- configure when not using mason-lspconfig
-    local manual_setup = require('lsp-servers.lsp_manual_config')
-    local manual_setup_config = {
-      lspconfig_handler = lspconfig_handler,
-    }
-
-    -- Load lsp manually from the manual selected list for environments such
-    -- as termux which uses lsps not built with gnu libraries
-    if special_binaries then
-      manual_setup.set_special_binaries(manual_setup_config)
-    end
-    manual_setup.set_manual_setup(manual_setup_config)
-    manual_setup.set_device_specific(manual_setup_config)
   end,
 }
 
