@@ -119,15 +119,15 @@ local try_attach_buffer = function (bufnr)
     return
   end
 
-  local lspconfig, configs = pcall(require, 'lspconfig.configs')
-  if lspconfig then
-    for _, key in ipairs(require('lspconfig.util').available_servers()) do
-      local config = configs[key]
-      if type(config.launch) == 'function' and (config.filetypes == nil or vim.tbl_contains(config.filetypes, vim.bo[bufnr].filetype)) then
-        config.launch(bufnr)
-      end
-    end
-  end
+  -- local lspconfig, configs = pcall(require, 'lspconfig.configs')
+  -- if lspconfig then
+  --   for _, key in ipairs(require('lspconfig.util').available_servers()) do
+  --     local config = configs[key]
+  --     if type(config.launch) == 'function' and (config.filetypes == nil or vim.tbl_contains(config.filetypes, vim.bo[bufnr].filetype)) then
+  --       config.launch(bufnr)
+  --     end
+  --   end
+  -- end
 
   for _, key in ipairs(vim.tbl_keys(vim.lsp._enabled_configs)) do
     if vim.lsp.config[key] and (vim.tbl_contains(vim.lsp.config[key].filetypes or {}, vim.bo[bufnr].filetype) or vim.lsp.config[key].filetype == vim.bo[bufnr].filetype) then
