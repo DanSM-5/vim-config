@@ -68,6 +68,7 @@ local function float_term(cmd, opts)
   end
 
   local float_window = float(opts)
+  termopen_opts = vim.tbl_deep_extend('force', termopen_opts, { term = true, pty = true })
   vim.fn.jobstart(cmd, termopen_opts)
   if opts.interactive ~= false then
     vim.cmd.startinsert()
