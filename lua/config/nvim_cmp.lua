@@ -177,8 +177,9 @@ local cmp_module = {
       -- end,
       ['<CR>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
-          if require('luasnip').expandable() then
-            require('luasnip').expand()
+          local luasnip = require('luasnip')
+          if luasnip.expandable() then
+            luasnip.expand()
           else
             cmp.confirm({
               select = true,
@@ -194,6 +195,8 @@ local cmp_module = {
           cmp.select_next_item()
         elseif require('luasnip').locally_jumpable(1) then
           require('luasnip').jump(1)
+        elseif vim.snippet.active({ direction = 1 }) then
+          vim.snippet.jump(1)
         else
           fallback()
         end
@@ -204,6 +207,8 @@ local cmp_module = {
           cmp.select_prev_item()
         elseif require('luasnip').locally_jumpable(-1) then
           require('luasnip').jump(-1)
+        elseif vim.snippet.active({ direction = -1 }) then
+          vim.snippet.jump(-1)
         else
           fallback()
         end
