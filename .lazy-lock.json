@@ -22,7 +22,7 @@
   "fugitive-delta.nvim": { "branch": "master", "commit": "406cec4173c18ce1d5dc617a0cea2d8c5507e354" },
   "fugitive-difftool.nvim": { "branch": "main", "commit": "5c4b2ed39f55f5f96c8b72e5fc1a828fc26ff82b" },
   "fzf": { "branch": "master", "commit": "06e70570e2088605d61f18b127356e5680f7f599" },
-  "fzf-lsp.nvim": { "branch": "main", "commit": "daaaa832cc994eef09281f189a4c72214b951ac1" },
+  "fzf-lsp.nvim": { "branch": "main", "commit": "7338fd4c58ca06a8b59a92eb090b29614723898a" },
   "fzf.vim": { "branch": "master", "commit": "b9624aa012ddcbae9e79964bfd30cc1fbe3cf263" },
   "gitsigns.nvim": { "branch": "main", "commit": "fcfa7a989cd6fed10abf02d9880dc76d7a38167d" },
   "grug-far.nvim": { "branch": "main", "commit": "21604255d0e8f9968322f61f2b6c09e5efe1285a" },
