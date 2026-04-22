@@ -427,15 +427,6 @@ end, {
   nargs = 1,
 })
 
-vim.api.nvim_create_user_command('Snippets', function(args)
-  require('utils.snippets').snippets(args.bang)
-end, {
-  desc = '[fzf] Show snippets (luasnip)',
-  bang = true,
-  bar = true,
-  nargs = 0,
-})
-
 vim.api.nvim_create_user_command('FunctionReferences', function(cmd_opts)
   local Hierarchy = require('lib.hierarchy')
   local depth = Hierarchy.depth
