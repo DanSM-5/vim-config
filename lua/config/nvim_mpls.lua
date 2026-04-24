@@ -135,7 +135,7 @@ local set_commands = function()
     -- TODO: Handle subcommand completion e.g. complete=file
     local match_str = '^' .. string.lower(curr)
     local sub_commands = vim.tbl_keys(commands)
-    return require('utils.cmd').get_matched(sub_commands, match_str, function(opt)
+    return require('lib.cmd').get_matched(sub_commands, match_str, function(opt)
       return string.lower(opt)
     end)
   end

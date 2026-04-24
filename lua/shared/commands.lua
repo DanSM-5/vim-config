@@ -192,7 +192,7 @@ end, {
 
     local engines = { '@google', '@bing', '@duckduckgo', '@wikipedia', '@brave', '@yandex', '@github' }
     if type(current) == 'string' and #current > 0 then
-      return require('utils.cmd').get_matched(engines, current)
+      return require('lib.cmd').get_matched(engines, current)
     end
 
     return engines
@@ -282,7 +282,7 @@ end
 local ts_modules_complete_name = function(current)
   local names = ts_modules_get_names()
   if #current > 0 then
-    return require('utils.cmd').get_matched(names, current)
+    return require('lib.cmd').get_matched(names, current)
   end
 
   return names
@@ -341,7 +341,7 @@ end, {
     end
 
     if #cmd_parts == 3 then
-      return require('utils.cmd').get_matched({ 'enable', 'disable' }, current)
+      return require('lib.cmd').get_matched({ 'enable', 'disable' }, current)
     end
 
     return ts_modules_complete_name(current)
@@ -446,7 +446,7 @@ end, {
       return
     end
 
-    return require('utils.cmd').get_matched({ 'incoming', 'outcoming' }, string.format('^%s', param))
+    return require('lib.cmd').get_matched({ 'incoming', 'outcoming' }, string.format('^%s', param))
   end,
 })
 
