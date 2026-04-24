@@ -258,6 +258,7 @@ return {
       'RangeCodeActions',
       'Diagnostics',
       'DiagnosticsAll',
+      'Snippets',
     },
     config = function()
       require('lsp-servers.nvim_fzf_lsp').setup()
