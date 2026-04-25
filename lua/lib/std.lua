@@ -4,6 +4,12 @@
 -- luajit windows detection
 -- local is_win = jit.os:find('Windows')
 
+-- Ensure this exist -- 5.1 compatibility
+local pack = table.pack or function(...)
+  return { n = select('#', ...), ... }
+end
+local unpack = table.unpack or unpack
+
 ---Concatenates 2 arrays
 ---@generic T
 ---@param t1 T[]
@@ -251,6 +257,42 @@ local function write_file(file, contents)
   local fd = assert(io.open(file, 'w+'))
   fd:write(contents)
   fd:close()
+end
+
+---Simple setTimeout
+---@async
+---@param callback fun() function to run on each interval
+---@param time integer interval to run the function
+---@return uv.uv_timer_t timer instance
+local function setTimeout(callback, time)
+  local timer = assert(vim.uv.new_timer())
+  timer:start(time, 0, function()
+    timer:stop()
+    timer:close()
+    callback()
+  end)
+  return timer
+end
+
+--- Simple setInterval
+---@async
+---@param callback fun() function to run on each interval
+---@param time integer interval to run the function
+---@return uv.uv_timer_t timer instance
+local function setInterval(callback, time)
+  local timer = assert(vim.uv.new_timer())
+  timer:start(time, time, function()
+    callback()
+  end)
+  return timer
+end
+
+--- Simple clear timer
+---@async
+---@param timer uv.uv_timer_t timer to clear
+local function clearTimer(timer)
+  timer:stop()
+  timer:close()
 end
 
 ---@generic F: fun()
@@ -513,16 +555,16 @@ local decodeURI = function(url)
 end
 
 ---Create a finally function block
----@generic T
+---@generic T : fun(...)
 ---@param block T Function to execute. Returns nil if an error happens
----@param on_end fun(ok: boolean, ret: any[]) Function to call on end. It will have access to any error or return from the block function
+---@param on_end fun(ok: boolean, ret: any) Function to call on end. It will have access to any error or return from the block function
 ---@return T Wrapped function with finally
 ---@example
 ---```lua
 ---local fetch_with_finally = create_finally(fetch, function(ok, ...)
 ---  print(ok and 'Completed' or 'Error')
 ---end)
----local data_or_nil = copy_with_finally()
+---local data_or_nil = fetch_with_finally()
 ---```
 local function create_finally(block, on_end)
   local function _finally(ok, ...)
@@ -539,6 +581,10 @@ local function create_finally(block, on_end)
 end
 
 ---Finally function block
+---Throws if an error occurs in `block`, however `on_end` block will still be called
+---any error in on_end will be ignoed and suppressed
+---It is recommended to avoid code that can throw in the on_end callback
+---
 ---Ref: https://github.com/siffiejoe/lua-finally
 ---@generic T
 ---@param block fun(...):T Function to execute.
@@ -547,10 +593,10 @@ end
 local function finally(block, on_end)
   local function _finally(ok, ...)
     if ok then
-      on_end()
+      pcall(on_end)
       return ...
     else
-      on_end( (...) )
+      pcall(on_end, (...) )
       error( (...), 0 )
     end
   end
@@ -670,4 +716,9 @@ return {
   create_finally = create_finally,
   finally = finally,
   get_dynamic_object = get_dynamic_object,
+  setTimeout = setTimeout,
+  setInterval = setInterval,
+  clearTimer = clearTimer,
+  pack = pack,
+  unpack = unpack,
 }
