@@ -167,13 +167,13 @@ end
 --- Calling the returned function will return the object if it has not been garbage collected.
 ---@generic T: table
 ---@param obj T
----@return T|fun():T?
+---@return fun():T?
 local function weak(obj)
   local weak_ref = { _obj = obj }
   ---@return table<any, any>
   local function get()
     local ret = rawget(weak_ref, '_obj')
-    return ret == nil and error('Object has been garbage collected', 2) or ret
+    return ret or nil
   end
   local mt = {
     __mode = 'v',
