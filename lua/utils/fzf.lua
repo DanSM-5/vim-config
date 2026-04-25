@@ -122,7 +122,7 @@ local select_buffer_lsp = function (sink)
 
   local hist_file = 'fzf-select-lsp-client'
   -- local hist_path = get_history_param(hist_file)
-  local array_concat = require('utils.stdlib').concat
+  local array_concat = require('lib.std').concat
   local options = array_concat(fzf_bind_options, {
     '--prompt',
     'Buffer Clients> ',

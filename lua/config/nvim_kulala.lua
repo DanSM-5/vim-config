@@ -65,7 +65,7 @@ local convert = function(format, file, on_exit)
 
       --Sample:
       --Converted OpenAPI spec file: notes/swagger.json --> notes/swagger.default.http
-      -- local output = require('utils.stdlib').split(data, '%-->')
+      -- local output = require('lib.std').split(data, '%-->')
       local output = vim.split(data, ' --> ')
       if output[2] == nil then
         return
@@ -100,7 +100,7 @@ local convert_to_http = function(format, file_or_url, outfile)
 
   if name == nil then
     -- Use last path segment as name
-    local segments = require('utils.stdlib').split(file_or_url, '/')
+    local segments = require('lib.std').split(file_or_url, '/')
     name = segments[#segments]
     -- Remove query string and fragment
     name = string.gsub(name, '%?.*$', '')

@@ -7,7 +7,7 @@ end, { nargs = '?', bang = true, force = true })
 ---@param opts vim.api.keyset.create_user_command.command_args
 ---@param runner 'npm' | 'pnpm'
 local node_manager_wrapper = function(opts, runner)
-  local dir = require('utils.stdlib').find_root('package.json')
+  local dir = require('lib.std').find_root('package.json')
   if dir == nil then
     if opts.fargs[1] == 'run' then
       vim.notify('[NPMRUN] package.json not found', vim.log.levels.WARN)
@@ -25,7 +25,7 @@ end
 ---@param runner 'npx' | 'pnpx'
 local node_runner_wrapper = function(opts, runner)
   -- Find directory with package.json
-  local dir = require('utils.stdlib').find_root('package.json')
+  local dir = require('lib.std').find_root('package.json')
   if dir == nil then
     dir = vim.fn.getcwd()
   end
@@ -41,7 +41,7 @@ local node_quick_runner = function(opts, runner)
 
   if #opts.fargs == 0 then
     -- Clean trailing lash or backslash
-    local dir = require('utils.stdlib').find_root('package.json'):gsub('[\\/]$', '')
+    local dir = require('lib.std').find_root('package.json'):gsub('[\\/]$', '')
 
     require('utils.npm').runfzf(dir, runner, false, terminal_fullscreen)
     return
@@ -50,8 +50,8 @@ local node_quick_runner = function(opts, runner)
   -- Find directory with package.json
   -- local dir = opts.bang
   --     and vim.fn.expand('%:p:h')
-  --     or require('utils.stdlib').find_root('package.json')
-  local dir = require('utils.stdlib').find_root('package.json')
+  --     or require('lib.std').find_root('package.json')
+  local dir = require('lib.std').find_root('package.json')
 
   if dir == nil then
     vim.notify('[NPMRUN] Directory not found', vim.log.levels.WARN)
@@ -154,7 +154,7 @@ vim.api.nvim_create_user_command('Fshow', function(opts)
     dir = vim.fn.expand('%:p:h')
   end
 
-  if not require('utils.stdlib').is_git_dir(dir) then
+  if not require('lib.std').is_git_dir(dir) then
     vim.notify('Not a git repository', vim.log.levels.ERROR)
     return
   end
@@ -218,7 +218,7 @@ local ts_modules_callback = function(module, state, switch)
 
   local manager = require('treesitter-modules.core.manager')
   local modules = manager.modules
-  local target_mod = require('utils.stdlib').find(function(mod)
+  local target_mod = require('lib.std').find(function(mod)
     return mod.name() == module
   end, modules)
 
@@ -294,7 +294,7 @@ end
 local ts_modules_switch = function(module, state)
   local manager = require('treesitter-modules.core.manager')
   local modules = manager.modules
-  local target_mod = require('utils.stdlib').find(function(mod)
+  local target_mod = require('lib.std').find(function(mod)
     return mod.name() == module
   end, modules)
 

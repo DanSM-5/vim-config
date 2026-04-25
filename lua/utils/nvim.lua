@@ -158,7 +158,7 @@ local function run_command(cmd, opts, on_end)
     if not ok then
       lines = {}
     end
-    if require('utils.stdlib').file_exists(tempfile) then
+    if require('lib.std').file_exists(tempfile) then
       os.remove(tempfile)
     end
     on_end(lines)
@@ -186,7 +186,7 @@ local function run_command(cmd, opts, on_end)
     opts.term_opts.on_exit = function() local_onexit() end
   end
 
-  local wrapped_cmd = require('utils.stdlib')
+  local wrapped_cmd = require('lib.std')
     .concat(run, cmd or {})
   return float_term(wrapped_cmd, opts)
 end

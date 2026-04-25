@@ -199,7 +199,7 @@ return {
   ---@param name string
   ---@return config.LspConfigExtended | nil
   get_config = function(name)
-    local shallow_clone = require('utils.stdlib').shallow_clone
+    local shallow_clone = require('lib.std').shallow_clone
     local general_config = shallow_clone(configs[name] or {})
 
     ---@type boolean, config.LspConfigExtended

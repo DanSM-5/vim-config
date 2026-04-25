@@ -104,7 +104,7 @@ function M:init(opts)
   -- and decide if we should adapt it
   -- self.render = Render.new(self)
   local update = self.update
-  self.update = require('utils.stdlib').throttle(self.opts.throttle or config.ui.throttle, function()
+  self.update = require('lib.std').throttle(self.opts.throttle or config.ui.throttle, function()
     update(self)
   end)
 
@@ -170,7 +170,7 @@ function M:create_autocmd(events, fn, opts)
   if opts.pattern then
     opts.buffer = nil
   end
-  local _self = require('utils.stdlib').weak(self)
+  local _self = require('lib.std').weak(self)
   opts.callback = function(e)
     local this = _self()
     if not this then
@@ -340,7 +340,7 @@ function M:on(events, fn, opts)
   if opts.pattern then
     opts.buffer = nil
   end
-  local _self = require('utils.stdlib').weak(self)
+  local _self = require('lib.std').weak(self)
   opts.callback = function(e)
     local this = _self()
     if not this then

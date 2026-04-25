@@ -353,7 +353,7 @@ local snippets = function(fullscreen)
     table.insert(items, snippet)
     table.insert(labels, format_item_display(snippet))
   end
-  local fzf_opts = require('utils.stdlib').concat(vim.g.fzf_bind_options, {
+  local fzf_opts = require('lib.std').concat(vim.g.fzf_bind_options, {
     '--prompt',
     'Snippets> ',
     '--with-nth',

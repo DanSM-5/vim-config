@@ -33,7 +33,7 @@ local pick_sha_or_ref = function (commit_hash, refs, callback)
   local fzf = require('utils.fzf')
   fzf.fzf({
     source = source,
-    fzf_opts = require('utils.stdlib').concat(fzf.fzf_bind_options, {
+    fzf_opts = require('lib.std').concat(fzf.fzf_bind_options, {
       '--prompt', 'Select Ref> ',
       '--no-multi',
       '--preview-window', '70%,wrap-word',

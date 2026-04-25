@@ -28,7 +28,7 @@ local set_commands = function()
       fullscreen = opts.bang,
       name = 'devdocs',
       sink = on_doc,
-      fzf_opts = require('utils.stdlib').concat(fzf.fzf_bind_options, options),
+      fzf_opts = require('lib.std').concat(fzf.fzf_bind_options, options),
     })
   end, { desc = '[DevDocs] Open devdocs', bang = true, bar = true, nargs = '*', force = true })
 
@@ -79,7 +79,7 @@ local set_commands = function()
         fullscreen = opts.bang,
         name = 'devdocs',
         sink = on_doc,
-        fzf_opts = require('utils.stdlib').concat(fzf.fzf_bind_options, {
+        fzf_opts = require('lib.std').concat(fzf.fzf_bind_options, {
           '--no-multi',
         }),
       })

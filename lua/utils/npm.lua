@@ -26,7 +26,7 @@ local open_term = function (dir, cmd, args, fullscreen)
   local term_args = { cmd }
 
   if args and #args > 0 then
-    term_args = require('utils.stdlib').concat(term_args, args)
+    term_args = require('lib.std').concat(term_args, args)
   end
 
   -- Run termopen on the context of the created buffer
@@ -49,7 +49,7 @@ end
 ---@param args string[] | nil Argument for the `npm run` command
 ---@param fullscreen? boolean Whether to display in fullscreen
 local run = function (dir, cmd, args, fullscreen)
-  local new_args = require('utils.stdlib').shallow_clone(args or {})
+  local new_args = require('lib.std').shallow_clone(args or {})
   table.insert(new_args, 1, 'run')
   open_term(dir, cmd, new_args, fullscreen)
 end
@@ -72,7 +72,7 @@ local runfzf = function(dir, cmd, fullscreen, t_fullscreen)
     end
   else
     -- if no provided, try to find a package.json from current buffer location
-    local result = require('utils.stdlib').find_root('package.json')
+    local result = require('lib.std').find_root('package.json')
     cwd = result ~= 0 and result or nil
   end
 
@@ -115,7 +115,7 @@ local runfzf = function(dir, cmd, fullscreen, t_fullscreen)
       return
     end
 
-    local split = require('utils.stdlib').split
+    local split = require('lib.std').split
     local ok, npm_line = pcall(split, selected[2], '\t')
 
     if not ok or #npm_line == 0 then
@@ -166,7 +166,7 @@ local pnpm = function (dir, args, fullscreen)
 end
 
 local pnpx = function (dir, args, fullscreen)
-  local new_args = require('utils.stdlib').shallow_clone(args or {})
+  local new_args = require('lib.std').shallow_clone(args or {})
   table.insert(new_args, 1, 'exec')
   open_term(dir, 'pnpm', args, fullscreen)
 end
