@@ -141,37 +141,43 @@ end
 
 -- WARN: Test function. Do not call from any other module
 local fzf_projects = function ()
-  require('utils.nvim')
-    .run_command({ 'gprj' }, {
-      term_opts = {
-        env = {
-          GPRJ_FZF_ARGS = '--height 100%'
-        },
-      },
-    }, function (lines)
-      if #lines == 0 then
-        return
-      end
+  ---Handle terminal process on_exit
+  ---@param lines string[]
+  local on_end = function (lines)
+    if #lines == 0 then
+      return
+    end
 
-      if vim.fn.isdirectory(lines[1]) == 1 then
-        vim.fn['fzfcmd#fzf_files'](lines[1], fzf_preview_options, 0)
+    if vim.fn.isdirectory(lines[1]) == 1 then
+      vim.fn['fzfcmd#fzf_files'](lines[1], fzf_preview_options, 0)
 
-        -- fzf won't start in interactive mode
-        -- from this callback so schedule startinsert
-        local timer = (vim.uv or vim.loop).new_timer()
-        timer:start(300, 0, function ()
-          timer:stop()
-          vim.schedule(function ()
-            vim.cmd.startinsert()
-          end)
+      -- fzf won't start in interactive mode
+      -- from this callback so schedule startinsert
+      local timer = assert(vim.uv.new_timer())
+      timer:start(300, 0, function ()
+        timer:stop()
+        timer:close()
+        vim.schedule(function ()
+          vim.cmd.startinsert()
         end)
-        return
-      end
+      end)
+      return
+    end
 
-      for _, value in ipairs(lines) do
-        vim.cmd.edit(value)
-      end
-    end)
+    for _, value in ipairs(lines) do
+      vim.cmd.edit(value)
+    end
+  end
+
+  require('lib.terminal').float_term({
+    cmd = { 'gprj' },
+    term = {
+      env = {
+        GPRJ_FZF_ARGS = '--height 100%'
+      },
+    },
+    on_end = on_end,
+  })
 end
 
 local options_sets = {

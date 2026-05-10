@@ -4,7 +4,7 @@ local function fshow(dir)
   -- TODO: Consider make the fshow script a standalone script in path "user-scripts"
   -- rather than a utility script.
   local cwd = dir or vim.fn['utils#git_path']()
-  local script_preview = vim.fn.stdpath('config') .. '/utils/lazy-git-preview'
+  local script_preview = vim.fs.joinpath(vim.fn.stdpath('config'), 'utils', 'lazy-git-preview')
   ---@type string[]
   local script_cmd = {}
 
@@ -24,10 +24,11 @@ local function fshow(dir)
     script_cmd = { script_preview .. '.sh' }
   end
 
-  require('utils.nvim').float_term(script_cmd, {
-    term_opts = {
+  require('lib.terminal').float_term({
+    cmd = script_cmd,
+    term = {
       cwd = cwd,
-    },
+    }
   })
 end
 
@@ -35,14 +36,15 @@ end
 ---@param dir? string
 local function git_log(dir)
   local cwd = dir or vim.fn['utils#git_path']()
-  require('utils.nvim')
-    .float_term({
+
+  require('lib.terminal').float_term({
+    cmd = {
       'git', 'log', '--oneline', '--decorate', '--graph',
-    }, {
-      term_opts = {
-        cwd = cwd,
-      },
-    })
+    },
+    term = {
+      cwd = cwd,
+    }
+  })
 end
 
 return {
