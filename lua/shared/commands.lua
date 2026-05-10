@@ -17,7 +17,7 @@ local node_manager_wrapper = function(opts, runner)
     end
   end
 
-  require('utils.npm')[runner](dir, opts.fargs, opts.bang)
+  require('lib.npm')[runner](dir, opts.fargs, opts.bang)
 end
 
 ---Node runner wrapper function
@@ -30,7 +30,7 @@ local node_runner_wrapper = function(opts, runner)
     dir = vim.fn.getcwd()
   end
 
-  require('utils.npm')[runner](dir, opts.fargs, opts.bang)
+  require('lib.npm')[runner](dir, opts.fargs, opts.bang)
 end
 
 ---Node quick runner
@@ -40,10 +40,10 @@ local node_quick_runner = function(opts, runner)
   local terminal_fullscreen = opts.bang
 
   if #opts.fargs == 0 then
-    -- Clean trailing lash or backslash
+    -- Clean trailing slash or backslash
     local dir = require('lib.std').find_root('package.json'):gsub('[\\/]$', '')
 
-    require('utils.npm').runfzf(dir, runner, false, terminal_fullscreen)
+    require('lib.npm').runfzf(dir, runner, false, terminal_fullscreen)
     return
   end
 
@@ -58,7 +58,7 @@ local node_quick_runner = function(opts, runner)
     return
   end
 
-  require('utils.npm').run(dir, runner, opts.fargs, terminal_fullscreen)
+  require('lib.npm').run(dir, runner, opts.fargs, terminal_fullscreen)
 end
 
 ---Create NR (npm run) command
@@ -67,7 +67,9 @@ vim.api.nvim_create_user_command('NR', function(opts)
 end, {
   bang = true,
   nargs = '*',
-  complete = 'dir',
+  complete = function(...)
+    return require('lib.npm').complete_scripts(...)
+  end,
   bar = true,
   force = true,
   desc = '[NR] Small wrapper for `[p]npm run` command',
@@ -78,7 +80,9 @@ vim.api.nvim_create_user_command('MR', function(opts)
 end, {
   bang = true,
   nargs = '*',
-  complete = 'dir',
+  complete = function(...)
+    return require('lib.npm').complete_scripts(...)
+  end,
   bar = true,
   force = true,
   desc = '[NR] Small wrapper for `[p]npm run` command',

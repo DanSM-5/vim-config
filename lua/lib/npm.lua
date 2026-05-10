@@ -191,10 +191,23 @@ local pnpx = function (dir, args, fullscreen)
   open_term(dir, 'pnpm', args, fullscreen)
 end
 
+---Completion function for scripts
+---@param arg_lead string
+---@return string[]
+local function complete_scripts(arg_lead)
+  local scripts = get_scripts()
+  local keys = vim.tbl_keys(scripts)
+  if #keys == 0 then
+    return {}
+  end
+
+  return require('lib.cmd').get_matched(keys, arg_lead)
+end
 
 return {
   resolve_packageJson = resolve_packageJson,
   get_scripts = get_scripts,
+  complete_scripts = complete_scripts,
   open = open_term,
   runfzf = runfzf,
   run = run,
