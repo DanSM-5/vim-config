@@ -295,29 +295,28 @@ local function clearTimer(timer)
   timer:close()
 end
 
+---Throttle function
+---@async
 ---@generic F: fun()
----@param ms number
----@param fn F
----@return F
-local function throttle(ms, fn)
-  ---@type Async
-  local async
-  local pending = false
+---@param fn F Function to throttle
+---@param ms number Time to throttle in ms
+---@return F Function throttled
+local function throttle(fn, ms)
+  ---@type uv.uv_timer_t|nil
+  local timer = nil
 
-  return function()
-    if async and async:running() then
-      pending = true
+  return function(...)
+    if timer then
       return
     end
-    ---@async
-    async = require('utils.async').new(function()
-      repeat
-        pending = false
-        fn()
-        async:sleep(ms)
 
-      until not pending
+    timer = assert(vim.uv.new_timer())
+    timer:start(ms, 0, function()
+      timer:stop()
+      timer:close()
+      timer = nil
     end)
+    fn(...)
   end
 end
 
