@@ -1,17 +1,56 @@
+---Resolve the paths for a package_json
+---@param dir? string Path to use as base to resolve
+---@return { packageJson?: string; root?: string } Resolved paths if package.json was found
+local function resolve_packageJson(dir)
+  local cwd = nil
+
+  if dir ~= nil then
+    if vim.fn.isdirectory(dir) then
+      -- Dir that should have a package.json
+      cwd = dir
+    else
+      -- directory of buffer
+      cwd = vim.fn.fnamemodify(dir, ':p:h')
+    end
+  else
+    -- if no provided, try to find a package.json from current buffer location
+    local result = require('lib.std').find_root('package.json')
+    cwd = result ~= 0 and result or nil
+  end
+
+  if (cwd == nil) or
+    (not (vim.uv or vim.loop).fs_stat(cwd .. '/package.json')) then
+    return vim.empty_dict()
+  end
+
+  return {
+    packageJson = vim.fs.joinpath(cwd, 'package.json'),
+    root = cwd,
+  }
+end
+
+---Get a table with key-value pairs of scripts in package.json
+---@param dir? string
+---@return table<string, string> scripts
+local function get_scripts(dir)
+  local resolved = resolve_packageJson(dir)
+  local package_json = resolved.packageJson
+
+  if not package_json then
+    return vim.empty_dict()
+  end
+
+  ---@type table<string, string>
+  local scripts = vim.json.decode(vim.fn.join(vim.fn.readfile(package_json), '')).scripts
+  return scripts
+end
+
 ---Runs the npm command in a new terminal buffer
 ---@param dir string Directory to use to run the command
 ---@param cmd 'npm' | 'npx' | 'pnpm' Command to execute
 ---@param args string[] | nil Argument for the command
 ---@param fullscreen boolean | nil Ensure full screen view (new tab)
 local open_term = function (dir, cmd, args, fullscreen)
-  -- Store current buffer reference for navigating back
-  -- local curr_buf = vim.api.nvim_get_current_buf()
-  -- local temp = vim.fn.tempname()
-  local buf = vim.api.nvim_create_buf(false, true)
-  -- -@type nil|integer
-  -- local temporaryTabId = nil
-
-  pcall(vim.api.nvim_set_option_value, 'filetype', 'npm_cmd', { buf = buf })
 
   if fullscreen then
     -- Open new tab to ensure fullscreen
@@ -20,7 +59,6 @@ local open_term = function (dir, cmd, args, fullscreen)
   end
 
   -- Apend buffer in current window
-  vim.api.nvim_win_set_buf(0, buf)
 
   ---@type string[]
   local term_args = { cmd }
@@ -29,18 +67,16 @@ local open_term = function (dir, cmd, args, fullscreen)
     term_args = require('lib.std').concat(term_args, args)
   end
 
-  -- Run termopen on the context of the created buffer
-  vim.api.nvim_buf_call(buf, function()
-    -- Name the buffer
-    vim.api.nvim_buf_set_name(buf, 'Npm Command')
-    vim.fn.jobstart(term_args, {
+  require('lib.terminal').win_term({
+    cmd = term_args,
+    name = ('Npm Command: %s'):format(table.concat(term_args, ' ')),
+    term = {
       cwd = dir,
-      -- :h 'channel-bytes'
-      on_exit = function (jobId, data, event) end,
-      term = true,
-    })
-  end)
-
+    },
+    ft = 'npm_cmd',
+    fullscreen = fullscreen,
+    keep = true, -- keep open to validate content of buffer
+  })
 end
 
 ---Runs the script command in a new terminal buffer
@@ -60,30 +96,14 @@ end
 ---@param fullscreen? boolean Open on fullscreen
 ---@param t_fullscreen? boolean Open terminal on fullscreen
 local runfzf = function(dir, cmd, fullscreen, t_fullscreen)
-  local cwd = nil
-
-  if dir ~= nil then
-    if vim.fn.isdirectory(dir) then
-      -- Dir that should have a package.json
-      cwd = dir
-    else
-      -- directory of buffer
-      cwd = vim.fn.fnamemodify(dir, ':p:h')
-    end
-  else
-    -- if no provided, try to find a package.json from current buffer location
-    local result = require('lib.std').find_root('package.json')
-    cwd = result ~= 0 and result or nil
-  end
-
-  if (cwd == nil) or
-    (not (vim.uv or vim.loop).fs_stat(cwd .. '/package.json')) then
-    vim.notify('NPMRUN: package.json not found', vim.log.levels.WARN)
+  local resolved = resolve_packageJson(dir)
+  local cwd = resolved.root
+  if not cwd then
+    vim.notify('NPMRUN: Could not find package.json')
     return
   end
 
-  local package_json = cwd .. '/package.json'
-  local scripts = vim.json.decode(vim.fn.join(vim.fn.readfile(package_json), '')).scripts
+  local scripts = get_scripts(resolved.root)
   local source = {}
 
   for key, value in pairs(scripts) do
@@ -172,8 +192,9 @@ local pnpx = function (dir, args, fullscreen)
 end
 
 
-
 return {
+  resolve_packageJson = resolve_packageJson,
+  get_scripts = get_scripts,
   open = open_term,
   runfzf = runfzf,
   run = run,
