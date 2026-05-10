@@ -26,6 +26,9 @@ local function fshow(dir)
 
   require('lib.terminal').float_term({
     cmd = script_cmd,
+    float = {
+      border = 'none',
+    },
     term = {
       cwd = cwd,
     }
