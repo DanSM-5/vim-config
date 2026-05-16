@@ -4,6 +4,60 @@
 ---@class lsp.cmd.subcmd
 ---@field complete? lsp.cmd.complete
 ---@field handler lsp.cmd.handler
+---@field help? string
+
+---@type table<string, lsp.cmd.subcmd | nil>
+local lsp_subcmds = {}
+
+---Helper for setting buf options safely
+---@param buf integer
+---@param name string
+---@param value string|integer|boolean|nil
+local function safe_set_buf_option(buf, name, value)
+  pcall(vim.api.nvim_set_option_value, name, value, { buf = buf, scope = 'local' })
+end
+
+---Format any conent into human readable format
+---@param ... any
+---@return string[]
+local function format_content(...)
+  local msg = {} ---@type string[]
+  for i = 1, select('#', ...) do
+    local o = select(i, ...)
+    if type(o) == 'string' then
+      table.insert(msg, o)
+    else
+      local tbl_str = vim.inspect(o, { newline = '\n', indent = '  ' })
+      local parts = vim.split(tbl_str, '\n')
+      vim.list_extend(msg, parts)
+    end
+  end
+  return msg
+end
+
+---Set options for the help buffer
+---@param buf integer bufnr for the help
+local function set_help_buf_opts(buf)
+  -- buffer options
+  safe_set_buf_option(buf, 'buftype', 'nofile')
+  safe_set_buf_option(buf, 'bufhidden', 'hide')
+  safe_set_buf_option(buf, 'swapfile', false)
+  safe_set_buf_option(buf, 'modifiable', false)
+  safe_set_buf_option(buf, 'filetype', 'lua')
+  pcall(vim.api.nvim_buf_set_name, buf, 'lsp-help')
+end
+
+---Create a help buffer
+---@param content any content for the help buffer
+---@return integer
+local function create_help_buffer(content)
+  local buf = vim.api.nvim_create_buf(false, true)
+  local parsed_content = format_content(content)
+  vim.api.nvim_buf_set_lines(buf, 0, 0, false, parsed_content)
+  set_help_buf_opts(buf)
+  return buf
+end
+
 
 ---Complete lsp name
 ---@param name string|nil
@@ -156,12 +210,23 @@ local function run_lsp_cmd(cmd, params)
   vim.cmd.lsp({ args = params })
 end
 
+---Get a formatted help table
+---@return table<string, string> table containing help of all sub commands
+local function get_help_table()
+  local help_tbl = {}
+  for name, value in pairs(lsp_subcmds) do
+    help_tbl[name] = ('[Lsp %s]: %s'):format(name, value.help or 'Subcommand of `Lsp`')
+  end
+  return help_tbl
+end
+
 ---@type table<string, lsp.cmd.subcmd | nil>
-local lsp_subcmds = {
+lsp_subcmds = {
   info = {
     handler = function()
       vim.cmd.checkhealth('vim.lsp')
     end,
+    help = 'Same as `:checkhealth vim.lsp`. See `:help LspInfo`.',
   },
   log = {
     handler = function()
@@ -170,6 +235,7 @@ local lsp_subcmds = {
 
       vim.cmd.edit(log_path)
     end,
+    help = 'Open `lsp.log` file.',
   },
   attach = {
     handler = function(params)
@@ -180,13 +246,19 @@ local lsp_subcmds = {
       end
       local client = vim.lsp.get_clients({ name = name })[1]
       if not client then
-        vim.notify(('[:Lsp attach] Unable to find a client with name "%s". Use `Lsp start %s`'):format(name, name), vim.log.levels.WARN)
+        vim.notify(
+          ('[:Lsp attach] Unable to find a client with name "%s". Use `Lsp start %s`'):format(name, name),
+          vim.log.levels.WARN
+        )
         return
       end
 
       local bufnr = resolve_buf(buf_or_name)
       if not bufnr then
-        vim.notify(('[:Lsp attach] Unable resolve buffer: "%s"'):format(tostring(buf_or_name or 'nil'), name), vim.log.levels.WARN)
+        vim.notify(
+          ('[:Lsp attach] Unable resolve buffer: "%s"'):format(tostring(buf_or_name or 'nil'), name),
+          vim.log.levels.WARN
+        )
         return
       end
 
@@ -198,6 +270,7 @@ local lsp_subcmds = {
     complete = function(param, cmd)
       return complete_lsp_att_det('detached', param, cmd)
     end,
+    help = 'Attach a buffer to the language server: `Lsp attach <lsp> [<buf_or_name>]`',
   },
   detach = {
     handler = function(params)
@@ -210,7 +283,10 @@ local lsp_subcmds = {
 
       local bufnr = resolve_buf(buf_or_name)
       if not bufnr then
-        vim.notify(('[:Lsp attach] Unable resolve buffer: "%s"'):format(tostring(buf_or_name or 'nil'), name), vim.log.levels.WARN)
+        vim.notify(
+          ('[:Lsp attach] Unable resolve buffer: "%s"'):format(tostring(buf_or_name or 'nil'), name),
+          vim.log.levels.WARN
+        )
         return
       end
 
@@ -228,6 +304,7 @@ local lsp_subcmds = {
     complete = function(param, cmd)
       return complete_lsp_att_det('attached', param, cmd)
     end,
+    help = 'Detach a buffer from the language server: `Lsp detach [<lsp>] [<buf_or_name>]`. With no args detaches all clients from current buffer.',
   },
   enable = {
     handler = function(params)
@@ -257,6 +334,7 @@ local lsp_subcmds = {
 
       return require('lib.cmd').get_matched(configs, param or '')
     end,
+    help = 'Enable a lsp by name. Same as `:lsp enable <lsp>`. See `:help lsp-enable`.',
   },
   disable = {
     handler = function(params)
@@ -269,6 +347,7 @@ local lsp_subcmds = {
     complete = function(param)
       return complete_enabled_lsp_name(param)
     end,
+    help = 'Disable a lsp by name. Same as `:lsp disable <lsp>`. See `:help lsp-disable`.',
   },
   restart = {
     handler = function(params)
@@ -277,6 +356,7 @@ local lsp_subcmds = {
     complete = function(...)
       return complete_buf_active_lsp(...)
     end,
+    help = 'Restart clients. Same as `:lsp restart [<lsp>]`. See `:help lsp-restart`.',
   },
   stop = {
     handler = function(params)
@@ -285,6 +365,22 @@ local lsp_subcmds = {
     complete = function(...)
       return complete_buf_active_lsp(...)
     end,
+    help = 'Stop clients. Same as `:lsp stop [<lsp>]`. See `:help lsp-stop`.',
+  },
+  help = {
+    handler = function(_, opts)
+      opts = opts or {}
+      local help_tbl = get_help_table()
+      if not opts.bang then
+        vim.print(help_tbl)
+        return
+      end
+
+      local win = vim.api.nvim_get_current_win()
+      local buf = create_help_buffer(help_tbl)
+      vim.api.nvim_win_set_buf(win, buf)
+    end,
+    help = 'Print this help message.',
   },
 }
 
