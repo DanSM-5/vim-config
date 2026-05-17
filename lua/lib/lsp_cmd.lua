@@ -58,7 +58,6 @@ local function create_help_buffer(content)
   return buf
 end
 
-
 ---Complete lsp name
 ---@param name string|nil
 ---@return string[]
