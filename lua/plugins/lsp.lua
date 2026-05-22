@@ -40,7 +40,7 @@ local blink_deps = use_blink and {
     -- make sure to set opts so that lazy.nvim calls blink.compat's setup
     -- opts = {},
   },
-  'petertriho/cmp-git',
+  { 'petertriho/cmp-git', commit = 'a3625a9' },
   'roginfarrer/cmp-css-variables',
   'mikavilpas/blink-ripgrep.nvim',
 } or {}
@@ -51,7 +51,7 @@ local cmp_deps = use_blink and {} or {
   'rafamadriz/friendly-snippets',
   luasnip_spec,
   'saadparwaiz1/cmp_luasnip',
-  'petertriho/cmp-git',
+  { 'petertriho/cmp-git', commit = 'e2dffc9' },
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/cmp-nvim-lsp-signature-help',
   'roginfarrer/cmp-css-variables',
