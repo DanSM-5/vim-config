@@ -389,108 +389,59 @@ function! fzfcmd#fzfrg_current(query, fullscreen)
   call fzfcmd#fzfrg_base(opts)
 endfunction
 
-" On buff close callback from 'exit' on fzf#run spec
-" Last argument is the exit code of fzf process
-function fzfcmd#fzf_buffers_onclose(remove_list, ...) abort
+
+" " Return list of listed buffers (bufnr)
+" function! fzfcmd#buffers_get_listed() abort
+"   return filter(range(1, bufnr('$')), 'buflisted(v:val) && getbufvar(v:val, "&filetype") != "qf"')
+" endfunction
+
+" " Sorter function for buffers
+" " Should return first the current buffer
+" function fzfcmd#buffers_sort_bufnr(...) abort
+"   let [b1, b2] = map(copy(a:000), 'get(g:fzf#vim#buffers, v:val, v:val)')
+"   " Using minus between a float and a number in a sort function causes an error
+"   return b1 < b2 ? 1 : -1
+" endfunction
+
+
+function! fzfcmd#buffers_exit(remove_list, ...)
+  if empty(a:remove_list)
+    return
+  endif
+  let path = a:remove_list
   try
-    if empty(a:remove_list) || !filereadable(a:remove_list)
-      return
-    endif
-
-    let buffers = readfile(a:remove_list)
-    if empty(buffers)
-      return
-    endif
-
-    for buffer in buffers
-      try
-        let bufnr = str2nr(buffer)
-        if bufloaded(bufnr)
-          execute 'bd! ' . bufnr
-        endif
-      catch
-      endtry
+    let lines = filereadable(path) ? readfile(path) : []
+    for line in lines
+      let b = matchstr(line, '\[\zs[0-9]*\ze\]')
+      if !empty(b)
+        silent! execute 'bdelete' b
+      endif
     endfor
   finally
-    " Remove temporary file
-    " List of opened buffers
-    call delete(a:remove_list)
+    call delete(path)
   endtry
 endfunction
 
-" Return list of listed buffers (bufnr)
-function! fzfcmd#buffers_get_listed() abort
-  return filter(range(1, bufnr('$')), 'buflisted(v:val) && getbufvar(v:val, "&filetype") != "qf"')
-endfunction
-
-" Sorter function for buffers
-" Should return first the current buffer
-function fzfcmd#buffers_sort_bufnr(...) abort
-  let [b1, b2] = map(copy(a:000), 'get(g:fzf#vim#buffers, v:val, v:val)')
-  " Using minus between a float and a number in a sort function causes an error
-  return b1 < b2 ? 1 : -1
-endfunction
 
 " Wrapper for fzf#vim#buffers to enable closing buffer with ctrl-q
 function fzfcmd#fzf_buffers(query, fullscreen) abort
-  " let buffers = fzfcmd#buffers_get_listed()
-  " Keep a list of the currently opened buffers
-  " let opened_buffers = substitute(tempname(), '\\', '/', 'g')
-  " Keep track of the marked for closing buffers
   let remove_list = substitute(tempname(), '\\', '/', 'g')
-  let utils_prefix = ''
-
-  " No longer needed. Using 'exit' callback from fzf spec. Leaving comment as
-  " example of how to wrap functions with callbacks using autocmds
-  " Ref: https://github.com/junegunn/fzf/commit/8cb59e6fcac3dce8dfa44b678fdc94cf81efa11b
-  " if has('nvim')
-  "   " Use nvim autocmd to use once
-  "   lua vim.api.nvim_create_autocmd('TermLeave', { pattern = '*', once = true, callback = function () vim.fn['fzfcmd#fzf_buffers_onclose'](vim.g.fzf_buffers_remove_list) end })
-  " else
-  "   " NOTE: In vim it cannot use BufLeave because fzf opens in a popop window
-  "   " and operations like buff delete are forbidden within a popop window.
-  "   " We use BufEnter and make sure it is not of type 'terminal'.
-  "   " For regular flows, this should be enough. It only affects the delete
-  "   " buffer action which should not be abused.
-  "   augroup FzfDeleteBuffers
-  "     au!
-  "     au BufEnter * ++once if &buftype != 'terminal' | call fzfcmd#fzf_buffers_onclose(g:fzf_buffers_remove_list) | autocmd! FzfDeleteBuffers | endif
-  "   augroup END
-  " endif
-
-  " let buff_sorted = sort(buffers, 'fzfcmd#buffers_sort_bufnr')
-  " Line format 'filename linenumber [bufnr] somesymbol? buffname' with ansi
-  " escape colors
-  " let buff_formatted = mapnew(buff_sorted, 'fzf#vim#_format_buffer(v:val)')
-  " Store formatted buff names in file
-  " call writefile(buff_formatted, opened_buffers)
 
   " Prepare remove command
-  let remove_command = $HOME . '/vim-config/utils/remove_buff.sh'
-  if g:is_windows
-    let bash_path = utils#get_bash()
-    " TODO: Should it use the hardcoded /vim-config/utils? Consider setting a
-    " global variale for the git repository
-    let utils_prefix = bash_path . ' /c' . substitute($HOMEPATH, '\\', '/', 'g') . '/vim-config/utils'
-    let remove_command = utils_prefix . '/remove_buff.sh'
-  endif
+  let remove_command = printf('echo {} >> "%s"', remove_list)
 
-  " Use third element is "[bufnr]"
-  let remove_command = remove_command . ' {3} "' . remove_list . '"'
-
-  " TODO: Decide which is better between execute-silent and execute
-  " The first one looks nicer with no reloads but the second is better as a
-  " visual confirmation that the process has ended
   let spec = fzf#vim#with_preview({
     \ 'placeholder': '{1}',
     \ 'options': g:fzf_bind_options + [
     \   '--ansi',
     \   '--no-multi',
-    \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+exclude'],
-    \  'exit': function('fzfcmd#fzf_buffers_onclose', [remove_list])
+    \   '--bind', 'ctrl-q:execute-silent(' . remove_command . ')+exclude'
+    \  ],
+    \  'exit': function('fzfcmd#buffers_exit', [remove_list])
     \ })
 
   if g:is_gitbash || (g:is_windows && !has('nvim'))
+    let utils_prefix = utils#windows_to_msys_path(s:fzfcmd_scripts)
     " preview to be used for windows only
     let preview = utils_prefix . '/preview.sh {1}'
     let spec.options = spec.options + ['--preview', preview]
@@ -509,12 +460,12 @@ function! fzfcmd#highlights(query, fullscreen) abort
     \   'source': highlight_colors,
     \   'sink*': { list -> setreg('"', join(list, "\n")) },
     \   'options': g:fzf_bind_options + [
-    \     '--ansi', '--border', '--multi', 
+    \     '--ansi', '--border', '--multi',
     \     '--input-border',
     \     '--query', a:query,
     \   ]
     \ }
-  
+
   call fzf#run(fzf#wrap('highlights', spec, a:fullscreen))
 endfunction
 
@@ -546,7 +497,7 @@ function fzfcmd#todo_comments(keywords, fullscreen) abort
   let keywords = type(a:keywords) == v:t_string ? map(split(a:keywords, ' '), 'trim(v:val)') : a:keywords
   let keys = empty(keywords) ? s:todo_keywords : keywords
   let search_query = '\b('.join(keys, '|').'):'
-  
+
   call fzfcmd#fzfrg_base({
         \ 'command_fmt': 'rg ' . s:rg_args .. ' %s || true',
         \ 'query': search_query,
@@ -570,7 +521,7 @@ function fzfcmd#todo_comments_completion(A, C, P) abort
     " return get_matched(engines, current)
     return sort(utils#get_matched(s:todo_keywords, a:A))
   endif
-   
+
   " Return all
   return s:todo_keywords
 endfunction
@@ -655,11 +606,11 @@ function! fzfcmd#rg_files(fullscreen, ...) abort
 endfunction
 
 function! fzfcmd#paste(mode) abort
-  let @" = getreg(nr2char(34)) 
+  let @" = getreg(nr2char(34))
   return a:mode
 endfunction
 function! fzfcmd#pastereg(mode) abort
-  let @" = getreg(nr2char(getchar())) 
+  let @" = getreg(nr2char(getchar()))
   return a:mode
 endfunction
 
