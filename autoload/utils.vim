@@ -31,11 +31,9 @@ function! utils#windows_to_msys_path(path) abort
     " If the very first characted of the path is a '/'
     " then it should be already in msys format
     return a:path
-  elseif slashidx == -1
-    " If no forward slash exist, it must have backslashes
-    let splitted = split(a:path, '\')
   else
-    let splitted = split(a:path, '/')
+    let norm_path = substitute(a:path, '\\', '/', 'g')
+    let splitted = split(norm_path, '/')
   endif
 
   let pathFromDrive = join(splitted[1:-1], '/')
