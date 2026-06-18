@@ -879,6 +879,8 @@ func! s:SetFZF () abort
   command! -nargs=0 -bang -bar GCheckout call fzfgit#checkout(<bang>0)
   command! -nargs=0 -bang -bar GApplyStash call fzfgit#stashes(<bang>0)
   command! -nargs=0 -bang -bar GCTag call fzfgit#tags(<bang>0)
+  command! -nargs=? -bang -bar -complete=customlist,fzfgit#compare_branch_complete GitCompareFiles call fzfgit#compare_files(<q-args>, <bang>0)
+  command! -nargs=? -bang -bar -complete=customlist,fzfgit#compare_branch_complete GitCompareCommits call fzfgit#compare_commits(<q-args>, <bang>0)
 
   " Custom fzf commands
   command! -nargs=* -bang -complete=customlist,fzftxt#completion FTxt call fzftxt#select(<q-args>, <bang>0)
