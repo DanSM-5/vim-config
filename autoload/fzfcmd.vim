@@ -496,7 +496,7 @@ let s:todo_keywords = [
 function fzfcmd#todo_comments(keywords, fullscreen) abort
   let keywords = type(a:keywords) == v:t_string ? map(split(a:keywords, ' '), 'trim(v:val)') : a:keywords
   let keys = empty(keywords) ? s:todo_keywords : keywords
-  let search_query = '\b('.join(keys, '|').'):'
+  let search_query = '\b('.join(keys, '|').')(\([^)]*\))?:'
 
   call fzfcmd#fzfrg_base({
         \ 'command_fmt': 'rg ' . s:rg_args .. ' %s || true',
