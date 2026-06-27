@@ -1,3 +1,4 @@
+require('shared.treesitter').load()
 require('shared.autocmd')
 require('shared.commands')
 require('shared.big_files').load()

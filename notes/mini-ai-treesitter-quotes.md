@@ -29,9 +29,10 @@ outer `"$(...)"`, so the treesitter object selects it correctly.
 
 # Architecture
 
-Two pieces:
+Three pieces:
 
-1. **`lua/config/nvim_mai.lua`** — a `FileType` autocommand that, per buffer:
+1. **`lua/config/nvim_mai.lua`** — a `FileType` autocommand (plus a VeryLazy
+   catch-up loop) that, per buffer:
    - gets the treesitter parser (`pcall`, `{ error = false }`); bails if none;
    - gets the language's `textobjects` query (`pcall`); bails if none/invalid;
    - for each quote key whose capture exists in the query, overrides that key
@@ -41,6 +42,10 @@ Two pieces:
 2. **`after/queries/<lang>/textobjects.scm`** — query files defining the string
    captures. nvim-treesitter-textobjects does **not** ship string captures, so
    we provide them ourselves.
+
+3. **`lua/shared/treesitter.lua`** — registers filetype->parser aliases (general
+   treesitter setup, not mini.ai-specific). Required from `shared/nvim_load.lua`
+   early at startup. See *Filetype -> parser aliases* below.
 
 This is mini.ai's documented Option-A pattern (`vim.b.miniai_config` per
 buffer). The global `mini.ai` config keeps the builtin quotes, so any buffer
@@ -112,6 +117,51 @@ languages that have no template/backtick string).
   end-inclusive.** mini.ai's `gen_spec.treesitter` already converts. You only
   deal with treesitter coordinates inside `#offset!` (0-based, signed deltas).
 
+# Filetype -> parser aliases (REQUIRED on nvim-treesitter `main`)
+
+nvim-treesitter's **`main`** branch does **not** register any filetype->parser
+aliases (confirmed: no `vim.treesitter.language.register` calls in its source),
+and Neovim core's `vim.treesitter.language.get_lang(ft)` **falls back to the
+filetype name** when nothing is registered. So for any filetype whose name
+differs from the parser (lang) name, `vim.treesitter.get_parser(buf)` fails ->
+the autocmd bails -> builtin quotes (the bug looks like "treesitter quotes don't
+work for X files").
+
+`shared/treesitter.lua` (the `filetype_aliases` table + `load()`) registers the
+aliases our queries need; it is invoked early at startup from
+`shared/nvim_load.lua`, before any real buffer's `FileType` and before mini.ai's
+`VeryLazy` setup:
+
+| filetype          | parser (lang) |
+|-------------------|---------------|
+| `sh`              | `bash`        |
+| `ps1`             | `powershell`  |
+| `typescriptreact` | `tsx`         |
+| `javascriptreact` | `javascript`  |
+
+(`bash`, `zsh`, `typescript`, `javascript`, `json`, `jsonc`, `json5`, `lua`,
+`vim`, `python` already match their parser name, so no alias is needed.)
+`vim.treesitter.language.register(lang, fts)` is **additive** — it preserves the
+default `<filetype> == <lang>` mappings. It lives in `shared/treesitter.lua`
+(not `nvim_mai.lua`) because it also fixes core treesitter highlighting/folds for
+those filetypes — it is general treesitter setup, not mini.ai-specific. **To add
+a new filetype alias, edit `M.filetype_aliases` there.**
+
+**Symptom & check:** "treesitter quotes don't work for `<ft>` files". In such a
+buffer run `:=vim.treesitter.language.get_lang(vim.bo.filetype)` — if it returns
+the filetype name and no parser of that name exists, you need an alias here.
+When adding a new language, check its filetype(s) vs parser name and add an
+alias if they differ.
+
+# Load order (VeryLazy catch-up)
+
+mini.ai loads on `VeryLazy`, **after** the first edited buffer's `FileType` has
+already fired. A pure `FileType` autocmd would therefore miss that first buffer.
+`setup()` ends by iterating `nvim_list_bufs()` and applying the same logic to
+already-loaded buffers. Keep this catch-up loop if you refactor. (The apply
+logic is factored into `apply_treesitter_quotes(buf)` so the autocmd and the
+catch-up loop share it.)
+
 # Per-language reference (node types, verified on the installed parsers)
 
 `outer` = node incl. delimiters; `inner` strategy noted. `parser:lang()` (not
@@ -143,7 +193,9 @@ Notes:
 
 # File locations
 
-- Config:  `lua/config/nvim_mai.lua`
+- Config:  `lua/config/nvim_mai.lua` (mini.ai setup + quote autocmd/catch-up)
+- Aliases: `lua/shared/treesitter.lua` (filetype->parser registration), loaded
+  from `lua/shared/nvim_load.lua`
 - Queries: `after/queries/<lang>/textobjects.scm`
 - mini.ai source (read when in doubt): `~/.local/share/nvim/lazy/mini.ai/lua/mini/ai.lua`
   - `gen_spec.treesitter` (~line 1042), `get_matched_ranges_builtin` (~1622),
@@ -327,7 +379,11 @@ Inside the affected buffer:
    ```
    nil means it fell back to builtin (safe but not treesitter). Find out why:
 
-2. **Parser present?**  `:=vim.treesitter.get_parser(0)` (errors/nil => install it).
+2. **Parser present / filetype aliased?**  `:=vim.treesitter.get_parser(0)`
+   (errors/nil). If it fails, check
+   `:=vim.treesitter.language.get_lang(vim.bo.filetype)` — if that returns the
+   filetype name and no parser of that name exists, add a filetype->parser alias
+   (see *Filetype -> parser aliases*). Otherwise `:TSInstall <lang>`.
 
 3. **Query loads and is valid?**
    ```
