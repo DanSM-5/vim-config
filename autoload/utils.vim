@@ -12,12 +12,13 @@ let g:loaded_utils = 1
 " will be slower. This has some assuptions like
 " the path being absolute.
 function! utils#msys_to_windows_path(path) abort
-  let splitted = split(a:path, '/')
+  let normalized = substitute(a:path, '\\', '/', 'g')
+  let splitted = split(normalized, '/')
 
   " Safety check. If a path contains a ':' in the first segment
   " it is very likely it is already a windows path
   if stridx(splitted[0], ':') != -1
-    return a:path
+    return normalized
   endif
 
   let pathFromDrive = join(splitted[1:-1], '/')
