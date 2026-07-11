@@ -77,7 +77,7 @@ function! fzfcmd#fzf_selected_list(fzf_options, fullscreen, list) abort
     return
   endif
 
-  if g:is_gitbash
+  if g:is_windows
     let selectedList = map(a:list, 'utils#msys_to_windows_path(v:val)')
   else
     let selectedList = a:list
@@ -144,30 +144,24 @@ function! fzfcmd#change_project(query, fzf_options, fullscreen) abort
   let reload_command = getprojects
   let files_command = "fd --type file --color=always --no-ignore --hidden --exclude plugged --exclude node_modules --exclude .git "
 
-  " NOTE: Windows only block
-  " The below if handles the function when called from powershell (pwsh)
-  " And bash/zsh from MINGW (git bash)
-  if s:is_windows
+  " NOTE: Gitbash only block
+  " This handles when called from bash/zsh from MINGW (git bash)
+  if s:is_gitbash
     let gitenv = utils#get_env()
     let bash = utils#get_bash()
     let preview = bash . ' ' . preview
     " Hack to run a bash script without adding -l or -i flags (faster)
     let getprojects = ' MSYS=enable_pcon MSYSTEM=MINGW64 enable_pcon=1 SHELL=/usr/bin/bash /usr/bin/bash -c "export PATH=/mingw64/bin:/usr/local/bin:/usr/bin:/bin:$PATH; export user_conf_path=' . user_conf_path . '; ' . getprojects . '"'
 
-    " Subtle differences between git bash and powershell
-    if s:is_gitbash
-      " Update reload_command (can call script directly)
-      let reload_command = 'user_conf_path=' . user_conf_path . ' ' . reload_command
-      let getprojects = gitenv . getprojects
-    else
-      let home = substitute(expand('~'), '\\', '/', 'g')
-      " Set get getprojects, then update reload_command
-      let getprojects = gitenv . ' HOME=' . home . getprojects
-      let reload_command = getprojects
-      " Use fortward slash (/) as path separator if called from powershell
-      " It is not needed for gitbash (it breaks).
-      let files_command = files_command . ' --path-separator "/"'
-    endif
+    " Update reload_command (can call script directly)
+    let reload_command = 'user_conf_path=' . user_conf_path . ' ' . reload_command
+    let getprojects = gitenv . getprojects
+  elseif s:is_windows
+    " NOTE: Handle calls from powershell and cmd
+    let pwsh = executable('pwsh') ? 'pwsh' : 'powershell'
+    let preview = user_conf_path . '/utils/fzf-preview.ps1 {}'
+    let getprojects = printf('%s -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -File %s%s', pwsh, user_conf_path, '/utils/getprojects.ps1')
+    let reload_command = getprojects
   endif
 
   " Notice ctrl-d doesn't work on Windows nvim
@@ -186,6 +180,12 @@ function! fzfcmd#change_project(query, fzf_options, fullscreen) abort
     \ }
 
   let spec.options = a:fzf_options + spec.options
+
+  " Use powershell as a shell when invoked from powershell/cmd
+  if s:is_windows && !s:is_gitbash
+    let pwsh = executable('pwsh') ? 'pwsh' : 'powershell'
+    let spec.options = spec.options + ['--with-shell', pwsh.' -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -Command']
+  endif
 
   " Hope for the best
   call fzf#run(fzf#wrap('cproj', spec, a:fullscreen))
