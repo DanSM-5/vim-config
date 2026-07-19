@@ -16,6 +16,31 @@ return {
       ['q'] = 'string',
     }
 
+    -- mini.ai's builtin (Lua-pattern) spec per quote key -- copied from
+    -- `H.builtin_textobjects` in mini.ai's source. Used as the syntax-blind
+    -- fallback below: it scans raw buffer text, so it matches quotes nested
+    -- inside a comment or a raw/literal string that treesitter cannot see
+    -- into (there is no node for them), and quotes of the "wrong" kind
+    -- nested inside a string whose node covers the whole span (there is no
+    -- separate node for them either -- e.g. a `'...'` phrase inside a JS/Lua
+    -- `"..."` string, where both quote kinds share one `string` node).
+    local quote_patterns = {
+      ['"'] = { '%b""', '^.().*().$' },
+      ["'"] = { "%b''", '^.().*().$' },
+      ['`'] = { '%b``', '^.().*().$' },
+      ['q'] = { { "%b''", '%b""', '%b``' }, '^.().*().$' },
+    }
+
+    -- True when 1-indexed (line, col) falls inside `region` (mini.ai region:
+    -- 1-based, end-inclusive -- see notes/mini-ai-treesitter-quotes.md).
+    local function region_covers(region, line, col)
+      if not (region and region.from and region.to) then return false end
+      if line < region.from.line or line > region.to.line then return false end
+      if line == region.from.line and col < region.from.col then return false end
+      if line == region.to.line and col > region.to.col then return false end
+      return true
+    end
+
     ai.setup({
       search_method = 'cover',
       n_lines = 999999,
@@ -60,10 +85,28 @@ return {
       if not has_query or query == nil then return end
 
       -- 3) Override only the quote keys whose capture exists in the query.
+      -- Each override tries the treesitter capture first, but only trusts it
+      -- if one of the returned regions actually covers the cursor (matching
+      -- this config's `search_method = 'cover'`). If nothing covers -- the
+      -- cursor is inside a comment, a raw string, or a "wrong-kind" nested
+      -- quote inside a shared string node, none of which have a matching
+      -- node/capture -- fall back to the builtin pattern spec, which is
+      -- syntax-blind and matches those cases directly off the buffer text.
       local custom = {}
       for key, cap in pairs(quote_keys) do
         if query_has_capture(query, cap .. '.outer') then
-          custom[key] = ai.gen_spec.treesitter({ a = '@' .. cap .. '.outer', i = '@' .. cap .. '.inner' })
+          local ts_spec = ai.gen_spec.treesitter({ a = '@' .. cap .. '.outer', i = '@' .. cap .. '.inner' })
+          custom[key] = function(ai_type, id, opts)
+            local ok_ts, regions = pcall(ts_spec, ai_type, id, opts)
+            if ok_ts and regions then
+              local cursor = vim.api.nvim_win_get_cursor(0)
+              local line, col = cursor[1], cursor[2] + 1
+              for _, region in ipairs(regions) do
+                if region_covers(region, line, col) then return regions end
+              end
+            end
+            return quote_patterns[key]
+          end
         end
       end
 

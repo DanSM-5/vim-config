@@ -36,7 +36,10 @@ Three pieces:
    - gets the treesitter parser (`pcall`, `{ error = false }`); bails if none;
    - gets the language's `textobjects` query (`pcall`); bails if none/invalid;
    - for each quote key whose capture exists in the query, overrides that key
-     **buffer-locally** via `vim.b.miniai_config`;
+     **buffer-locally** via `vim.b.miniai_config` with a function that tries
+     the treesitter capture and only trusts it if a returned region actually
+     covers the cursor, otherwise falling back to the builtin pattern spec
+     (see *Fallback to pattern matching* below);
    - if no captures match, sets nothing → builtin quotes stay (fallback).
 
 2. **`after/queries/<lang>/textobjects.scm`** — query files defining the string
@@ -70,6 +73,92 @@ if `<family>.outer` is present in the query (so e.g. backtick stays builtin in
 languages that have no template/backtick string).
 
 `mini.ai` is wired to these via `gen_spec.treesitter({ a = '@x.outer', i = '@x.inner' })`.
+
+# Fallback to pattern matching when treesitter has no capture for the cursor
+
+**The bug** — `da"`/`ca"`/`di'`/etc. do nothing (or, worse, would need
+language-specific special-casing to work) whenever the cursor sits on a
+quote character that has no corresponding treesitter node. Three distinct
+ways this happens, all confirmed:
+
+```bash
+# a "quoted word" in a comment          <- da" here did nothing
+some_var='
+  nested type of quotes "just like this one right here" makes not possible
+'                                        <- da" on that " did nothing either
+```
+```javascript
+const s = "she said 'hello' to me";     // da' on 'hello' did nothing
+```
+
+1. **Comments.** A `comment` node is a leaf — the lexer swallows the whole
+   span as one opaque token, the parser never descends into it. Confirmed by
+   dumping the parse tree (see *Inspect a parser's tree* below):
+   `comment  [# Some comment (with parenthesis) that I…]` — no children.
+2. **Raw/literal strings** (bash/zsh `'...'`, PowerShell verbatim strings).
+   Same story: `raw_string  ['\n  Some multiline string like this wit…]` — a
+   single leaf node. A `"` inside bash `'...'` has no syntactic meaning at
+   all (that's *why* the language treats it as one token), so there's no
+   node boundary a query could ever capture there.
+3. **A "wrong-kind" quote nested inside a shared `string` node.** Languages
+   where `'` and `"` are told apart by a first-character predicate on one
+   `string` node (js/ts/tsx/json5/lua/vim/python — see *Hard-won
+   constraints*) have exactly the same problem one level up: `'hello'`
+   inside `"she said 'hello' to me"` is not a separate node either — the
+   whole double-quoted span is one `string` node whose text starts with
+   `"`, so it fails the `squote` predicate, and there is nothing else
+   there for `@squote.outer` to match.
+
+None of these are a missing capture or a fixable query — categorically
+different from the *Why this exists* command-substitution case, where the
+nested `"..."` actually gets reparsed as real bash syntax (real nested nodes
+exist to capture). Here there is nothing to capture, in any language,
+because the grammar doesn't produce a node boundary at that position.
+
+**The fix — don't special-case node types or languages; check whether
+treesitter's answer actually covers the cursor.** `gen_spec.treesitter(...)`
+returns *every* matching region for the capture across the buffer (within
+`n_lines`), and mini.ai (configured here with `search_method = 'cover'`)
+only accepts one that covers the cursor. So instead of guessing from node
+types which cases are "opaque" per language, call the treesitter spec, then
+directly check whether one of its returned regions covers the cursor — the
+same "cover" condition mini.ai itself applies. If none do (case 1, 2, or 3
+above — or any other case not yet discovered), fall back to mini.ai's own
+builtin (Lua-pattern) quote spec, which scans raw buffer text and is
+completely blind to syntax, so it matches nested/commented/mismatched quotes
+exactly like it would in a plain-text file. No per-language table to
+maintain, and it generalizes automatically to languages/cases not
+enumerated here. Implemented entirely in `lua/config/nvim_mai.lua`:
+
+- `quote_patterns`: the fallback spec per key, copied verbatim from
+  mini.ai's `H.builtin_textobjects` (`{ '%b""', '^.().*().$' }` etc.) — the
+  same patterns the builtin quote textobjects already use everywhere.
+- `region_covers(region, line, col)`: a plain 1-indexed, end-inclusive
+  interval check (matching mini.ai's own region convention) — no treesitter
+  or node-type knowledge involved, just "is this cursor position inside
+  this from/to range".
+- Each per-key override in `apply_treesitter_quotes` becomes a function
+  that: calls the treesitter spec (`pcall`, since it can be invoked for an
+  `ai_type` whose capture doesn't exist, e.g. `i` on an outer-only
+  PowerShell here-string); if any returned region covers the cursor,
+  returns those regions; otherwise returns `quote_patterns[key]` (mini.ai
+  accepts a plain pattern-spec array returned from a custom-textobject
+  function, per `H.get_textobject_spec`'s "allow function returning spec or
+  region(s)").
+
+Verified end-to-end (see *Testing*): nested quotes inside a bash raw string;
+quotes inside bash/JS comments for every overridden key including `q`;
+mismatched squote/dquote pairs nested inside a shared `string` node in
+JavaScript, Lua, Python, JSON5, and Vimscript; and — as a regression check —
+the original command-substitution case
+(`message="$(echo "foo" | tr "f" "c")"`) and a nested template-literal
+backtick case in JS still correctly use the treesitter path and select the
+*outer*/structural match, since those regions do cover the cursor.
+
+**If you add a new language:** no opaque-node table to update — the
+coverage check is language-agnostic and applies automatically. Just add its
+per-key fallback pattern to `quote_patterns` if you're wiring a new key
+(`` ` ``/`q` already cover all current keys; a brand-new key would need one).
 
 # Hard-won constraints (do not relearn these the hard way)
 
@@ -362,6 +451,31 @@ check('javascript', { [[const a = "dq"; const b = 'sq'; const c = `t`;]] }, {1,1
 check('javascript', { [[const a = "dq"; const b = 'sq'; const c = `t`;]] }, {1,28}, "'", 'i', 'sq')
 check('lua', { [=[local d = [[brk]]]=] }, {1,12}, 'q', 'i', 'brk')
 check('python', { [[d = """triple"""]] }, {1,8}, '"', 'i', 'triple')
+
+-- pattern fallback: nested quote inside a raw (single-quoted) string
+check('sh', {
+  [[some_var=']], [[  Some multiline string like this with]],
+  [[  nested type of quotes "just like this one right here" makes not possible]],
+  [[  to match because treesitter assumes nodes.]], [[']],
+}, {3, 30}, '"', 'a', '"just like this one right here"')
+
+-- pattern fallback: quotes inside comments (every overridden quote key)
+check('sh', { [[# a "quoted word" in a comment]] }, {1, 10}, '"', 'a', '"quoted word"')
+check('sh', { [[# some text 'quoted here' and more]] }, {1, 18}, "'", 'a', "'quoted here'")
+check('sh', { [[# a "quoted word" in a comment]] }, {1, 10}, 'q', 'a', '"quoted word"')
+check('javascript', { [[// a "quoted word" here]] }, {1, 6}, '"', 'a', '"quoted word"')
+
+-- pattern fallback: "wrong-kind" quote pair nested inside a shared `string`
+-- node (languages where '/" share one node, told apart by a predicate)
+check('javascript', { [[const s = "she said 'hello' to me";]] }, {1,22}, "'", 'a', "'hello'")
+check('javascript', { [[const s = 'she said "hello" to me';]] }, {1,22}, '"', 'a', '"hello"')
+check('lua', { [[local s = "she said 'hello' to me"]] }, {1,22}, "'", 'a', "'hello'")
+check('python', { [[s = "she said 'hello' to me"]] }, {1,16}, "'", 'a', "'hello'")
+check('json5', { [[{ s: "she said 'hello' to me" }]] }, {1,17}, "'", 'a', "'hello'")
+check('vim', { [[let s = "she said 'hello' to me"]] }, {1,20}, "'", 'a', "'hello'")
+
+-- regression: nested template-literal backtick must still use treesitter
+check('javascript', { [[const x = `outer ${`inner ${y}`} more`;]] }, {1,22}, '`', 'i', 'inner ${y}')
 -- ... add a case per language / quote kind / nesting ...
 
 print(('%d/%d passed%s'):format(total - fails, total,
@@ -405,7 +519,15 @@ Inside the affected buffer:
 5. **Wrong selection (pairs again)?** You're on the builtin path — see step 1.
    If on the treesitter path, the node is likely wrong; re-inspect the tree.
 
-6. **Re-run the verification harness** after any change.
+6. **Textobject silently does nothing on a quote inside a comment, a raw
+   string, or nested with the "wrong" quote kind inside a shared `string`
+   node?** Expected — see *Fallback to pattern matching* above: no
+   treesitter node exists there, so the cursor-coverage check should already
+   route to `quote_patterns[key]`. If it's still failing, the bug is in the
+   fallback pattern itself (or `region_covers`), not a missing per-language
+   table entry — there is no such table anymore.
+
+7. **Re-run the verification harness** after any change.
 
 # Change history / provenance
 
@@ -416,3 +538,23 @@ Inside the affected buffer:
 - All 12 languages verified end-to-end (24 + 11 assertions, all green):
   bash, zsh, powershell, javascript, typescript, tsx, json, jsonc, json5, lua,
   vim, python.
+- Added a pattern-matching fallback (`quote_patterns` / `region_covers` in
+  `lua/config/nvim_mai.lua`) after real-world reports that `da"`/`ca"` etc.
+  did nothing on quotes nested inside a bash raw string or inside a `#`/`//`
+  comment. First iteration used a hand-maintained per-language
+  `opaque_node_types` table (comment/raw_string/etc. node names) — root
+  causing via parse-tree inspection showed those are leaf nodes with no
+  children. That iteration was then found (by testing JS/Lua with a
+  genuinely nested `'hello'` inside a `"..."` string) to miss languages
+  where `'`/`"` share one `string` node distinguished by a predicate: a
+  "wrong-kind" nested quote there has no separate node either, but isn't a
+  named opaque type, so the per-language table couldn't catch it. Replaced
+  with a general, language-agnostic fix: check whether the treesitter spec's
+  returned regions actually cover the cursor (mirroring this config's
+  `search_method = 'cover'`) and fall back to the pattern spec if not — no
+  per-language table needed at all. Verified against the bash raw-string
+  case, bash/JS comments for every overridden quote key, mismatched
+  squote/dquote pairs nested in a shared `string` node across JS, Lua,
+  Python, JSON5, and Vimscript, and regression checks that the original
+  command-substitution fix and nested-template-literal backtick matching
+  still select the correct outer/structural match.
