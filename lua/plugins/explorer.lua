@@ -1,6 +1,7 @@
 return {
   {
-    'stevearc/oil.nvim',
+    -- 'stevearc/oil.nvim',
+    'barrettruth/canola.nvim', -- switch to fork with fixes
     keys = { '<leader>-' },
     cmd = { 'Oil' },
     config = function ()
