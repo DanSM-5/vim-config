@@ -66,19 +66,19 @@ return {
     ft = { 'diff', 'gitcommit', 'git' },
     opts = {},
   },
-  {
-    'farhanmustar/fugitive-delta.nvim',
-    ft = { 'git', 'gvgit', 'diff' },
-  },
   -- {
-  --   'barrettruth/diffs.nvim',
-  --   -- ft = { 'git', 'gvgit', 'diff' },
-  --   init = function (self)
-  --     vim.g.diffs = {
-  --       fugitive = true,
-  --       extra_filetypes = { 'git', 'gvgit', 'diff' },
-  --     }
-  --   end,
+  --   'farhanmustar/fugitive-delta.nvim',
+  --   ft = { 'git', 'gvgit', 'diff' },
   -- },
+  {
+    'barrettruth/diffs.nvim',
+    -- ft = { 'git', 'gvgit', 'diff' },
+    init = function (self)
+      vim.g.diffs = {
+        fugitive = true,
+        extra_filetypes = { 'git', 'gvgit', 'diff' },
+      }
+    end,
+  },
 }
 
