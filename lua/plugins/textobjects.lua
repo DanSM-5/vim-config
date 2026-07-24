@@ -7,7 +7,7 @@ return {
     config = function()
       require('config.nvim_cursor-text-objects').setup()
     end,
-    version = 'v1.*',
+    version = 'v2.*',
   },
   {
     'windwp/nvim-autopairs',
