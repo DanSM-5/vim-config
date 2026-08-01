@@ -9,8 +9,10 @@ through a terminal graphics backend. The public API and LuaDoc types live in
 ## Requirements
 
 - Neovim 0.12 or newer.
-- A Sixel-capable terminal, such as Windows Terminal or WezTerm.
-- `chafa` for the current Sixel backend.
+- A terminal supporting Kitty graphics or Sixel. Kitty is preferred in Kitty
+  and WezTerm; Windows Terminal falls back to Sixel.
+- `chafa` for the Sixel backend. The Kitty backend transmits normalized PNG
+  data directly and has no additional rendering dependency.
 - `mcat` as the primary file-to-image converter.
 - Tree-sitter parsers `markdown`, `markdown_inline`, and `html` for Markdown
   cursor previews.
@@ -32,6 +34,14 @@ vim.print(require('lib.image').capabilities())
 
 The result reports the Neovim version check, available backends, executables,
 Tree-sitter parsers, and registered URI schemes.
+
+With `backend = 'auto'`, Kitty is selected when Kitty or WezTerm environment
+markers are present; Sixel is the fallback. A backend can be forced when
+terminal detection is unavailable:
+
+```lua
+require('lib.image').config({ backend = 'kitty' })
+```
 
 ## Basic use
 
