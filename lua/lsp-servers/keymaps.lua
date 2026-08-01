@@ -9,6 +9,7 @@ local exclude_filetypes = {
 }
 
 local exists = vim.fn.exists
+local lsp_k_group = vim.api.nvim_create_augroup('LspNativeKRestore', { clear = false })
 
 ---Get the function for on_forward and on_backward
 ---@param forward boolean If to move forward or backward
@@ -112,7 +113,7 @@ local cmd_to_lsp_handlers = {
 ---@field code_action fun(opts?: vim.lsp.buf.code_action.Opts)
 
 ---@type config.LspHandlers
-local handlers = ({}) --[[@as config.LspHandlers]]
+local handlers = {} --[[@as config.LspHandlers]]
 
 local set_handlers = function()
   for _, handler in ipairs(cmd_to_lsp_handlers) do
@@ -222,9 +223,42 @@ return {
       vim.cmd.vsplit()
       handlers.definition()
     end, '[Lsp]: Go to definition in vsplit')
-    set_map('n', 'K', function()
+    local function hover()
       vim.lsp.buf.hover({ border = 'rounded', max_height = 50 })
-    end, '[Lsp]: Hover action')
+    end
+    if vim.tbl_contains({ 'markdown', 'markdown.mdx', 'mdx' }, vim.bo[buf].filetype) then
+      set_map('n', 'K', function()
+        if #vim.lsp.get_clients({ bufnr = buf }) == 0 then
+          vim.cmd.normal({ args = { 'K' }, bang = true })
+          return
+        end
+        local result = require('lib.image').preview_at_cursor({
+          bufnr = buf,
+          target = { kind = 'float' },
+        })
+        if not result.handled then
+          hover()
+        end
+      end, '[Lsp]: Preview Markdown image / hover')
+    else
+      set_map('n', 'K', hover, '[Lsp]: Hover action')
+    end
+
+    -- `K` belongs to Neovim again once the last client leaves this buffer.
+    -- Reattaching a client calls this function and installs the LSP map anew.
+    vim.api.nvim_clear_autocmds({ group = lsp_k_group, event = 'LspDetach', buffer = buf })
+    vim.api.nvim_create_autocmd('LspDetach', {
+      group = lsp_k_group,
+      buffer = buf,
+      callback = function()
+        vim.schedule(function()
+          if vim.api.nvim_buf_is_valid(buf) and #vim.lsp.get_clients({ bufnr = buf }) == 0 then
+            pcall(vim.keymap.del, 'n', 'K', { buffer = buf })
+          end
+        end)
+      end,
+      desc = 'Restore native K after the last LSP client detaches',
+    })
     set_map('n', '<space>i', handlers.implementation, '[Lsp]: Go to implementation')
     set_map('n', '<C-k>', function()
       vim.lsp.buf.signature_help({ border = 'rounded' })

@@ -4,8 +4,7 @@ local search_dir = function()
   require('config.nvim_grugfar').open_from_explorer(prefills)
 end
 
-local set_commands = function ()
-
+local set_commands = function()
   -- If we want to restore netrw commands (do I?)
   -- Ref: https://github.com/saccarosium/netrw.vim/blob/fd09e094525c796f6220666246a11e9be258be69/plugin/netrwPlugin.vim
   vim.cmd([[
@@ -27,9 +26,12 @@ return {
       keymaps = {
         ge = {
           callback = search_dir,
-          desc = '[Oil] Search in directory'
-        }
-      }
+          desc = '[Oil] Search in directory',
+        },
+      },
+      preview_win = {
+        disable_preview = require('config.lib_image').oil_disable_preview,
+      },
     })
     -- Imitate vinegar '-' map
     vim.keymap.set('n', '<leader>-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
@@ -37,4 +39,3 @@ return {
   search_dir = search_dir,
   set_commands = set_commands,
 }
-
