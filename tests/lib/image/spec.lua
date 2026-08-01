@@ -91,6 +91,58 @@ equal(image.can_preview('example.docx', { explicit = false }), false, 'Office fi
 truthy(image.can_preview('example.docx', { explicit = true }), 'explicit previews should reach mcat/fallbacks')
 equal(image.can_preview('s3://bucket/example.png', { explicit = true }), false, 'S3 is intentionally unregistered')
 
+-- Kitty is dependency-free after PNG normalization. Verify chunking, placement,
+-- targeted cleanup, and automatic selection in a WezTerm environment.
+local kitty = require('lib.image.backends.kitty')
+local kitty_config = image.get_config()
+kitty_config.backend = 'kitty'
+kitty_config.renderer.kitty.chunk_size = 16
+truthy(kitty.available(kitty_config), 'explicit Kitty selection must override environment detection')
+local kitty_encoded
+local kitty_error
+kitty.encode(tiny_png, { width = 1, height = 1 }, 10, 20, kitty_config, function(encoded, err)
+  kitty_encoded, kitty_error = encoded, err
+end)
+truthy(kitty_encoded ~= nil, kitty_error or 'Kitty encoding failed')
+local payloads = {}
+local controls = {}
+for control, payload in kitty_encoded.transmission:gmatch('\27_G([^;]+);(.-)\27\\') do
+  table.insert(controls, control)
+  table.insert(payloads, payload)
+  truthy(#payload <= 16, 'Kitty payload exceeded the configured chunk size')
+end
+truthy(#payloads > 1, 'small Kitty chunk size should split the PNG transmission')
+truthy(controls[1]:match('^a=T,f=100,t=d,i=%d+,c=1,r=1,C=1,q=2,m=1$') ~= nil, 'Kitty placement metadata is invalid')
+equal(controls[#controls], 'm=0', 'final Kitty chunk must terminate the transmission')
+equal(vim.base64.decode(table.concat(payloads)), tiny_png, 'Kitty chunks must reconstruct the normalized PNG')
+
+local sent = {}
+local original_chansend = vim.fn.chansend
+vim.fn.chansend = function(_, value)
+  table.insert(sent, value)
+  return 1
+end
+truthy(
+  kitty.draw(kitty_encoded, { winid = vim.api.nvim_get_current_win(), border_top = 0, border_left = 0 }),
+  'Kitty draw failed'
+)
+kitty.clear(kitty_encoded)
+kitty.clear(kitty_encoded)
+vim.fn.chansend = original_chansend
+equal(#sent, 2, 'Kitty cleanup must delete a drawn image exactly once')
+truthy(sent[1]:find(kitty_encoded.transmission, 1, true) ~= nil, 'Kitty draw must include the PNG transmission')
+truthy(
+  sent[2]:find(('a=d,d=I,i=%d,q=2'):format(kitty_encoded.id), 1, true) ~= nil,
+  'Kitty cleanup must target and free only its own image id'
+)
+
+local old_wezterm_pane = vim.env.WEZTERM_PANE
+vim.env.WEZTERM_PANE = 'lib-image-test'
+local auto_config = image.get_config()
+auto_config.backend = 'auto'
+equal(require('lib.image.backend').select(auto_config).name, 'kitty', 'WezTerm must prefer Kitty over Sixel')
+vim.env.WEZTERM_PANE = old_wezterm_pane
+
 -- Command parsing follows fzf.vim: the trailing ? is the command's first arg.
 require('config.lib_image').setup()
 local original_preview = image.preview
