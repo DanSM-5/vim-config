@@ -1,6 +1,7 @@
 local M = {}
 
 local backends = {
+  kitty = require('lib.image.backends.kitty'),
   sixel = require('lib.image.backends.sixel'),
 }
 
@@ -36,13 +37,13 @@ function M.select(config)
     end
     return backend
   end
-  for _, name in ipairs({ 'sixel' }) do
+  for _, name in ipairs({ 'kitty', 'sixel' }) do
     local backend = backends[name]
     if backend and backend.available(config) then
       return backend
     end
   end
-  return nil, 'No image backend is available (the Sixel backend requires `chafa`)'
+  return nil, 'No image backend is available (Kitty requires a compatible terminal; Sixel requires `chafa`)'
 end
 
 function M.capabilities(config)

@@ -1,6 +1,6 @@
 ---@meta
 
----@alias LibImageBackendName 'auto'|'sixel'|string
+---@alias LibImageBackendName 'auto'|'kitty'|'sixel'|string
 ---@alias LibImageLayoutKind 'float'|'tab'|'preview'|'window'
 
 ---@class LibImageSource
@@ -67,9 +67,9 @@
 ---@class LibImageBackend
 ---@field name string
 ---@field available fun(config: LibImageConfig): boolean
----@field encode fun(data: string, layout: table, cell_width: number, cell_height: number, config: LibImageConfig, callback: fun(encoded: string?, err: string?)): table?
----@field draw fun(encoded: string, layout: table): boolean
----@field clear fun()
+---@field encode fun(data: string, layout: table, cell_width: number, cell_height: number, config: LibImageConfig, callback: fun(encoded: unknown?, err: string?)): table?
+---@field draw fun(encoded: unknown, layout: table): boolean
+---@field clear fun(encoded?: unknown)
 
 ---@class LibImageConfig
 ---@field backend LibImageBackendName
@@ -113,7 +113,12 @@
 ---@field terminal_query_timeout integer
 ---@field fallback_cell_width number
 ---@field fallback_cell_height number
+---@field kitty LibImageKittyConfig
 ---@field sixel LibImageSixelConfig
+
+---@class LibImageKittyConfig
+---@field chunk_size integer Maximum base64 payload bytes per protocol command, capped at 4096.
+---@field force boolean Select Kitty in `auto` mode when environment detection is unavailable.
 
 ---@class LibImageSixelConfig
 ---@field command string

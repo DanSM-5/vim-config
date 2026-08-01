@@ -64,7 +64,7 @@ local function fail(request, message)
   request.phase = 'error'
   cleanup(request)
   if request.layout then
-    request.backend.clear()
+    request.backend.clear(request.encoded)
     if request.layout.owned_win then
       layout_manager.close(request.layout)
       request.layout = nil
@@ -96,7 +96,7 @@ local function draw(request)
   if not valid(request) or not request.encoded or not request.layout then
     return false
   end
-  request.backend.clear()
+  request.backend.clear(request.encoded)
   return request.backend.draw(request.encoded, request.layout)
 end
 
@@ -216,7 +216,7 @@ function M.close()
     return
   end
   cleanup(request)
-  request.backend.clear()
+  request.backend.clear(request.encoded)
   layout_manager.close(request.layout)
 end
 

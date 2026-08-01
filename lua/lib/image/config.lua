@@ -68,6 +68,10 @@ local defaults = {
     terminal_query_timeout = 250,
     fallback_cell_width = 10,
     fallback_cell_height = 20,
+    kitty = {
+      chunk_size = 4096,
+      force = false,
+    },
     sixel = {
       command = 'chafa',
       work = 5,
