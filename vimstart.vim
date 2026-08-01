@@ -393,9 +393,6 @@ call plug#begin()
 
     " File explorer
     Plug 'stevearc/oil.nvim'
-    " Image preview | Oil.nvim support
-    Plug 'Skardyy/neo-img'
-
     " Split lines
     Plug 'wurli/split.nvim'
 
@@ -506,4 +503,3 @@ autocmd BufReadPost *
      \ if line("'\"") > 0 && line("'\"") <= line("$") |
      \   exe "normal! g`\"zz" |
      \ endif
-

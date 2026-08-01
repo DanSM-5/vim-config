@@ -83,7 +83,6 @@ require('config.nvim_mindent').setup()
 
 -- Call plugins that need setup
 -- require('Comment').setup({})
-require('neo-img').setup()
 require('split').setup({})
 require('nvim-surround').setup({})
 require('ts-node-action').setup({})
@@ -102,4 +101,3 @@ vim.cmd('hi CursorWord gui=underline cterm=underline guibg=#4b5263')
 
 require('shared.nvim_load')
 require('shared.highlights').setup()
-
