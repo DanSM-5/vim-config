@@ -34,13 +34,17 @@ local function title(source, config)
   return ' ' .. vim.fn.fnamemodify(source.name or source.path or source.uri or 'image', ':~:.') .. ' '
 end
 
-local function scratch_buffer()
-  local bufnr = vim.api.nvim_create_buf(false, true)
+local function configure_scratch_buffer(bufnr)
+  vim.bo[bufnr].buflisted = false
   vim.bo[bufnr].bufhidden = 'wipe'
   vim.bo[bufnr].buftype = 'nofile'
   vim.bo[bufnr].swapfile = false
   vim.bo[bufnr].filetype = 'lib_image'
   return bufnr
+end
+
+local function scratch_buffer()
+  return configure_scratch_buffer(vim.api.nvim_create_buf(false, true))
 end
 
 local function clear_preview_buffer(bufnr)
@@ -81,9 +85,10 @@ local function create_preview_window(config)
     vim.cmd(('botright %dnew'):format(dimension(preview_config.height, vim.o.lines)))
   end
   local winid = vim.api.nvim_get_current_win()
+  local bufnr = configure_scratch_buffer(vim.api.nvim_get_current_buf())
   vim.wo[winid].previewwindow = true
   vim.api.nvim_set_current_win(current)
-  return winid
+  return winid, bufnr
 end
 
 local function window_layout(winid, bufnr, owned_win, owned_buf, border)
@@ -133,20 +138,21 @@ function M.open(target, source, image, cell_width, cell_height, config)
   if kind == 'tab' then
     vim.cmd.tabnew()
     local winid = vim.api.nvim_get_current_win()
-    local bufnr = scratch_buffer()
-    vim.api.nvim_win_set_buf(winid, bufnr)
+    local bufnr = configure_scratch_buffer(vim.api.nvim_get_current_buf())
     return window_layout(winid, bufnr, true, true, nil)
   end
 
   if kind == 'preview' then
     local winid = find_preview_window()
+    local bufnr
     local owned_win = false
     if not winid then
-      winid = create_preview_window(config)
+      winid, bufnr = create_preview_window(config)
       owned_win = true
+    else
+      bufnr = scratch_buffer()
+      vim.api.nvim_win_set_buf(winid, bufnr)
     end
-    local bufnr = scratch_buffer()
-    vim.api.nvim_win_set_buf(winid, bufnr)
     return window_layout(winid, bufnr, owned_win, true, nil)
   end
 

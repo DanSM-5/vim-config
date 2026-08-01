@@ -26,6 +26,16 @@ local function wait_for(predicate, message)
   truthy(vim.wait(10000, predicate, 10), message or 'timed out')
 end
 
+local function listed_unnamed_buffers()
+  local result = {}
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted and vim.api.nvim_buf_get_name(bufnr) == '' then
+      table.insert(result, bufnr)
+    end
+  end
+  return result
+end
+
 local image = require('lib.image')
 local process = require('lib.image.process')
 vim.cmd('filetype on')
@@ -98,6 +108,38 @@ equal(command_calls, {
   { source = 'virtual.png', kind = 'preview' },
 }, 'PreviewImage command layout parsing')
 image.preview = original_preview
+
+-- Owned splits and tabs reuse the blank buffer created by :new/:tabnew. They
+-- must not leave a listed [No Name] buffer after replacing or closing it.
+local layout_manager = require('lib.image.layout')
+local unnamed_before = listed_unnamed_buffers()
+local preview_layout = layout_manager.open(
+  { kind = 'preview' },
+  { name = 'tiny.png' },
+  { width = 1, height = 1 },
+  10,
+  20,
+  image.get_config()
+)
+equal(vim.bo[preview_layout.bufnr].buftype, 'nofile', 'preview layout must reuse a nofile buffer')
+equal(vim.bo[preview_layout.bufnr].buflisted, false, 'preview layout buffer must be unlisted')
+equal(listed_unnamed_buffers(), unnamed_before, 'preview layout must not leak an unnamed buffer while open')
+layout_manager.close(preview_layout)
+equal(listed_unnamed_buffers(), unnamed_before, 'preview layout must not leak an unnamed buffer after close')
+
+local tab_layout = layout_manager.open(
+  { kind = 'tab' },
+  { name = 'tiny.png' },
+  { width = 1, height = 1 },
+  10,
+  20,
+  image.get_config()
+)
+equal(vim.bo[tab_layout.bufnr].buftype, 'nofile', 'tab layout must reuse a nofile buffer')
+equal(vim.bo[tab_layout.bufnr].buflisted, false, 'tab layout buffer must be unlisted')
+equal(listed_unnamed_buffers(), unnamed_before, 'tab layout must not leak an unnamed buffer while open')
+layout_manager.close(tab_layout)
+equal(listed_unnamed_buffers(), unnamed_before, 'tab layout must not leak an unnamed buffer after close')
 
 -- Exercise the asynchronous session without emitting terminal escape data.
 local draw_count = 0
