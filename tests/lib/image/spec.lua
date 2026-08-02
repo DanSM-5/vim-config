@@ -92,7 +92,7 @@ truthy(image.can_preview('example.docx', { explicit = true }), 'explicit preview
 equal(image.can_preview('s3://bucket/example.png', { explicit = true }), false, 'S3 is intentionally unregistered')
 
 -- Kitty is dependency-free after PNG normalization. Verify chunking, placement,
--- targeted cleanup, and automatic selection in a WezTerm environment.
+-- and targeted cleanup.
 local kitty = require('lib.image.backends.kitty')
 local kitty_config = image.get_config()
 kitty_config.backend = 'kitty'
@@ -136,12 +136,86 @@ truthy(
   'Kitty cleanup must target and free only its own image id'
 )
 
-local old_wezterm_pane = vim.env.WEZTERM_PANE
+-- iTerm2 is also dependency-free. Verify the OSC 1337 fields, payload,
+-- placement, and redraw-based cleanup.
+local iterm2 = require('lib.image.backends.iterm2')
+local iterm2_config = image.get_config()
+iterm2_config.backend = 'iterm2'
+truthy(iterm2.available(iterm2_config), 'explicit iTerm2 selection must override environment detection')
+local iterm2_encoded
+local iterm2_error
+iterm2.encode(tiny_png, { width = 3, height = 2 }, 10, 20, iterm2_config, function(encoded, err)
+  iterm2_encoded, iterm2_error = encoded, err
+end)
+truthy(iterm2_encoded ~= nil, iterm2_error or 'iTerm2 encoding failed')
+local arguments, iterm2_payload = iterm2_encoded.transmission:match('^\27%]1337;File=(.-):(.*)\7$')
+truthy(arguments ~= nil and iterm2_payload ~= nil, 'iTerm2 transmission framing is invalid')
+for _, argument in ipairs({
+  'inline=1',
+  'size=' .. #tiny_png,
+  'width=3',
+  'height=2',
+  'preserveAspectRatio=1',
+  'doNotMoveCursor=1',
+}) do
+  truthy(arguments:find(argument, 1, true) ~= nil, 'iTerm2 transmission is missing ' .. argument)
+end
+equal(vim.base64.decode(iterm2_payload), tiny_png, 'iTerm2 payload must reconstruct the normalized PNG')
+
+sent = {}
+vim.fn.chansend = function(_, value)
+  table.insert(sent, value)
+  return 1
+end
+truthy(
+  iterm2.draw(iterm2_encoded, { winid = vim.api.nvim_get_current_win(), border_top = 0, border_left = 0 }),
+  'iTerm2 draw failed'
+)
+iterm2.clear(iterm2_encoded)
+iterm2.clear(iterm2_encoded)
+vim.fn.chansend = original_chansend
+equal(#sent, 1, 'iTerm2 must transmit a drawn image exactly once')
+truthy(sent[1]:find(iterm2_encoded.transmission, 1, true) ~= nil, 'iTerm2 draw must include the PNG transmission')
+equal(iterm2_encoded.drawn, false, 'iTerm2 cleanup must mark the image as cleared')
+
+-- Non-Windows WezTerm prefers Kitty. Its Windows and WSL transport prefers
+-- OSC/iTerm2 because APC/Kitty may be filtered by ConPTY.
+local saved_terminal_environment = {}
+for _, name in ipairs({
+  'ITERM_SESSION_ID',
+  'KITTY_WINDOW_ID',
+  'LC_TERMINAL',
+  'TERM',
+  'TERM_PROGRAM',
+  'WEZTERM_PANE',
+}) do
+  table.insert(saved_terminal_environment, { name = name, value = vim.env[name] })
+end
+vim.env.ITERM_SESSION_ID = nil
+vim.env.KITTY_WINDOW_ID = nil
+vim.env.LC_TERMINAL = nil
+vim.env.TERM = 'xterm-256color'
+vim.env.TERM_PROGRAM = 'WezTerm'
 vim.env.WEZTERM_PANE = 'lib-image-test'
 local auto_config = image.get_config()
 auto_config.backend = 'auto'
-equal(require('lib.image.backend').select(auto_config).name, 'kitty', 'WezTerm must prefer Kitty over Sixel')
-vim.env.WEZTERM_PANE = old_wezterm_pane
+local backend_registry = require('lib.image.backend')
+local windows_host = require('lib.image.terminal').is_windows_host()
+local expected_wezterm_backend = windows_host and 'iterm2' or 'kitty'
+local wezterm_capabilities = backend_registry.capabilities(auto_config)
+truthy(wezterm_capabilities.iterm2, 'WezTerm must advertise its iTerm2-compatible image protocol')
+equal(wezterm_capabilities.kitty, not windows_host, 'Kitty capability must account for the Windows transport')
+equal(
+  backend_registry.select(auto_config).name,
+  expected_wezterm_backend,
+  'WezTerm must choose the backend appropriate to its host transport'
+)
+vim.env.WEZTERM_PANE = nil
+vim.env.TERM_PROGRAM = 'iTerm.app'
+equal(backend_registry.select(auto_config).name, 'iterm2', 'iTerm2 must select its native image protocol')
+for _, item in ipairs(saved_terminal_environment) do
+  vim.env[item.name] = item.value
+end
 
 -- Command parsing follows fzf.vim: the trailing ? is the command's first arg.
 require('config.lib_image').setup()
