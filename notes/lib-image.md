@@ -9,10 +9,13 @@ through a terminal graphics backend. The public API and LuaDoc types live in
 ## Requirements
 
 - Neovim 0.12 or newer.
-- A terminal supporting Kitty graphics or Sixel. Kitty is preferred in Kitty
-  and WezTerm; Windows Terminal falls back to Sixel.
+- A terminal supporting Kitty graphics, the iTerm2 inline-image protocol, or
+  Sixel. Kitty is preferred in Kitty and non-Windows WezTerm. The iTerm2
+  protocol is preferred in iTerm2 and in WezTerm running through Windows or
+  WSL; Windows Terminal falls back to Sixel.
 - `chafa` for the Sixel backend. The Kitty backend transmits normalized PNG
-  data directly and has no additional rendering dependency.
+  data directly and has no additional rendering dependency. The iTerm2 backend
+  likewise sends normalized PNG data directly through OSC 1337.
 - `mcat` as the primary file-to-image converter.
 - Tree-sitter parsers `markdown`, `markdown_inline`, and `html` for Markdown
   cursor previews.
@@ -32,15 +35,17 @@ Inspect the current environment from Neovim with:
 vim.print(require('lib.image').capabilities())
 ```
 
-The result reports the Neovim version check, available backends, executables,
-Tree-sitter parsers, and registered URI schemes.
+The result reports the Neovim version check, environment-detected backends,
+executables, Tree-sitter parsers, and registered URI schemes. Backend detection
+does not probe escape-sequence delivery end to end.
 
-With `backend = 'auto'`, Kitty is selected when Kitty or WezTerm environment
-markers are present; Sixel is the fallback. A backend can be forced when
-terminal detection is unavailable:
+With `backend = 'auto'`, selection follows Kitty, iTerm2, then Sixel, subject to
+terminal detection. WezTerm on Windows and WSL skips Kitty automatically because
+its ConPTY path may discard Kitty APC sequences while allowing iTerm2 OSC
+sequences. A backend can always be selected explicitly:
 
 ```lua
-require('lib.image').config({ backend = 'kitty' })
+require('lib.image').config({ backend = 'iterm2' })
 ```
 
 ## Basic use
