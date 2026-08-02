@@ -1,4 +1,5 @@
 local png = require('lib.image.png')
+local terminal = require('lib.image.terminal')
 
 local M = { name = 'kitty' }
 
@@ -10,12 +11,13 @@ local function image_id()
 end
 
 local function kitty_environment()
-  local term = (vim.env.TERM or ''):lower()
-  local term_program = (vim.env.TERM_PROGRAM or ''):lower()
-  return vim.env.KITTY_WINDOW_ID ~= nil
-    or vim.env.WEZTERM_PANE ~= nil
-    or term == 'xterm-kitty'
-    or term_program == 'wezterm'
+  if terminal.is_kitty() then
+    return true
+  end
+  -- WezTerm supports Kitty graphics, but its Windows ConPTY path can discard
+  -- APC sequences. Prefer its iTerm2-compatible OSC protocol there; users can
+  -- still opt in explicitly with `backend = 'kitty'` or `kitty.force`.
+  return terminal.is_wezterm() and not terminal.is_windows_host()
 end
 
 ---@param config LibImageConfig

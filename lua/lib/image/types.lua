@@ -1,6 +1,6 @@
 ---@meta
 
----@alias LibImageBackendName 'auto'|'kitty'|'sixel'|string
+---@alias LibImageBackendName 'auto'|'kitty'|'iterm2'|'sixel'|string
 ---@alias LibImageLayoutKind 'float'|'tab'|'preview'|'window'
 
 ---@class LibImageSource

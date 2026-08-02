@@ -4,6 +4,39 @@ local cached
 local pending = {}
 local query_started = false
 
+local function environment(name)
+  return (vim.env[name] or ''):lower()
+end
+
+---Whether the current UI was launched by WezTerm.
+---@return boolean
+function M.is_wezterm()
+  return vim.env.WEZTERM_PANE ~= nil or environment('TERM_PROGRAM') == 'wezterm'
+end
+
+---Whether the terminal transport ultimately runs on Windows. This includes
+---Linux Neovim instances running under WSL.
+---@return boolean
+function M.is_windows_host()
+  return vim.fn.has('win32') == 1 or vim.env.WSL_DISTRO_NAME ~= nil or vim.env.WSL_INTEROP ~= nil
+end
+
+---Whether the environment identifies a native Kitty terminal.
+---@return boolean
+function M.is_kitty()
+  return vim.env.KITTY_WINDOW_ID ~= nil or environment('TERM') == 'xterm-kitty'
+end
+
+---Whether the environment identifies Apple's iTerm2 terminal.
+---@return boolean
+function M.is_iterm2()
+  local term_program = environment('TERM_PROGRAM')
+  return vim.env.ITERM_SESSION_ID ~= nil
+    or term_program == 'iterm.app'
+    or term_program == 'iterm2'
+    or environment('LC_TERMINAL') == 'iterm2'
+end
+
 local function finish(width, height)
   if cached then
     return
