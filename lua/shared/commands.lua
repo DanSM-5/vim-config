@@ -109,9 +109,15 @@ end, { force = true, bang = true, bar = true, nargs = '*', desc = '[Npx] Small w
 
 -- Override regular LF autocommand
 ---Create LF command to use lf binary to select files
+-- -@param opts { fargs: string[]; bang: boolean; }
+-- vim.api.nvim_create_user_command('LF', function(opts)
+--   require('lib.lf').lf(opts.fargs[1], opts.bang)
+-- end, { force = true, bar = true, nargs = '?', complete = 'dir', bang = true })
+
+---Create Yazi command to use yazi binary to select files
 ---@param opts { fargs: string[]; bang: boolean; }
-vim.api.nvim_create_user_command('LF', function(opts)
-  require('lib.lf').lf(opts.fargs[1], opts.bang)
+vim.api.nvim_create_user_command('Yazi', function(opts)
+  require('lib.yazi').yazi(opts.fargs[1], opts.bang)
 end, { force = true, bar = true, nargs = '?', complete = 'dir', bang = true })
 
 ---@param opts { bang: boolean, fargs: string[] }
