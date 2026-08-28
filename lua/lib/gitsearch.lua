@@ -205,7 +205,7 @@ local function run(script, root, args, fullscreen)
   if fullscreen then
     terminal.win_term(options)
   else
-    options.float = { style = 'minimal' }
+    options.float = { border = 'none' }
     terminal.float_term(options)
   end
 end
