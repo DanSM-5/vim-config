@@ -178,6 +178,27 @@ end, {
   desc = '[FShow] Show the commits in fzf',
 })
 
+vim.api.nvim_create_user_command('GitSearch', function(opts)
+  require('lib.gitsearch').search(opts.fargs, opts.bang)
+end, {
+  nargs = '*',
+  bang = true,
+  bar = true,
+  force = true,
+  desc = '[GitSearch] Search commit messages or patches',
+})
+
+vim.api.nvim_create_user_command('GitFileHistory', function(opts)
+  require('lib.gitsearch').file_history(opts.fargs[1], opts.bang)
+end, {
+  nargs = '?',
+  complete = 'file',
+  bang = true,
+  bar = true,
+  force = true,
+  desc = '[GitSearch] Search the history of a file',
+})
+
 vim.api.nvim_create_user_command('BSearch', function(args)
   local first = args.fargs[1]
   local engine = string.gsub(first, '@', '')

@@ -1,207 +1,232 @@
-" Search interactively in git repository in the logs
-" or in the patches by regex or literal string.
-"
-" Upon selecting commits the patches will be opened in a new temporary buffer
-" for further inpection.
-"
-" Calling any of the functions with a '%' as query will start the search
-" scoped to the current buffer.
-"
-" Dependencies:
-" - git
-" - fzf
-" - fzf.vim
-" - gitsearch_copy.ps1 for coping (windows only)
-"
-" Recommended Commands:
-" command! -nargs=* -bang -bar GitSearchLog call gitsearch#log(<q-args>, <bang>0)
-" command! -nargs=* -bang -bar GitSearchRegex call gitsearch#regex(<q-args>, <bang>0)
-" command! -nargs=* -bang -bar GitSearchString call gitsearch#string(<q-args>, <bang>0)
+" Git history search backed by the standalone git-search-commits and
+" git-file-history scripts. Neovim has its own lazy Lua implementation.
+
+if has('nvim')
+  finish
+endif
 
 if exists('g:loaded_git_search_commits')
   finish
 endif
 
 let g:loaded_git_search_commits = 1
-let s:copy_helper = exists('g:gitsearch_scripts') ? g:gitsearch_scripts : expand('<sfile>:p:h:h') . '/utils'
+let s:expected_keys = 'enter,ctrl-o,ctrl-e'
+let s:supported_keys = {'enter': 1, 'ctrl-o': 1, 'ctrl-e': 1}
 
-function! gitsearch#open_commits(commits) abort
-  if len(a:commits) == 0
+function! s:Notify(message, warning) abort
+  execute 'echohl ' . (a:warning ? 'WarningMsg' : 'ErrorMsg')
+  echom '[GitSearch] ' . a:message
+  echohl None
+endfunction
+
+function! s:GitRoot(...) abort
+  let seed = get(a:000, 0, '')
+  if !empty(seed)
+    let path = fnamemodify(expand(seed), ':p')
+  else
+    let path = expand('%:p')
+  endif
+  let directory = empty(path) ? getcwd() : (isdirectory(path) ? path : fnamemodify(path, ':h'))
+  let output = systemlist('git -C ' . shellescape(directory) . ' rev-parse --show-toplevel')
+  if v:shell_error != 0 || empty(output) || !isdirectory(output[0])
+    call s:Notify('Not in a git repository', 1)
+    return ''
+  endif
+  return substitute(output[0], '\r$', '', '')
+endfunction
+
+function! s:ScriptCommand(name) abort
+  if has('win32') || has('win64')
+    let script = exepath(a:name . '.ps1')
+    if !empty(script)
+      let powershell = executable('pwsh') ? 'pwsh' : (executable('powershell') ? 'powershell' : '')
+      if empty(powershell)
+        call s:Notify('Cannot find pwsh or powershell on PATH', 0)
+        return []
+      endif
+      return [powershell, '-NoLogo', '-NonInteractive', '-NoProfile',
+            \ '-ExecutionPolicy', 'Bypass', '-File', script]
+    endif
+  endif
+
+  let executable_path = exepath(a:name)
+  if empty(executable_path)
+    call s:Notify('Cannot find ' . a:name . ' on PATH', 0)
+    return []
+  endif
+  return [executable_path]
+endfunction
+
+function! s:RepositoryPath(root, path) abort
+  let root = substitute(substitute(fnamemodify(a:root, ':p'), '\\', '/', 'g'), '/$', '', '')
+  let absolute = substitute(fnamemodify(expand(a:path), ':p'), '\\', '/', 'g')
+  let prefix = root . '/'
+  let comparable_root = (has('win32') || has('win64')) ? tolower(prefix) : prefix
+  let comparable_path = (has('win32') || has('win64')) ? tolower(absolute) : absolute
+  if stridx(comparable_path, comparable_root) != 0
+    call s:Notify('File is outside the repository: ' . a:path, 0)
+    return ''
+  endif
+  return strpart(absolute, strlen(prefix))
+endfunction
+
+function! s:CurrentFile(root) abort
+  let path = expand('%:p')
+  return empty(path) ? '' : s:RepositoryPath(a:root, path)
+endfunction
+
+function! s:OpenCommits(lines, key, origin_win) abort
+  if empty(a:lines)
     return
+  endif
+  if win_id2win(a:origin_win) != 0
+    call win_gotoid(a:origin_win)
+  endif
+  if &modified && !&hidden
+    new
   else
     enew
-    exec 'file Commits'
-    for commit in a:commits
-      let hash = split(commit)[0]
-      pu = system('git show ' . hash)
-      pu = ''
-    endfor
-    silent call execute('normal ggdd')
-    setlocal nomodifiable readonly nomodified
-    setlocal filetype=git
-    setlocal foldmethod=syntax
+  endif
+
+  execute 'file gitsearch://commits/' . bufnr('%')
+  setlocal buftype=nofile bufhidden=wipe noswapfile
+  call setline(1, a:lines)
+  let b:gitsearch_expected_key = a:key
+  setlocal filetype=git foldmethod=syntax
+  setlocal nomodifiable readonly nomodified
+endfunction
+
+function! s:CollectOutput(state, stream, channel, message) abort
+  call add(a:state[a:stream], a:message)
+endfunction
+
+function! s:FinishGitShow(state, timer) abort
+  let info = job_info(a:state.job)
+  let status = get(info, 'exitval', 0)
+  if status != 0
+    let message = trim(join(a:state.errors, "\n"))
+    call s:Notify(empty(message) ? 'git show failed' : message, 0)
+    return
+  endif
+  call s:OpenCommits(a:state.output, a:state.key, a:state.origin_win)
+endfunction
+
+function! s:GitShowClosed(state, channel) abort
+  if get(a:state, 'done', 0)
+    return
+  endif
+  let a:state.done = 1
+  call timer_start(0, function('s:FinishGitShow', [a:state]))
+endfunction
+
+function! s:ShowCommits(root, hashes, key) abort
+  let state = {
+        \ 'done': 0,
+        \ 'errors': [],
+        \ 'key': a:key,
+        \ 'origin_win': win_getid(),
+        \ 'output': [],
+        \ }
+  let options = {
+        \ 'close_cb': function('s:GitShowClosed', [state]),
+        \ 'err_cb': function('s:CollectOutput', [state, 'errors']),
+        \ 'err_mode': 'nl',
+        \ 'out_cb': function('s:CollectOutput', [state, 'output']),
+        \ 'out_mode': 'nl',
+        \ }
+  let state.job = job_start(['git', '-C', a:root, '--no-pager', 'show', '--no-color'] + a:hashes, options)
+  if job_status(state.job) ==# 'fail'
+    call s:Notify('Could not start git show', 0)
   endif
 endfunction
 
-function s:GetCopyCmd() abort
-  let os = substitute(system('uname'), '\n', '', '')
+function! s:HandleSelection(root, lines, status) abort
+  let key = ''
+  let hashes = []
+  for line in a:lines
+    let value = trim(line)
+    if has_key(s:supported_keys, value)
+      let key = value
+      let hashes = []
+    elseif !empty(key) && value =~# '^[0-9a-fA-F]\+$'
+      call add(hashes, value)
+    endif
+  endfor
 
-  if has('gui_win32') || has('win32')
-    " NOTE: Manually point to the location of the helper script
-    " Or return the specific command to copy
-    let gitsearch_copy = substitute(s:copy_helper, '\\', '/', 'g') . '/gitsearch_copy.ps1'
-    return 'powershell -NoLogo -NonInteractive -NoProfile -File ' . shellescape(gitsearch_copy) . ' "{+f}"'
-  elseif has("gui_mac") || os ==? 'Darwin'
-    return "awk '{ print $1 }' {+f} | pbcopy"
-  elseif !empty($WAYLAND_DISPLAY) && executable('wl-copy')
-    return "awk '{ print $1 }' {+f} | wl-copy --foreground --type text/plain"
-  elseif !empty($DISPLAY) && executable('xsel')
-    return "awk '{ print $1 }' {+f} | xsel -i -b"
-  elseif !empty($DISPLAY) && executable('xclip')
-    return "awk '{ print $1 }' {+f} | xclip -i -selection clipboard"
-  endif
-endfunction
-
-function! gitsearch#search(query, fullscreen, options) abort
-  let curr_path = getcwd()
-  let gitpath = utils#git_path()
-
-  if empty(gitpath)
-    echohl hlgroup
-    echo 'WARNING: Not in a git repository'
-    echohl None
+  if empty(key) || empty(hashes)
+    if a:status != 0
+      call s:Notify('Selector exited with status ' . a:status, 1)
+    endif
     return
   endif
 
-  let source = get(a:options, 'source', 'git log --oneline || true')
-  let name = get(a:options, 'name', 'git-search-commits')
-  let fzf_options = get(a:options, 'options', [])
-
-  " NOTE: ctrl-d doesn't work on Windows nvim
-
-  " NOTE: this could use 'start:reload' instead of 'source'
-  " '--bind', 'start:reload:'.source_command,
-  " But git bash never starts the command until the query changes.
-  " So passing the command as source seems like a better option for
-  " cross platform commands.
-
-  let spec = {
-    \   'source': source,
-    \   'sinklist': function('gitsearch#open_commits'),
-    \   'options': [
-    \     '--prompt', 'GitSearch> ',
-    \     '--multi', '--ansi',
-    \     '--layout=reverse',
-    \     '--input-border',
-    \     '--cycle',
-    \     '--bind', 'alt-up:preview-page-up,alt-down:preview-page-down',
-    \     '--bind', 'shift-up:preview-up,shift-down:preview-down',
-    \     '--bind', 'ctrl-s:toggle-sort',
-    \     '--bind', 'ctrl-l:change-preview-window(down|hidden|)',
-    \     '--bind', 'ctrl-/:change-preview-window(down|hidden|)',
-    \     '--bind', 'ctrl-^:toggle-preview',
-    \     '--bind', 'alt-f:first',
-    \     '--bind', 'alt-l:last',
-    \     '--bind', 'alt-a:select-all',
-    \     '--bind', 'alt-d:deselect-all',
-    \     '--bind', 'alt-c:clear-query',
-    \     '--query', a:query,
-    \   ] + fzf_options
-    \ }
-
-    try
-      exec 'cd ' . gitpath
-      call fzf#run(fzf#wrap(name, spec, a:fullscreen))
-    finally
-      exec 'cd ' . curr_path
-    endtry
+  " Enter preserves the original Vim integration, ctrl-o represents printed
+  " patches, and ctrl-e edits those patches in the already-running editor.
+  call s:ShowCommits(a:root, hashes, key)
 endfunction
 
-function gitsearch#search_common(query, fullscreen, cmd) abort
-  let query = a:query
-  let cmd = a:cmd
-  if query == '?'
-    let query = ''
-    let file = shellescape(expand('%'))
-    let cmd = printf(a:cmd, '%s --follow -- ' . file)
+function! s:Run(script, root, arguments, fullscreen) abort
+  let command = s:ScriptCommand(a:script)
+  if empty(command)
+    return
+  endif
+  call add(command, '-Display')
+  call extend(command, a:arguments)
+
+  let expect_name = a:script ==# 'git-search-commits' ? 'GSC_EXPECT' : 'GFH_EXPECT'
+  let environment = {}
+  let environment[expect_name] = s:expected_keys
+  call terminal#run(command, {
+        \ 'cwd': a:root,
+        \ 'env': environment,
+        \ 'fullscreen': a:fullscreen,
+        \ 'name': a:script,
+        \ 'on_term_exit': function('s:HandleSelection', [a:root]),
+        \ })
+endfunction
+
+function! gitsearch#search(arguments, fullscreen) abort
+  let root = s:GitRoot()
+  if empty(root)
+    return
   endif
 
-  " NOTE: fzf#shellescape seems to break on windows.
-  " Usual shellescape works fine.
-  let source = printf(cmd, g:is_windows ? shellescape(query) : fzf#shellescape(query))
-  let reload = printf(cmd, '{q}')
-  let copy_cmd = s:GetCopyCmd()
-  let preview = 'git show --color=always {1} ' . (executable('delta') ? '| delta' : '') . ' || true'
-  let preview_window = a:fullscreen ? 'up,80%,wrap-word' : 'right,80%,wrap-word'
-  let options = [
-    \     '--prompt', 'GitSearch> ',
-    \     '--disabled',
-    \     '--header', 'ctrl-r: Interactive search | ctrl-f: Filtering results | ctrl-y: Copy hashes',
-    \     '--preview', preview,
-    \     '--preview-window', preview_window,
-    \     '--bind', 'ctrl-y:execute-silent:' . copy_cmd,
-    \     '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(GitSearch> )+disable-search+reload(' . reload . ')+rebind(change,ctrl-f)',
-    \     '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(FzfFilter> )+enable-search+clear-query+rebind(ctrl-r)',
-    \     '--bind', 'change:reload:'.reload,
-    \ ]
-  let search_options = { 'source': source, 'options': options }
-  call gitsearch#search(query, a:fullscreen, search_options)
+  let arguments = copy(a:arguments)
+  if len(arguments) == 1 && index(['%', '?'], arguments[0]) >= 0
+    let path = s:CurrentFile(root)
+    if empty(path)
+      call s:Notify('The current buffer has no repository file', 1)
+      return
+    endif
+    let arguments = ['-File', path]
+  endif
+  call s:Run('git-search-commits', root, arguments, a:fullscreen)
 endfunction
 
-function! gitsearch#log(query, fullscreen) abort
-  let cmd = 'git log --color=always --oneline --branches --all --grep %s || true'
-  call gitsearch#search_common(a:query, a:fullscreen, cmd)
-endfunction
-
-function! gitsearch#regex(query, fullscreen) abort
-  let cmd = 'git log --color=always --oneline --branches --all -G %s || true'
-  call gitsearch#search_common(a:query, a:fullscreen, cmd)
-endfunction
-
-function! gitsearch#string(query, fullscreen) abort
-  let cmd = 'git log --color=always --oneline --branches --all -S %s || true'
-  silent call gitsearch#search_common(a:query, a:fullscreen, cmd)
-endfunction
-
-function! gitsearch#file(file, fullscreen) abort
-  let file = a:file
-  if file == '?' || file == '' || empty(file)
-    let file = expand('%')
+function! gitsearch#file_history(arguments, fullscreen) abort
+  let file = get(a:arguments, 0, '')
+  let root = (empty(file) || index(['%', '?'], file) >= 0) ? s:GitRoot() : s:GitRoot(file)
+  if empty(root)
+    return
   endif
 
-  " TODO:Should I use the forward path version in all places?
-  " It is needed for git to preview the file even on windows
-  let escaped_file = shellescape(file)
-  let forward_path = substitute(escaped_file, '\\', '/', 'g')
-  let source = printf('git log --color=always --oneline --follow -- %s || true', escaped_file)
-  let preview = 'git show --color=always %s'
-  let preview_cmd = printf(preview, executable('delta') ? '{1} --follow -- ' . escaped_file . ' | delta' : '{1} --follow -- ' . escaped_file)
-  let preview_all = printf(preview, executable('delta') ? '{1} | delta' : '{1}')
-  let copy_cmd = s:GetCopyCmd()
-  let preview_graph = 'git log --color=always --oneline --decorate --graph {1}'
-  let preview_file = printf(preview, '{1}:'.forward_path)
-  if executable('bat')
-    let bat_style = empty($BAT_STYLE) ? 'numbers,header' : $BAT_STYLE
-    let preview_file = preview_file . ' | bat --color=always --style=' . bat_style . ' --file-name ' . forward_path
+  let arguments = []
+  if file ==# '?'
+    " Let git-file-history run its own file selector.
+  elseif !empty(file) && file !=# '%'
+    let path = s:RepositoryPath(root, file)
+    if empty(path)
+      return
+    endif
+    let arguments = [path]
+  else
+    let path = s:CurrentFile(root)
+    if !empty(path)
+      let arguments = [path]
+    elseif file ==# '%'
+      call s:Notify('The current buffer has no repository file', 1)
+      return
+    endif
   endif
-  let preview_window = a:fullscreen ? 'up,70%,wrap-word' : 'right,70%,wrap-word'
-  let options = { 'source': source, 'options': [
-        \    '--prompt', 'File History> ',
-        \    '--bind', 'ctrl-y:execute-silent(' . copy_cmd . ')+bell',
-        \    '--header','File: ' .. file,
-        \    '--preview', preview_cmd,
-        \    '--preview-window', preview_window,
-        \    '--bind', 'ctrl-a:change-preview:'.preview_all,
-        \    '--bind', 'ctrl-d:change-preview:'.preview_cmd,
-        \    '--bind', 'ctrl-f:change-preview:'.preview_file,
-        \    '--bind', 'ctrl-g:change-preview:'.preview_graph,
-        \  ] }
-
-  " NOTE: No longer needed as we can change preview without transform
-  " Fix for transform to work
-  " if has('win32')
-  "   let options.options = options.options + ['--with-shell', 'powershell -NoLogo -NonInteractive -NoProfile -Command']
-  " endif
-  silent call gitsearch#search('', a:fullscreen, options)
+  call s:Run('git-file-history', root, arguments, a:fullscreen)
 endfunction
-
