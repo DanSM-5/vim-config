@@ -18,6 +18,8 @@ local function safe_set_buf_option(buf, name, value)
   pcall(vim.api.nvim_set_option_value, name, value, { buf = buf, scope = 'local' })
 end
 
+local termCloseGroup = vim.api.nvim_create_augroup('terminal.termClose', { clear = true })
+
 ---@class terminal.jobstart.opts
 ---@field cwd? string Working directory to start the terminal
 ---@field env? table<string, string> Pass to add variables to environment
@@ -69,10 +71,13 @@ end
 ---@field buf integer bufnr of floating window
 
 ---@class terminal.output
----@field jobid integer jobId of the process
+---@field jobId integer jobId of the process
 ---@field win integer winrn of floating window
 ---@field buf integer bufnr of floating window
 ---@field close fun() function to close the window
+---@field termCloseId integer id of `TermClose` autocmd
+---@field termCloseGroup integer group used for all TermClose autocmd
+---@field termOpenId integer id of `TermOpen` autocmd
 
 ---Get floating term config
 ---@param config vim.api.keyset.win_config
@@ -249,9 +254,9 @@ local function call_float(opts)
   set_options(opts, { win = win, buf = buf }, true)
   pcall(vim.api.nvim_buf_set_name, buf, opts.name or terminal_const.float_name)
 
-  local term_autocmd_group = vim.api.nvim_create_augroup(('float_term_%d_%d'):format(win, buf), { clear = true })
+  local term_autocmd_group = vim.api.nvim_create_augroup(('%s_%d_%d'):format(terminal_const.float_name, win, buf), { clear = true })
 
-  vim.api.nvim_create_autocmd('TermOpen', {
+  local termOpenId = vim.api.nvim_create_autocmd('TermOpen', {
     once = true,
     buffer = buf,
     group = term_autocmd_group,
@@ -284,21 +289,26 @@ local function call_float(opts)
     vim.cmd.checktime()
   end
 
-  local out = {
-    close = close,
-    buf = buf,
-    win = win,
-    jobId = id,
-  }
-
-  vim.api.nvim_create_autocmd('TermClose', {
+  local termCloseId = vim.api.nvim_create_autocmd('TermClose', {
     once = true,
     buffer = buf,
+    group = termCloseGroup,
     callback = function(args)
       local status = args.data and tonumber(args.data.status) or 0
       finish_terminal(opts, buf, close, status)
     end,
   })
+
+  ---@type terminal.output
+  local out = {
+    close = close,
+    buf = buf,
+    win = win,
+    jobId = id,
+    termCloseId = termCloseId,
+    termCloseGroup = termCloseGroup,
+    termOpenId = termOpenId,
+  }
 
   return out
 end
@@ -422,7 +432,7 @@ local function call_win(opts)
 
   local term_autocmd_group = vim.api.nvim_create_augroup(('win_term_%d_%d'):format(win, buf), { clear = true })
 
-  vim.api.nvim_create_autocmd('TermOpen', {
+  local termOpenId = vim.api.nvim_create_autocmd('TermOpen', {
     once = true,
     buffer = buf,
     group = term_autocmd_group,
@@ -476,14 +486,8 @@ local function call_win(opts)
     vim.cmd.checktime()
   end
 
-  local out = {
-    close = close,
-    buf = buf,
-    win = win,
-    jobId = id,
-  }
 
-  vim.api.nvim_create_autocmd('TermClose', {
+  local termCloseId = vim.api.nvim_create_autocmd('TermClose', {
     once = true,
     buffer = buf,
     callback = function(args)
@@ -491,6 +495,17 @@ local function call_win(opts)
       finish_terminal(opts, buf, close, status)
     end,
   })
+
+  ---@type terminal.output
+  local out = {
+    close = close,
+    buf = buf,
+    win = win,
+    jobId = id,
+    termCloseId = termCloseId,
+    termCloseGroup = termCloseGroup,
+    termOpenId = termOpenId,
+  }
 
   return out
 end
