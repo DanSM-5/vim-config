@@ -158,6 +158,7 @@ function! fzfgh#select_prs(fullscreen) abort
   if empty(command)
     return
   endif
+  call add(command, '-Display')
 
   let cwd = getcwd()
   let origin_win = win_getid()

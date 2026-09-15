@@ -172,6 +172,7 @@ function M.select_prs(fullscreen)
   if not command then
     return
   end
+  table.insert(command, '-Display')
 
   local cwd = vim.fn.getcwd()
   local origin_win = vim.api.nvim_get_current_win()
