@@ -199,6 +199,16 @@ end, {
   desc = '[GitSearch] Search the history of a file',
 })
 
+vim.api.nvim_create_user_command('GHPR', function(opts)
+  require('lib.fzfgh').select_prs(opts.bang)
+end, {
+  nargs = 0,
+  bang = true,
+  bar = true,
+  force = true,
+  desc = '[Fzfgh] Browse GitHub pull requests',
+})
+
 vim.api.nvim_create_user_command('BSearch', function(args)
   local first = args.fargs[1]
   local engine = string.gsub(first, '@', '')

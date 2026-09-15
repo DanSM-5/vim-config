@@ -877,6 +877,7 @@ func! s:SetFZF () abort
   if !has('nvim')
     command! -nargs=* -bang -bar GitSearch call gitsearch#search([<f-args>], <bang>0)
     command! -nargs=? -bang -bar -complete=file GitFileHistory call gitsearch#file_history([<f-args>], <bang>0)
+    command! -nargs=0 -bang -bar GHPR call fzfgh#select_prs(<bang>0)
   endif
   " Git fzf
   command! -nargs=0 -bang -bar GCheckout call fzfgit#checkout(<bang>0)
@@ -888,7 +889,6 @@ func! s:SetFZF () abort
   " Custom fzf commands
   command! -nargs=* -bang -complete=customlist,fzftxt#completion FTxt call fzftxt#select(<q-args>, <bang>0)
   command! -nargs=* -bang CPrj call fzfcmd#change_project(<q-args>, g:fzf_bind_options, <bang>0)
-  command! -nargs=0 -bang GHPR call fzfgh#select_prs(<bang>0)
 
   " Fzf vim variants
   command! -nargs=* -bang RG call fzfcmd#fzfrg_rg(<q-args>, <bang>0)
