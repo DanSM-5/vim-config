@@ -624,7 +624,11 @@ func! s:Windows_conf_before () abort
 endf
 
 func! s:Windows_conf_after () abort
-  if executable('pbcopy.exe')
+  if executable('win32yank.exe')
+    " Set paste command with pwsh core
+    let g:system_copy#paste_command = 'win32yank.exe -o --lf'
+    let g:system_copy#copy_command = 'pbcopy.exe -i --crlf'
+  elseif executable('pbcopy.exe')
     " Set paste command with pwsh core
     let g:system_copy#paste_command = 'pbpaste.exe'
     let g:system_copy#copy_command = 'pbcopy.exe'

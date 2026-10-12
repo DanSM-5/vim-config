@@ -27,12 +27,6 @@ function! s:set_command() abort
   elseif executable('lemonade')
     let yank = 'lemonade copy'
     let paste = 'lemonade paste'
-  elseif executable('pbcopy.exe')
-    let yank = 'pbcopy.exe'
-    let paste = 'pbpaste.exe'
-  elseif executable('doitclient')
-    let yank = 'doitclient wclip'
-    let paste = 'doitclient wclip -r'
   elseif executable('win32yank.exe')
     if has('wsl') && getftype(exepath('win32yank.exe')) == 'link'
       let win32yank = resolve(exepath('win32yank.exe'))
@@ -41,6 +35,12 @@ function! s:set_command() abort
     endif
     let yank = shellescape(win32yank) . ' -i --crlf'
     let paste = shellescape(win32yank) .  ' -o --lf'
+  elseif executable('pbcopy.exe')
+    let yank = 'pbcopy.exe'
+    let paste = 'pbpaste.exe'
+  elseif executable('doitclient')
+    let yank = 'doitclient wclip'
+    let paste = 'doitclient wclip -r'
   elseif executable('termux-clipboard-set')
     let yank = 'termux-clipboard-set'
     let paste = 'termux-clipboard-get'
