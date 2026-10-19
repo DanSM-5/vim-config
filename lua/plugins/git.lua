@@ -71,7 +71,7 @@ return {
   --   ft = { 'git', 'gvgit', 'diff' },
   -- },
   {
-    'barrettruth/diffs.nvim',
+    'DanSM-5/diffs.nvim',
     -- ft = { 'git', 'gvgit', 'diff' },
     init = function (self)
       vim.g.diffs = {
