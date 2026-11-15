@@ -61,11 +61,14 @@ return {
       require('config.nvim_cursor_ref').setup()
     end,
   },
-  {
-    'santhosh-tekuri/wordiff.nvim',
-    ft = { 'diff', 'gitcommit', 'git' },
-    opts = {},
-  },
+  -- Disabled to avoid conflicts with diffs.nvim
+  -- {
+  --   'santhosh-tekuri/wordiff.nvim',
+  --   ft = { 'diff', 'gitcommit', 'git' },
+  --   opts = {},
+  -- },
+
+  -- Disabled due to performance issues
   -- {
   --   'farhanmustar/fugitive-delta.nvim',
   --   ft = { 'git', 'gvgit', 'diff' },
