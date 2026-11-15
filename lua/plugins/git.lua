@@ -76,9 +76,19 @@ return {
     init = function (self)
       vim.g.diffs = {
         fugitive = true,
-        extra_filetypes = { 'git', 'gvgit', 'diff' },
+        -- extra_filetypes = { 'git', 'gvgit', 'diff' },
       }
     end,
+    config = function (self, opts)
+      local group = vim.api.nvim_create_augroup('diffs_nvim', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        group = group,
+        pattern = { 'git', 'gvgit', 'diff' },
+        callback = function(event)
+          require('diffs').attach(event.buf)
+        end,
+      })
+    end
   },
 }
 
