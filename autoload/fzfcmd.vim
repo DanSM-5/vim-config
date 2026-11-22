@@ -89,7 +89,10 @@ function! fzfcmd#fzf_selected_list(fzf_options, fullscreen, list) abort
   elseif !empty(glob(selectedList[0])) " Is file
     " Open multiple files
     for sfile in selectedList
-      exec ':e ' . sfile
+      " bufadd() avoids ':edit' parsing ('\(', '%', '#', '$', spaces...)
+      let bufnr = bufadd(fnamemodify(sfile, ':p'))
+      call setbufvar(bufnr, '&buflisted', 1)
+      exec 'buffer' bufnr
     endfor
   endif
 endfunction
@@ -105,10 +108,46 @@ function! fzfcmd#fzf_set_preview_window(spec, fullscreen) abort
   return new_spec
 endf
 
+" Sink for fzfcmd#fzf_files.
+" The default fzf sink runs ':edit ' . fnameescape(path). On Windows,
+" fnameescape() does not escape backslashes and ':edit' drops a backslash
+" that precedes a non-isfname character, so 'app\(stacks)\Game.tsx' opened
+" 'app(stacks)\Game.tsx'. Forward slashes alone are not enough either
+" ('$HOME.txt' gets expanded). bufadd() takes the raw name, so no Ex
+" command-line parsing touches the path.
+function! fzfcmd#fzf_files_sink(lines) abort
+  if len(a:lines) < 2
+    return
+  endif
+
+  let key = a:lines[0]
+  if key ==# get(get(g:, 'fzf_vim', {}), 'paste_key', 'alt-enter')
+    return fzf#vim#paste(a:lines[1:])
+  endif
+
+  let actions = get(g:, 'fzf_action', {
+    \ 'ctrl-t': 'tab split', 'ctrl-x': 'split', 'ctrl-v': 'vsplit' })
+  let Cmd = get(actions, key, '')
+  let cmd = type(Cmd) == v:t_string ? Cmd : ''
+
+  " Resolve to absolute paths now. The callback runs inside fzf's 'dir', and
+  " opening a split may pop back to the previous directory.
+  let files = map(a:lines[1:], 'fnamemodify(v:val, ":p")')
+
+  for file in files
+    if !empty(cmd) && stridx('edit', cmd) != 0
+      execute cmd
+    endif
+    let bufnr = bufadd(file)
+    call setbufvar(bufnr, '&buflisted', 1)
+    execute 'buffer' bufnr
+  endfor
+endfunction
+
 " Wrapper for fzf#vim#files that implement our preview window options
 function! fzfcmd#fzf_files(query, options, fullscreen) abort
   " Get the fzf preview.sh script
-  let spec = fzf#vim#with_preview({ 'options': [] }, a:fullscreen)
+  let spec = fzf#vim#with_preview({ 'options': [], 'sink*': function('fzfcmd#fzf_files_sink') }, a:fullscreen)
   " Inject preview window options
   let spec = fzfcmd#fzf_set_preview_window(spec, a:fullscreen)
   " Append options after to get better keybindings for 'ctrl-/'
